@@ -1,0 +1,26 @@
+{
+  "C_Cpp.autocomplete": "disabled",
+  "C_Cpp.errorSquiggles": "disabled",
+  "C_Cpp.intelliSenseEngine": "disabled",
+  "cmake.buildDirectory": "${workspaceFolder}",
+  "dart.sdkPath": "~/development/dart-sources/sdk/out/ReleaseX64/dart-sdk",
+  "dotnet.defaultSolution": "disable",
+  "git.autoRepositoryDetection": false,
+  "mesonbuild.configureOnOpen": false,
+  "C_Cpp.dimInactiveRegions": false,
+  "clangd.checkUpdates": true,
+  "clangd.onConfigChanged": "restart",
+  "clangd.arguments": [
+    "-background-index",
+    "-header-insertion=iwyu",
+    "-header-insertion-decorators",
+    "--inlay-hints",
+    "--function-arg-placeholders",
+  ],
+  "grammarly.selectors": [
+    {
+      "language": "mdx",
+      "scheme": "file"
+    }
+  ],
+}

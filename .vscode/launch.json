@@ -1,0 +1,111 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "storage-test",
+      "type": "dart",
+      "request": "launch",
+      "toolArgs": [
+        "--define=DEBUG=true"
+      ],
+      "cwd": "${workspaceFolder}/storage",
+      "program": "${workspaceFolder}/storage/test/dart/lib/test.dart",
+      "preLaunchTask": "storage-native-build"
+    },
+    {
+      "name": "storage-test-gdb",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "/usr/bin/dart",
+      "args": [
+        "-DDEBUG=true",
+        "${workspaceFolder}/storage/test/dart/lib/test.dart"
+      ],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}/storage",
+      "MIMode": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ],
+      "preLaunchTask": "storage-native-build"
+    },
+    {
+      "name": "transport-test",
+      "type": "dart",
+      "request": "launch",
+      "toolArgs": [
+        "--define=DEBUG=true"
+      ],
+      "cwd": "${workspaceFolder}/transport",
+      "program": "${workspaceFolder}/transport/test/dart/lib/test.dart",
+      "preLaunchTask": "storage-native-build"
+    },
+    {
+      "name": "storage-test-gdb",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "/usr/bin/dart",
+      "args": [
+        "-DDEBUG=true",
+        "${workspaceFolder}/transport/test/dart/lib/test.dart"
+      ],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}/transport",
+      "MIMode": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ],
+      "preLaunchTask": "transport-native-build"
+    },
+    {
+      "name": "interactor-test",
+      "type": "dart",
+      "request": "launch",
+      "toolArgs": [
+        "--define=DEBUG=true"
+      ],
+      "cwd": "${workspaceFolder}/interactor",
+      "program": "${workspaceFolder}/interactor/test/dart/lib/test.dart",
+      "preLaunchTask": "storage-native-build"
+    },
+    {
+      "name": "interactor-test-gdb",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "/usr/bin/dart",
+      "args": [
+        "-DDEBUG=true",
+        "${workspaceFolder}/interactor/test/dart/lib/test.dart"
+      ],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}/interactor",
+      "MIMode": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ],
+      "preLaunchTask": "interactor-native-build"
+    },
+    {
+      "name": "reactive-test",
+      "type": "dart",
+      "request": "launch",
+      "toolArgs": [
+        "--define=DEBUG=true"
+      ],
+      "cwd": "${workspaceFolder}/reactive",
+      "program": "${workspaceFolder}/reactive/test/test.dart",
+    },
+  ]
+}

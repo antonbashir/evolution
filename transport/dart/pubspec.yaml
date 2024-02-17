@@ -1,0 +1,55 @@
+name: iouring_transport
+version: 1.0.0
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dev_dependencies:
+  ffigen: ^9.0.1
+  lint: ^2.1.2
+
+dependencies:
+  ffi: ^2.1.0
+  test: ^1.24.6
+
+ffigen:
+  name: "TransportBindings"
+  description: "Bindings for Transport"
+  output: "lib/transport/bindings.dart"
+  headers:
+    entry-points:
+      - "../native/transport.h"
+      - "../native/transport_worker.h"
+      - "../native/transport_constants.h"
+      - "../native/transport_server.h"
+      - "../native/transport_client.h"
+      - "../native/transport_file.h"
+      - "../native/transport_socket.h"
+  globals:
+    exclude:
+      - "_(.*)"
+      - "ck(.*)"
+  functions:
+    leaf:
+      include:
+        - "transport_worker_.*"
+    symbol-address:
+      include:
+        - ".*"
+    exclude:
+      - "_(.*)"
+      - "io_uring(.*)"
+  macros:
+    exclude:
+      - "_(.*)"
+      - "true"
+      - "false"
+  typedefs:
+    exclude:
+      - "_(.*)"
+  structs:
+    exclude:
+      - "_(.*)"
+      - "max_align_t"
+      - "file_(.*)"
+      - "io_uring_probe"

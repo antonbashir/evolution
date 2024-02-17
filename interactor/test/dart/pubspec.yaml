@@ -1,0 +1,52 @@
+name: linux_interactor_test
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dev_dependencies:
+  ffigen: ^11.0.0
+
+dependencies:
+  ffi: ^2.1.0
+  test: ^1.22.0
+  linux_interactor:
+    path: ../../dart/
+  collection: ^1.18.0
+  message_pack_dart: ^2.0.1
+
+ffigen:
+  name: "TestBindings"
+  ffi-native:
+    assetId: "interactor-bindings-test"
+  description: "Bindings for Test"
+  output: "lib/bindings.dart"
+  compiler-opts:
+    - "-I../../native/include"
+  globals:
+    exclude:
+      - "(.*)"
+  macros:
+    exclude:
+      - "(.*)"
+  typedefs:
+    exclude:
+      - "_(.*)"
+  type-map:
+    structs:
+      "interactor_message":
+        lib: "linux_interactor"
+        c-type: "interactor_message"
+        dart-type: "interactor_message"
+  library-imports:
+    linux_interactor: package:linux_interactor/interactor/bindings.dart
+  headers:
+    entry-points:
+      - "../native/test.h"
+      - "../native/test_call.h"
+      - "../native/test_threading.h"
+  functions:
+    leaf:
+      include:
+        - "test_.*"
