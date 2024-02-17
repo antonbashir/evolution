@@ -1,5 +1,5 @@
-#ifndef INTERACTOR_STATIC_BUFFERS_H
-#define INTERACTOR_STATIC_BUFFERS_H
+#ifndef MEMORY_STATIC_BUFFERS_H
+#define MEMORY_STATIC_BUFFERS_H
 
 #include <bits/types/struct_iovec.h>
 #include <stddef.h>
@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "interactor_constants.h"
 #include "interactor_native_common.h"
 
 #if defined(__cplusplus)
@@ -79,7 +78,7 @@ extern "C"
     static inline int32_t interactor_static_buffers_pop(struct interactor_static_buffers* pool)
     {
         if (interactor_unlikely(pool->available == 0))
-            return INTERACTOR_BUFFER_USED;
+            return MEMORY_BUFFER_USED;
         return pool->ids[--pool->available];
     }
 

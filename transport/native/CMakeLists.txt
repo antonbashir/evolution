@@ -8,6 +8,7 @@ include_directories(${transport_liburing_BINARY_DIR}/src/include)
 include_directories(${PROJECT_BINARY_DIR})
 include_directories(${PROJECT_SOURCE_DIR})
 include_directories(include)
+include_directories(${INTERACTOR_INCLUDE_DIRECTORY})
 
 file(GLOB sources
   *.c
@@ -19,14 +20,12 @@ file(GLOB sources
 )
 
 add_library(transport_debug_linux_x64 SHARED ${sources})
-add_dependencies(transport_debug_linux_x64 transport_liburing)
-target_link_libraries(transport_debug_linux_x64 PRIVATE ${transport_liburing_SOURCE_DIR}/build/lib/liburing.a)
+target_link_libraries(transport_debug_linux_x64 PRIVATE ${INTERACTOR_LIBRARY})
 add_custom_command(TARGET transport_debug_linux_x64 POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:transport_debug_linux_x64> ${CMAKE_CURRENT_SOURCE_DIR}/../dart/native/libtransport_debug_linux_x64.so)
 set_target_properties(transport_debug_linux_x64 PROPERTIES COMPILE_FLAGS ${CMAKE_C_FLAGS_DEBUG})
 
 add_library(transport_release_linux_x64 SHARED ${sources})
-add_dependencies(transport_release_linux_x64 transport_liburing)
-target_link_libraries(transport_release_linux_x64 PRIVATE ${transport_liburing_SOURCE_DIR}/build/lib/liburing.a)
+target_link_libraries(transport_release_linux_x64 PRIVATE ${INTERACTOR_LIBRARY})
 add_custom_command(TARGET transport_release_linux_x64 POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:transport_release_linux_x64> ${CMAKE_CURRENT_SOURCE_DIR}/../dart/native/libtransport_release_linux_x64.so)
 set_target_properties(transport_release_linux_x64 PROPERTIES COMPILE_FLAGS ${CMAKE_C_FLAGS})
 

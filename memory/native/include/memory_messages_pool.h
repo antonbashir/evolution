@@ -1,5 +1,5 @@
-#ifndef INTERACTOR_MESSAGES_POOL_H
-#define INTERACTOR_MESSAGES_POOL_H
+#ifndef MEMORY_MESSAGES_POOL_H
+#define MEMORY_MESSAGES_POOL_H
 
 #include <interactor_memory.h>
 #include <interactor_message.h>

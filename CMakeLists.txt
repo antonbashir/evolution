@@ -23,14 +23,20 @@ set(DEPENDENCY_SMALL_REPOSITORY "developer@git.local:dependencies/tarantool-smal
 set(DEPENDENCY_SMALL_VERSION evolution)
 
 set(DEPENDENCY_MSGPUCK_REPOSITORY "developer@git.local:dependencies/tarantool-msgpuck.git")
-set(DEPENDENCY_MSGPUCK_VERSION master)
+set(DEPENDENCY_MSGPUCK_VERSION evolution)
 
 set(DEPENDENCY_TARANTOOL_REPOSITORY "developer@git.local:dependencies/tarantool.git")
 set(DEPENDENCY_TARANTOOL_VERSION evolution-3.0.0)
 
+set(CORE_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/core/native/include)
+set(INTERACTOR_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/interactor/native/include)
+set(MEMORY_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/memory/native/include)
+
 include(FetchContent)
 include(ExternalProject)
 
+add_subdirectory(core)
 add_subdirectory(interactor)
-add_subdirectory(storage)
 add_subdirectory(transport)
+add_subdirectory(memory)
+add_subdirectory(storage)

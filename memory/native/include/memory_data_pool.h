@@ -1,5 +1,5 @@
-#ifndef INTERACTOR_DATA_POOL_INCLUDED
-#define INTERACTOR_DATA_POOL_INCLUDED
+#ifndef MEMORY_DATA_POOL_INCLUDED
+#define MEMORY_DATA_POOL_INCLUDED
 
 #include <interactor_memory.h>
 

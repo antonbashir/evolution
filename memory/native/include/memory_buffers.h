@@ -1,5 +1,5 @@
-#ifndef INTERACTOR_IO_BUFFERS_H
-#define INTERACTOR_IO_BUFFERS_H
+#ifndef MEMORY_IO_BUFFERS_H
+#define MEMORY_IO_BUFFERS_H
 
 #include <stddef.h>
 #include "interactor_memory.h"

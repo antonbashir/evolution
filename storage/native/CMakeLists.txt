@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.16.0)
 project(storage_native C CXX ASM)
 
-include(${CMAKE_SOURCE_DIR}/cmake/interactor.cmake)
-
 file(GLOB sources
   src/*.h
   src/*.c
