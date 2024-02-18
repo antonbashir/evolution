@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
 
-import 'package:tarantool_storage/storage/constants.dart';
-import 'package:tarantool_storage/tarantool_storage.dart';
+import 'package:storage/storage/constants.dart';
+import 'package:storage/storage.dart';
 import 'package:test/scaffolding.dart';
 
 // late final StorageExecutor _executor;

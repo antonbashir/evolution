@@ -15,7 +15,7 @@ const parentDirectorySymbol = '..';
 const currentDirectorySymbol = './';
 
 final storageLibraryName = bool.fromEnvironment("DEBUG") ? "libstorage_debug_${Abi.current()}.so" : "libstorage_release_${Abi.current()}.so";
-const storagePackageName = "tarantool_storage";
+const storagePackageName = "storage";
 const storageLuaModule = "storage";
 
 const int32Max = 4294967295;
@@ -129,7 +129,7 @@ class Messages {
   static const runPubGet = "Run 'dart pub get'";
   static const specifyDartEntryPoint = 'Specify dart execution entry point';
   static const projectRootNotFound = "Project root not found (parent of 'pubspec.yaml')";
-  static const nativeDirectoryNotFound = "Native root not found (run 'dart run tarantool_storage:setup')";
+  static const nativeDirectoryNotFound = "Native root not found (run 'dart run storage:setup')";
   static const nativeSourcesNotFound = "Native root does not contain any *.c or *.cpp sources";
 }
 

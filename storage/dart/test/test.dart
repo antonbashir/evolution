@@ -4,9 +4,9 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:memory/memory.dart';
-import 'package:tarantool_storage/storage/bindings.dart';
-import 'package:tarantool_storage/storage/lua.dart';
-import 'package:tarantool_storage/tarantool_storage.dart';
+import 'package:storage/storage/bindings.dart';
+import 'package:storage/storage/lua.dart';
+import 'package:storage/storage.dart';
 import 'package:test/test.dart';
 
 class TestData implements MemoryTuple {

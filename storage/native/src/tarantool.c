@@ -24,7 +24,7 @@
 
 static struct tarantool_executor_configuration executor;
 
-static struct tarantool_storage
+static struct storage
 {
     struct tarantool_configuration configuration;
     char* initialization_error;

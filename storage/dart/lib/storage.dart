@@ -1,4 +1,4 @@
-library tarantool_storage;
+library storage;
 
 export "storage/storage.dart" show Storage;
 export 'storage/executor.dart' show StorageExecutor;

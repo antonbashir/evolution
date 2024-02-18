@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:tarantool_storage/tarantool_storage.dart';
+import 'package:storage/storage.dart';
 import 'package:test/expect.dart';
 import 'package:test/scaffolding.dart';
 
