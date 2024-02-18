@@ -16,13 +16,17 @@ class Interactors {
   final _workerPorts = <RawReceivePort>[];
   final _workerDestroyer = ReceivePort();
 
-  Interactors({String? libraryPath}) {
+  static void load({String? libraryPath}) {
     Core.load();
     if (libraryPath != null) {
       SystemLibrary.loadByPath(libraryPath);
       return;
     }
     SystemLibrary.loadByName(interactorLibraryName, interactorPackageName);
+  }
+
+  Interactors({String? libraryPath}) {
+    load(libraryPath: libraryPath);
   }
 
   Future<void> shutdown() async {

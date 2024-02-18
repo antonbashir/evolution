@@ -15,7 +15,7 @@ class StorageSerialization {
     final units = result.asTypedList(source.length + 1);
     final length = fastEncodeString(source, units, 0);
     units[length] = 0;
-    return (result.cast(), source.length);
+    return (result.cast(), length + 1);
   }
 
   @inline

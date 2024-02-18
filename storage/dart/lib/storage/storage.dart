@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:ffi/ffi.dart';
+import 'package:interactor/interactor.dart';
 
 import 'bindings.dart';
 import 'configuration.dart';
@@ -24,7 +25,9 @@ class Storage {
 
   StreamSubscription<ProcessSignal>? _reloadListener = null;
 
-  Storage({String? libraryPath}) : _library = libraryPath == null ? SystemLibrary.loadByName(storageLibraryName, storagePackageName) : SystemLibrary.loadByPath(libraryPath);
+  Storage({String? libraryPath}) : _library = libraryPath == null ? SystemLibrary.loadByName(storageLibraryName, storagePackageName) : SystemLibrary.loadByPath(libraryPath) {
+    Interactors.load();
+  }
 
   StorageExecutor get executor => _executor;
 

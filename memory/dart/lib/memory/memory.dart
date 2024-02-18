@@ -17,13 +17,17 @@ class Memory {
   late final MemorySmallData smallDatas;
   late final MemoryStructurePool<Double> doubles;
 
-  Memory({String? libraryPath, bool shared = false}) {
+  static void load({String? libraryPath, bool shared = false}) {
     Core.load();
     if (libraryPath != null) {
       SystemLibrary.loadByPath(libraryPath);
       return;
     }
     SystemLibrary.loadByName(shared ? memorySharedLibraryName : memoryLibraryName, memoryPackageName);
+  }
+
+  Memory({String? libraryPath, bool shared = false}) {
+    load(libraryPath: libraryPath, shared: shared);
   }
 
   void initialize({MemoryConfiguration configuration = MemoryDefaults.memory}) {
