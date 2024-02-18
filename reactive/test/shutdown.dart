@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
-import 'package:iouring_transport/iouring_transport.dart';
+import 'package:transport/transport.dart';
 import 'package:reactive_transport/reactive/constants.dart';
 import 'package:reactive_transport/reactive/defaults.dart';
 import 'package:reactive_transport/reactive/producer.dart';

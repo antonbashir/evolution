@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:iouring_transport/iouring_transport.dart';
+import 'package:transport/transport.dart';
 import 'package:meta/meta.dart';
 
 import 'client.dart';

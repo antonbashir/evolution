@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:iouring_transport/iouring_transport.dart';
+import 'package:transport/transport.dart';
 
 import 'broker.dart';
 import 'configuration.dart';

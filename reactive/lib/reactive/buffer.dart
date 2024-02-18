@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'constants.dart';
+import 'package:core/core.dart';
 
 class ReactiveReadBuffer {
   var _data = <int>[];

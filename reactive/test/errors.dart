@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:test/test.dart';
-import 'package:iouring_transport/iouring_transport.dart';
+import 'package:transport/transport.dart';
 import 'package:reactive_transport/reactive/defaults.dart';
 import 'package:reactive_transport/reactive/producer.dart';
 import 'package:reactive_transport/reactive/transport.dart';

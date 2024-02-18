@@ -1,7 +1,7 @@
 import 'dart:io' as io;
 import 'dart:typed_data';
 
-import 'package:iouring_transport/iouring_transport.dart';
+import 'package:transport/transport.dart';
 import 'package:iouring_transport/transport/defaults.dart';
 import 'package:iouring_transport/transport/transport.dart';
 import 'package:iouring_transport/transport/worker.dart';

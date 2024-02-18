@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:iouring_transport/iouring_transport.dart';
+import 'package:transport/transport.dart';
 import 'package:reactive_transport/reactive/channel.dart';
 import 'package:reactive_transport/reactive/configuration.dart';
 import 'package:reactive_transport/reactive/defaults.dart';

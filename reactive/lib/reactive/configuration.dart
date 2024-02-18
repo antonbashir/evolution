@@ -1,4 +1,4 @@
-import 'package:iouring_transport/iouring_transport.dart';
+import 'package:transport/transport.dart';
 
 import 'codec.dart';
 
