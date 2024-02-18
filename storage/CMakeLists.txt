@@ -29,7 +29,6 @@ ExternalProject_Add(storage_tarantool
   BUILD_ALWAYS TRUE
 )
 ExternalProject_Get_Property(storage_tarantool install_dir)
-set(TARANTOOL_ISNTALL_DIR ${install_dir})
-set(INTERACTOR_PATH_TRIMMED ${install_dir}/lib/libtarantool-bundle.a)
+set(TARANTOOL_INSTALL_DIR ${install_dir})
 
 add_subdirectory(native)

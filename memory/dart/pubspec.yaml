@@ -1,5 +1,5 @@
-name: linux_interactor
-version: 1.0.0
+name: memory
+version: 0.0.0
 
 environment:
   sdk: ">=3.1.0 <4.0.0"
@@ -12,16 +12,16 @@ dependencies:
   test: ^1.22.0
 
 ffigen:
-  name: "InteractorBindings"
+  name: "MemoryBindings"
   ffi-native:
-    assetId: "interactor-bindings"
-  description: "Bindings for Interactor"
-  output: "lib/interactor/bindings.dart"
+    assetId: "memory-bindings"
+  description: "Bindings for memory"
+  output: "lib/memory/bindings.dart"
   compiler-opts:
     - "-I../native/include"
   headers:
     entry-points:
-      - "../native/interactor_dart.h"
+      - "../native/memory_dart.h"
   globals:
     exclude:
       - "(.*)"
@@ -34,13 +34,11 @@ ffigen:
   functions:
     leaf:
       include:
-        - "interactor_dart_.*"
+        - "memory_dart_.*"
     exclude:
       - "_(.*)"
-      - "io_uring(.*)"
   structs:
     exclude:
       - "_(.*)"
       - "max_align_t"
       - "file_(.*)"
-      - "io_uring_probe"

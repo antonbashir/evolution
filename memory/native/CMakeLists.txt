@@ -35,3 +35,17 @@ set_target_properties(memory_release_linux_x64 PROPERTIES COMPILE_FLAGS ${CMAKE_
 add_custom_command(TARGET memory_release_linux_x64 POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:memory_release_linux_x64> ${CMAKE_CURRENT_SOURCE_DIR}/../dart/native/libmemory_release_linux_x64.so)
 
 add_custom_target(memory_native DEPENDS memory_release_linux_x64 memory_debug_linux_x64)
+
+add_library(memory_debug_linux_x64_bundle SHARED ${sources})
+add_dependencies(memory_debug_linux_x64_bundle core_debug_linux_x64 ${SMALL_PROJECT}_shared ${MSGPUCK_PROJECT}_shared)
+target_link_libraries(memory_debug_linux_x64_bundle PRIVATE core_debug_linux_x64 ${SMALL_PROJECT}_shared ${MSGPUCK_PROJECT}_shared)
+set_target_properties(memory_debug_linux_x64_bundle PROPERTIES COMPILE_FLAGS ${CMAKE_C_FLAGS_DEBUG})
+add_custom_command(TARGET memory_debug_linux_x64_bundle POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:memory_debug_linux_x64_bundle> ${CMAKE_CURRENT_SOURCE_DIR}/../dart/native/libmemory_debug_linux_x64_bundle.so)
+
+add_library(memory_release_linux_x64_bundle SHARED ${sources})
+add_dependencies(memory_release_linux_x64_bundle core_release_linux_x64 ${SMALL_PROJECT}_shared ${MSGPUCK_PROJECT}_shared)
+target_link_libraries(memory_release_linux_x64_bundle  PRIVATE core_release_linux_x64 ${SMALL_PROJECT}_shared ${MSGPUCK_PROJECT}_shared)
+set_target_properties(memory_release_linux_x64_bundle PROPERTIES COMPILE_FLAGS ${CMAKE_C_FLAGS})
+add_custom_command(TARGET memory_release_linux_x64_bundle POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:memory_release_linux_x64_bundle> ${CMAKE_CURRENT_SOURCE_DIR}/../dart/native/libmemory_release_linux_x64_bundle.so)
+
+add_custom_target(memory_native_bundle DEPENDS memory_release_linux_x64_bundle memory_debug_linux_x64_bundle)

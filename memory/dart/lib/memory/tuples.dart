@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:ffi';
 import 'dart:typed_data';
 
-import 'bindings.dart';
-import 'constants.dart';
+import '../interactor/bindings.dart';
+import '../interactor/constants.dart';
 import 'extensions.dart';
 
 const tupleSizeOfNull = 1;

@@ -34,6 +34,7 @@ set(MEMORY_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/memory/native/include)
 
 include(FetchContent)
 include(ExternalProject)
+include(infrastructure/cmake/infrastructure.cmake)
 
 add_subdirectory(core)
 add_subdirectory(interactor)

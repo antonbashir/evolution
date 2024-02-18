@@ -17,10 +17,10 @@ file(GLOB sources
 
 add_library(core_debug_linux_x64 SHARED ${sources})
 set_target_properties(core_debug_linux_x64 PROPERTIES COMPILE_FLAGS ${CMAKE_C_FLAGS_DEBUG})
-add_custom_command(TARGET core_debug_linux_x64 POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:core_debug_linux_x64> ${CMAKE_CURRENT_SOURCE_DIR}/../dart/native/libcore_debug_linux_x64.so)
+copy_to_assets(core_debug_linux_x64)
 
 add_library(core_release_linux_x64 SHARED ${sources})
 set_target_properties(core_release_linux_x64 PROPERTIES COMPILE_FLAGS ${CMAKE_C_FLAGS})
-add_custom_command(TARGET core_release_linux_x64 POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:core_release_linux_x64> ${CMAKE_CURRENT_SOURCE_DIR}/../dart/native/libcore_release_linux_x64.so)
+copy_to_assets(core_release_linux_x64)
 
 add_custom_target(core_native DEPENDS core_release_linux_x64 core_debug_linux_x64)

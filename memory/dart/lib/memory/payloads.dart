@@ -1,8 +1,8 @@
 import 'dart:ffi';
 
-import 'bindings.dart';
-import 'constants.dart';
-import 'exception.dart';
+import '../interactor/bindings.dart';
+import '../interactor/constants.dart';
+import '../interactor/exception.dart';
 
 class InteractorPayloads {
   final Map<int, Pointer<interactor_payload_pool>> _pools = {};

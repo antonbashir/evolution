@@ -1,7 +1,7 @@
 import 'dart:ffi';
 
-import 'bindings.dart';
-import 'constants.dart';
+import '../interactor/bindings.dart';
+import '../interactor/constants.dart';
 
 class InteractorDatas {
   final Pointer<interactor_dart> _interactor;

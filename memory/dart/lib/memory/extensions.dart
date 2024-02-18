@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'constants.dart';
+import '../interactor/constants.dart';
 
 const int _oneByteLimit = 0x7f;
 const int _twoByteLimit = 0x7ff;
