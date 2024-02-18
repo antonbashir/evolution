@@ -100,7 +100,7 @@ class StorageConsumer implements InteractorConsumer {
 }
 
 class StorageExecutor {
-  final interactors = Interactors();
+  final interactors = InteractorModule();
 
   final Pointer<tarantool_box> _box;
 
@@ -116,7 +116,7 @@ class StorageExecutor {
 
   StorageSchema get schema => _schema;
   MemoryTuples get tuples => _tuples;
-  Memory get memory => _interactor.memory;
+  MemoryModule get memory => _interactor.memory;
 
   Future<void> initialize() async {
     _interactor = Interactor(interactors.interactor());

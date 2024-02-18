@@ -26,7 +26,7 @@ class Storage {
   StreamSubscription<ProcessSignal>? _reloadListener = null;
 
   Storage({String? libraryPath}) : _library = libraryPath == null ? SystemLibrary.loadByName(storageLibraryName, storagePackageName) : SystemLibrary.loadByPath(libraryPath) {
-    Interactors.load();
+    InteractorModule.load();
   }
 
   StorageExecutor get executor => _executor;

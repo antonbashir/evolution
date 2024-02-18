@@ -27,7 +27,7 @@ class Interactor {
 
   late final int descriptor;
   late final InteractorMessages messages;
-  late final Memory memory;
+  late final MemoryModule memory;
   bool get active => _active;
   int get id => _pointer.ref.id;
 
@@ -50,7 +50,7 @@ class Interactor {
     descriptor = configuration[2] as int;
     _fromInteractors.close();
     _completions = _pointer.ref.completions;
-    memory = Memory(shared: sharedMemory)..initialize();
+    memory = MemoryModule(shared: sharedMemory)..initialize();
     messages = InteractorMessages(memory);
     _consumers = InteractorConsumerRegistry(_pointer);
     _producers = InteractorProducerRegistry(_pointer);

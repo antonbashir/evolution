@@ -13,7 +13,7 @@ import 'bindings.dart';
 
 void testThreadingNative() {
   test("[isolates]dart(bytes) <-> [threads]native(bytes)", () async {
-    final interactor = Interactors();
+    final interactor = InteractorModule();
     final messages = 16;
     final isolates = 4;
     final threads = 8;
@@ -64,7 +64,7 @@ void testThreadingNative() {
 
 void testThreadingDart() {
   test("[threads]native(bytes) <-> [isolates]dart(bytes)", () async {
-    final interactor = Interactors();
+    final interactor = InteractorModule();
     final messages = 16;
     final isolates = 4;
     final threads = 8;

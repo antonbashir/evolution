@@ -9,7 +9,7 @@ import 'constants.dart';
 import 'defaults.dart';
 import 'exceptions.dart';
 
-class Memory {
+class MemoryModule {
   late final Pointer<memory_dart> pointer;
   late final MemoryStaticBuffers staticBuffers;
   late final MemoryInputOutputBuffers inputOutputBuffers;
@@ -18,7 +18,7 @@ class Memory {
   late final MemoryStructurePool<Double> doubles;
 
   static void load({String? libraryPath, bool shared = false}) {
-    Core.load();
+    CoreModule.load();
     if (libraryPath != null) {
       SystemLibrary.loadByPath(libraryPath);
       return;
@@ -26,7 +26,7 @@ class Memory {
     SystemLibrary.loadByName(shared ? memorySharedLibraryName : memoryLibraryName, memoryPackageName);
   }
 
-  Memory({String? libraryPath, bool shared = false}) {
+  MemoryModule({String? libraryPath, bool shared = false}) {
     load(libraryPath: libraryPath, shared: shared);
   }
 

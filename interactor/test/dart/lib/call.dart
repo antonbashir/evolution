@@ -10,7 +10,7 @@ import 'producer.dart';
 
 void testCallNative() {
   test("dart(null) <-> native(null)", () async {
-    final interactors = Interactors();
+    final interactors = InteractorModule();
     final interactor = Interactor(interactors.interactor());
     test_call_reset();
     await interactor.initialize();
@@ -26,7 +26,7 @@ void testCallNative() {
   });
 
   test("dart(bool) <-> native(bool)", () async {
-    final interactors = Interactors();
+    final interactors = InteractorModule();
     final interactor = Interactor(interactors.interactor());
     test_call_reset();
     await interactor.initialize();
@@ -43,7 +43,7 @@ void testCallNative() {
   });
 
   test("dart(int) <-> native(int)", () async {
-    final interactors = Interactors();
+    final interactors = InteractorModule();
     final interactor = Interactor(interactors.interactor());
     test_call_reset();
     await interactor.initialize();
@@ -60,7 +60,7 @@ void testCallNative() {
   });
 
   test("dart(double) <-> native(double)", () async {
-    final interactors = Interactors();
+    final interactors = InteractorModule();
     final interactor = Interactor(interactors.interactor());
     test_call_reset();
     await interactor.initialize();
@@ -81,7 +81,7 @@ void testCallNative() {
 
 void testCallDart() {
   test("native(null) <-> dart(null)", () async {
-    final interactors = Interactors();
+    final interactors = InteractorModule();
     final interactor = Interactor(interactors.interactor());
 
     test_call_reset();
@@ -98,7 +98,7 @@ void testCallDart() {
   });
 
   test("native(bool) <-> dart(bool)", () async {
-    final interactors = Interactors();
+    final interactors = InteractorModule();
     final interactor = Interactor(interactors.interactor());
 
     test_call_reset();
@@ -120,7 +120,7 @@ void testCallDart() {
   });
 
   test("native(int) <-> dart(int)", () async {
-    final interactors = Interactors();
+    final interactors = InteractorModule();
     final interactor = Interactor(interactors.interactor());
 
     test_call_reset();
@@ -142,7 +142,7 @@ void testCallDart() {
   });
 
   test("native(double) <-> dart(double)", () async {
-    final interactors = Interactors();
+    final interactors = InteractorModule();
     final interactor = Interactor(interactors.interactor());
 
     test_call_reset();

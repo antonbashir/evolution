@@ -1,7 +1,7 @@
 import '../core.dart';
 
-class Core {
-  Core._();
+class CoreModule {
+  CoreModule._();
 
   static void load() => SystemLibrary.loadByName(coreLibraryName, corePackageName);
 }

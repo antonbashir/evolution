@@ -11,13 +11,13 @@ import 'constants.dart';
 import 'defaults.dart';
 import 'exception.dart';
 
-class Interactors {
+class InteractorModule {
   final _workerClosers = <SendPort>[];
   final _workerPorts = <RawReceivePort>[];
   final _workerDestroyer = ReceivePort();
 
   static void load({String? libraryPath}) {
-    Core.load();
+    CoreModule.load();
     if (libraryPath != null) {
       SystemLibrary.loadByPath(libraryPath);
       return;
@@ -25,7 +25,7 @@ class Interactors {
     SystemLibrary.loadByName(interactorLibraryName, interactorPackageName);
   }
 
-  Interactors({String? libraryPath}) {
+  InteractorModule({String? libraryPath}) {
     load(libraryPath: libraryPath);
   }
 
