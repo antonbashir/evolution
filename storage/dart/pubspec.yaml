@@ -55,16 +55,16 @@ ffigen:
   type-map:
     "structs":
       "interactor_message":
-        "lib": "linux_interactor_bindings"
+        "lib": "interactor"
         "c-type": "interactor_message"
         "dart-type": "interactor_message"
       "interactor_completion_event":
-        "lib": "linux_interactor_bindings"
+        "lib": "interactor"
         "c-type": "interactor_completion_event"
         "dart-type": "interactor_completion_event"
       "interactor_memory":
-        "lib": "linux_interactor_bindings"
+        "lib": "interactor"
         "c-type": "interactor_memory"
         "dart-type": "interactor_memory"
   library-imports:
-    linux_interactor_bindings: "package:linux_interactor/interactor/bindings.dart"
+    interactor: "package:interactor/interactor/interactor.dart"

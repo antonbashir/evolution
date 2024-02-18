@@ -1,7 +1,17 @@
 import 'dart:io';
 
+import 'package:interactor/interactor.dart';
+
 void main() {
-  final command = (executable: "dart", args: ["run", "ffigen"]);
+  final command = (
+    executable: "dart",
+    args: [
+      "run",
+      "ffigen",
+      "--compiler-opts",
+      "-I/${File(Interactors.libraryPath).parent.path}/../../native/include",
+    ]
+  );
   final result = Process.runSync(command.executable, command.args);
   if (result.exitCode != 0) {
     print(result.stdout);
