@@ -201,7 +201,7 @@ class StorageExecutor {
     final buffer = message.outputPointer;
     final bufferSize = message.outputSize;
     final result = buffer.cast<Uint8>().asTypedList(message.outputSize);
-    //tarantool_evaluate_request_free(_factory, message);
+    tarantool_evaluate_request_free(_factory, message);
     return (result, () {});
   }
 
@@ -210,7 +210,7 @@ class StorageExecutor {
     final buffer = message.outputPointer;
     final bufferSize = message.outputSize;
     final result = message.outputPointer.cast<Uint8>().asTypedList(message.outputSize);
-    //tarantool_call_request_free(_factory, message);
+    tarantool_call_request_free(_factory, message);
     return (result, () {});
   }
 }
