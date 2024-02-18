@@ -81,3 +81,4 @@ dependencies
 !**/assets/*.so
 *-prefix
 Makefile
+bin/

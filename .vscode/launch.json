@@ -8,7 +8,7 @@
       "toolArgs": [
         "--define=DEBUG=true"
       ],
-      "cwd": "${workspaceFolder}/storage",
+      "cwd": "${workspaceFolder}/storage/dart",
       "program": "${workspaceFolder}/storage/dart/test/test.dart",
       "preLaunchTask": "storage-native-build"
     },
@@ -22,7 +22,7 @@
         "${workspaceFolder}/storage/dart/test/test.dart"
       ],
       "stopAtEntry": false,
-      "cwd": "${workspaceFolder}/storage",
+      "cwd": "${workspaceFolder}/storage/dart",
       "MIMode": "gdb",
       "setupCommands": [
         {
