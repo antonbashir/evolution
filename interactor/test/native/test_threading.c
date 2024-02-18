@@ -47,7 +47,7 @@ static void* test_threading_run(void* thread)
     casted->alive = false;
     do
     {
-        casted->test_interactor = test_interactor_initialize();
+        casted->test_interactor = test_interactor_initialize(false);
     } while (!casted->test_interactor || ((struct interactor_native*)casted->test_interactor)->descriptor <= 0);
     interactor_native_register_callback((struct interactor_native*)casted->test_interactor, 0, 0, test_threading_call_dart_callback);
     casted->alive = true;
@@ -57,7 +57,13 @@ static void* test_threading_run(void* thread)
     {
         interactor_native_process_timeout((struct interactor_native*)casted->test_interactor);
     }
-    test_interactor_destroy((struct interactor_native*)casted->test_interactor);
+    test_interactor_destroy((struct interactor_native*)casted->test_interactor, false);
+    memory_small_data_destroy(casted->thread_small_data);
+    memory_pool_destroy(casted->thread_memory_pool);
+    memory_destroy(casted->thread_memory);
+    free(casted->thread_small_data);
+    free(casted->thread_memory_pool);
+    free(casted->thread_memory);
     free(casted->messages);
     return NULL;
 }
@@ -79,7 +85,7 @@ bool test_threading_initialize(int thread_count, int isolates_count, int per_thr
         thread->thread_memory = calloc(1, sizeof(struct memory));
         thread->thread_memory_pool = calloc(1, sizeof(struct memory_pool));
         thread->thread_small_data = calloc(1, sizeof(struct memory_small_data));
-        memory_create(thread->thread_memory, 16 * 1024 * 1024, 64 * 1024, 64 * 1024);
+        memory_create(thread->thread_memory, 1 * 1024 * 1024, 64 * 1024, 64 * 1024);
         memory_pool_create(thread->thread_memory_pool, thread->thread_memory, sizeof(struct interactor_message));
         memory_small_data_create(thread->thread_small_data, thread->thread_memory);
         pthread_mutex_init((pthread_mutex_t*)thread->initialize_mutex, NULL);

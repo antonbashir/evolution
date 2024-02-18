@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:ffi';
 import 'dart:isolate';
 import 'dart:math';
-import 'package:ffi/ffi.dart' as ffi;
+import 'package:ffi/ffi.dart';
 import 'package:memory/memory.dart';
 import 'bindings.dart';
 import 'constants.dart';
@@ -34,8 +34,9 @@ class Interactor {
   Interactor(SendPort toInteractor) {
     _closer = RawReceivePort((_) async {
       await deactivate();
+      memory.destroy();
       interactor_dart_destroy(_pointer);
-      ffi.calloc.free(_pointer);
+      calloc.free(_pointer);
       _closer.close();
       _destroyer.send(null);
     });
@@ -49,7 +50,7 @@ class Interactor {
     descriptor = configuration[2] as int;
     _fromInteractors.close();
     _completions = _pointer.ref.completions;
-    memory = Memory(load: false);
+    memory = Memory()..initialize();
     messages = InteractorMessages(memory);
     _consumers = InteractorConsumerRegistry(_pointer);
     _producers = InteractorProducerRegistry(_pointer);

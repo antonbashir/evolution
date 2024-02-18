@@ -5,11 +5,13 @@
 import 'dart:ffi' as ffi;
 import 'package:interactor/interactor.dart' as interactor;
 
-@ffi.Native<ffi.Pointer<test_interactor_native> Function()>(
+@ffi.Native<ffi.Pointer<test_interactor_native> Function(ffi.Bool)>(
     symbol: 'test_interactor_initialize',
     assetId: 'interactor-bindings-test',
     isLeaf: true)
-external ffi.Pointer<test_interactor_native> test_interactor_initialize();
+external ffi.Pointer<test_interactor_native> test_interactor_initialize(
+  bool initialize_memory,
+);
 
 @ffi.Native<ffi.Int Function(ffi.Pointer<test_interactor_native>)>(
     symbol: 'test_interactor_descriptor',
@@ -19,12 +21,13 @@ external int test_interactor_descriptor(
   ffi.Pointer<test_interactor_native> interactor,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<test_interactor_native>)>(
+@ffi.Native<ffi.Void Function(ffi.Pointer<test_interactor_native>, ffi.Bool)>(
     symbol: 'test_interactor_destroy',
     assetId: 'interactor-bindings-test',
     isLeaf: true)
 external void test_interactor_destroy(
   ffi.Pointer<test_interactor_native> interactor,
+  bool initialize_memory,
 );
 
 @ffi.Native<ffi.Pointer<interactor.interactor_message> Function()>(

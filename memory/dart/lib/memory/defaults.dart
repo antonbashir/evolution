@@ -8,6 +8,6 @@ class MemoryDefaults {
     staticBufferSize: 4096,
     slabSize: 64 * 1024,
     preallocationSize: 64 * 1024,
-    quotaSize: 16 * 1024 * 1024,
+    quotaSize: 1 * 1024 * 1024,
   );
 }

@@ -14,7 +14,7 @@ void testCallNative() {
     final interactor = Interactor(interactors.interactor());
     test_call_reset();
     await interactor.initialize();
-    final native = test_interactor_initialize();
+    final native = test_interactor_initialize(true);
     final producer = interactor.producer(TestNativeProducer());
     interactor.activate();
     final call = producer.testCallNative(test_interactor_descriptor(native), interactor.messages.allocate());
@@ -22,7 +22,7 @@ void testCallNative() {
     final result = await call;
     interactor.messages.free(result);
     await interactors.shutdown();
-    test_interactor_destroy(native);
+    test_interactor_destroy(native, true);
   });
 
   test("dart(bool) <-> native(bool)", () async {
@@ -30,7 +30,7 @@ void testCallNative() {
     final interactor = Interactor(interactors.interactor());
     test_call_reset();
     await interactor.initialize();
-    final native = test_interactor_initialize();
+    final native = test_interactor_initialize(true);
     final producer = interactor.producer(TestNativeProducer());
     interactor.activate();
     final call = producer.testCallNative(test_interactor_descriptor(native), interactor.messages.allocate()..inputBool = true);
@@ -39,7 +39,7 @@ void testCallNative() {
     expect(result.outputBool, true);
     interactor.messages.free(result);
     await interactors.shutdown();
-    test_interactor_destroy(native);
+    test_interactor_destroy(native, true);
   });
 
   test("dart(int) <-> native(int)", () async {
@@ -47,7 +47,7 @@ void testCallNative() {
     final interactor = Interactor(interactors.interactor());
     test_call_reset();
     await interactor.initialize();
-    final native = test_interactor_initialize();
+    final native = test_interactor_initialize(true);
     final producer = interactor.producer(TestNativeProducer());
     interactor.activate();
     final call = producer.testCallNative(test_interactor_descriptor(native), interactor.messages.allocate()..inputInt = 123);
@@ -56,7 +56,7 @@ void testCallNative() {
     expect(result.outputInt, 123);
     interactor.messages.free(result);
     await interactors.shutdown();
-    test_interactor_destroy(native);
+    test_interactor_destroy(native, true);
   });
 
   test("dart(double) <-> native(double)", () async {
@@ -64,7 +64,7 @@ void testCallNative() {
     final interactor = Interactor(interactors.interactor());
     test_call_reset();
     await interactor.initialize();
-    final native = test_interactor_initialize();
+    final native = test_interactor_initialize(true);
     final producer = interactor.producer(TestNativeProducer());
     interactor.activate();
     final value = interactor.memory.doubles.allocate();
@@ -75,7 +75,7 @@ void testCallNative() {
     expect(result.outputDouble, 123.45);
     interactor.messages.free(result);
     await interactors.shutdown();
-    test_interactor_destroy(native);
+    test_interactor_destroy(native, true);
   });
 }
 
@@ -86,7 +86,7 @@ void testCallDart() {
 
     test_call_reset();
     await interactor.initialize();
-    final native = test_interactor_initialize();
+    final native = test_interactor_initialize(true);
     final completer = Completer();
     interactor.consumer(TestNativeConsumer((message) => completer.complete()));
     interactor.activate();
@@ -94,7 +94,7 @@ void testCallDart() {
     await _awaitDartCall(native);
     await completer.future;
     await interactors.shutdown();
-    test_interactor_destroy(native);
+    test_interactor_destroy(native, true);
   });
 
   test("native(bool) <-> dart(bool)", () async {
@@ -103,7 +103,7 @@ void testCallDart() {
 
     test_call_reset();
     await interactor.initialize();
-    final native = test_interactor_initialize();
+    final native = test_interactor_initialize(true);
     final completer = Completer();
     interactor.consumer(TestNativeConsumer(
       (message) {
@@ -116,7 +116,7 @@ void testCallDart() {
     await _awaitDartCall(native);
     await completer.future;
     await interactors.shutdown();
-    test_interactor_destroy(native);
+    test_interactor_destroy(native, true);
   });
 
   test("native(int) <-> dart(int)", () async {
@@ -125,7 +125,7 @@ void testCallDart() {
 
     test_call_reset();
     await interactor.initialize();
-    final native = test_interactor_initialize();
+    final native = test_interactor_initialize(true);
     final completer = Completer();
     interactor.consumer(TestNativeConsumer(
       (message) {
@@ -138,7 +138,7 @@ void testCallDart() {
     await _awaitDartCall(native);
     await completer.future;
     await interactors.shutdown();
-    test_interactor_destroy(native);
+    test_interactor_destroy(native, true);
   });
 
   test("native(double) <-> dart(double)", () async {
@@ -147,7 +147,7 @@ void testCallDart() {
 
     test_call_reset();
     await interactor.initialize();
-    final native = test_interactor_initialize();
+    final native = test_interactor_initialize(true);
     final completer = Completer();
     interactor.consumer(TestNativeConsumer(
       (message) {
@@ -160,7 +160,7 @@ void testCallDart() {
     await _awaitDartCall(native);
     await completer.future;
     await interactors.shutdown();
-    test_interactor_destroy(native);
+    test_interactor_destroy(native, true);
   });
 }
 

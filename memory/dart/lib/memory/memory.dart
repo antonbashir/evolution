@@ -17,18 +17,16 @@ class Memory {
   late final MemorySmallData smallDatas;
   late final MemoryStructurePool<Double> doubles;
 
-  Memory({
-    String? libraryPath,
-    MemoryConfiguration configuration = MemoryDefaults.memory,
-    bool shared = false,
-    bool load = false,
-  }) {
+  Memory({String? libraryPath, bool shared = false, bool load = false}) {
     Core.load();
     if (libraryPath != null) {
       SystemLibrary.loadByPath(libraryPath);
       return;
     }
     SystemLibrary.loadByName(shared ? memorySharedLibraryName : memoryLibraryName, memoryPackageName);
+  }
+
+  void initialize({MemoryConfiguration configuration = MemoryDefaults.memory}) {
     pointer = calloc<memory_dart>(sizeOf<memory_dart>());
     if (pointer == nullptr) throw MemoryException(MemoryErrors.outOfMemory);
     final result = using((arena) {

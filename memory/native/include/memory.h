@@ -30,6 +30,7 @@ extern "C"
         struct quota quota;
         struct slab_arena arena;
         struct slab_cache cache;
+        bool initialized;
     };
 
     struct memory_pool
@@ -58,6 +59,7 @@ extern "C"
         quota_init(&memory->quota, quota_size);
         if ((result = slab_arena_create(&memory->arena, &memory->quota, preallocation_size, slab_size, MAP_PRIVATE))) return result;
         slab_cache_create(&memory->cache, &memory->arena);
+        memory->initialized = true;
         return 0;
     }
 
@@ -69,6 +71,7 @@ extern "C"
         {
             quota_release(&memory->quota, quota_used(&memory->quota));
         }
+        memory->initialized = false;
     }
 
     static inline int memory_pool_create(struct memory_pool* pool, struct memory* memory, size_t size)
