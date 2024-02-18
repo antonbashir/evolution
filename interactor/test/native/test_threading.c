@@ -18,7 +18,7 @@ int* test_threading_interactor_descriptors()
     pthread_mutex_lock((pthread_mutex_t*)threads.global_working_mutex);
     for (int id = 0; id < threads.count; id++)
     {
-        descriptors[id] = ((struct interactor_native*)threads.threads[id].interactor)->descriptor;
+        descriptors[id] = ((struct interactor_native*)threads.threads[id].test_interactor)->descriptor;
     }
     pthread_mutex_unlock((pthread_mutex_t*)threads.global_working_mutex);
     return descriptors;
@@ -30,7 +30,7 @@ static inline struct test_thread* test_threading_thread_by_fd(int fd)
     for (int id = 0; id < threads.count; id++)
     {
         thread = &threads.threads[id];
-        if (((struct interactor_native*)thread->interactor)->descriptor == fd)
+        if (((struct interactor_native*)thread->test_interactor)->descriptor == fd)
         {
             return thread;
         }
@@ -45,17 +45,17 @@ static void* test_threading_run(void* thread)
     casted->alive = false;
     do
     {
-        casted->interactor = test_interactor_initialize();
-    } while (!casted->interactor || ((struct interactor_native*)casted->interactor)->descriptor <= 0);
-    interactor_native_register_callback((struct interactor_native*)casted->interactor, 0, 0, test_threading_call_dart_callback);
+        casted->test_interactor = test_interactor_initialize();
+    } while (!casted->test_interactor || ((struct interactor_native*)casted->test_interactor)->descriptor <= 0);
+    interactor_native_register_callback((struct interactor_native*)casted->test_interactor, 0, 0, test_threading_call_dart_callback);
     casted->alive = true;
     pthread_cond_broadcast((pthread_cond_t*)casted->initialize_condition);
     pthread_mutex_unlock((pthread_mutex_t*)casted->initialize_mutex);
     while (casted->alive)
     {
-        interactor_native_process_timeout((struct interactor_native*)casted->interactor);
+        interactor_native_process_timeout((struct interactor_native*)casted->test_interactor);
     }
-    test_interactor_destroy((struct interactor_native*)casted->interactor);
+    test_interactor_destroy((struct interactor_native*)casted->test_interactor);
     free(casted->messages);
     return NULL;
 }
@@ -140,19 +140,19 @@ void test_threading_prepare_call_dart_bytes(int32_t* targets, int32_t target_cou
         {
             for (int message_id = 0; message_id < thread->whole_messages_count / target_count; message_id++)
             {
-                struct interactor_message* message = interactor_native_allocate_message((struct interactor_native*)thread->interactor);
+                struct interactor_message* message = interactor_native_allocate_message((struct interactor_native*)thread->test_interactor);
                 message->id = message_id;
-                message->input = (void*)(intptr_t)interactor_native_data_allocate((struct interactor_native*)thread->interactor, 3);
+                message->input = (void*)(intptr_t)interactor_native_data_allocate((struct interactor_native*)thread->test_interactor, 3);
                 ((char*)message->input)[0] = 0x1;
                 ((char*)message->input)[1] = 0x2;
                 ((char*)message->input)[2] = 0x3;
                 message->input_size = 3;
                 message->owner = 0;
                 message->method = 0;
-                interactor_native_call_dart((struct interactor_native*)thread->interactor, targets[target], message);
+                interactor_native_call_dart((struct interactor_native*)thread->test_interactor, targets[target], message);
             }
         }
-        interactor_native_submit((struct interactor_native*)thread->interactor);
+        interactor_native_submit((struct interactor_native*)thread->test_interactor);
     }
     pthread_mutex_unlock((pthread_mutex_t*)threads.global_working_mutex);
 }

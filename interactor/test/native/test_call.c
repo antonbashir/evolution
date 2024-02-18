@@ -6,6 +6,8 @@
 #include "interactor_message.h"
 
 static struct interactor_message* current_message = NULL;
+struct memory memory;
+struct memory_pool pool;
 
 void test_call_reset()
 {

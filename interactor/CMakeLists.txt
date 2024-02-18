@@ -12,3 +12,4 @@ FetchContent_MakeAvailable(interactor_liburing)
 add_custom_target(interactor_liburing COMMAND ./configure --prefix=${interactor_liburing_SOURCE_DIR}/build && make && make install WORKING_DIRECTORY ${interactor_liburing_SOURCE_DIR})
 
 add_subdirectory(native)
+add_subdirectory(test/native)

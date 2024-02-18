@@ -23,7 +23,7 @@ extern "C"
         size_t whole_messages_count;
         size_t received_messages_count;
 
-        test_interactor_native* interactor;
+        test_interactor_native* test_interactor;
         struct interactor_message** messages;
 
         test_cond_t* initialize_condition;

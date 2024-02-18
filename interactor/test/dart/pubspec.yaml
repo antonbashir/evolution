@@ -44,7 +44,7 @@ ffigen:
         c-type: "interactor_message"
         dart-type: "interactor_message"
   library-imports:
-    linux_interactor: package:interactor/interactor/bindings.dart
+    interactor: package:interactor/interactor.dart
   headers:
     entry-points:
       - "../native/test.h"
