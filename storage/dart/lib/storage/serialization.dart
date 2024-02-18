@@ -15,9 +15,9 @@ class StorageSerialization {
     final units = result.asTypedList(source.length + 1);
     final length = fastEncodeString(source, units, 0);
     units[length] = 0;
-    return (result.cast(), length + 1);
+    return (result.cast(), length);
   }
 
   @inline
-  void freeString(Pointer<Char> string, int size) => tarantool_free_string(_factory, string, size);
+  void freeString(Pointer<Char> string, int size) => tarantool_free_string(_factory, string, size + 1);
 }
