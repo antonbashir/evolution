@@ -84,7 +84,6 @@ Future<void> main() async {
   });
   setUp(() async => await _space.truncate());
   tearDownAll(() async {
-    print("shutdown");
     await _storage.shutdown();
     Directory.current.listSync().forEach((element) {
       if (element.path.contains("00000")) element.deleteSync();
