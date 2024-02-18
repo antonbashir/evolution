@@ -46,6 +46,7 @@ class PackageConfigFields {
   static const packages = 'packages';
 }
 
-const int intMaxValue = 9223372036854775807;
+const int64MaxValue = 9223372036854775807;
+const int32MaxValue = 2147483647;
 const soFileExtension = "so";
 const nativeDirectory = "native";

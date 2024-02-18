@@ -34,9 +34,9 @@ class InteractorMethodExecutor implements InteractorMethod {
 
   var _nextId = 0;
   int? get nextId {
-    if (_nextId == intMaxValue) _nextId = 0;
+    if (_nextId == int64MaxValue) _nextId = 0;
     while (_calls.containsKey(++_nextId)) {
-      if (_nextId == intMaxValue) {
+      if (_nextId == int64MaxValue) {
         _nextId = 0;
         return null;
       }

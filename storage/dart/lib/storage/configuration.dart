@@ -2,6 +2,7 @@ import 'dart:ffi';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:core/core.dart';
 import 'package:ffi/ffi.dart';
 import 'package:memory/memory.dart';
 import 'bindings.dart';

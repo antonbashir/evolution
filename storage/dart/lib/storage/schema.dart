@@ -1,6 +1,7 @@
 import 'dart:ffi';
 import 'dart:typed_data';
 
+import 'package:core/core.dart';
 import 'package:interactor/interactor.dart';
 import 'package:memory/memory.dart';
 

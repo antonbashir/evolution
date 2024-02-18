@@ -275,7 +275,7 @@ class StorageSpace {
   @inline
   Future<Pointer<tarantool_tuple_port_t>> select({
     int offset = 0,
-    int limit = int32Max,
+    int limit = int32MaxValue,
     StorageIteratorType iteratorType = StorageIteratorType.eq,
   }) {
     final keySize = tupleSizeOfList(1) + tupleSizeOfNull;
@@ -290,7 +290,7 @@ class StorageSpace {
     Pointer<Uint8> key,
     int keySize, {
     int offset = 0,
-    int limit = int32Max,
+    int limit = int32MaxValue,
     StorageIteratorType iteratorType = StorageIteratorType.eq,
   }) {
     final request = tarantool_space_select_request_prepare(_factory, _id, key.cast(), keySize, offset, limit, iteratorType.index);
