@@ -24,26 +24,24 @@ file(GLOB sources
 
 add_library(memory_debug_linux_x64 SHARED ${sources})
 add_dependencies(memory_debug_linux_x64 core_debug_linux_x64 ${SMALL_PROJECT} ${MSGPUCK_PROJECT})
-target_link_libraries(memory_debug_linux_x64 PRIVATE core_debug_linux_x64 ${SMALL_PROJECT} ${MSGPUCK_PROJECT})
+target_link_libraries(memory_debug_linux_x64 PRIVATE ${SMALL_PROJECT} ${MSGPUCK_PROJECT})
 set_target_properties(memory_debug_linux_x64 PROPERTIES COMPILE_FLAGS ${CMAKE_C_FLAGS_DEBUG})
 copy_to_assets(memory_debug_linux_x64)
 
 add_library(memory_release_linux_x64 SHARED ${sources})
 add_dependencies(memory_release_linux_x64 core_release_linux_x64 ${SMALL_PROJECT} ${MSGPUCK_PROJECT})
-target_link_libraries(memory_release_linux_x64  PRIVATE core_release_linux_x64 ${SMALL_PROJECT} ${MSGPUCK_PROJECT})
+target_link_libraries(memory_release_linux_x64  PRIVATE ${SMALL_PROJECT} ${MSGPUCK_PROJECT})
 set_target_properties(memory_release_linux_x64 PROPERTIES COMPILE_FLAGS ${CMAKE_C_FLAGS})
 copy_to_assets(memory_release_linux_x64)
 
 add_library(memory_debug_linux_x64_shared SHARED ${sources})
 add_dependencies(memory_debug_linux_x64_shared core_debug_linux_x64 ${SMALL_PROJECT}_shared ${MSGPUCK_PROJECT}_shared)
-target_link_libraries(memory_debug_linux_x64_shared PRIVATE core_debug_linux_x64 ${SMALL_PROJECT}_shared ${MSGPUCK_PROJECT}_shared)
 set_target_properties(memory_debug_linux_x64_shared PROPERTIES COMPILE_FLAGS ${CMAKE_C_FLAGS_DEBUG})
 copy_to_assets(memory_debug_linux_x64_shared)
 
 add_library(memory_release_linux_x64_shared SHARED ${sources})
 add_dependencies(memory_release_linux_x64_shared core_release_linux_x64 ${SMALL_PROJECT}_shared ${MSGPUCK_PROJECT}_shared)
-target_link_libraries(memory_release_linux_x64_shared  PRIVATE core_release_linux_x64 ${SMALL_PROJECT}_shared ${MSGPUCK_PROJECT}_shared)
 set_target_properties(memory_release_linux_x64_shared PROPERTIES COMPILE_FLAGS ${CMAKE_C_FLAGS})
 copy_to_assets(memory_release_linux_x64_shared)
 
-add_custom_target(memory_native DEPENDS memory_release_linux_x64_shared memory_debug_linux_x64_shared memory_release_linux_x64 memory_debug_linux_x64)
+add_custom_target(memory_native DEPENDS "memory_release_linux_x64_shared;memory_debug_linux_x64_shared;memory_release_linux_x64;memory_debug_linux_x64")

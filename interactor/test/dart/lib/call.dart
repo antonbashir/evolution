@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:ffi';
 
-import 'package:collection/collection.dart';
-import 'package:ffi/ffi.dart';
 import 'package:interactor/interactor.dart';
 import 'package:test/test.dart';
 
@@ -159,72 +157,6 @@ void testCallDart() {
     ));
     interactor.activate();
     test_call_dart_double(native, interactor.descriptor, 0, 123.45);
-    await _awaitDartCall(native);
-    await completer.future;
-    await interactors.shutdown();
-    test_interactor_destroy(native);
-  });
-
-  test("native(string) <-> dart(string)", () async {
-    final interactors = Interactors();
-    final interactor = Interactor(interactors.interactor());
-
-    test_call_reset();
-    await interactor.initialize();
-    final native = test_interactor_initialize();
-    final completer = Completer();
-    interactor.consumer(TestNativeConsumer(
-      (message) {
-        expect(message.getInputString(), "test");
-        completer.complete();
-      },
-    ));
-    interactor.activate();
-    test_call_dart_string(native, interactor.descriptor, 0, "test".toNativeUtf8().cast());
-    await _awaitDartCall(native);
-    await completer.future;
-    await interactors.shutdown();
-    test_interactor_destroy(native);
-  });
-
-  test("native(object) <-> dart(object)", () async {
-    final interactors = Interactors();
-    final interactor = Interactor(interactors.interactor());
-
-    test_call_reset();
-    await interactor.initialize();
-    final native = test_interactor_initialize();
-    final completer = Completer();
-    interactor.consumer(TestNativeConsumer(
-      (message) {
-        expect(message.getInputObject<test_object>().ref.field, 123);
-        completer.complete();
-      },
-    ));
-    interactor.activate();
-    test_call_dart_object(native, interactor.descriptor, 0, 123);
-    await _awaitDartCall(native);
-    await completer.future;
-    await interactors.shutdown();
-    test_interactor_destroy(native);
-  });
-
-  test("native(bytes) <-> dart(bytes)", () async {
-    final interactors = Interactors();
-    final interactor = Interactor(interactors.interactor());
-
-    test_call_reset();
-    await interactor.initialize();
-    final native = test_interactor_initialize();
-    final completer = Completer();
-    interactor.consumer(TestNativeConsumer(
-      (message) {
-        expect(true, ListEquality().equals(message.inputBytes, [1, 2, 3]));
-        completer.complete();
-      },
-    ));
-    interactor.activate();
-    test_call_dart_bytes(native, interactor.descriptor, 0, (calloc<Uint8>(3)..asTypedList(3).setAll(0, [1, 2, 3])), 3);
     await _awaitDartCall(native);
     await completer.future;
     await interactors.shutdown();

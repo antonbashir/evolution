@@ -8,6 +8,8 @@
 #include <unistd.h>
 #include "interactor_message.h"
 #include "interactor_native.h"
+#include "memory.h"
+#include "memory_small_data.h"
 #include "test.h"
 
 struct test_threads threads;
@@ -74,6 +76,12 @@ bool test_threading_initialize(int thread_count, int isolates_count, int per_thr
         thread->received_messages_count = 0;
         thread->messages = malloc(per_thread_messages_count * sizeof(struct interactor_message*));
         thread->initialize_mutex = malloc(sizeof(pthread_mutex_t));
+        thread->thread_memory = calloc(1, sizeof(struct memory));
+        thread->thread_memory_pool = calloc(1, sizeof(struct memory_pool));
+        thread->thread_small_data = calloc(1, sizeof(struct memory_small_data));
+        memory_create(thread->thread_memory, 16 * 1024 * 1024, 64 * 1024, 64 * 1024);
+        memory_pool_create(thread->thread_memory_pool, thread->thread_memory, sizeof(struct interactor_message));
+        memory_small_data_create(thread->thread_small_data, thread->thread_memory);
         pthread_mutex_init((pthread_mutex_t*)thread->initialize_mutex, NULL);
         thread->initialize_condition = malloc(sizeof(pthread_cond_t));
         pthread_cond_init((pthread_cond_t*)thread->initialize_condition, NULL);
@@ -140,9 +148,9 @@ void test_threading_prepare_call_dart_bytes(int32_t* targets, int32_t target_cou
         {
             for (int message_id = 0; message_id < thread->whole_messages_count / target_count; message_id++)
             {
-                struct interactor_message* message = interactor_native_allocate_message((struct interactor_native*)thread->test_interactor);
+                struct interactor_message* message = memory_pool_allocate(thread->thread_memory_pool);
                 message->id = message_id;
-                message->input = (void*)(intptr_t)interactor_native_data_allocate((struct interactor_native*)thread->test_interactor, 3);
+                message->input = (void*)(intptr_t)memory_small_data_allocate(thread->thread_small_data, 3);
                 ((char*)message->input)[0] = 0x1;
                 ((char*)message->input)[1] = 0x2;
                 ((char*)message->input)[2] = 0x3;

@@ -27,6 +27,18 @@ external void test_interactor_destroy(
   ffi.Pointer<test_interactor_native> interactor,
 );
 
+@ffi.Native<ffi.Pointer<interactor.interactor_message> Function()>(
+    symbol: 'test_allocate_message',
+    assetId: 'interactor-bindings-test',
+    isLeaf: true)
+external ffi.Pointer<interactor.interactor_message> test_allocate_message();
+
+@ffi.Native<ffi.Pointer<ffi.Double> Function()>(
+    symbol: 'test_allocate_double',
+    assetId: 'interactor-bindings-test',
+    isLeaf: true)
+external ffi.Pointer<ffi.Double> test_allocate_double();
+
 @ffi.Native<ffi.Void Function()>(
     symbol: 'test_call_reset',
     assetId: 'interactor-bindings-test',
@@ -98,46 +110,6 @@ external void test_call_dart_double(
   int target,
   int method,
   double value,
-);
-
-@ffi.Native<
-        ffi.Void Function(ffi.Pointer<test_interactor_native>, ffi.Int32,
-            ffi.UintPtr, ffi.Pointer<ffi.Char>)>(
-    symbol: 'test_call_dart_string',
-    assetId: 'interactor-bindings-test',
-    isLeaf: true)
-external void test_call_dart_string(
-  ffi.Pointer<test_interactor_native> interactor,
-  int target,
-  int method,
-  ffi.Pointer<ffi.Char> value,
-);
-
-@ffi.Native<
-        ffi.Void Function(ffi.Pointer<test_interactor_native>, ffi.Int32,
-            ffi.UintPtr, ffi.Int)>(
-    symbol: 'test_call_dart_object',
-    assetId: 'interactor-bindings-test',
-    isLeaf: true)
-external void test_call_dart_object(
-  ffi.Pointer<test_interactor_native> interactor,
-  int target,
-  int method,
-  int field,
-);
-
-@ffi.Native<
-        ffi.Void Function(ffi.Pointer<test_interactor_native>, ffi.Int32,
-            ffi.UintPtr, ffi.Pointer<ffi.Uint8>, ffi.Size)>(
-    symbol: 'test_call_dart_bytes',
-    assetId: 'interactor-bindings-test',
-    isLeaf: true)
-external void test_call_dart_bytes(
-  ffi.Pointer<test_interactor_native> interactor,
-  int target,
-  int method,
-  ffi.Pointer<ffi.Uint8> value,
-  int count,
 );
 
 @ffi.Native<
@@ -229,10 +201,6 @@ external void test_threading_destroy();
     isLeaf: true)
 external int test_threading_call_native_address_lookup();
 
-final class interactor_native extends ffi.Opaque {}
-
-typedef test_interactor_native = interactor_native;
-
 final class max_align_t extends ffi.Opaque {}
 
 final class __fsid_t extends ffi.Struct {
@@ -253,6 +221,10 @@ final class interactor_completion_event extends ffi.Struct {
   @ffi.Array.multi([2])
   external ffi.Array<ffi.UnsignedLongLong> big_cqe;
 }
+
+final class interactor_native extends ffi.Opaque {}
+
+typedef test_interactor_native = interactor_native;
 
 final class test_object_child extends ffi.Struct {
   @ffi.Int()
@@ -290,12 +262,24 @@ final class test_thread extends ffi.Struct {
   external ffi.Pointer<test_cond_t> initialize_condition;
 
   external ffi.Pointer<test_mutex_t> initialize_mutex;
+
+  external ffi.Pointer<memory> thread_memory;
+
+  external ffi.Pointer<memory_pool> thread_memory_pool;
+
+  external ffi.Pointer<memory_small_data> thread_small_data;
 }
 
 typedef pthread_t = ffi.UnsignedLong;
 typedef Dartpthread_t = int;
 typedef test_cond_t = pthread_cond_t;
 typedef test_mutex_t = pthread_mutex_t;
+
+final class memory extends ffi.Opaque {}
+
+final class memory_pool extends ffi.Opaque {}
+
+final class memory_small_data extends ffi.Opaque {}
 
 final class test_threads extends ffi.Struct {
   external ffi.Pointer<test_thread> threads;

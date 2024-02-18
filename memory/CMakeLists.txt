@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16.0)
-project(interactor C ASM)
+project(memory C ASM)
 
 set(MSGPUCK_PROJECT memory_msgpuck)
 set(SMALL_PROJECT memory_small)

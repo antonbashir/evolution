@@ -22,7 +22,7 @@ class SystemLibrary {
     return SystemLibrary.loadByPath(path);
   }
 
-  factory SystemLibrary.loadByName(String packageName, String libraryName) {
+  factory SystemLibrary.loadByName(String libraryName, String packageName) {
     try {
       return SystemLibrary(
         Platform.isLinux ? DynamicLibrary.open(libraryName) : throw CoreException(CoreErrors.nonLinuxError),

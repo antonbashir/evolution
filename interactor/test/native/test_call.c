@@ -4,10 +4,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include "interactor_message.h"
+#include "test.h"
 
 static struct interactor_message* current_message = NULL;
-struct memory memory;
-struct memory_pool pool;
 
 void test_call_reset()
 {
@@ -30,7 +29,7 @@ void test_call_native(struct interactor_message* message)
 
 void test_call_dart_null(struct interactor_native* interactor, int32_t target, uintptr_t method)
 {
-    struct interactor_message* message = interactor_native_allocate_message(interactor);
+    struct interactor_message* message = test_allocate_message();
     message->id = 0;
     message->source = interactor->descriptor;
     message->owner = 0;
@@ -41,7 +40,7 @@ void test_call_dart_null(struct interactor_native* interactor, int32_t target, u
 
 void test_call_dart_bool(struct interactor_native* interactor, int32_t target, uintptr_t method, bool value)
 {
-    struct interactor_message* message = interactor_native_allocate_message(interactor);
+    struct interactor_message* message = test_allocate_message();
     message->id = 0;
     message->input = (void*)value;
     message->input_size = sizeof(bool);
@@ -54,7 +53,7 @@ void test_call_dart_bool(struct interactor_native* interactor, int32_t target, u
 
 void test_call_dart_int(struct interactor_native* interactor, int32_t target, uintptr_t method, int value)
 {
-    struct interactor_message* message = interactor_native_allocate_message(interactor);
+    struct interactor_message* message = test_allocate_message();
     message->id = 0;
     message->input = (void*)(uintptr_t)value;
     message->input_size = sizeof(int);
@@ -67,53 +66,11 @@ void test_call_dart_int(struct interactor_native* interactor, int32_t target, ui
 
 void test_call_dart_double(struct interactor_native* interactor, int32_t target, uintptr_t method, double value)
 {
-    struct interactor_message* message = interactor_native_allocate_message(interactor);
+    struct interactor_message* message = test_allocate_message();
     message->id = 0;
-    message->input = (void*)interactor_native_data_allocate(interactor, sizeof(double));
+    message->input = test_allocate_double();
     (*(double*)message->input) = value;
     message->input_size = sizeof(double);
-    message->source = interactor->descriptor;
-    message->owner = 0;
-    message->method = method;
-    interactor_native_call_dart(interactor, target, message);
-    interactor_native_submit(interactor);
-}
-
-void test_call_dart_string(struct interactor_native* interactor, int32_t target, uintptr_t method, const char* value)
-{
-    struct interactor_message* message = interactor_native_allocate_message(interactor);
-    message->id = 0;
-    message->input = (void*)interactor_native_data_allocate(interactor, strlen(value));
-    strcpy(message->input, value);
-    message->input_size = strlen(value);
-    message->source = interactor->descriptor;
-    message->owner = 0;
-    message->method = method;
-    interactor_native_call_dart(interactor, target, message);
-    interactor_native_submit(interactor);
-}
-
-void test_call_dart_object(struct interactor_native* interactor, int32_t target, uintptr_t method, int field)
-{
-    struct interactor_message* message = interactor_native_allocate_message(interactor);
-    message->id = 0;
-    message->input = (void*)interactor_native_payload_allocate(interactor_native_payload_pool_create(interactor, sizeof(struct test_object)));
-    ((struct test_object*)message->input)->field = field;
-    message->input_size = sizeof(struct test_object);
-    message->source = interactor->descriptor;
-    message->owner = 0;
-    message->method = method;
-    interactor_native_call_dart(interactor, target, message);
-    interactor_native_submit(interactor);
-}
-
-void test_call_dart_bytes(struct interactor_native* interactor, int32_t target, uintptr_t method, const uint8_t* value, size_t count)
-{
-    struct interactor_message* message = interactor_native_allocate_message(interactor);
-    message->id = 0;
-    message->input = (void*)(intptr_t)interactor_native_data_allocate(interactor, count);
-    memcpy(message->input, value, count);
-    message->input_size = count;
     message->source = interactor->descriptor;
     message->owner = 0;
     message->method = method;

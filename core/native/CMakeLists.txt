@@ -23,4 +23,4 @@ add_library(core_release_linux_x64 SHARED ${sources})
 set_target_properties(core_release_linux_x64 PROPERTIES COMPILE_FLAGS ${CMAKE_C_FLAGS})
 copy_to_assets(core_release_linux_x64)
 
-add_custom_target(core_native DEPENDS core_release_linux_x64 core_debug_linux_x64)
+add_custom_target(core_native DEPENDS "core_release_linux_x64;core_debug_linux_x64")
