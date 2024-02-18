@@ -1,7 +1,5 @@
 import 'dart:io';
 
-import 'package:interactor/interactor.dart';
-
 void main() {
   final command = (
     executable: "dart",
@@ -9,7 +7,7 @@ void main() {
       "run",
       "ffigen",
       "--compiler-opts",
-      "-I/${File(Interactors.libraryPath).parent.path}/../../native/include",
+      "-I${Directory.current.absolute.parent.parent.path}/interactor/native/include",
     ]
   );
   final result = Process.runSync(command.executable, command.args);

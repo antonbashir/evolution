@@ -26,8 +26,6 @@ ffigen:
     assetId: "tarantool-bindings"
   description: "Bindings for Tarantool"
   output: "lib/storage/bindings.dart"
-  compiler-opts:
-    - "-I../native/src"
   headers:
     entry-points:
       - "../native/src/tarantool.h"
@@ -62,9 +60,5 @@ ffigen:
         "lib": "interactor"
         "c-type": "interactor_completion_event"
         "dart-type": "interactor_completion_event"
-      "interactor_memory":
-        "lib": "interactor"
-        "c-type": "interactor_memory"
-        "dart-type": "interactor_memory"
   library-imports:
-    interactor: "package:interactor/interactor/interactor.dart"
+    interactor: "package:interactor/interactor.dart"

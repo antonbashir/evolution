@@ -16,8 +16,6 @@ class Interactors {
   final _workerPorts = <RawReceivePort>[];
   final _workerDestroyer = ReceivePort();
 
-  static String libraryPath = SystemLibrary.loadByName(interactorLibraryName, interactorPackageName).path;
-
   Interactors({String? libraryPath, bool load = true}) {
     if (libraryPath != null) {
       SystemLibrary.loadByPath(libraryPath);
