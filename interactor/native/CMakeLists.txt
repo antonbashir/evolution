@@ -19,13 +19,13 @@ file(GLOB sources
 )
 
 add_library(interactor_debug_linux_x64 SHARED ${sources})
-add_dependencies(interactor_debug_linux_x64 interactor_liburing core_debug_linux_x64 memory_debug_linux_x64)
+add_dependencies(interactor_debug_linux_x64 interactor_liburing memory_debug_linux_x64)
 target_link_libraries(interactor_debug_linux_x64 PRIVATE ${interactor_liburing_SOURCE_DIR}/build/lib/liburing.a)
 set_target_properties(interactor_debug_linux_x64 PROPERTIES COMPILE_FLAGS ${CMAKE_C_FLAGS_DEBUG})
 copy_to_assets(interactor_debug_linux_x64)
 
 add_library(interactor_release_linux_x64 SHARED ${sources})
-add_dependencies(interactor_release_linux_x64 interactor_liburing core_release_linux_x64 memory_release_linux_x64)
+add_dependencies(interactor_release_linux_x64 interactor_liburing memory_release_linux_x64)
 target_link_libraries(interactor_release_linux_x64 PRIVATE ${interactor_liburing_SOURCE_DIR}/build/lib/liburing.a)
 set_target_properties(interactor_release_linux_x64 PROPERTIES COMPILE_FLAGS ${CMAKE_C_FLAGS})
 copy_to_assets(interactor_release_linux_x64)

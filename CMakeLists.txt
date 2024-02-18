@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.16.0)
 project(root)
-
 add_definitions("-D_GNU_SOURCE")
 
 #set(CMAKE_MESSAGE_LOG_LEVEL ERROR)

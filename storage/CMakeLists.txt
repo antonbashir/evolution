@@ -30,5 +30,6 @@ ExternalProject_Add(storage_tarantool
 )
 ExternalProject_Get_Property(storage_tarantool install_dir)
 set(TARANTOOL_INSTALL_DIR ${install_dir})
+set(TARANTOOL_LIBRARY ${install_dir}/lib/libtarantool-bundle.a)
 
 add_subdirectory(native)

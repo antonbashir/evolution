@@ -9,7 +9,7 @@
         "--define=DEBUG=true"
       ],
       "cwd": "${workspaceFolder}/storage",
-      "program": "${workspaceFolder}/storage/test/dart/lib/test.dart",
+      "program": "${workspaceFolder}/storage/dart/test/test.dart",
       "preLaunchTask": "storage-native-build"
     },
     {
@@ -19,7 +19,7 @@
       "program": "/usr/bin/dart",
       "args": [
         "-DDEBUG=true",
-        "${workspaceFolder}/storage/test/dart/lib/test.dart"
+        "${workspaceFolder}/storage/dart/test/test.dart"
       ],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}/storage",

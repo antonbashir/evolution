@@ -43,14 +43,14 @@ class Interactor {
     toInteractor.send([_fromInteractors.sendPort, _closer.sendPort]);
   }
 
-  Future<void> initialize() async {
+  Future<void> initialize({bool sharedMemory = false}) async {
     final configuration = await _fromInteractors.first as List;
     _pointer = Pointer.fromAddress(configuration[0] as int).cast<interactor_dart>();
     _destroyer = configuration[1] as SendPort;
     descriptor = configuration[2] as int;
     _fromInteractors.close();
     _completions = _pointer.ref.completions;
-    memory = Memory()..initialize();
+    memory = Memory(shared: sharedMemory)..initialize();
     messages = InteractorMessages(memory);
     _consumers = InteractorConsumerRegistry(_pointer);
     _producers = InteractorProducerRegistry(_pointer);
