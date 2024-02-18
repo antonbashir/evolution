@@ -12,7 +12,6 @@
 #include "mempool.h"
 #include "msgpuck.h"
 #include "port.h"
-#include "say.h"
 #include "small.h"
 #include "small/obuf.h"
 
