@@ -7,6 +7,7 @@
 #include "box/session.h"
 #include "box/tuple.h"
 #include "box/txn.h"
+#include "diag.h"
 #include "fiber.h"
 #include "mempool.h"
 #include "msgpuck.h"
@@ -162,6 +163,7 @@ void tarantool_space_insert_single(struct interactor_message* message)
                             request->tuple + request->tuple_size,
                             &result) < 0))
     {
+        diag_log();
         return;
     }
     tuple_ref(result);

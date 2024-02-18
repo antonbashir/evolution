@@ -115,8 +115,8 @@ class StorageExecutor {
   StorageExecutor(this._box);
 
   StorageSchema get schema => _schema;
-
   MemoryTuples get tuples => _tuples;
+  Memory get memory => _interactor.memory;
 
   Future<void> initialize() async {
     _interactor = Interactor(interactors.interactor());
