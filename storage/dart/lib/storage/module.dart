@@ -13,7 +13,7 @@ import 'executor.dart';
 import 'script.dart';
 import 'package:core/core.dart';
 
-class Storage {
+class StorageModule {
   final Map<String, SystemLibrary> _loadedModulesByName = {};
   final Map<String, SystemLibrary> _loadedModulesByPath = {};
   final SystemLibrary _library;
@@ -25,7 +25,7 @@ class Storage {
 
   StreamSubscription<ProcessSignal>? _reloadListener = null;
 
-  Storage({String? libraryPath}) : _library = libraryPath == null ? SystemLibrary.loadByName(storageLibraryName, storagePackageName) : SystemLibrary.loadByPath(libraryPath) {
+  StorageModule({String? libraryPath}) : _library = libraryPath == null ? SystemLibrary.loadByName(storageLibraryName, storagePackageName) : SystemLibrary.loadByPath(libraryPath) {
     InteractorModule.load();
   }
 

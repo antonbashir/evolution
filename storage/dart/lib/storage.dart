@@ -1,6 +1,6 @@
 library storage;
 
-export "storage/storage.dart" show Storage;
+export "storage/module.dart" show StorageModule;
 export 'storage/executor.dart' show StorageExecutor;
 
 export "storage/space.dart" show StorageSpace;

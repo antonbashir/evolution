@@ -41,7 +41,7 @@ class TestData implements MemoryTuple {
 }
 
 late final StorageExecutor _executor;
-late final Storage _storage;
+late final StorageModule _storage;
 late final StorageSpace _space;
 late final StorageIndex _index;
 
@@ -70,7 +70,7 @@ Future<void> main() async {
   Directory.current.listSync().forEach((element) {
     if (element.path.contains("00000")) element.deleteSync();
   });
-  _storage = Storage();
+  _storage = StorageModule();
   await _storage.boot(
     StorageBootstrapScript(StorageDefaults.storage())..file(File("test/test.lua")),
     StorageDefaults.executor(),

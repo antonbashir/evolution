@@ -5,7 +5,7 @@ import 'package:test/expect.dart';
 import 'package:test/scaffolding.dart';
 
 void main(List<String> args) => test("test replica ${args[0]}", () async {
-      final storage = Storage();
+      final storage = StorageModule();
       final workDirectory = Directory(Directory.current.path + "/test/tarantool_${int.parse(args[0].toString())}");
       final bootConfiguration = StorageDefaults.boot();
       final configuration = StorageDefaults.storage().copyWith(
