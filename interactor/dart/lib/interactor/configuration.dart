@@ -13,7 +13,7 @@ class InteractorConfiguration {
   final int memoryPreallocationSize;
   final int memoryQuotaSize;
 
-  InteractorConfiguration({
+  const InteractorConfiguration({
     required this.staticBuffersCapacity,
     required this.staticBufferSize,
     required this.ringSize,

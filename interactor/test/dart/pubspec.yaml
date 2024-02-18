@@ -13,6 +13,8 @@ dependencies:
   test: ^1.22.0
   core:
     path: ../../../core/dart/
+  memory:
+    path: ../../../memory/dart/
   interactor:
     path: ../../dart/
   collection: ^1.18.0

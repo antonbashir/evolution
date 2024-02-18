@@ -19,7 +19,12 @@ class Memory {
   late final MemorySmallData smallDatas;
   late final MemoryStructurePool<Double> doubles;
 
-  Memory({String? libraryPath, MemoryConfiguration configuration = MemoryDefaults.memory, bool shared = false}) {
+  Memory({
+    String? libraryPath,
+    MemoryConfiguration configuration = MemoryDefaults.memory,
+    bool shared = false,
+    bool load = false,
+  }) {
     if (libraryPath != null) {
       SystemLibrary.loadByPath(libraryPath);
       return;

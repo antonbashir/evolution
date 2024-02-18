@@ -1,69 +1,130 @@
 import 'dart:async';
 import 'dart:ffi';
 import 'dart:isolate';
-
-import 'package:core/core.dart';
+import 'dart:math';
 import 'package:ffi/ffi.dart' as ffi;
-
+import 'package:memory/memory.dart';
 import 'bindings.dart';
-import 'configuration.dart';
 import 'constants.dart';
-import 'exception.dart';
+import 'declaration.dart';
+import 'messages.dart';
+import 'registry.dart';
 
 class Interactor {
-  final _workerClosers = <SendPort>[];
-  final _workerPorts = <RawReceivePort>[];
-  final _workerDestroyer = ReceivePort();
+  final _fromInteractors = ReceivePort();
 
-  Interactor({String? libraryPath, bool load = true}) {
-    if (load) {
-      if (libraryPath != null) {
-        SystemLibrary.loadByPath(libraryPath);
-        return;
-      }
-      SystemLibrary.loadByName(interactorLibraryName, interactorPackageName);
+  late final InteractorConsumerRegistry _consumers;
+  late final InteractorProducerRegistry _producers;
+
+  late final Pointer<interactor_dart> _pointer;
+  late final Pointer<Pointer<interactor_dart_completion_event>> _completions;
+  late final RawReceivePort _closer;
+  late final SendPort _destroyer;
+  late final List<Duration> _delays;
+
+  var _active = false;
+  final _done = Completer();
+
+  late final int descriptor;
+  late final InteractorMessages messages;
+  late final Memory memory;
+  bool get active => _active;
+  int get id => _pointer.ref.id;
+
+  Interactor(SendPort toInteractor) {
+    _closer = RawReceivePort((_) async {
+      await deactivate();
+      interactor_dart_destroy(_pointer);
+      ffi.calloc.free(_pointer);
+      _closer.close();
+      _destroyer.send(null);
+    });
+    toInteractor.send([_fromInteractors.sendPort, _closer.sendPort]);
+  }
+
+  Future<void> initialize() async {
+    final configuration = await _fromInteractors.first as List;
+    _pointer = Pointer.fromAddress(configuration[0] as int).cast<interactor_dart>();
+    _destroyer = configuration[1] as SendPort;
+    descriptor = configuration[2] as int;
+    _fromInteractors.close();
+    _completions = _pointer.ref.completions;
+    memory = Memory(load: false);
+    messages = InteractorMessages(memory);
+    _consumers = InteractorConsumerRegistry(_pointer);
+    _producers = InteractorProducerRegistry(_pointer);
+  }
+
+  void activate() {
+    _active = true;
+    _delays = _calculateDelays();
+    unawaited(_listen());
+  }
+
+  Future<void> deactivate() async {
+    if (_active) {
+      _active = false;
+      await _done.future;
     }
   }
 
-  Future<void> shutdown() async {
-    _workerClosers.forEach((worker) => worker.send(null));
-    await _workerDestroyer.take(_workerClosers.length).toList();
-    _workerDestroyer.close();
-    _workerPorts.forEach((port) => port.close());
+  void consumer(InteractorConsumer declaration) => _consumers.register(declaration);
+
+  T producer<T extends InteractorProducer>(T provider) => _producers.register(provider);
+
+  Future<void> _listen() async {
+    final baseDelay = _pointer.ref.base_delay_micros;
+    final regularDelayDuration = Duration(microseconds: baseDelay);
+    var attempt = 0;
+    while (_active) {
+      attempt++;
+      if (_handleCqes()) {
+        attempt = 0;
+        await Future.delayed(regularDelayDuration);
+        continue;
+      }
+      await Future.delayed(_delays[min(attempt, 31)]);
+    }
+    _done.complete();
   }
 
-  SendPort worker(InteractorConfiguration configuration) {
-    final port = RawReceivePort((ports) async {
-      SendPort toWorker = ports[0];
-      _workerClosers.add(ports[1]);
-      final interactorPointer = ffi.calloc<interactor_dart>(sizeOf<interactor_dart>());
-      if (interactorPointer == nullptr) throw InteractorInitializationException(InteractorErrors.workerMemoryError);
-      final result = ffi.using((arena) {
-        final nativeConfiguration = arena<interactor_dart_configuration>();
-        nativeConfiguration.ref.ring_flags = configuration.ringFlags;
-        nativeConfiguration.ref.ring_size = configuration.ringSize;
-        nativeConfiguration.ref.static_buffer_size = configuration.staticBufferSize;
-        nativeConfiguration.ref.static_buffers_capacity = configuration.staticBuffersCapacity;
-        nativeConfiguration.ref.base_delay_micros = configuration.baseDelay.inMicroseconds;
-        nativeConfiguration.ref.max_delay_micros = configuration.maxDelay.inMicroseconds;
-        nativeConfiguration.ref.delay_randomization_factor = configuration.delayRandomizationFactor;
-        nativeConfiguration.ref.cqe_peek_count = configuration.cqePeekCount;
-        nativeConfiguration.ref.cqe_wait_count = configuration.cqeWaitCount;
-        nativeConfiguration.ref.cqe_wait_timeout_millis = configuration.cqeWaitTimeout.inMilliseconds;
-        nativeConfiguration.ref.slab_size = configuration.memorySlabSize;
-        nativeConfiguration.ref.preallocation_size = configuration.memoryPreallocationSize;
-        nativeConfiguration.ref.quota_size = configuration.memoryQuotaSize;
-        return interactor_dart_initialize(interactorPointer, nativeConfiguration, _workerClosers.length);
-      });
-      if (result < 0) {
-        interactor_dart_destroy(interactorPointer);
-        ffi.calloc.free(interactorPointer);
-        throw InteractorInitializationException(InteractorErrors.workerError(result));
+  bool _handleCqes() {
+    final cqeCount = interactor_dart_peek(_pointer);
+    if (cqeCount == 0) return false;
+    for (var cqeIndex = 0; cqeIndex < cqeCount; cqeIndex++) {
+      Pointer<interactor_completion_event> cqe = (_completions + cqeIndex).value.cast();
+      final data = cqe.ref.user_data;
+      final result = cqe.ref.res;
+      if (data > 0) {
+        if (result & interactorDartCall > 0) {
+          Pointer<interactor_message> message = Pointer.fromAddress(data);
+          _consumers.call(message);
+          continue;
+        }
+        if (result & interactorDartCallback > 0) {
+          Pointer<interactor_message> message = Pointer.fromAddress(data);
+          _producers.callback(message);
+          continue;
+        }
+        continue;
       }
-      final workerInput = [interactorPointer.address, _workerDestroyer.sendPort, result];
-      toWorker.send(workerInput);
-    });
-    _workerPorts.add(port);
-    return port.sendPort;
+    }
+    interactor_dart_cqe_advance(_pointer, cqeCount);
+    return true;
+  }
+
+  List<Duration> _calculateDelays() {
+    final baseDelay = _pointer.ref.base_delay_micros;
+    final delayRandomizationFactor = _pointer.ref.delay_randomization_factor;
+    final maxDelay = _pointer.ref.max_delay_micros;
+    final random = Random();
+    final delays = <Duration>[];
+    for (var i = 0; i < 32; i++) {
+      final randomization = (delayRandomizationFactor * (random.nextDouble() * 2 - 1) + 1);
+      final exponent = min(i, 31);
+      final delay = (baseDelay * pow(2.0, exponent) * randomization).toInt();
+      delays.add(Duration(microseconds: delay < maxDelay ? delay : maxDelay));
+    }
+    return delays;
   }
 }
