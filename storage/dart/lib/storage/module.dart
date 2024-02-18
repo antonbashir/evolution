@@ -69,7 +69,7 @@ class StorageModule {
       throw StorageLauncherException(tarantool_shutdown_error().cast<Utf8>().toDartString());
     }
     await _executor.destroy();
-    //calloc.free(_box.cast());
+    calloc.free(_box.cast());
   }
 
   SystemLibrary loadModuleByPath(String libraryPath) {
