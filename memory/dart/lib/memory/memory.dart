@@ -1,8 +1,9 @@
 import 'dart:ffi';
 
 import 'package:core/core.dart';
-import 'package:ffi/ffi.dart' as ffi;
+import 'package:ffi/ffi.dart';
 
+import '../memory.dart';
 import 'bindings.dart';
 import 'configuration.dart';
 import 'constants.dart';
@@ -12,17 +13,21 @@ import 'exceptions.dart';
 class Memory {
   late final Pointer<memory_dart> _pointer;
 
-  Memory({String? libraryPath, MemoryConfiguration configuration = MemoryDefaults.memory, bool load = true}) {
-    if (load) {
-      if (libraryPath != null) {
-        SystemLibrary.loadByPath(libraryPath);
-        return;
-      }
-      SystemLibrary.loadByName(memoryLibraryName, memoryPackageName);
+  late final MemoryStaticBuffers staticBuffers;
+  late final MemoryInputOutputBuffers inputOutputBuffers;
+  late final MemoryStructurePools structures;
+  late final MemorySmallData smallDatas;
+  late final MemoryStructurePool<Double> doubles;
+
+  Memory({String? libraryPath, MemoryConfiguration configuration = MemoryDefaults.memory, bool shared = false}) {
+    if (libraryPath != null) {
+      SystemLibrary.loadByPath(libraryPath);
+      return;
     }
-    _pointer = ffi.calloc<memory_dart>(sizeOf<memory_dart>());
+    SystemLibrary.loadByName(shared ? memorySharedLibraryName : memoryLibraryName, memoryPackageName);
+    _pointer = calloc<memory_dart>(sizeOf<memory_dart>());
     if (_pointer == nullptr) throw MemoryException(MemoryErrors.outOfMemory);
-    final result = ffi.using((arena) {
+    final result = using((arena) {
       final nativeConfiguration = arena<memory_dart_configuration>();
       nativeConfiguration.ref.static_buffer_size = configuration.staticBufferSize;
       nativeConfiguration.ref.static_buffers_capacity = configuration.staticBuffersCapacity;
@@ -33,9 +38,14 @@ class Memory {
     });
     if (result < 0) {
       memory_dart_destroy(_pointer);
-      ffi.calloc.free(_pointer);
+      calloc.free(_pointer);
       throw MemoryException(CoreErrors.systemError(result));
     }
+    staticBuffers = MemoryStaticBuffers(_pointer);
+    inputOutputBuffers = MemoryInputOutputBuffers(_pointer);
+    structures = MemoryStructurePools(_pointer);
+    smallDatas = MemorySmallData(_pointer);
+    doubles = structures.register(sizeOf<Double>());
   }
 
   void destroy() {

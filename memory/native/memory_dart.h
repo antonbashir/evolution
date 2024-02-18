@@ -32,18 +32,18 @@ extern "C"
         memory_dart_memory* memory;
     };
 
-    int memory_dart_initialize(struct memory_dart* interactor, struct memory_dart_configuration* configuration);
+    int memory_dart_initialize(struct memory_dart* memory, struct memory_dart_configuration* configuration);
 
-    int32_t memory_dart_static_buffers_get(struct memory_dart* interactor);
-    void memory_dart_static_buffers_release(struct memory_dart* interactor, int32_t buffer_id);
-    int32_t memory_dart_static_buffers_available(struct memory_dart* interactor);
-    int32_t memory_dart_static_buffers_used(struct memory_dart* interactor);
-    struct iovec* memory_dart_static_buffers_inner(struct memory_dart* interactor);
+    int32_t memory_dart_static_buffers_get(struct memory_dart* memory);
+    void memory_dart_static_buffers_release(struct memory_dart* memory, int32_t buffer_id);
+    int32_t memory_dart_static_buffers_available(struct memory_dart* memory);
+    int32_t memory_dart_static_buffers_used(struct memory_dart* memory);
+    struct iovec* memory_dart_static_buffers_inner(struct memory_dart* memory);
 
-    struct memory_input_buffer* memory_dart_io_buffers_allocate_input(struct memory_dart* interactor, size_t initial_capacity);
-    struct memory_output_buffer* memory_dart_io_buffers_allocate_output(struct memory_dart* interactor, size_t initial_capacity);
-    void memory_dart_io_buffers_free_input(struct memory_dart* interactor, struct memory_input_buffer* buffer);
-    void memory_dart_io_buffers_free_output(struct memory_dart* interactor, struct memory_output_buffer* buffer);
+    struct memory_input_buffer* memory_dart_io_buffers_allocate_input(struct memory_dart* memory, size_t initial_capacity);
+    struct memory_output_buffer* memory_dart_io_buffers_allocate_output(struct memory_dart* memory, size_t initial_capacity);
+    void memory_dart_io_buffers_free_input(struct memory_dart* memory, struct memory_input_buffer* buffer);
+    void memory_dart_io_buffers_free_output(struct memory_dart* memory, struct memory_output_buffer* buffer);
     uint8_t* memory_dart_input_buffer_reserve(struct memory_input_buffer* buffer, size_t size);
     uint8_t* memory_dart_input_buffer_allocate(struct memory_input_buffer* buffer, size_t size);
     uint8_t* memory_dart_input_buffer_allocate_reserve(struct memory_input_buffer* buffer, size_t delta, size_t size);
@@ -54,16 +54,16 @@ extern "C"
     uint8_t* memory_dart_output_buffer_allocate_reserve(struct memory_output_buffer* buffer, size_t delta, size_t size);
     struct iovec* memory_dart_output_buffer_content(struct memory_output_buffer* buffer);
 
-    struct memory_dart_structure_pool* memory_dart_structure_pool_create(struct memory_dart* interactor, size_t size);
+    struct memory_dart_structure_pool* memory_dart_structure_pool_create(struct memory_dart* memory, size_t size);
     void* memory_dart_structure_allocate(struct memory_dart_structure_pool* pool);
     void memory_dart_structure_free(struct memory_dart_structure_pool* pool, void* pointer);
     void memory_dart_structure_pool_destroy(struct memory_dart_structure_pool* pool);
     size_t memory_dart_structure_pool_size(struct memory_dart_structure_pool* pool);
 
-    void* memory_dart_small_data_allocate(struct memory_dart* interactor, size_t size);
-    void memory_dart_small_data_free(struct memory_dart* interactor, void* pointer, size_t size);
+    void* memory_dart_small_data_allocate(struct memory_dart* memory, size_t size);
+    void memory_dart_small_data_free(struct memory_dart* memory, void* pointer, size_t size);
 
-    void memory_dart_destroy(struct memory_dart* interactor);
+    void memory_dart_destroy(struct memory_dart* memory);
 #if defined(__cplusplus)
 }
 #endif

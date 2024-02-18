@@ -9,7 +9,7 @@ import 'dart:ffi' as ffi;
             ffi.Pointer<memory_dart>, ffi.Pointer<memory_dart_configuration>)>(
     symbol: 'memory_dart_initialize', assetId: 'memory-bindings', isLeaf: true)
 external int memory_dart_initialize(
-  ffi.Pointer<memory_dart> interactor,
+  ffi.Pointer<memory_dart> memory,
   ffi.Pointer<memory_dart_configuration> configuration,
 );
 
@@ -18,7 +18,7 @@ external int memory_dart_initialize(
     assetId: 'memory-bindings',
     isLeaf: true)
 external int memory_dart_static_buffers_get(
-  ffi.Pointer<memory_dart> interactor,
+  ffi.Pointer<memory_dart> memory,
 );
 
 @ffi.Native<ffi.Void Function(ffi.Pointer<memory_dart>, ffi.Int32)>(
@@ -26,7 +26,7 @@ external int memory_dart_static_buffers_get(
     assetId: 'memory-bindings',
     isLeaf: true)
 external void memory_dart_static_buffers_release(
-  ffi.Pointer<memory_dart> interactor,
+  ffi.Pointer<memory_dart> memory,
   int buffer_id,
 );
 
@@ -35,7 +35,7 @@ external void memory_dart_static_buffers_release(
     assetId: 'memory-bindings',
     isLeaf: true)
 external int memory_dart_static_buffers_available(
-  ffi.Pointer<memory_dart> interactor,
+  ffi.Pointer<memory_dart> memory,
 );
 
 @ffi.Native<ffi.Int32 Function(ffi.Pointer<memory_dart>)>(
@@ -43,7 +43,7 @@ external int memory_dart_static_buffers_available(
     assetId: 'memory-bindings',
     isLeaf: true)
 external int memory_dart_static_buffers_used(
-  ffi.Pointer<memory_dart> interactor,
+  ffi.Pointer<memory_dart> memory,
 );
 
 @ffi.Native<ffi.Pointer<iovec> Function(ffi.Pointer<memory_dart>)>(
@@ -51,7 +51,7 @@ external int memory_dart_static_buffers_used(
     assetId: 'memory-bindings',
     isLeaf: true)
 external ffi.Pointer<iovec> memory_dart_static_buffers_inner(
-  ffi.Pointer<memory_dart> interactor,
+  ffi.Pointer<memory_dart> memory,
 );
 
 @ffi.Native<
@@ -61,7 +61,7 @@ external ffi.Pointer<iovec> memory_dart_static_buffers_inner(
     assetId: 'memory-bindings',
     isLeaf: true)
 external ffi.Pointer<memory_input_buffer> memory_dart_io_buffers_allocate_input(
-  ffi.Pointer<memory_dart> interactor,
+  ffi.Pointer<memory_dart> memory,
   int initial_capacity,
 );
 
@@ -73,7 +73,7 @@ external ffi.Pointer<memory_input_buffer> memory_dart_io_buffers_allocate_input(
     isLeaf: true)
 external ffi.Pointer<memory_output_buffer>
     memory_dart_io_buffers_allocate_output(
-  ffi.Pointer<memory_dart> interactor,
+  ffi.Pointer<memory_dart> memory,
   int initial_capacity,
 );
 
@@ -84,7 +84,7 @@ external ffi.Pointer<memory_output_buffer>
     assetId: 'memory-bindings',
     isLeaf: true)
 external void memory_dart_io_buffers_free_input(
-  ffi.Pointer<memory_dart> interactor,
+  ffi.Pointer<memory_dart> memory,
   ffi.Pointer<memory_input_buffer> buffer,
 );
 
@@ -95,7 +95,7 @@ external void memory_dart_io_buffers_free_input(
     assetId: 'memory-bindings',
     isLeaf: true)
 external void memory_dart_io_buffers_free_output(
-  ffi.Pointer<memory_dart> interactor,
+  ffi.Pointer<memory_dart> memory,
   ffi.Pointer<memory_output_buffer> buffer,
 );
 
@@ -199,7 +199,7 @@ external ffi.Pointer<iovec> memory_dart_output_buffer_content(
     isLeaf: true)
 external ffi.Pointer<memory_dart_structure_pool>
     memory_dart_structure_pool_create(
-  ffi.Pointer<memory_dart> interactor,
+  ffi.Pointer<memory_dart> memory,
   int size,
 );
 
@@ -245,7 +245,7 @@ external int memory_dart_structure_pool_size(
     assetId: 'memory-bindings',
     isLeaf: true)
 external ffi.Pointer<ffi.Void> memory_dart_small_data_allocate(
-  ffi.Pointer<memory_dart> interactor,
+  ffi.Pointer<memory_dart> memory,
   int size,
 );
 
@@ -256,7 +256,7 @@ external ffi.Pointer<ffi.Void> memory_dart_small_data_allocate(
     assetId: 'memory-bindings',
     isLeaf: true)
 external void memory_dart_small_data_free(
-  ffi.Pointer<memory_dart> interactor,
+  ffi.Pointer<memory_dart> memory,
   ffi.Pointer<ffi.Void> pointer,
   int size,
 );
@@ -264,7 +264,7 @@ external void memory_dart_small_data_free(
 @ffi.Native<ffi.Void Function(ffi.Pointer<memory_dart>)>(
     symbol: 'memory_dart_destroy', assetId: 'memory-bindings', isLeaf: true)
 external void memory_dart_destroy(
-  ffi.Pointer<memory_dart> interactor,
+  ffi.Pointer<memory_dart> memory,
 );
 
 @ffi.Native<ffi.Uint64 Function(ffi.Pointer<ffi.Char>, ffi.Uint64)>(

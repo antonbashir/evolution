@@ -13,7 +13,7 @@ class MemoryStaticBuffers {
   final Pointer<memory_dart> _memory;
   final Pointer<iovec> _buffers;
 
-  MemoryStaticBuffers(this._buffers, this._memory);
+  MemoryStaticBuffers(this._memory) : _buffers = memory_dart_static_buffers_inner(_memory);
 
   @inline
   void release(int bufferId) {

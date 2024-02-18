@@ -6,14 +6,14 @@ import '../memory/bindings.dart';
 import 'constants.dart';
 import 'exceptions.dart';
 
-class MemoryStructures {
+class MemoryStructurePools {
   final Map<int, Pointer<memory_dart_structure_pool>> _pools = {};
 
   final Pointer<memory_dart> _memory;
 
-  MemoryStructures(this._memory);
+  MemoryStructurePools(this._memory);
 
-  MemoryStructurePool<T> register<T extends Struct>(int size) {
+  MemoryStructurePool<T> register<T extends NativeType>(int size) {
     final pool = memory_dart_structure_pool_create(_memory, size);
     _pools[T.hashCode] = pool;
     return MemoryStructurePool<T>(pool);
@@ -23,14 +23,14 @@ class MemoryStructures {
   int size<T extends Struct>() => memory_dart_structure_pool_size(_pools[T.hashCode]!.cast());
 
   @inline
-  Pointer<T> allocate<T extends Struct>() {
+  Pointer<T> allocate<T extends NativeType>() {
     final pool = _pools[T.hashCode];
     if (pool == null) throw MemoryException(MemoryErrors.outOfMemory);
     return memory_dart_structure_allocate(pool).cast();
   }
 
   @inline
-  void free<T extends Struct>(Pointer<T> payload) {
+  void free<T extends NativeType>(Pointer<T> payload) {
     final pool = _pools[T.hashCode];
     if (pool == null) return;
     memory_dart_structure_free(pool, payload.cast());
@@ -43,7 +43,7 @@ class MemoryStructures {
   }
 }
 
-class MemoryStructurePool<T extends Struct> {
+class MemoryStructurePool<T extends NativeType> {
   final Pointer<memory_dart_structure_pool> _pool;
 
   MemoryStructurePool(this._pool);
