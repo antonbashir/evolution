@@ -30,4 +30,4 @@ target_link_libraries(interactor_release_linux_x64 PRIVATE ${interactor_liburing
 set_target_properties(interactor_release_linux_x64 PROPERTIES COMPILE_FLAGS ${CMAKE_C_FLAGS})
 copy_to_assets(interactor_release_linux_x64)
 
-add_custom_target(interactor_native DEPENDS interactor_release_linux_x64 interactor_debug_linux_x64)
+add_custom_target(interactor_native DEPENDS "interactor_release_linux_x64;interactor_debug_linux_x64")
