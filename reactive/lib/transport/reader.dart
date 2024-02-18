@@ -10,7 +10,7 @@ import 'payload.dart';
 class ReactiveReader {
   ReactiveReader._();
 
-  @pragma(preferInlinePragma)
+  @inline
   static FrameHeader? readFrameHeader(ReactiveReadBuffer buffer) {
     final frameLength = buffer.readInt24();
     if (frameLength == null) return null;
@@ -28,7 +28,7 @@ class ReactiveReader {
     return FrameHeader(frameLength, streamId, type, flags, meta);
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   static SetupFrame readSetupFrame(ReactiveReadBuffer buffer, FrameHeader header) {
     var delta = buffer.readerIndex - reactiveFrameHeaderSize;
     final leaseEnable = (header.flags & reactiveFrameSetupFlagLease) > 0;
@@ -68,7 +68,7 @@ class ReactiveReader {
     );
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   static LeaseFrame? readLeaseFrame(ReactiveReadBuffer buffer, FrameHeader header) {
     final timeToLive = buffer.readInt32();
     if (timeToLive == null) return null;
@@ -77,7 +77,7 @@ class ReactiveReader {
     return LeaseFrame(header, timeToLive, numberOfRequests);
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   static KeepAliveFrame? readKeepAliveFrame(ReactiveReadBuffer buffer, FrameHeader header) {
     var delta = buffer.readerIndex - reactiveFrameHeaderSize;
     var lastReceivedPosition = buffer.readInt32();
@@ -92,7 +92,7 @@ class ReactiveReader {
     return KeepAliveFrame(header, lastReceivedPosition, (header.flags & reactiveFrameKeepAliveFlagRespond) > 0, payload: payload);
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   static ErrorFrame? readErrorFrame(ReactiveReadBuffer buffer, FrameHeader header) {
     var delta = buffer.readerIndex - reactiveFrameHeaderSize;
     final code = buffer.readInt32();
@@ -107,7 +107,7 @@ class ReactiveReader {
     return ErrorFrame(header, utf8.decode(message), code);
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   static RequestChannelFrame? readRequestChannelFrame(ReactiveReadBuffer buffer, FrameHeader header) {
     var delta = buffer.readerIndex - reactiveFrameHeaderSize;
     final initialRequestN = buffer.readInt32();
@@ -124,14 +124,14 @@ class ReactiveReader {
     return RequestChannelFrame(header, initialRequestN);
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   static RequestNFrame? readRequestNFrame(ReactiveReadBuffer buffer, FrameHeader header) {
     final count = buffer.readInt32();
     if (count == null) return null;
     return RequestNFrame(header, count);
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   static PayloadFrame? readPayloadFrame(ReactiveReadBuffer buffer, FrameHeader header) {
     final payloadSize = header.frameLength + reactiveFrameLengthFieldSize - reactiveFrameHeaderSize;
     if (payloadSize > 0) {
@@ -152,7 +152,7 @@ class ReactiveReader {
     );
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   static ReactivePayload? _readPayload(ReactiveReadBuffer buffer, bool metadataPresent, int dataLength) {
     Uint8List? metadata = emptyBytes;
     if (metadataPresent) {

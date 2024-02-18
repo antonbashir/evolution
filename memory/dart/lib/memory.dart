@@ -1,4 +1,4 @@
-export 'memory/buffers.dart' show InteractorStaticBuffers;
-export 'memory/data.dart' show InteractorDatas;
+export 'memory/buffers.dart';
+export 'memory/data.dart';
 export 'memory/tuples.dart';
-export 'memory/payloads.dart' show InteractorPayloads, InteractorPayloadPool;
+export 'memory/structures.dart';

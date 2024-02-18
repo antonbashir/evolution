@@ -11,7 +11,7 @@ class ReactiveLeaseLimiter {
 
   bool get enabled => _enabled;
 
-  @pragma(preferInlinePragma)
+  @inline
   bool restricted(int count) {
     if (_available < count) return true;
     if (DateTime.now().millisecondsSinceEpoch - _timestamp > _timeToLive) {
@@ -21,7 +21,7 @@ class ReactiveLeaseLimiter {
     return false;
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   void reconfigure(int timeToLive, int requests) {
     _enabled = true;
     _available = requests;
@@ -29,7 +29,7 @@ class ReactiveLeaseLimiter {
     _timestamp = DateTime.now().millisecondsSinceEpoch;
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   void notify(int count) {
     _available = max(_available - count, 0);
     if (DateTime.now().millisecondsSinceEpoch - _timestamp > _timeToLive) {

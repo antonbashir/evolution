@@ -90,27 +90,27 @@ struct memory_dart_structure_pool* memory_dart_structure_pool_create(struct memo
     return (struct memory_dart_structure_pool*)pool;
 }
 
-void* memory_dart_structure_allocate(struct memory_structure_pool* pool)
+void* memory_dart_structure_allocate(struct memory_dart_structure_pool* pool)
 {
-    void* payload = memory_structure_pool_allocate(pool);
-    memset(payload, 0, pool->size);
+    void* payload = memory_structure_pool_allocate((struct memory_structure_pool*)pool);
+    memset(payload, 0, ((struct memory_structure_pool*)pool)->size);
     return payload;
 }
 
-void memory_dart_structure_free(struct memory_structure_pool* pool, void* pointer)
+void memory_dart_structure_free(struct memory_dart_structure_pool* pool, void* pointer)
 {
-    memory_structure_pool_free(pool, pointer);
+    memory_structure_pool_free((struct memory_structure_pool*)pool, pointer);
 }
 
-void memory_dart_structure_pool_destroy(struct memory_structure_pool* pool)
+void memory_dart_structure_pool_destroy(struct memory_dart_structure_pool* pool)
 {
-    memory_structure_pool_destroy(pool);
+    memory_structure_pool_destroy((struct memory_structure_pool*)pool);
     free(pool);
 }
 
-size_t memory_dart_structure_pool_size(struct memory_structure_pool* pool)
+size_t memory_dart_structure_pool_size(struct memory_dart_structure_pool* pool)
 {
-    return pool->size;
+    return ((struct memory_structure_pool*)pool)->size;
 }
 
 void* memory_dart_small_data_allocate(struct memory_dart* memory, size_t size)

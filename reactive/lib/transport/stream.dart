@@ -22,21 +22,21 @@ class ReactiveStream {
 
   ReactiveStream(this.id, this.initialRequestCount, this._requester, this._producer, this._channel) : key = _channel.key;
 
-  @pragma(preferInlinePragma)
+  @inline
   bool requested() {
     if (_requested) return false;
     _requested = true;
     return true;
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   void subscribe() {
     if (_subscribed) return;
     _subscribed = true;
     _channel.onSubscribe(_producer);
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   FutureOr<void> onPayloadFragment(ReactiveCodec codec, Uint8List payload, bool follow, bool complete) {
     if (follow) {
       _fragments.add(payload);
@@ -49,24 +49,24 @@ class ReactiveStream {
     }
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   FutureOr<void> onRequest(int count) => _channel.onRequest(count, _producer);
 
-  @pragma(preferInlinePragma)
+  @inline
   FutureOr<void> onError(int code, String message) => _channel.onError(code, message, _producer);
 
-  @pragma(preferInlinePragma)
+  @inline
   FutureOr<void> onComplete() => _channel.onComplete(_producer);
 
-  @pragma(preferInlinePragma)
+  @inline
   FutureOr<void> onCancel() => _channel.onCancel(_producer);
 
-  @pragma(preferInlinePragma)
+  @inline
   Future<void> close({Duration? gracefulTimeout}) => _requester.close(gracefulTimeout: gracefulTimeout);
 
-  @pragma(preferInlinePragma)
+  @inline
   void error(String message) => _producer.error(message);
 
-  @pragma(preferInlinePragma)
+  @inline
   void resume(int count) => _requester.resume(count);
 }

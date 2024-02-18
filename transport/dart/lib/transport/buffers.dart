@@ -20,30 +20,30 @@ class TransportBuffers {
     buffersCount = _worker.ref.buffers_count;
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   void release(int bufferId) {
     _bindings.transport_worker_release_buffer(_worker, bufferId);
     if (_finalizers.isNotEmpty) _finalizers.removeLast().complete();
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   Uint8List read(int bufferId) {
     final buffer = buffers.elementAt(bufferId);
     final bufferBytes = buffer.ref.iov_base.cast<Uint8>();
     return bufferBytes.asTypedList(buffer.ref.iov_len);
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   void setLength(int bufferId, int length) => buffers.elementAt(bufferId).ref.iov_len = length;
 
-  @pragma(preferInlinePragma)
+  @inline
   void write(int bufferId, Uint8List bytes) {
     final buffer = buffers.elementAt(bufferId);
     buffer.ref.iov_base.cast<Uint8>().asTypedList(bytes.length).setAll(0, bytes);
     buffer.ref.iov_len = bytes.length;
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   int? get() {
     final buffer = _bindings.transport_worker_get_buffer(_worker);
     if (buffer == transportBufferUsed) return null;
@@ -72,13 +72,13 @@ class TransportBuffers {
     return bufferIds;
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   int available() => _bindings.transport_worker_available_buffers(_worker);
 
-  @pragma(preferInlinePragma)
+  @inline
   int used() => _bindings.transport_worker_used_buffers(_worker);
 
-  @pragma(preferInlinePragma)
+  @inline
   void releaseArray(List<int> buffers) {
     for (var id in buffers) release(id);
   }

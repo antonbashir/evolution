@@ -204,39 +204,41 @@ external ffi.Pointer<memory_dart_structure_pool>
   int size,
 );
 
-@ffi.Native<ffi.Pointer<ffi.Void> Function(ffi.Pointer<memory_structure_pool>)>(
+@ffi.Native<
+        ffi.Pointer<ffi.Void> Function(
+            ffi.Pointer<memory_dart_structure_pool>)>(
     symbol: 'memory_dart_structure_allocate',
     assetId: 'memory-bindings',
     isLeaf: true)
 external ffi.Pointer<ffi.Void> memory_dart_structure_allocate(
-  ffi.Pointer<memory_structure_pool> pool,
+  ffi.Pointer<memory_dart_structure_pool> pool,
 );
 
 @ffi.Native<
         ffi.Void Function(
-            ffi.Pointer<memory_structure_pool>, ffi.Pointer<ffi.Void>)>(
+            ffi.Pointer<memory_dart_structure_pool>, ffi.Pointer<ffi.Void>)>(
     symbol: 'memory_dart_structure_free',
     assetId: 'memory-bindings',
     isLeaf: true)
 external void memory_dart_structure_free(
-  ffi.Pointer<memory_structure_pool> pool,
+  ffi.Pointer<memory_dart_structure_pool> pool,
   ffi.Pointer<ffi.Void> pointer,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<memory_structure_pool>)>(
+@ffi.Native<ffi.Void Function(ffi.Pointer<memory_dart_structure_pool>)>(
     symbol: 'memory_dart_structure_pool_destroy',
     assetId: 'memory-bindings',
     isLeaf: true)
 external void memory_dart_structure_pool_destroy(
-  ffi.Pointer<memory_structure_pool> pool,
+  ffi.Pointer<memory_dart_structure_pool> pool,
 );
 
-@ffi.Native<ffi.Size Function(ffi.Pointer<memory_structure_pool>)>(
+@ffi.Native<ffi.Size Function(ffi.Pointer<memory_dart_structure_pool>)>(
     symbol: 'memory_dart_structure_pool_size',
     assetId: 'memory-bindings',
     isLeaf: true)
 external int memory_dart_structure_pool_size(
-  ffi.Pointer<memory_structure_pool> pool,
+  ffi.Pointer<memory_dart_structure_pool> pool,
 );
 
 @ffi.Native<ffi.Pointer<ffi.Void> Function(ffi.Pointer<memory_dart>, ffi.Size)>(
@@ -264,6 +266,13 @@ external void memory_dart_small_data_free(
     symbol: 'memory_dart_destroy', assetId: 'memory-bindings', isLeaf: true)
 external void memory_dart_destroy(
   ffi.Pointer<memory_dart> interactor,
+);
+
+@ffi.Native<ffi.Uint64 Function(ffi.Pointer<ffi.Char>, ffi.Uint64)>(
+    symbol: 'memory_dart_tuple_next', assetId: 'memory-bindings', isLeaf: true)
+external int memory_dart_tuple_next(
+  ffi.Pointer<ffi.Char> buffer,
+  int offset,
 );
 
 final class iovec extends ffi.Struct {

@@ -13,14 +13,14 @@ class TransportPayloadPool {
     }
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   TransportPayload getPayload(int bufferId, Uint8List bytes) {
     final payload = _payloads[bufferId];
     payload._bytes = bytes;
     return payload;
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   void release(int bufferId) => _buffers.release(bufferId);
 }
 
@@ -33,17 +33,17 @@ class TransportPayload {
 
   TransportPayload(this._bufferId, this._pool);
 
-  @pragma(preferInlinePragma)
+  @inline
   void release() => _pool.release(_bufferId);
 
-  @pragma(preferInlinePragma)
+  @inline
   Uint8List takeBytes({bool release = true}) {
     final result = Uint8List.fromList(bytes);
     if (release) this.release();
     return result;
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   List<int> toBytes({bool release = true}) {
     final result = _bytes.toList();
     if (release) this.release();

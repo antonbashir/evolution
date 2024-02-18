@@ -5,7 +5,7 @@ import 'constants.dart';
 class ReactiveAssembler {
   ReactiveAssembler._();
 
-  @pragma(preferInlinePragma)
+  @inline
   static Uint8List reassemble(List<Uint8List> fragments) {
     final totalLength = fragments.fold(0, (current, list) => current + list.length);
     final assemble = Uint8List(totalLength);
@@ -18,7 +18,7 @@ class ReactiveAssembler {
     return assemble;
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   static List<Uint8List> disassemble(Uint8List payload, int size) {
     var index = 0;
     var resultIndex = 0;

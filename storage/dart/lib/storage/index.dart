@@ -27,30 +27,30 @@ class StorageIndex {
     return countBy(key, keySize, iteratorType: iteratorType).whenComplete(() => _tuples.free(key, keySize));
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   int _completeCountBy(Pointer<interactor_message> message) {
     final count = message.outputInt;
     tarantool_index_count_request_free(_factory, message);
     return count;
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   Future<int> countBy(Pointer<Uint8> key, int keySize, {StorageIteratorType iteratorType = StorageIteratorType.eq}) {
     final request = tarantool_index_count_request_prepare(_factory, _spaceId, _indexId, key.cast(), keySize, iteratorType.index);
     return _producer.indexCount(_descriptor, request).then(_completeCountBy);
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   int _completeLength(Pointer<interactor_message> message) {
     final length = message.outputInt;
     tarantool_index_id_free(_factory, message);
     return length;
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   Future<int> length() => _producer.indexLength(_descriptor, tarantool_index_id_prepare(_factory, _spaceId, _indexId)).then(_completeLength);
 
-  @pragma(preferInlinePragma)
+  @inline
   Future<StorageIterator> iterator({StorageIteratorType iteratorType = StorageIteratorType.eq}) {
     final keySize = tupleSizeOfList(1) + tupleSizeOfNull;
     final key = _tuples.allocate(keySize);
@@ -59,33 +59,33 @@ class StorageIndex {
     return iteratorBy(key, keySize, iteratorType: iteratorType).whenComplete(() => _tuples.free(key, keySize));
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   StorageIterator _completeIteratorBy(Pointer<interactor_message> message) {
     final iterator = StorageIterator(_factory, message.outputInt, _producer, _descriptor);
     tarantool_index_iterator_request_free(_factory, message);
     return iterator;
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   Future<StorageIterator> iteratorBy(Pointer<Uint8> key, int keySize, {StorageIteratorType iteratorType = StorageIteratorType.eq}) {
     final request = tarantool_index_iterator_request_prepare(_factory, _spaceId, _indexId, iteratorType.index, key.cast(), keySize);
     return _producer.indexIterator(_descriptor, request).then(_completeIteratorBy);
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   Pointer<tarantool_tuple_t> _completeGet(Pointer<interactor_message> message) {
     final tuple = Pointer<tarantool_tuple_t>.fromAddress(message.outputInt);
     tarantool_index_request_free(_factory, message);
     return tuple;
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   Future<Pointer<tarantool_tuple_t>> get(Pointer<Uint8> key, int keySize) {
     final request = tarantool_index_request_prepare(_factory, _spaceId, _indexId, key.cast(), keySize);
     return _producer.indexGet(_descriptor, request).then(_completeGet);
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   Future<Pointer<tarantool_tuple_t>> min() {
     final keySize = tupleSizeOfList(1) + tupleSizeOfNull;
     final key = _tuples.allocate(keySize);
@@ -94,20 +94,20 @@ class StorageIndex {
     return minBy(key, keySize).whenComplete(() => _tuples.free(key, keySize));
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   Pointer<tarantool_tuple_t> _completeMin(Pointer<interactor_message> message) {
     final tuple = Pointer<tarantool_tuple_t>.fromAddress(message.outputInt);
     tarantool_index_request_free(_factory, message);
     return tuple;
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   Future<Pointer<tarantool_tuple_t>> minBy(Pointer<Uint8> key, int keySize) {
     final request = tarantool_index_request_prepare(_factory, _spaceId, _indexId, key.cast(), keySize);
     return _producer.indexMin(_descriptor, request).then(_completeMin);
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   Future<Pointer<tarantool_tuple_t>> max() {
     final keySize = tupleSizeOfList(1) + tupleSizeOfNull;
     final key = _tuples.allocate(keySize);
@@ -116,53 +116,53 @@ class StorageIndex {
     return maxBy(key, keySize).whenComplete(() => _tuples.free(key, keySize));
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   Pointer<tarantool_tuple_t> _completeMax(Pointer<interactor_message> message) {
     final tuple = Pointer<tarantool_tuple_t>.fromAddress(message.outputInt);
     tarantool_index_request_free(_factory, message);
     return tuple;
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   Future<Pointer<tarantool_tuple_t>> maxBy(Pointer<Uint8> key, int keySize) {
     final request = tarantool_index_request_prepare(_factory, _spaceId, _indexId, key.cast(), keySize);
     return _producer.indexMax(_descriptor, request).then(_completeMax);
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   Pointer<tarantool_tuple_t> _completeUpdateSingle(Pointer<interactor_message> message) {
     final tuple = Pointer<tarantool_tuple_t>.fromAddress(message.outputInt);
     tarantool_index_update_request_free(_factory, message);
     return tuple;
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   Future<Pointer<tarantool_tuple_t>> updateSingle(Pointer<Uint8> key, int keySize, Pointer<Uint8> operations, int operationsSize) {
     final request = tarantool_index_update_request_prepare(_factory, _spaceId, _indexId, key.cast(), keySize, operations.cast(), operationsSize);
     return _producer.indexUpdateSingle(_descriptor, request).then(_completeUpdateSingle);
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   Pointer<tarantool_tuple_port_t> _completeUpdateMany(Pointer<interactor_message> message) {
     final tuple = Pointer<tarantool_tuple_port_t>.fromAddress(message.outputInt);
     tarantool_index_update_request_free(_factory, message);
     return tuple;
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   Future<Pointer<tarantool_tuple_port_t>> updateMany(Pointer<Uint8> keys, int keysCount, Pointer<Uint8> operations, int operationsCount) {
     final request = tarantool_index_update_request_prepare(_factory, _spaceId, _indexId, keys.cast(), keysCount, operations.cast(), operationsCount);
     return _producer.indexUpdateMany(_descriptor, request).then(_completeUpdateMany);
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   Pointer<tarantool_tuple_port_t> _completeSelect(Pointer<interactor_message> message) {
     final tuple = Pointer<tarantool_tuple_port_t>.fromAddress(message.outputInt);
     tarantool_index_select_request_free(_factory, message);
     return tuple;
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   Future<Pointer<tarantool_tuple_port_t>> select({
     int offset = 0,
     int limit = int32Max,
@@ -175,7 +175,7 @@ class StorageIndex {
     return selectBy(key, keySize).whenComplete(() => _tuples.free(key, keySize));
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   Future<Pointer<tarantool_tuple_port_t>> selectBy(
     Pointer<Uint8> key,
     int keySize, {

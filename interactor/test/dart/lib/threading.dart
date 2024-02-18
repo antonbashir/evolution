@@ -4,9 +4,9 @@ import 'dart:isolate';
 
 import 'package:collection/collection.dart';
 import 'package:ffi/ffi.dart' as ffi;
-import 'package:linux_interactor/linux_interactor.dart';
-import 'package:linux_interactor_test/consumer.dart';
-import 'package:linux_interactor_test/producer.dart';
+import 'package:interactor/interactor.dart';
+import 'package:interactor_test/consumer.dart';
+import 'package:interactor_test/producer.dart';
 import 'package:test/test.dart';
 
 import 'bindings.dart';

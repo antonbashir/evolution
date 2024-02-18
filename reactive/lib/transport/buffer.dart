@@ -10,20 +10,20 @@ class ReactiveReadBuffer {
 
   int get readerIndex => _readerIndex;
 
-  @pragma(preferInlinePragma)
+  @inline
   void extend(Uint8List data) {
     _data.addAll(data);
     _capacity += data.length;
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   void shrink() {
     _data = _data.sublist(_readerIndex);
     _capacity = _data.length;
     _readerIndex = 0;
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   void reset() {
     _data = [];
     _capacity = 0;
@@ -31,16 +31,16 @@ class ReactiveReadBuffer {
     _checkpointIndex = 0;
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   bool isReadable() => _readerIndex < _capacity;
 
-  @pragma(preferInlinePragma)
+  @inline
   void save() => _checkpointIndex = _readerIndex;
 
-  @pragma(preferInlinePragma)
+  @inline
   void restore() => _readerIndex = _checkpointIndex;
 
-  @pragma(preferInlinePragma)
+  @inline
   int? readInt8() {
     if (_readerIndex < _capacity) {
       var value = _data[_readerIndex];
@@ -50,31 +50,31 @@ class ReactiveReadBuffer {
     return null;
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   int? readInt16() {
     final data = readBytes(2);
     return data == null ? null : _bytesToNumber(data);
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   int? readInt24() {
     final data = readBytes(3);
     return data == null ? null : _bytesToNumber(data);
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   int? readInt32() {
     final data = readBytes(4);
     return data == null ? null : _bytesToNumber(data);
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   int? readInt64() {
     final data = readBytes(8);
     return data == null ? null : _bytesToNumber(data);
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   List<int>? readBytes(int length) {
     if (_readerIndex + length <= _capacity) {
       final array = _data.sublist(_readerIndex, _readerIndex + length);
@@ -84,13 +84,13 @@ class ReactiveReadBuffer {
     return null;
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   Uint8List? readUint8List(int length) {
     final data = readBytes(length);
     return data == null ? null : Uint8List.fromList(data);
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   int _bytesToNumber(List<int> data) {
     var value = 0;
     for (var element in data) {
@@ -105,7 +105,7 @@ class ReactiveWriteBuffer {
   var _writerIndex = 0;
   var _capacity = 0;
 
-  @pragma(preferInlinePragma)
+  @inline
   void writeInt8(int value) {
     if (_writerIndex == _data.length) {
       _data.add(value);
@@ -117,22 +117,22 @@ class ReactiveWriteBuffer {
     _writerIndex += 1;
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   void writeInt16(int value) => writeBytes(_int16ToBytes(value));
 
-  @pragma(preferInlinePragma)
+  @inline
   void writeInt24(int value) => writeBytes(_int24ToBytes(value));
 
-  @pragma(preferInlinePragma)
+  @inline
   void writeInt32(int value) => writeBytes(_int32ToBytes(value));
 
-  @pragma(preferInlinePragma)
+  @inline
   void writeInt64(int value) => writeBytes(_int64ToBytes(value));
 
-  @pragma(preferInlinePragma)
+  @inline
   void insertInt24(int value) => insertBytes(_int24ToBytes(value));
 
-  @pragma(preferInlinePragma)
+  @inline
   void writeBytes(List<int> bytes) {
     final end = _writerIndex + bytes.length;
     if (_writerIndex == _data.length) {
@@ -146,7 +146,7 @@ class ReactiveWriteBuffer {
     _updateCapacity();
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   void insertBytes(List<int> bytes) {
     var end = _writerIndex + bytes.length;
     _data.insertAll(_writerIndex, bytes);
@@ -154,41 +154,41 @@ class ReactiveWriteBuffer {
     _updateCapacity();
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   void writeUint8List(Uint8List data) => writeBytes(List.from(data));
 
-  @pragma(preferInlinePragma)
+  @inline
   bool isWritable() => _writerIndex < _capacity;
 
-  @pragma(preferInlinePragma)
+  @inline
   void resetWriterIndex() => _writerIndex = 0;
 
-  @pragma(preferInlinePragma)
+  @inline
   int capacity() => _capacity;
 
-  @pragma(preferInlinePragma)
+  @inline
   Uint8List toUint8Array() => Uint8List.fromList(_data);
 
-  @pragma(preferInlinePragma)
+  @inline
   void _updateCapacity() {
     if (_capacity < _data.length) {
       _capacity = _data.length;
     }
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   Uint8List _int64ToBytes(int value) => Uint8List(8)..buffer.asByteData().setUint64(0, value, Endian.big);
 
-  @pragma(preferInlinePragma)
+  @inline
   Uint8List _int32ToBytes(int value) => Uint8List(4)..buffer.asByteData().setUint32(0, value, Endian.big);
 
-  @pragma(preferInlinePragma)
+  @inline
   Uint8List _int24ToBytes(int value) {
     var uint8list = Uint8List(4)..buffer.asByteData().setUint32(0, value, Endian.big);
     return uint8list.sublist(1);
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   Uint8List _int16ToBytes(int value) => Uint8List(2)..buffer.asByteData().setUint16(0, value, Endian.big);
 }
 
@@ -204,14 +204,14 @@ class ReactiveRequesterBuffer {
   List<Uint8List> get chunks => _chunks;
   int get count => _count;
 
-  @pragma(preferInlinePragma)
+  @inline
   void clear() {
     _last = 0;
     _count = 0;
     _chunks = [];
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   List<Uint8List> add(Uint8List frame) {
     _count++;
     if (_chunks.isEmpty) {

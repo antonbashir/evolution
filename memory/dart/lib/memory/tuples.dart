@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'dart:ffi';
 import 'dart:typed_data';
 
-import '../interactor/bindings.dart';
-import '../interactor/constants.dart';
-import 'extensions.dart';
+import 'package:core/core.dart';
+
+import 'bindings.dart';
 
 const tupleSizeOfNull = 1;
 const tupleSizeOfBool = 1;
@@ -12,19 +12,19 @@ const tupleSizeOfDouble = 9;
 
 const _decoder = const Utf8Decoder();
 
-@pragma(preferInlinePragma)
+@inline
 int tupleWriteNull(ByteData data, int offset) {
   data.setUint8(offset++, 0xc0);
   return offset;
 }
 
-@pragma(preferInlinePragma)
+@inline
 int tupleWriteBool(ByteData data, bool value, int offset) {
   data.setUint8(offset++, value ? 0xc3 : 0xc2);
   return offset;
 }
 
-@pragma(preferInlinePragma)
+@inline
 int tupleWriteInt(ByteData data, int value, int offset) {
   if (value >= 0) {
     if (value <= 0x7f) {
@@ -73,14 +73,14 @@ int tupleWriteInt(ByteData data, int value, int offset) {
   return offset + 8;
 }
 
-@pragma(preferInlinePragma)
+@inline
 int tupleWriteDouble(ByteData data, double value, int offset) {
   data.setUint8(offset++, 0xcb);
   data.setFloat64(offset, value);
   return offset + 8;
 }
 
-@pragma(preferInlinePragma)
+@inline
 int tupleWriteString(Uint8List buffer, ByteData data, String value, int offset) {
   final length = value.length;
   if (length <= 0x1F) {
@@ -111,7 +111,7 @@ int tupleWriteString(Uint8List buffer, ByteData data, String value, int offset) 
   throw ArgumentError('Max string length is 0xFFFFFFFF');
 }
 
-@pragma(preferInlinePragma)
+@inline
 int tupleWriteBinary(Uint8List buffer, ByteData data, Uint8List value, int offset) {
   final length = value.length;
   if (length <= 0xFF) {
@@ -137,7 +137,7 @@ int tupleWriteBinary(Uint8List buffer, ByteData data, Uint8List value, int offse
   throw ArgumentError('Max binary length is 0xFFFFFFFF');
 }
 
-@pragma(preferInlinePragma)
+@inline
 int tupleWriteList(ByteData data, int length, int offset) {
   if (length <= 0xF) {
     data.setUint8(offset++, 0x90 | length);
@@ -156,7 +156,7 @@ int tupleWriteList(ByteData data, int length, int offset) {
   throw ArgumentError('Max list length is 4294967295');
 }
 
-@pragma(preferInlinePragma)
+@inline
 int tupleWriteMap(ByteData data, int length, int offset) {
   if (length <= 0xF) {
     data.setUint8(offset++, 0x80 | length);
@@ -175,7 +175,7 @@ int tupleWriteMap(ByteData data, int length, int offset) {
   throw ArgumentError('Max map length is 4294967295');
 }
 
-@pragma(preferInlinePragma)
+@inline
 ({bool? value, int offset}) tupleReadBool(ByteData data, int offset) {
   final value = data.getUint8(offset);
   switch (value) {
@@ -189,7 +189,7 @@ int tupleWriteMap(ByteData data, int length, int offset) {
   throw FormatException("Byte $value is not bool");
 }
 
-@pragma(preferInlinePragma)
+@inline
 ({int? value, int offset}) tupleReadInt(ByteData data, int offset) {
   final bytes = data.getUint8(offset);
   int? value;
@@ -229,7 +229,7 @@ int tupleWriteMap(ByteData data, int length, int offset) {
   throw FormatException("Byte $value is not int");
 }
 
-@pragma(preferInlinePragma)
+@inline
 ({double? value, int offset}) tupleReadDouble(ByteData data, int offset) {
   final bytes = data.getUint8(offset);
   double? value;
@@ -247,7 +247,7 @@ int tupleWriteMap(ByteData data, int length, int offset) {
   throw FormatException("Byte $value is not double");
 }
 
-@pragma(preferInlinePragma)
+@inline
 ({String? value, int offset}) tupleReadString(Uint8List buffer, ByteData data, int offset) {
   final bytes = data.getUint8(offset);
   final innerBuffer = buffer.buffer;
@@ -281,7 +281,7 @@ int tupleWriteMap(ByteData data, int length, int offset) {
   throw FormatException("Byte $bytes is not string");
 }
 
-@pragma(preferInlinePragma)
+@inline
 ({Uint8List value, int offset}) tupleReadBinary(Uint8List buffer, ByteData data, int offset) {
   final bytes = data.getUint8(offset);
   final innerBuffer = buffer.buffer;
@@ -308,7 +308,7 @@ int tupleWriteMap(ByteData data, int length, int offset) {
   throw FormatException("Byte $bytes is not binary");
 }
 
-@pragma(preferInlinePragma)
+@inline
 ({int length, int offset}) tupleReadList(ByteData data, int offset) {
   final bytes = data.getUint8(offset);
   if (bytes & 0xF0 == 0x90) {
@@ -325,7 +325,7 @@ int tupleWriteMap(ByteData data, int length, int offset) {
   throw FormatException("Byte $bytes is invalid list length");
 }
 
-@pragma(preferInlinePragma)
+@inline
 ({int length, int offset}) tupleReadMap(ByteData data, int offset) {
   final bytes = data.getUint8(offset);
   if (bytes & 0xF0 == 0x80) {
@@ -342,7 +342,7 @@ int tupleWriteMap(ByteData data, int length, int offset) {
   throw FormatException("Byte $bytes is invalid map length");
 }
 
-@pragma(preferInlinePragma)
+@inline
 int tupleSizeOfInt(int number) {
   if (number >= -0x20) {
     return 1;
@@ -359,7 +359,7 @@ int tupleSizeOfInt(int number) {
   return 9;
 }
 
-@pragma(preferInlinePragma)
+@inline
 int tupleSizeOfString(int length) {
   if (length <= 0x1F) {
     return 1 + length;
@@ -373,7 +373,7 @@ int tupleSizeOfString(int length) {
   return 5 + length;
 }
 
-@pragma(preferInlinePragma)
+@inline
 int tupleSizeOfBinary(int length) {
   if (length <= 0xFF) {
     return 2;
@@ -384,7 +384,7 @@ int tupleSizeOfBinary(int length) {
   return 5;
 }
 
-@pragma(preferInlinePragma)
+@inline
 int tupleSizeOfList(int length) {
   if (length <= 0xF) {
     return 1;
@@ -395,7 +395,7 @@ int tupleSizeOfList(int length) {
   return 5;
 }
 
-@pragma(preferInlinePragma)
+@inline
 int tupleSizeOfMap(int length) {
   if (length <= 0xF) {
     return 1;
@@ -406,33 +406,33 @@ int tupleSizeOfMap(int length) {
   return 5;
 }
 
-class InteractorTuples {
-  final Pointer<interactor_dart> _interactor;
+class MemoryTuples {
+  final Pointer<memory_dart> _memory;
 
   late final (Pointer<Uint8>, int) emptyList;
   late final (Pointer<Uint8>, int) emptyMap;
 
-  InteractorTuples(this._interactor) {
+  MemoryTuples(this._memory) {
     emptyList = _createEmptyList();
     emptyMap = _createEmptyMap();
   }
 
-  @pragma(preferInlinePragma)
-  int next(Pointer<Uint8> pointer, int offset) => interactor_dart_tuple_next(pointer.cast(), offset);
+  @inline
+  int next(Pointer<Uint8> pointer, int offset) => memory_dart_tuple_next(pointer.cast(), offset);
 
-  @pragma(preferInlinePragma)
-  Pointer<Uint8> allocate(int capacity) => interactor_dart_data_allocate(_interactor, capacity).cast();
+  @inline
+  Pointer<Uint8> allocate(int capacity) => memory_dart_small_data_allocate(_memory, capacity).cast();
 
-  @pragma(preferInlinePragma)
+  @inline
   (Pointer<Uint8>, Uint8List, ByteData) prepare(int size) {
-    final pointer = interactor_dart_data_allocate(_interactor, size).cast<Uint8>();
+    final pointer = memory_dart_small_data_allocate(_memory, size).cast<Uint8>();
     final buffer = pointer.asTypedList(size);
     final data = ByteData.view(buffer.buffer, buffer.offsetInBytes);
     return (pointer, buffer, data);
   }
 
-  @pragma(preferInlinePragma)
-  void free(Pointer<Uint8> tuple, int size) => interactor_dart_data_free(_interactor, tuple.cast(), size);
+  @inline
+  void free(Pointer<Uint8> tuple, int size) => memory_dart_small_data_free(_memory, tuple.cast(), size);
 
   (Pointer<Uint8>, int) _createEmptyList() {
     final size = tupleSizeOfList(0);
@@ -451,57 +451,57 @@ class InteractorTuples {
   }
 }
 
-abstract interface class InteractorTuple {
+abstract interface class MemoryTuple {
   int get tupleSize;
 
   int serialize(Uint8List buffer, ByteData data, int offset);
 }
 
-extension InteractorTupleIntExtension on int {
-  @pragma(preferInlinePragma)
+extension MemoryTupleIntExtension on int {
+  @inline
   int get tupleSize => tupleSizeOfInt(this);
 
-  @pragma(preferInlinePragma)
+  @inline
   int writeToTuple(ByteData data, int offset) => tupleWriteInt(data, this, offset);
 }
 
-extension InteractorTupleDoubleExtension on double {
-  @pragma(preferInlinePragma)
+extension MemoryTupleDoubleExtension on double {
+  @inline
   int get tupleSize => tupleSizeOfDouble;
 
-  @pragma(preferInlinePragma)
+  @inline
   int writeToTuple(ByteData data, int offset) => tupleWriteDouble(data, this, offset);
 }
 
-extension InteractorTupleBooleanExtension on bool {
-  @pragma(preferInlinePragma)
+extension MemoryTupleBooleanExtension on bool {
+  @inline
   int get tupleSize => tupleSizeOfBool;
 
-  @pragma(preferInlinePragma)
+  @inline
   int writeToTuple(ByteData data, int offset) => tupleWriteBool(data, this, offset);
 }
 
-extension InteractorTupleStringExtension on String {
-  @pragma(preferInlinePragma)
+extension MemoryTupleStringExtension on String {
+  @inline
   int get tupleSize => tupleSizeOfString(length);
 
-  @pragma(preferInlinePragma)
+  @inline
   int writeToTuple(Uint8List buffer, ByteData data, int offset) => tupleWriteString(buffer, data, this, offset);
 }
 
-extension InteractorTupleBinaryExtension on Uint8List {
-  @pragma(preferInlinePragma)
+extension MemoryTupleBinaryExtension on Uint8List {
+  @inline
   int get tupleSize => tupleSizeOfBinary(length);
 
-  @pragma(preferInlinePragma)
+  @inline
   int writeToTuple(Uint8List buffer, ByteData data, int offset) => tupleWriteBinary(buffer, data, this, offset);
 }
 
-extension InteractorTupleMapExtension<K, V> on Map<K, V> {
-  @pragma(preferInlinePragma)
+extension MemoryTupleMapExtension<K, V> on Map<K, V> {
+  @inline
   int get tupleSize => tupleSizeOfMap(length);
 
-  @pragma(preferInlinePragma)
+  @inline
   int computeTupleSize() {
     var size = tupleSize;
     for (var entry in entries) {
@@ -530,7 +530,7 @@ extension InteractorTupleMapExtension<K, V> on Map<K, V> {
         case Map asMap:
           size += asMap.computeTupleSize();
           break;
-        case InteractorTuple asTuple:
+        case MemoryTuple asTuple:
           size += asTuple.tupleSize;
           break;
       }
@@ -559,7 +559,7 @@ extension InteractorTupleMapExtension<K, V> on Map<K, V> {
         case Map asMap:
           size += asMap.computeTupleSize();
           break;
-        case InteractorTuple asTuple:
+        case MemoryTuple asTuple:
           size += asTuple.tupleSize;
           break;
       }
@@ -567,10 +567,10 @@ extension InteractorTupleMapExtension<K, V> on Map<K, V> {
     return size;
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   int writeToTuple(Uint8List buffer, ByteData data, int offset) => tupleWriteMap(data, length, offset);
 
-  @pragma(preferInlinePragma)
+  @inline
   int serializeToTuple(Uint8List buffer, ByteData data, int offset) {
     offset = tupleWriteMap(data, length, offset);
     for (var entry in entries) {
@@ -599,7 +599,7 @@ extension InteractorTupleMapExtension<K, V> on Map<K, V> {
         case Map asMap:
           offset = asMap.serializeToTuple(buffer, data, offset);
           break;
-        case InteractorTuple asTuple:
+        case MemoryTuple asTuple:
           offset = asTuple.serialize(buffer, data, offset);
           break;
       }
@@ -628,7 +628,7 @@ extension InteractorTupleMapExtension<K, V> on Map<K, V> {
         case Map asMap:
           offset = asMap.serializeToTuple(buffer, data, offset);
           break;
-        case InteractorTuple asTuple:
+        case MemoryTuple asTuple:
           offset = asTuple.serialize(buffer, data, offset);
           break;
       }
@@ -637,14 +637,14 @@ extension InteractorTupleMapExtension<K, V> on Map<K, V> {
   }
 }
 
-extension InteractorTupleListExtension<T> on List<T> {
-  @pragma(preferInlinePragma)
+extension MemoryTupleListExtension<T> on List<T> {
+  @inline
   int get tupleSize => tupleSizeOfList(length);
 
-  @pragma(preferInlinePragma)
+  @inline
   int writeToTuple(Uint8List buffer, ByteData data, int offset) => tupleWriteList(data, length, offset);
 
-  @pragma(preferInlinePragma)
+  @inline
   int computeTupleSize() {
     var size = tupleSize;
     for (var entry in this) {
@@ -673,7 +673,7 @@ extension InteractorTupleListExtension<T> on List<T> {
         case Map asMap:
           size += asMap.computeTupleSize();
           break;
-        case InteractorTuple asTuple:
+        case MemoryTuple asTuple:
           size += asTuple.tupleSize;
           break;
       }
@@ -681,7 +681,7 @@ extension InteractorTupleListExtension<T> on List<T> {
     return size;
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   int serializeToTuple(Uint8List buffer, ByteData data, int offset) {
     offset = tupleWriteList(data, length, offset);
     for (var entry in this) {
@@ -710,7 +710,7 @@ extension InteractorTupleListExtension<T> on List<T> {
         case Map asMap:
           offset = asMap.serializeToTuple(buffer, data, offset);
           break;
-        case InteractorTuple asTuple:
+        case MemoryTuple asTuple:
           offset = asTuple.serialize(buffer, data, offset);
           break;
       }

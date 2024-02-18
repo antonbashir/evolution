@@ -3,58 +3,60 @@ import 'dart:collection';
 import 'dart:ffi';
 import 'dart:typed_data';
 
-import '../interactor/bindings.dart';
-import '../interactor/constants.dart';
+import 'package:core/core.dart';
 
-class InteractorStaticBuffers {
+import '../memory/bindings.dart';
+import 'constants.dart';
+
+class MemoryStaticBuffers {
   final Queue<Completer<void>> _finalizers = Queue();
-  final Pointer<interactor_dart> _interactor;
+  final Pointer<memory_dart> _memory;
   final Pointer<iovec> _buffers;
 
-  InteractorStaticBuffers(this._buffers, this._interactor);
+  MemoryStaticBuffers(this._buffers, this._memory);
 
-  @pragma(preferInlinePragma)
+  @inline
   void release(int bufferId) {
-    interactor_dart_static_buffers_release(_interactor, bufferId);
+    memory_dart_static_buffers_release(_memory, bufferId);
     if (_finalizers.isNotEmpty) _finalizers.removeLast().complete();
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   Uint8List read(int bufferId) {
-    final buffer = _buffers.elementAt(bufferId);
+    final buffer = _buffers + bufferId;
     final bufferBytes = buffer.ref.iov_base.cast<Uint8>();
     return bufferBytes.asTypedList(buffer.ref.iov_len);
   }
 
-  @pragma(preferInlinePragma)
-  void setLength(int bufferId, int length) => _buffers.elementAt(bufferId).ref.iov_len = length;
+  @inline
+  void setLength(int bufferId, int length) => (_buffers + bufferId).ref.iov_len = length;
 
-  @pragma(preferInlinePragma)
+  @inline
   void write(int bufferId, Uint8List bytes) {
-    final buffer = _buffers.elementAt(bufferId);
+    final buffer = _buffers + bufferId;
     buffer.ref.iov_base.cast<Uint8>().asTypedList(bytes.length).setAll(0, bytes);
     buffer.ref.iov_len = bytes.length;
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   int? get() {
-    final buffer = interactor_dart_static_buffers_get(_interactor);
-    if (buffer == interactorBufferUsed) return null;
+    final buffer = memory_dart_static_buffers_get(_memory);
+    if (buffer == memoryBufferUsed) return null;
     return buffer;
   }
 
   Future<int> allocate() async {
-    var bufferId = interactor_dart_static_buffers_get(_interactor);
-    while (bufferId == interactorBufferUsed) {
+    var bufferId = memory_dart_static_buffers_get(_memory);
+    while (bufferId == memoryBufferUsed) {
       if (_finalizers.isNotEmpty) {
         await _finalizers.last.future;
-        bufferId = interactor_dart_static_buffers_get(_interactor);
+        bufferId = memory_dart_static_buffers_get(_memory);
         continue;
       }
       final completer = Completer();
       _finalizers.add(completer);
       await completer.future;
-      bufferId = interactor_dart_static_buffers_get(_interactor);
+      bufferId = memory_dart_static_buffers_get(_memory);
     }
     return bufferId;
   }
@@ -65,63 +67,63 @@ class InteractorStaticBuffers {
     return bufferIds;
   }
 
-  @pragma(preferInlinePragma)
-  int available() => interactor_dart_static_buffers_available(_interactor);
+  @inline
+  int available() => memory_dart_static_buffers_available(_memory);
 
-  @pragma(preferInlinePragma)
-  int used() => interactor_dart_static_buffers_used(_interactor);
+  @inline
+  int used() => memory_dart_static_buffers_used(_memory);
 
-  @pragma(preferInlinePragma)
+  @inline
   void releaseArray(List<int> buffers) {
     for (var id in buffers) release(id);
   }
 }
 
-class InteractorInputOutputBuffers {
-  final Pointer<interactor_dart> _interactor;
+class MemoryInputOutputBuffers {
+  final Pointer<memory_dart> _memory;
 
-  InteractorInputOutputBuffers(this._interactor);
+  MemoryInputOutputBuffers(this._memory);
 
-  @pragma(preferInlinePragma)
-  Pointer<interactor_input_buffer> allocateInputBuffer(int capacity) => interactor_dart_io_buffers_allocate_input(_interactor, capacity);
+  @inline
+  Pointer<memory_input_buffer> allocateInputBuffer(int capacity) => memory_dart_io_buffers_allocate_input(_memory, capacity);
 
-  @pragma(preferInlinePragma)
-  Pointer<interactor_output_buffer> allocateOutputBuffer(int capacity) => interactor_dart_io_buffers_allocate_output(_interactor, capacity);
+  @inline
+  Pointer<memory_output_buffer> allocateOutputBuffer(int capacity) => memory_dart_io_buffers_allocate_output(_memory, capacity);
 
-  @pragma(preferInlinePragma)
-  void freeInputBuffer(Pointer<interactor_input_buffer> buffer) => interactor_dart_io_buffers_free_input(_interactor, buffer);
+  @inline
+  void freeInputBuffer(Pointer<memory_input_buffer> buffer) => memory_dart_io_buffers_free_input(_memory, buffer);
 
-  @pragma(preferInlinePragma)
-  void freeOutputBuffer(Pointer<interactor_output_buffer> buffer) => interactor_dart_io_buffers_free_output(_interactor, buffer);
+  @inline
+  void freeOutputBuffer(Pointer<memory_output_buffer> buffer) => memory_dart_io_buffers_free_output(_memory, buffer);
 }
 
-extension InteractorInputBufferExtensions on Pointer<interactor_input_buffer> {
-  @pragma(preferInlinePragma)
-  Pointer<Uint8> allocate(buffer, int delta) => interactor_dart_input_buffer_allocate(buffer, delta);
+extension MemoryInputBufferExtensions on Pointer<memory_input_buffer> {
+  @inline
+  Pointer<Uint8> allocate(buffer, int delta) => memory_dart_input_buffer_allocate(buffer, delta);
 
-  @pragma(preferInlinePragma)
-  Pointer<Uint8> reserve(Pointer<interactor_input_buffer> buffer, int size) => interactor_dart_input_buffer_reserve(buffer, size);
+  @inline
+  Pointer<Uint8> reserve(Pointer<memory_input_buffer> buffer, int size) => memory_dart_input_buffer_reserve(buffer, size);
 
-  @pragma(preferInlinePragma)
-  Pointer<Uint8> allocateReserve(Pointer<interactor_input_buffer> buffer, int delta, int size) => interactor_dart_input_buffer_allocate_reserve(buffer, delta, size);
+  @inline
+  Pointer<Uint8> allocateReserve(Pointer<memory_input_buffer> buffer, int delta, int size) => memory_dart_input_buffer_allocate_reserve(buffer, delta, size);
 
-  @pragma(preferInlinePragma)
-  Pointer<Uint8> get readPosition => interactor_dart_input_buffer_read_position(this);
+  @inline
+  Pointer<Uint8> get readPosition => memory_dart_input_buffer_read_position(this);
 
-  @pragma(preferInlinePragma)
-  Pointer<Uint8> get writePosition => interactor_dart_input_buffer_write_position(this);
+  @inline
+  Pointer<Uint8> get writePosition => memory_dart_input_buffer_write_position(this);
 }
 
-extension InteractorOutputBufferExtensions on Pointer<interactor_output_buffer> {
-  @pragma(preferInlinePragma)
-  Pointer<Uint8> allocate(Pointer<interactor_output_buffer> buffer, int delta) => interactor_dart_output_buffer_allocate(buffer, delta);
+extension MemoryOutputBufferExtensions on Pointer<memory_output_buffer> {
+  @inline
+  Pointer<Uint8> allocate(Pointer<memory_output_buffer> buffer, int delta) => memory_dart_output_buffer_allocate(buffer, delta);
 
-  @pragma(preferInlinePragma)
-  Pointer<Uint8> reserve(Pointer<interactor_output_buffer> buffer, int size) => interactor_dart_output_buffer_reserve(buffer, size);
+  @inline
+  Pointer<Uint8> reserve(Pointer<memory_output_buffer> buffer, int size) => memory_dart_output_buffer_reserve(buffer, size);
 
-  @pragma(preferInlinePragma)
-  Pointer<Uint8> allocateReserve(Pointer<interactor_output_buffer> buffer, int delta, int size) => interactor_dart_output_buffer_allocate_reserve(buffer, delta, size);
+  @inline
+  Pointer<Uint8> allocateReserve(Pointer<memory_output_buffer> buffer, int delta, int size) => memory_dart_output_buffer_allocate_reserve(buffer, delta, size);
 
-  @pragma(preferInlinePragma)
-  Pointer<iovec> get content => interactor_dart_output_buffer_content(this);
+  @inline
+  Pointer<iovec> get content => memory_dart_output_buffer_content(this);
 }

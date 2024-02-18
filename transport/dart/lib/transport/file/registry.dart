@@ -8,16 +8,16 @@ class TransportFileRegistry {
 
   TransportFileRegistry();
 
-  @pragma(preferInlinePragma)
+  @inline
   TransportFileChannel? get(int fd) => _files[fd];
 
-  @pragma(preferInlinePragma)
+  @inline
   void remove(int fd) => _files.remove(fd);
 
-  @pragma(preferInlinePragma)
+  @inline
   void add(int fd, TransportFileChannel file) => _files[fd] = file;
 
-  @pragma(preferInlinePragma)
+  @inline
   Future<void> close({Duration? gracefulTimeout}) => Future.wait(_files.values.toList().map((file) => file.close(gracefulTimeout: gracefulTimeout)));
 
   @visibleForTesting

@@ -1,16 +1,17 @@
 import 'dart:ffi';
 
-import '../interactor/bindings.dart';
-import '../interactor/constants.dart';
+import 'package:core/core.dart';
 
-class InteractorDatas {
-  final Pointer<interactor_dart> _interactor;
+import '../memory/bindings.dart';
 
-  InteractorDatas(this._interactor);
+class MemorySmallData {
+  final Pointer<memory_dart> _memory;
 
-  @pragma(preferInlinePragma)
-  Pointer<Void> allocate(int size) => interactor_dart_data_allocate(_interactor, size);
+  MemorySmallData(this._memory);
 
-  @pragma(preferInlinePragma)
-  void free(Pointer<Void> pointer, int size) => interactor_dart_data_free(_interactor, pointer, size);
+  @inline
+  Pointer<Void> allocate(int size) => memory_dart_small_data_allocate(_memory, size);
+
+  @inline
+  void free(Pointer<Void> pointer, int size) => memory_dart_small_data_free(_memory, pointer, size);
 }

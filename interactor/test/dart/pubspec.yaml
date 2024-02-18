@@ -1,5 +1,5 @@
-name: linux_interactor_test
-version: 1.0.0
+name: interactor_test
+version: 0.0.0
 publish_to: none
 
 environment:
@@ -11,7 +11,9 @@ dev_dependencies:
 dependencies:
   ffi: ^2.1.0
   test: ^1.22.0
-  linux_interactor:
+  core:
+    path: ../../../core/dart/
+  interactor:
     path: ../../dart/
   collection: ^1.18.0
   message_pack_dart: ^2.0.1
@@ -36,11 +38,11 @@ ffigen:
   type-map:
     structs:
       "interactor_message":
-        lib: "linux_interactor"
+        lib: "interactor"
         c-type: "interactor_message"
         dart-type: "interactor_message"
   library-imports:
-    linux_interactor: package:linux_interactor/interactor/bindings.dart
+    linux_interactor: package:interactor/interactor/bindings.dart
   headers:
     entry-points:
       - "../native/test.h"

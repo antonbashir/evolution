@@ -1,7 +1,8 @@
 import 'dart:ffi';
 
-import 'package:linux_interactor/interactor/declaration.dart';
-import 'package:linux_interactor_test/bindings.dart';
+import 'package:interactor/interactor.dart';
+
+import 'bindings.dart';
 
 class TestNativeProducer implements InteractorProducer {
   TestNativeProducer();

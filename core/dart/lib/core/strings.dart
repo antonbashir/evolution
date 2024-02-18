@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import '../interactor/constants.dart';
+import 'constants.dart';
 
 const int _oneByteLimit = 0x7f;
 const int _twoByteLimit = 0x7ff;
@@ -8,7 +8,7 @@ const int _surrogateTagMask = 0xFC00;
 const int _surrogateValueMask = 0x3FF;
 const int _leadSurrogateMin = 0xD800;
 
-@pragma(preferInlinePragma)
+@inline
 int fastEncodeString(String string, Uint8List buffer, int offset) {
   final startOffset = offset;
   for (var stringIndex = 0; stringIndex < string.length; stringIndex++) {

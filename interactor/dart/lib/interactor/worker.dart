@@ -4,26 +4,17 @@ import 'dart:isolate';
 import 'dart:math';
 import 'package:ffi/ffi.dart' as ffi;
 import 'bindings.dart';
-import 'buffers.dart';
 import 'constants.dart';
-import 'data.dart';
 import 'declaration.dart';
 import 'messages.dart';
-import 'payloads.dart';
 import 'registry.dart';
-import 'tuples.dart';
 
 class InteractorWorker {
   final _fromInteractor = ReceivePort();
 
   late final InteractorConsumerRegistry _consumers;
   late final InteractorProducerRegistry _producers;
-  late final InteractorPayloads _payloads;
-  late final InteractorStaticBuffers _staticBuffers;
-  late final InteractorInputOutputBuffers _ioBuffers;
-  late final InteractorDatas _datas;
   late final InteractorMessages _messages;
-  late final InteractorTuples _tuples;
 
   late final Pointer<interactor_dart> _interactor;
   late final int _descriptor;
@@ -38,18 +29,11 @@ class InteractorWorker {
   bool get active => _active;
   int get id => _interactor.ref.id;
   int get descriptor => _descriptor;
-  InteractorPayloads get payloads => _payloads;
-  InteractorStaticBuffers get staticBuffers => _staticBuffers;
-  InteractorInputOutputBuffers get inputOutputBuffers => _ioBuffers;
-  InteractorDatas get datas => _datas;
   InteractorMessages get messages => _messages;
-  InteractorTuples get tuples => _tuples;
-  Pointer<interactor_memory> get memory => _interactor.ref.memory;
 
   InteractorWorker(SendPort toInteractor) {
     _closer = RawReceivePort((_) async {
       await deactivate();
-      _payloads.destroy();
       interactor_dart_destroy(_interactor);
       ffi.calloc.free(_interactor);
       _closer.close();
@@ -65,12 +49,7 @@ class InteractorWorker {
     _descriptor = configuration[2] as int;
     _fromInteractor.close();
     _completions = _interactor.ref.completions;
-    _payloads = InteractorPayloads(_interactor);
-    _staticBuffers = InteractorStaticBuffers(interactor_dart_static_buffers_inner(_interactor), _interactor);
-    _ioBuffers = InteractorInputOutputBuffers(_interactor);
-    _datas = InteractorDatas(_interactor);
     _messages = InteractorMessages(_interactor);
-    _tuples = InteractorTuples(_interactor);
     _consumers = InteractorConsumerRegistry(_interactor);
     _producers = InteractorProducerRegistry(_interactor);
   }
@@ -112,7 +91,7 @@ class InteractorWorker {
     final cqeCount = interactor_dart_peek(_interactor);
     if (cqeCount == 0) return false;
     for (var cqeIndex = 0; cqeIndex < cqeCount; cqeIndex++) {
-      Pointer<interactor_completion_event> cqe = _completions.elementAt(cqeIndex).value.cast();
+      Pointer<interactor_completion_event> cqe = (_completions + cqeIndex).value.cast();
       final data = cqe.ref.user_data;
       final result = cqe.ref.res;
       print("data: ${data}");

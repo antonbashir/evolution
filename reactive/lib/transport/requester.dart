@@ -55,13 +55,13 @@ class ReactiveRequester {
     _output.stream.listen(_send);
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   void request(int count) {
     if (!_accepting) return;
     _connection.writeSingle(ReactiveWriter.writeRequestNFrame(_streamId, count));
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   void schedulePayload(Uint8List bytes, bool complete) {
     if (!_accepting) return;
     _accepting = !complete;
@@ -71,7 +71,7 @@ class ReactiveRequester {
     if (_requested > 0 && !_fragmenting && _sending) _subscription.resume();
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   void scheduleError(String message) {
     if (!_accepting) return;
     _accepting = false;
@@ -82,7 +82,7 @@ class ReactiveRequester {
     if (_requested > 0 && !_fragmenting && _sending) _subscription.resume();
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   void scheduleCancel() {
     if (!_accepting) return;
     _accepting = false;
@@ -93,7 +93,7 @@ class ReactiveRequester {
     if (_requested > 0 && !_fragmenting && _sending) _subscription.resume();
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   void resume(int count) {
     if (!_sending || _fragmenting) return;
     if (_requested == reactiveInfinityRequestsCount) {
@@ -178,7 +178,7 @@ class ReactiveRequester {
     }
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   void _fragmentate() {
     final chunks = min(_channelConfiguration.chunksLimit, _currentFragments.length);
     _currentFragmentNumber += chunks;
@@ -192,7 +192,7 @@ class ReactiveRequester {
     _buffer.clear();
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   void _fragmentateNext() {
     if (_currentFragmentNumber < _currentFragmentsCount) {
       _fragmentate();
@@ -210,7 +210,7 @@ class ReactiveRequester {
     if (_requested == reactiveInfinityRequestsCount || --_requested > 0) _subscription.resume();
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   void _stop() {
     _sending = false;
     _subscription.pause();

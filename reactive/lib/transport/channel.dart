@@ -43,26 +43,26 @@ class ReactiveFunctionalChannel with ReactiveChannel {
   });
 
   @override
-  @pragma(preferInlinePragma)
+  @inline
   FutureOr<void> onError(int code, String error, ReactiveProducer producer) => errorConsumer?.call(code, error, producer);
 
   @override
-  @pragma(preferInlinePragma)
+  @inline
   FutureOr<void> onPayload(dynamic payload, ReactiveProducer producer) => payloadConsumer?.call(payload, producer);
 
   @override
-  @pragma(preferInlinePragma)
+  @inline
   FutureOr<void> onRequest(int count, ReactiveProducer producer) => requestConsumer?.call(count, producer);
 
   @override
-  @pragma(preferInlinePragma)
+  @inline
   FutureOr<void> onSubscribe(ReactiveProducer producer) => subscribeConsumer?.call(producer);
 
   @override
-  @pragma(preferInlinePragma)
+  @inline
   FutureOr<void> onComplete(ReactiveProducer producer) => completeConsumer?.call(producer);
 
   @override
-  @pragma(preferInlinePragma)
+  @inline
   FutureOr<void> onCancel(ReactiveProducer producer) => cancelConsumer?.call(producer);
 }

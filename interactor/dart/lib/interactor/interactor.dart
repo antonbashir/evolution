@@ -2,13 +2,13 @@ import 'dart:async';
 import 'dart:ffi';
 import 'dart:isolate';
 
+import 'package:core/core.dart';
 import 'package:ffi/ffi.dart' as ffi;
 
 import 'bindings.dart';
 import 'configuration.dart';
 import 'constants.dart';
 import 'exception.dart';
-import 'lookup.dart';
 
 class Interactor {
   final _workerClosers = <SendPort>[];
@@ -17,7 +17,11 @@ class Interactor {
 
   Interactor({String? libraryPath, bool load = true}) {
     if (load) {
-      InteractorLibrary.load(libraryPath: libraryPath);
+      if (libraryPath != null) {
+        SystemLibrary.loadByPath(libraryPath);
+        return;
+      }
+      SystemLibrary.loadByName(interactorLibraryName, interactorPackageName);
     }
   }
 

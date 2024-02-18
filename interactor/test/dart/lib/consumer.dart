@@ -1,7 +1,6 @@
 import 'dart:ffi';
 
-import 'package:linux_interactor/interactor/bindings.dart';
-import 'package:linux_interactor/interactor/declaration.dart';
+import 'package:interactor/interactor.dart';
 
 class TestNativeConsumer implements InteractorConsumer {
   void Function(Pointer<interactor_message> message) _checker;

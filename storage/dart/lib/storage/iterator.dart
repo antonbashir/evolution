@@ -15,36 +15,36 @@ class StorageIterator {
 
   const StorageIterator(this._factory, this._iterator, this._producer, this._descriptor);
 
-  @pragma(preferInlinePragma)
+  @inline
   Pointer<tarantool_tuple_t> _completeNextSingle(Pointer<interactor_message> message) {
     final tuple = Pointer<tarantool_tuple_t>.fromAddress(message.outputInt);
     tarantool_iterator_next_free(_factory, message);
     return tuple;
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   Future<Pointer<tarantool_tuple_t>> nextSingle() {
     final request = tarantool_iterator_next_prepare(_factory, _iterator, 1);
     return _producer.iteratorNextSingle(_descriptor, request).then(_completeNextSingle);
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   Pointer<tarantool_tuple_port_t> _completeNextMany(Pointer<interactor_message> message) {
     final tuple = Pointer<tarantool_tuple_port_t>.fromAddress(message.outputInt);
     tarantool_iterator_next_free(_factory, message);
     return tuple;
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   Future<Pointer<tarantool_tuple_port_t>> nextMany({int count = 1}) {
     final request = tarantool_iterator_next_prepare(_factory, _iterator, count);
     return _producer.iteratorNextMany(_descriptor, request).then(_completeNextMany);
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   void _completeDestroy(Pointer<interactor_message> message) => tarantool_iterator_destroy_free(_factory, message);
 
-  @pragma(preferInlinePragma)
+  @inline
   Future<void> destroy() {
     final request = tarantool_iterator_destroy_prepare(_factory, _iterator);
     return _producer.iteratorDestroy(_descriptor, request).then(_completeDestroy);

@@ -13,7 +13,7 @@ class TransportChannel {
 
   const TransportChannel(this._workerPointer, this.fd, this._bindings, this._buffers);
 
-  @pragma(preferInlinePragma)
+  @inline
   void read(
     int bufferId,
     int event, {
@@ -32,7 +32,7 @@ class TransportChannel {
     );
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   void write(
     Uint8List bytes,
     int bufferId,
@@ -53,7 +53,7 @@ class TransportChannel {
     );
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   void receiveMessage(
     int bufferId,
     int socketFamily,
@@ -74,7 +74,7 @@ class TransportChannel {
     );
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   void sendMessage(
     Uint8List bytes,
     int bufferId,
@@ -99,6 +99,6 @@ class TransportChannel {
     );
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   void close() => _bindings.transport_close_descriptor(fd);
 }

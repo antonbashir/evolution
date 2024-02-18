@@ -205,7 +205,7 @@ class TransportServerChannel implements TransportServer {
     TransportChannel? datagramChannel,
   }) : this._datagramChannel = datagramChannel;
 
-  @pragma(preferInlinePragma)
+  @inline
   void accept(void Function(TransportServerConnection connection) onAccept) {
     if (_closing) throw TransportClosedException.forServer();
     _acceptor = onAccept;
@@ -335,7 +335,7 @@ class TransportServerChannel implements TransportServer {
     if (_pending == 0 && _closing && !_closer.isCompleted) _closer.complete();
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   void notifyAccept(int fd) {
     if (_closing) return;
     if (fd > 0) {
@@ -358,10 +358,10 @@ class TransportServerChannel implements TransportServer {
     _bindings.transport_worker_accept(_workerPointer, pointer);
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   bool connectionIsActive(int fd) => _connections[fd]?._closing == false;
 
-  @pragma(preferInlinePragma)
+  @inline
   void _removeConnection(int fd) {
     _connections.remove(fd);
     _registry.removeConnection(fd);

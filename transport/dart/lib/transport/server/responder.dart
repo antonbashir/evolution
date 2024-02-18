@@ -18,10 +18,10 @@ class TransportServerDatagramResponderPool {
     }
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   void release(int bufferId) => _buffers.release(bufferId);
 
-  @pragma(preferInlinePragma)
+  @inline
   TransportServerDatagramResponder getDatagramResponder(
     int bufferId,
     Uint8List bytes,
@@ -52,7 +52,7 @@ class TransportServerDatagramResponder {
 
   TransportServerDatagramResponder(this._bufferId, this._pool);
 
-  @pragma(preferInlinePragma)
+  @inline
   void respondSingle(Uint8List bytes, {int? flags, void Function(Exception error)? onError, void Function()? onDone}) {
     unawaited(
       _server
@@ -68,7 +68,7 @@ class TransportServerDatagramResponder {
     );
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   void respondMany(List<Uint8List> bytes, {int? flags, bool linked = true, void Function(Exception error)? onError, void Function()? onDone}) {
     var doneCounter = 0;
     var errorCounter = 0;
@@ -79,17 +79,17 @@ class TransportServerDatagramResponder {
     }).onError((error, stackTrace) => onError?.call(error as Exception)));
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   void release() => _pool.release(_bufferId);
 
-  @pragma(preferInlinePragma)
+  @inline
   Uint8List takeBytes({bool release = true}) {
     final result = Uint8List.fromList(_bytes);
     if (release) this.release();
     return result;
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   List<int> toBytes({bool release = true}) {
     final result = _bytes.toList();
     if (release) this.release();

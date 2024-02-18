@@ -14,10 +14,10 @@ class TransportServerConnection {
   Stream<TransportPayload> get inbound => _connection.inbound;
   bool get active => _connection.active;
 
-  @pragma(preferInlinePragma)
+  @inline
   Future<void> read() => _connection.read();
 
-  @pragma(preferInlinePragma)
+  @inline
   Stream<TransportPayload> stream() {
     final out = StreamController<TransportPayload>(sync: true);
     out.onListen = () => unawaited(_connection.read().onError((error, stackTrace) => out.addError(error!)));
@@ -32,12 +32,12 @@ class TransportServerConnection {
     return out.stream;
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   void writeSingle(Uint8List bytes, {void Function(Exception error)? onError, void Function()? onDone}) {
     unawaited(_connection.writeSingle(bytes, onError: onError, onDone: onDone).onError((error, stackTrace) => onError?.call(error as Exception)));
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   void writeMany(List<Uint8List> bytes, {bool linked = true, void Function(Exception error)? onError, void Function()? onDone}) {
     var doneCounter = 0;
     var errorCounter = 0;
@@ -48,10 +48,10 @@ class TransportServerConnection {
     }).onError((error, stackTrace) => onError?.call(error as Exception)));
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   Future<void> close({Duration? gracefulTimeout}) => _connection.close(gracefulTimeout: gracefulTimeout);
 
-  @pragma(preferInlinePragma)
+  @inline
   Future<void> closeServer({Duration? gracefulTimeout}) => _connection.closeServer(gracefulTimeout: gracefulTimeout);
 }
 
@@ -63,7 +63,7 @@ class TransportServerDatagramReceiver {
   Stream<TransportServerDatagramResponder> get inbound => _server.inbound;
   bool get active => _server.active;
 
-  @pragma(preferInlinePragma)
+  @inline
   Stream<TransportServerDatagramResponder> stream({int? flags}) {
     final out = StreamController<TransportServerDatagramResponder>(sync: true);
     out.onListen = () => unawaited(_server.receive(flags: flags).onError((error, stackTrace) => out.addError(error!)));
@@ -81,6 +81,6 @@ class TransportServerDatagramReceiver {
     return out.stream;
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   Future<void> closeServer({Duration? gracefulTimeout}) => _server.close(gracefulTimeout: gracefulTimeout);
 }

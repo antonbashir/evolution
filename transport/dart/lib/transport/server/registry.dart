@@ -9,25 +9,25 @@ class TransportServerRegistry {
 
   TransportServerRegistry();
 
-  @pragma(preferInlinePragma)
+  @inline
   TransportServerChannel? getServer(int fd) => _servers[fd];
 
-  @pragma(preferInlinePragma)
+  @inline
   TransportServerConnectionChannel? getConnection(int fd) => _serverConnections[fd];
 
-  @pragma(preferInlinePragma)
+  @inline
   void addConnection(int connectionFd, TransportServerConnectionChannel connection) => _serverConnections[connectionFd] = connection;
 
-  @pragma(preferInlinePragma)
+  @inline
   void removeConnection(int fd) => _serverConnections.remove(fd);
 
-  @pragma(preferInlinePragma)
+  @inline
   void removeServer(int fd) => _servers.remove(fd);
 
-  @pragma(preferInlinePragma)
+  @inline
   void addServer(int fd, TransportServerChannel channel) => _servers[fd] = channel;
 
-  @pragma(preferInlinePragma)
+  @inline
   Future<void> close({Duration? gracefulTimeout}) => Future.wait(_servers.values.toList().map((server) => server.close(gracefulTimeout: gracefulTimeout)));
 
   @visibleForTesting

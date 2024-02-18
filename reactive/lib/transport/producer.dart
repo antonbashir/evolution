@@ -8,21 +8,21 @@ class ReactiveProducer {
 
   const ReactiveProducer(this._requester, this._codec);
 
-  @pragma(preferInlinePragma)
+  @inline
   void payload(dynamic data, {bool complete = false}) => _requester.schedulePayload(_codec.encode(data), complete);
 
-  @pragma(preferInlinePragma)
+  @inline
   void error(String message) => _requester.scheduleError(message);
 
-  @pragma(preferInlinePragma)
+  @inline
   void cancel() => _requester.scheduleCancel();
 
-  @pragma(preferInlinePragma)
+  @inline
   void complete() => _requester.schedulePayload(emptyBytes, true);
 
-  @pragma(preferInlinePragma)
+  @inline
   void request(int count) => _requester.request(count);
 
-  @pragma(preferInlinePragma)
+  @inline
   void unbound() => _requester.request(reactiveInfinityRequestsCount);
 }

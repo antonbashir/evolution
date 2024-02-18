@@ -63,10 +63,10 @@ extern "C"
     struct iovec* memory_dart_output_buffer_content(struct memory_output_buffer* buffer);
 
     struct memory_dart_structure_pool* memory_dart_structure_pool_create(struct memory_dart* interactor, size_t size);
-    void* memory_dart_structure_allocate(struct memory_structure_pool* pool);
-    void memory_dart_structure_free(struct memory_structure_pool* pool, void* pointer);
-    void memory_dart_structure_pool_destroy(struct memory_structure_pool* pool);
-    size_t memory_dart_structure_pool_size(struct memory_structure_pool* pool);
+    void* memory_dart_structure_allocate(struct memory_dart_structure_pool* pool);
+    void memory_dart_structure_free(struct memory_dart_structure_pool* pool, void* pointer);
+    void memory_dart_structure_pool_destroy(struct memory_dart_structure_pool* pool);
+    size_t memory_dart_structure_pool_size(struct memory_dart_structure_pool* pool);
 
     void* memory_dart_small_data_allocate(struct memory_dart* interactor, size_t size);
     void memory_dart_small_data_free(struct memory_dart* interactor, void* pointer, size_t size);

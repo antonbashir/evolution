@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:ffi';
 
+import 'package:core/core.dart';
+
 import 'bindings.dart';
 import 'constants.dart';
 import 'declaration.dart';
@@ -20,7 +22,7 @@ class InteractorProducerExecutor implements InteractorProducerRegistrat {
     return executor;
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   void callback(Pointer<interactor_message> message) => _methods[message.ref.method]?.callback(message);
 }
 
@@ -49,7 +51,7 @@ class InteractorMethodExecutor implements InteractorMethod {
   );
 
   @override
-  @pragma(preferInlinePragma)
+  @inline
   Future<Pointer<interactor_message>> call(int target, Pointer<interactor_message> message) {
     final completer = Completer<Pointer<interactor_message>>();
     final id;
@@ -62,6 +64,6 @@ class InteractorMethodExecutor implements InteractorMethod {
     return completer.future.whenComplete(() => _calls.remove(id));
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   void callback(Pointer<interactor_message> message) => _calls[message.ref.id]?.complete(message);
 }

@@ -4,7 +4,7 @@ import 'package:linux_interactor/linux_interactor.dart';
 
 import 'constants.dart';
 
-@pragma(preferInlinePragma)
+@inline
 bool? tarantoolCallExtractBool((Uint8List, void Function()) buffer) {
   final (tuple, cleaner) = buffer;
   final data = ByteData.view(tuple.buffer, tuple.offsetInBytes);
@@ -15,7 +15,7 @@ bool? tarantoolCallExtractBool((Uint8List, void Function()) buffer) {
   return value;
 }
 
-@pragma(preferInlinePragma)
+@inline
 int? tarantoolCallExtractInt((Uint8List, void Function()) buffer) {
   final (tuple, cleaner) = buffer;
   final data = ByteData.view(tuple.buffer, tuple.offsetInBytes);
@@ -26,7 +26,7 @@ int? tarantoolCallExtractInt((Uint8List, void Function()) buffer) {
   return value;
 }
 
-@pragma(preferInlinePragma)
+@inline
 double? tarantoolCallExtractDouble((Uint8List, void Function()) buffer) {
   final (tuple, cleaner) = buffer;
   final data = ByteData.view(tuple.buffer, tuple.offsetInBytes);
@@ -37,7 +37,7 @@ double? tarantoolCallExtractDouble((Uint8List, void Function()) buffer) {
   return value;
 }
 
-@pragma(preferInlinePragma)
+@inline
 String? tarantoolCallExtractString((Uint8List, void Function()) buffer) {
   final (tuple, cleaner) = buffer;
   final data = ByteData.view(tuple.buffer, tuple.offsetInBytes);
@@ -48,7 +48,7 @@ String? tarantoolCallExtractString((Uint8List, void Function()) buffer) {
   return value;
 }
 
-@pragma(preferInlinePragma)
+@inline
 Uint8List tarantoolCallExtractBinary((Uint8List, void Function()) buffer) {
   final (tuple, cleaner) = buffer;
   final data = ByteData.view(tuple.buffer, tuple.offsetInBytes);
@@ -59,7 +59,7 @@ Uint8List tarantoolCallExtractBinary((Uint8List, void Function()) buffer) {
   return value;
 }
 
-@pragma(preferInlinePragma)
+@inline
 List<T?> tarantoolCallExtractList<T>(
   (Uint8List, void Function()) buffer,
   ({T? value, int offset}) Function(Uint8List buffer, ByteData data, int offset) mapper,
@@ -80,7 +80,7 @@ List<T?> tarantoolCallExtractList<T>(
   return results;
 }
 
-@pragma(preferInlinePragma)
+@inline
 Map<K, V?> tarantoolCallExtractMap<K, V>(
   (Uint8List, void Function()) buffer,
   ({K key, int offset}) Function(Uint8List buffer, ByteData data, int offset) keyMapper,

@@ -9,7 +9,9 @@ dev_dependencies:
 
 dependencies:
   ffi: ^2.1.0
-  test: ^1.22.0
+  core:
+    path:
+      ../../core/dart
 
 ffigen:
   name: "MemoryBindings"
@@ -22,6 +24,7 @@ ffigen:
   headers:
     entry-points:
       - "../native/memory_dart.h"
+      - "../native/tuple_dart.h"
   globals:
     exclude:
       - "(.*)"
@@ -35,6 +38,7 @@ ffigen:
     leaf:
       include:
         - "memory_dart_.*"
+        - "tuple_dart_.*"
     exclude:
       - "_(.*)"
   structs:

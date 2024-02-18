@@ -11,7 +11,7 @@ class StorageSerialization {
 
   StorageSerialization(this._factory);
 
-  @pragma(preferInlinePragma)
+  @inline
   (Pointer<Char>, int) createString(String source) {
     final units = Uint8List(source.length);
     fastEncodeString(source, units, 0);
@@ -24,6 +24,6 @@ class StorageSerialization {
     return (result.cast(), length);
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   void freeString(Pointer<Char> string, int size) => tarantool_free_string(_factory, string, size);
 }

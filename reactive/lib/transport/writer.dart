@@ -7,7 +7,7 @@ import 'payload.dart';
 class ReactiveWriter {
   ReactiveWriter._();
 
-  @pragma(preferInlinePragma)
+  @inline
   static Uint8List writeSetupFrame(
     int keepAliveInterval,
     int keepAliveMaxLifetime,
@@ -40,7 +40,7 @@ class ReactiveWriter {
     return frameBuffer.toUint8Array();
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   static Uint8List writeKeepAliveFrame(bool respond, int lastPosition) {
     final frameBuffer = ReactiveWriteBuffer();
     frameBuffer.writeInt24(0);
@@ -52,7 +52,7 @@ class ReactiveWriter {
     return frameBuffer.toUint8Array();
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   static Uint8List writeRequestNFrame(int streamId, int count) {
     final frameBuffer = ReactiveWriteBuffer();
     frameBuffer.writeInt24(0);
@@ -64,7 +64,7 @@ class ReactiveWriter {
     return frameBuffer.toUint8Array();
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   static Uint8List writeRequestChannelFrame(int streamId, int initialRequestN, ReactivePayload payload) {
     final frameBuffer = ReactiveWriteBuffer();
     frameBuffer.writeInt24(0);
@@ -83,7 +83,7 @@ class ReactiveWriter {
     return frameBuffer.toUint8Array();
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   static Uint8List writePayloadFrame(int streamId, bool completed, bool follow, ReactivePayload? payload) {
     final frameBuffer = ReactiveWriteBuffer();
     frameBuffer.writeInt24(0);
@@ -108,7 +108,7 @@ class ReactiveWriter {
     return frameBuffer.toUint8Array();
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   static Uint8List writeErrorFrame(int streamId, int code, String message) {
     final frameBuffer = ReactiveWriteBuffer();
     frameBuffer.writeInt24(0);
@@ -121,7 +121,7 @@ class ReactiveWriter {
     return frameBuffer.toUint8Array();
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   static Uint8List writeCancelFrame(int streamId) {
     final frameBuffer = ReactiveWriteBuffer();
     frameBuffer.writeInt24(0);
@@ -132,7 +132,7 @@ class ReactiveWriter {
     return frameBuffer.toUint8Array();
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   static Uint8List writeLeaseFrame(int timeToLive, int requests) {
     final frameBuffer = ReactiveWriteBuffer();
     frameBuffer.writeInt24(0);
@@ -145,7 +145,7 @@ class ReactiveWriter {
     return frameBuffer.toUint8Array();
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   static void _refillFrameLength(ReactiveWriteBuffer frameBuffer) {
     final frameLength = frameBuffer.capacity() - reactiveFrameLengthFieldSize;
     frameBuffer.resetWriterIndex();

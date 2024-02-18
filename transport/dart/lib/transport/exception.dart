@@ -64,7 +64,7 @@ class TransportZeroDataException implements Exception {
   String toString() => message;
 }
 
-@pragma(preferInlinePragma)
+@inline
 Exception createTransportException(TransportEvent event, int result, TransportBindings bindings) {
   if (result < 0) {
     if (result == -ECANCELED) {

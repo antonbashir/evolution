@@ -175,7 +175,7 @@ class TransportClientChannel {
     _pending += bytes.length;
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   Future<TransportClientChannel> connect() {
     if (_closing) return Future.error(TransportClosedException.forClient());
     _bindings.transport_worker_connect(_workerPointer, _pointer, _connectTimeout!);
@@ -309,19 +309,19 @@ class TransportClientConnectionPool {
 
   TransportClientConnectionPool(this._clients);
 
-  @pragma(preferInlinePragma)
+  @inline
   TransportClientConnection select() {
     final provider = _clients[_next];
     if (++_next == _clients.length) _next = 0;
     return provider;
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   void forEach(FutureOr<void> Function(TransportClientConnection provider) action) => _clients.forEach(action);
 
-  @pragma(preferInlinePragma)
+  @inline
   int count() => _clients.length;
 
-  @pragma(preferInlinePragma)
+  @inline
   Future<void> close({Duration? gracefulTimeout}) => Future.wait(_clients.toList().map((provider) => provider.close(gracefulTimeout: gracefulTimeout)));
 }

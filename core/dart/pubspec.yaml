@@ -9,7 +9,6 @@ dev_dependencies:
 
 dependencies:
   ffi: ^2.1.0
-  test: ^1.22.0
 
 ffigen:
   name: "CoreBindings"
@@ -37,7 +36,6 @@ ffigen:
         - "system_dart_.*"
     exclude:
       - "_(.*)"
-      - "io_uring(.*)"
   structs:
     exclude:
       - "_(.*)"

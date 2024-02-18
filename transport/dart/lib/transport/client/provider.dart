@@ -15,7 +15,7 @@ class TransportClientConnection {
 
   Future<void> read() => _client.read();
 
-  @pragma(preferInlinePragma)
+  @inline
   Stream<TransportPayload> stream() {
     final out = StreamController<TransportPayload>(sync: true);
     out.onListen = () => unawaited(_client.read().onError((error, stackTrace) => out.addError(error!)));
@@ -30,12 +30,12 @@ class TransportClientConnection {
     return out.stream;
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   void writeSingle(Uint8List bytes, {void Function(Exception error)? onError, void Function()? onDone}) {
     unawaited(_client.writeSingle(bytes, onError: onError, onDone: onDone).onError((error, stackTrace) => onError?.call(error as Exception)));
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   void writeMany(List<Uint8List> bytes, {linked = true, void Function(Exception error)? onError, void Function()? onDone}) {
     var doneCounter = 0;
     var errorCounter = 0;
@@ -46,7 +46,7 @@ class TransportClientConnection {
     }).onError((error, stackTrace) => onError?.call(error as Exception)));
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   Future<void> close({Duration? gracefulTimeout}) => _client.close(gracefulTimeout: gracefulTimeout);
 }
 
@@ -58,10 +58,10 @@ class TransportDatagramClient {
   bool get active => _client.active;
   Stream<TransportPayload> get inbound => _client.inbound;
 
-  @pragma(preferInlinePragma)
+  @inline
   Future<void> receive({int? flags}) => _client.receive(flags: flags);
 
-  @pragma(preferInlinePragma)
+  @inline
   Stream<TransportPayload> stream({int? flags}) {
     final out = StreamController<TransportPayload>(sync: true);
     out.onListen = () => unawaited(_client.receive(flags: flags).onError((error, stackTrace) => out.addError(error!)));
@@ -79,7 +79,7 @@ class TransportDatagramClient {
     return out.stream;
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   void sendSingle(
     Uint8List bytes, {
     int? flags,
@@ -89,7 +89,7 @@ class TransportDatagramClient {
     unawaited(_client.sendSingle(bytes, onError: onError, onDone: onDone, flags: flags).onError((error, stackTrace) => onError?.call(error as Exception)));
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   void sendMany(
     List<Uint8List> bytes, {
     int? flags,
@@ -106,6 +106,6 @@ class TransportDatagramClient {
     }).onError((error, stackTrace) => onError?.call(error as Exception)));
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   Future<void> close({Duration? gracefulTimeout}) => _client.close(gracefulTimeout: gracefulTimeout);
 }

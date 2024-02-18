@@ -137,16 +137,16 @@ class StorageExecutor {
     await interactor.shutdown();
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   Future<void> startBackup() => evaluate(LuaExpressions.startBackup);
 
-  @pragma(preferInlinePragma)
+  @inline
   Future<void> stopBackup() => evaluate(LuaExpressions.stopBackup);
 
-  @pragma(preferInlinePragma)
+  @inline
   Future<void> configure(StorageConfiguration configuration) => evaluate(configuration.format());
 
-  @pragma(preferInlinePragma)
+  @inline
   Future<void> boot(StorageBootConfiguration configuration) {
     final size = configuration.tupleSize;
     final (pointer, buffer, data) = _tuples.prepare(size);
@@ -154,7 +154,7 @@ class StorageExecutor {
     return call(LuaExpressions.boot, input: pointer, size: size);
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   Future<(Uint8List, void Function())> evaluate(String expression, {Pointer<Uint8>? input, int size = 0}) {
     final (expressionString, expressionLength) = _serialization.createString(expression);
     if (input != null) {
@@ -166,7 +166,7 @@ class StorageExecutor {
     return _producer.evaluate(_descriptor, message).then(_parseLuaEvaluate).whenComplete(() => _serialization.freeString(expressionString, expressionLength));
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   Future<(Uint8List, void Function())> call(String function, {Pointer<Uint8>? input, int size = 0}) {
     final (functionString, functionLength) = _serialization.createString(function);
     if (input != null) {
@@ -178,16 +178,16 @@ class StorageExecutor {
     return _producer.call(_descriptor, message).then(_parseLuaCall).whenComplete(() => _serialization.freeString(functionString, functionLength));
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   Future<void> file(File file) => file.readAsString().then(evaluate);
 
-  @pragma(preferInlinePragma)
+  @inline
   Future<void> require(String module) => evaluate(LuaExpressions.require(module));
 
-  @pragma(preferInlinePragma)
+  @inline
   void _freeOutputBuffer(Pointer<interactor_message> freeMessage) => tarantool_free_output_buffer_free(_factory, freeMessage);
 
-  @pragma(preferInlinePragma)
+  @inline
   (Uint8List, void Function()) _parseLuaEvaluate(Pointer<interactor_message> message) {
     final buffer = message.outputPointer;
     final bufferSize = message.outputSize;
@@ -196,7 +196,7 @@ class StorageExecutor {
     return (result, () {});
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   (Uint8List, void Function()) _parseLuaCall(Pointer<interactor_message> message) {
     final buffer = message.outputPointer;
     final bufferSize = message.outputSize;

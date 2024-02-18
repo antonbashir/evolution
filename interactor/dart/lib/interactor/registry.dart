@@ -1,7 +1,8 @@
 import 'dart:ffi';
 
+import 'package:core/core/constants.dart';
+
 import 'bindings.dart';
-import 'constants.dart';
 import 'consumer.dart';
 import 'declaration.dart';
 import 'producer.dart';
@@ -21,7 +22,7 @@ class InteractorConsumerRegistry {
     _consumers.add(InteractorConsumerExecutor(callbacks));
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   void call(Pointer<interactor_message> message) => _consumers[message.ref.owner].call(message);
 }
 
@@ -39,6 +40,6 @@ class InteractorProducerRegistry {
     return provider..initialize(executor);
   }
 
-  @pragma(preferInlinePragma)
+  @inline
   void callback(Pointer<interactor_message> message) => _producers[message.ref.owner].callback(message);
 }

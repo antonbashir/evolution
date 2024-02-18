@@ -1,51 +1,10 @@
 import 'dart:ffi';
 
+import 'package:core/core.dart';
 import 'package:ffi/ffi.dart';
-
-import 'bindings.dart';
-
-const preferInlinePragma = "vm:prefer-inline";
-
-const empty = "";
-const unknown = "unknown";
-const newLine = "\n";
-const slash = "/";
-const dot = ".";
-const star = "*";
-const equalSpaced = " = ";
-const openingBracket = "{";
-const closingBracket = "}";
-const comma = ",";
-const parentDirectorySymbol = '..';
-const currentDirectorySymbol = './';
 
 final interactorLibraryName = bool.fromEnvironment("DEBUG") ? "libinteractor_debug_${Abi.current()}.so" : "libinteractor_release_${Abi.current()}.so";
 const interactorPackageName = "linux_interactor";
-
-const packageConfigJsonFile = "package_config.json";
-
-String loadError(path) => "Unable to load library ${path}";
-
-const unableToFindProjectRoot = "Unable to find project root";
-
-const pubspecYamlFile = 'pubspec.yaml';
-const pubspecYmlFile = 'pubspec.yml';
-
-class InteractorDirectories {
-  const InteractorDirectories._();
-
-  static const native = "/native";
-  static const package = "/package";
-  static const dotDartTool = ".dart_tool";
-}
-
-class InteractorPackageConfigFields {
-  InteractorPackageConfigFields._();
-
-  static const rootUri = 'rootUri';
-  static const name = 'name';
-  static const packages = 'packages';
-}
 
 class InteractorErrors {
   InteractorErrors._();
@@ -56,7 +15,7 @@ class InteractorErrors {
   static workerError(int result) => "[worker] code = $result, message = ${_kernelErrorToString(result)}";
   static workerTrace(int id, int result, int data, int fd) => "worker = $id, result = $result,  bid = ${((data >> 16) & 0xffff)}, fd = $fd";
 
-  static _kernelErrorToString(int error) => interactor_dart_error_to_string(error).cast<Utf8>().toDartString();
+  static _kernelErrorToString(int error) => system_dart_error_to_string(error).cast<Utf8>().toDartString();
 }
 
 const interactorBufferUsed = -1;
