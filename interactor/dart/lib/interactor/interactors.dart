@@ -3,7 +3,7 @@ import 'dart:ffi';
 import 'dart:isolate';
 
 import 'package:core/core.dart';
-import 'package:ffi/ffi.dart' as ffi;
+import 'package:ffi/ffi.dart';
 
 import 'bindings.dart';
 import 'configuration.dart';
@@ -36,9 +36,9 @@ class Interactors {
     final port = RawReceivePort((ports) async {
       SendPort toWorker = ports[0];
       _workerClosers.add(ports[1]);
-      final interactorPointer = ffi.calloc<interactor_dart>(sizeOf<interactor_dart>());
+      final interactorPointer = calloc<interactor_dart>(sizeOf<interactor_dart>());
       if (interactorPointer == nullptr) throw InteractorException(InteractorErrors.workerMemoryError);
-      final result = ffi.using((arena) {
+      final result = using((arena) {
         final nativeConfiguration = arena<interactor_dart_configuration>();
         nativeConfiguration.ref.ring_flags = configuration.ringFlags;
         nativeConfiguration.ref.ring_size = configuration.ringSize;
@@ -57,7 +57,7 @@ class Interactors {
       });
       if (result < 0) {
         interactor_dart_destroy(interactorPointer);
-        ffi.calloc.free(interactorPointer);
+        calloc.free(interactorPointer);
         throw InteractorException(InteractorErrors.workerError(result));
       }
       final workerInput = [interactorPointer.address, _workerDestroyer.sendPort, result];

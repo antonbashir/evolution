@@ -2,7 +2,8 @@ import 'dart:async';
 import 'dart:ffi';
 import 'dart:io';
 
-import 'package:ffi/ffi.dart' as ffi;
+import 'package:ffi/ffi.dart';
+
 import 'bindings.dart';
 import 'configuration.dart';
 import 'constants.dart';
@@ -16,7 +17,7 @@ class Storage {
   final Map<String, SystemLibrary> _loadedModulesByPath = {};
   final SystemLibrary _library;
 
-  late final _box = ffi.calloc<tarantool_box>(sizeOf<tarantool_box>());
+  late final _box = calloc<tarantool_box>(sizeOf<tarantool_box>());
 
   late StorageExecutor _executor;
   late bool _hasStorageLuaModule;
@@ -30,11 +31,11 @@ class Storage {
   Future<void> boot(StorageBootstrapScript script, StorageExecutorConfiguration executorConfiguration, {StorageBootConfiguration? bootConfiguration, activateReloader = false}) async {
     if (initialized()) return;
     _hasStorageLuaModule = script.hasStorageLuaModule;
-    if (!ffi.using((ffi.Arena allocator) => tarantool_initialize(executorConfiguration.native(_library.path, script.write(), allocator), _box))) {
-      throw StorageLauncherException(tarantool_initialization_error().cast<ffi.Utf8>().toDartString());
+    if (!using((Arena allocator) => tarantool_initialize(executorConfiguration.native(_library.path, script.write(), allocator), _box))) {
+      throw StorageLauncherException(tarantool_initialization_error().cast<Utf8>().toDartString());
     }
     if (!initialized()) {
-      throw StorageLauncherException(tarantool_initialization_error().cast<ffi.Utf8>().toDartString());
+      throw StorageLauncherException(tarantool_initialization_error().cast<Utf8>().toDartString());
     }
     _executor = StorageExecutor(_box);
     await _executor.initialize();
@@ -62,10 +63,10 @@ class Storage {
     _reloadListener?.cancel();
     await _executor.stop();
     if (!tarantool_shutdown()) {
-      throw StorageLauncherException(tarantool_shutdown_error().cast<ffi.Utf8>().toDartString());
+      throw StorageLauncherException(tarantool_shutdown_error().cast<Utf8>().toDartString());
     }
     await _executor.destroy();
-    //ffi.calloc.free(_box.cast());
+    //calloc.free(_box.cast());
   }
 
   SystemLibrary loadModuleByPath(String libraryPath) {

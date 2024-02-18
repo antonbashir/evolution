@@ -3,7 +3,7 @@ import 'dart:ffi';
 import 'dart:isolate';
 
 import 'package:collection/collection.dart';
-import 'package:ffi/ffi.dart' as ffi;
+import 'package:ffi/ffi.dart';
 import 'package:interactor/interactor.dart';
 import 'package:interactor_test/consumer.dart';
 import 'package:interactor_test/producer.dart';
@@ -107,7 +107,7 @@ void testThreadingDart() {
 
     await Future.wait(spawnedIsolates);
     final descriptors = (await Future.wait(descriptorPorts.map((port) => port.first))).map((descriptor) => descriptor as int).toList();
-    final Pointer<Int32> descriptorsNative = ffi.calloc(descriptors.length * sizeOf<Int32>());
+    final Pointer<Int32> descriptorsNative = calloc(descriptors.length * sizeOf<Int32>());
     descriptors.forEachIndexed((index, element) => descriptorsNative[index] = element);
     test_threading_prepare_call_dart_bytes(descriptorsNative, descriptors.length);
 
