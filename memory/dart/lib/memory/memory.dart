@@ -17,7 +17,7 @@ class Memory {
   late final MemorySmallData smallDatas;
   late final MemoryStructurePool<Double> doubles;
 
-  Memory({String? libraryPath, bool shared = false, bool load = false}) {
+  Memory({String? libraryPath, bool shared = false}) {
     Core.load();
     if (libraryPath != null) {
       SystemLibrary.loadByPath(libraryPath);

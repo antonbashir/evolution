@@ -100,7 +100,7 @@ class StorageConsumer implements InteractorConsumer {
 }
 
 class StorageExecutor {
-  final interactors = Interactors(load: false);
+  final interactors = Interactors();
 
   final Pointer<tarantool_box> _box;
 

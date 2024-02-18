@@ -16,7 +16,7 @@ class Interactors {
   final _workerPorts = <RawReceivePort>[];
   final _workerDestroyer = ReceivePort();
 
-  Interactors({String? libraryPath, bool load = true}) {
+  Interactors({String? libraryPath}) {
     Core.load();
     if (libraryPath != null) {
       SystemLibrary.loadByPath(libraryPath);

@@ -56,7 +56,7 @@ int interactor_native_initialize_default(struct interactor_native* interactor, u
         .cqe_wait_timeout_millis = 1,
         .preallocation_size = 64 * 1024,
         .slab_size = 64 * 1024,
-        .quota_size = 16 * 1024 * 1024,
+        .quota_size = 1 * 1024 * 1024,
     };
     return interactor_native_initialize(interactor, &configuration, id);
 }
