@@ -11,7 +11,7 @@
 #include "memory_static_buffers.h"
 #include "memory_structure_pool.h"
 
-int memory_dart_initialize(struct memory_dart* memory, struct memory_dart_configuration* configuration, uint8_t id)
+int memory_dart_initialize(struct memory_dart* memory, struct memory_dart_configuration* configuration)
 {
     memory->memory = calloc(1, sizeof(struct memory));
     if (!memory->memory)

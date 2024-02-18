@@ -7,10 +7,6 @@ import 'package:core/core.dart';
 import 'package:ffi/ffi.dart';
 
 import 'bindings.dart';
-import 'buffers.dart';
-import 'constants.dart';
-import 'data.dart';
-import 'payloads.dart';
 
 extension InteractorMessageExtensions on Pointer<interactor_message> {
   @inline
@@ -33,12 +29,6 @@ extension InteractorMessageExtensions on Pointer<interactor_message> {
 
   @inline
   Uint8List get inputBytes => ref.input.cast<Uint8>().asTypedList(ref.input_size);
-
-  @inline
-  List<int> getOutputStaticBuffer(InteractorStaticBuffers buffers) => buffers.read(ref.output.address);
-
-  @inline
-  List<int> getInputStaticBuffer(InteractorStaticBuffers buffers) => buffers.read(ref.input.address);
 
   @inline
   String getInputString({int? length}) => ref.input.cast<Utf8>().toDartString(length: length);

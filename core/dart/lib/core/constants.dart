@@ -1,3 +1,5 @@
+import '../core.dart';
+
 const inline = pragma("vm:prefer-inline");
 
 const empty = "";
@@ -20,6 +22,7 @@ class CoreErrors {
   CoreErrors._();
 
   static String systemLibraryLoadError(path) => "Unable to load library ${path}";
+  static String systemError(code) => "code = $code, message = ${system_dart_error_to_string(-code)}";
   static const nonLinuxError = "You should use Linux";
   static const unableToFindProjectRoot = "Unable to find project root";
 }
@@ -39,3 +42,7 @@ class PackageConfigFields {
   static const name = 'name';
   static const packages = 'packages';
 }
+
+const int intMaxValue = 9223372036854775807;
+const soFileExtension = "so";
+const nativeDirectory = "native";

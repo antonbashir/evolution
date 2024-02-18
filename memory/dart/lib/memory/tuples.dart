@@ -6,11 +6,75 @@ import 'package:core/core.dart';
 
 import 'bindings.dart';
 
+const _decoder = const Utf8Decoder();
+
 const tupleSizeOfNull = 1;
 const tupleSizeOfBool = 1;
 const tupleSizeOfDouble = 9;
 
-const _decoder = const Utf8Decoder();
+@inline
+int tupleSizeOfInt(int number) {
+  if (number >= -0x20) {
+    return 1;
+  }
+  if (number >= -127 && number <= 127) {
+    return 2;
+  }
+  if (number >= -327678 && number <= 0xFFFF) {
+    return 3;
+  }
+  if (number >= -2147483648 && number <= 0xFFFFFFFF) {
+    return 5;
+  }
+  return 9;
+}
+
+@inline
+int tupleSizeOfString(int length) {
+  if (length <= 0x1F) {
+    return 1 + length;
+  }
+  if (length <= 0xFFFF) {
+    return 2 + length;
+  }
+  if (length <= 0xFFFFFFFF) {
+    return 3 + length;
+  }
+  return 5 + length;
+}
+
+@inline
+int tupleSizeOfBinary(int length) {
+  if (length <= 0xFF) {
+    return 2;
+  }
+  if (length <= 0xFFFF) {
+    return 3;
+  }
+  return 5;
+}
+
+@inline
+int tupleSizeOfList(int length) {
+  if (length <= 0xF) {
+    return 1;
+  }
+  if (length <= 0xFFFF) {
+    return 3;
+  }
+  return 5;
+}
+
+@inline
+int tupleSizeOfMap(int length) {
+  if (length <= 0xF) {
+    return 1;
+  }
+  if (length <= 0xFFFF) {
+    return 3;
+  }
+  return 5;
+}
 
 @inline
 int tupleWriteNull(ByteData data, int offset) {
@@ -340,70 +404,6 @@ int tupleWriteMap(ByteData data, int length, int offset) {
       return (length: data.getUint32(++offset), offset: offset + 4);
   }
   throw FormatException("Byte $bytes is invalid map length");
-}
-
-@inline
-int tupleSizeOfInt(int number) {
-  if (number >= -0x20) {
-    return 1;
-  }
-  if (number >= -127 && number <= 127) {
-    return 2;
-  }
-  if (number >= -327678 && number <= 0xFFFF) {
-    return 3;
-  }
-  if (number >= -2147483648 && number <= 0xFFFFFFFF) {
-    return 5;
-  }
-  return 9;
-}
-
-@inline
-int tupleSizeOfString(int length) {
-  if (length <= 0x1F) {
-    return 1 + length;
-  }
-  if (length <= 0xFFFF) {
-    return 2 + length;
-  }
-  if (length <= 0xFFFFFFFF) {
-    return 3 + length;
-  }
-  return 5 + length;
-}
-
-@inline
-int tupleSizeOfBinary(int length) {
-  if (length <= 0xFF) {
-    return 2;
-  }
-  if (length <= 0xFFFF) {
-    return 3;
-  }
-  return 5;
-}
-
-@inline
-int tupleSizeOfList(int length) {
-  if (length <= 0xF) {
-    return 1;
-  }
-  if (length <= 0xFFFF) {
-    return 3;
-  }
-  return 5;
-}
-
-@inline
-int tupleSizeOfMap(int length) {
-  if (length <= 0xF) {
-    return 1;
-  }
-  if (length <= 0xFFFF) {
-    return 3;
-  }
-  return 5;
 }
 
 class MemoryTuples {

@@ -4,7 +4,7 @@ import 'package:core/core.dart';
 
 import '../memory/bindings.dart';
 import 'constants.dart';
-import 'exception.dart';
+import 'exceptions.dart';
 
 class MemoryStructures {
   final Map<int, Pointer<memory_dart_structure_pool>> _pools = {};
@@ -25,7 +25,7 @@ class MemoryStructures {
   @inline
   Pointer<T> allocate<T extends Struct>() {
     final pool = _pools[T.hashCode];
-    if (pool == null) throw MemoryRuntimeException(MemoryErrors.outOfMemory);
+    if (pool == null) throw MemoryException(MemoryErrors.outOfMemory);
     return memory_dart_structure_allocate(pool).cast();
   }
 

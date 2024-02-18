@@ -7,7 +7,7 @@ void main() {
     print(result.stderr);
     throw Exception("dart run ffigen");
   }
-  final file = File("lib/interactor/bindings.dart");
+  final file = File("lib/memory/bindings.dart");
   var content = file.readAsStringSync();
   content = content.replaceAll(
     "// ignore_for_file: type=lint",

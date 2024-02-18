@@ -4,7 +4,7 @@ import 'package:core/core.dart';
 import 'package:ffi/ffi.dart';
 
 final interactorLibraryName = bool.fromEnvironment("DEBUG") ? "libinteractor_debug_${Abi.current()}.so" : "libinteractor_release_${Abi.current()}.so";
-const interactorPackageName = "linux_interactor";
+const interactorPackageName = "interactor";
 
 class InteractorErrors {
   InteractorErrors._();
@@ -17,8 +17,6 @@ class InteractorErrors {
 
   static _kernelErrorToString(int error) => system_dart_error_to_string(error).cast<Utf8>().toDartString();
 }
-
-const interactorBufferUsed = -1;
 
 const interactorDartCallback = 1 << 0;
 const interactorNativeCallback = 1 << 1;
@@ -39,8 +37,3 @@ const ringSetupSqe128 = 1 << 10;
 const ringSetupCqe32 = 1 << 11;
 const ringSetupSingleIssuer = 1 << 12;
 const ringSetupDeferTaskrun = 1 << 13;
-
-const int intMaxValue = 9223372036854775807;
-
-const soFileExtension = "so";
-const nativeDirectory = "native";
