@@ -410,13 +410,13 @@ external ffi.Pointer<ffi.Void> tarantool_tuple_data(
 
 @ffi.Native<
         ffi.Int Function(ffi.Pointer<tarantool_factory>,
-            ffi.Pointer<tarantool_factory_interactor_memory>)>(
+            ffi.Pointer<tarantool_factory_configuration>)>(
     symbol: 'tarantool_factory_initialize',
     assetId: 'tarantool-bindings',
     isLeaf: true)
 external int tarantool_factory_initialize(
   ffi.Pointer<tarantool_factory> factory1,
-  ffi.Pointer<tarantool_factory_interactor_memory> memory,
+  ffi.Pointer<tarantool_factory_configuration> configuration,
 );
 
 @ffi.Native<
@@ -1505,19 +1505,7 @@ final class tarantool_configuration extends ffi.Struct {
   external int cqe_wait_timeout_millis;
 
   @ffi.Size()
-  external int quota_size;
-
-  @ffi.Size()
-  external int preallocation_size;
-
-  @ffi.Size()
   external int slab_size;
-
-  @ffi.Size()
-  external int static_buffers_capacity;
-
-  @ffi.Size()
-  external int static_buffer_size;
 
   @ffi.Size()
   external int ring_size;
@@ -1570,9 +1558,11 @@ final class mempool extends ffi.Opaque {}
 
 final class small_alloc extends ffi.Opaque {}
 
-final class interactor_memory extends ffi.Opaque {}
+final class memory extends ffi.Opaque {}
 
 final class tarantool_factory extends ffi.Struct {
+  external ffi.Pointer<tarantool_factory_memory> memory;
+
   external ffi.Pointer<tarantool_factory_small_alloc> tarantool_datas;
 
   external ffi.Pointer<tarantool_factory_mempool> tarantool_messages;
@@ -1617,6 +1607,17 @@ final class tarantool_factory extends ffi.Struct {
   external ffi.Pointer<tarantool_factory_mempool> tarantool_index_index_ids;
 }
 
+typedef tarantool_factory_memory = memory;
 typedef tarantool_factory_small_alloc = small_alloc;
 typedef tarantool_factory_mempool = mempool;
-typedef tarantool_factory_interactor_memory = interactor_memory;
+
+final class tarantool_factory_configuration extends ffi.Struct {
+  @ffi.Size()
+  external int quota_size;
+
+  @ffi.Size()
+  external int slab_size;
+
+  @ffi.Size()
+  external int preallocation_size;
+}

@@ -7,10 +7,10 @@ void main() {
       "run",
       "ffigen",
       "--compiler-opts",
-      "-I${Directory.current.absolute.parent.parent.path}/interactor/native/include",
-    ]
+      "-I${Directory.current.absolute.parent.path}/interactor/native/include",
+    ],
   );
-  final result = Process.runSync(command.executable, command.args);
+  final result = Process.runSync(command.executable, command.args, workingDirectory: "dart");
   if (result.exitCode != 0) {
     print(result.stdout);
     print(result.stderr);
@@ -18,7 +18,7 @@ void main() {
   }
   print(result.stdout);
   print(result.stderr);
-  final file = File("lib/storage/bindings.dart");
+  final file = File("dart/lib/storage/bindings.dart");
   var content = file.readAsStringSync();
   content = content.replaceAll(
     "// ignore_for_file: type=lint",

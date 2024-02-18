@@ -15,11 +15,7 @@ extern "C"
         const char* library_path;
         const char* binary_path;
         uint64_t cqe_wait_timeout_millis;
-        size_t quota_size;
-        size_t preallocation_size;
         size_t slab_size;
-        size_t static_buffers_capacity;
-        size_t static_buffer_size;
         size_t ring_size;
         uint64_t initialization_timeout_seconds;
         uint64_t shutdown_timeout_seconds;

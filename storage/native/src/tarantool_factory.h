@@ -4,9 +4,9 @@
 #include "interactor_message.h"
 #include "tarantool_tuple.h"
 
-typedef struct mempool tarantool_factory_mempool; 
-typedef struct small_alloc tarantool_factory_small_alloc; 
-typedef struct interactor_memory tarantool_factory_interactor_memory; 
+typedef struct mempool tarantool_factory_mempool;
+typedef struct small_alloc tarantool_factory_small_alloc;
+typedef struct memory tarantool_factory_memory;
 
 #if defined(__cplusplus)
 extern "C"
@@ -14,6 +14,7 @@ extern "C"
 #endif
     struct tarantool_factory
     {
+        tarantool_factory_memory* memory;
         tarantool_factory_small_alloc* tarantool_datas;
         tarantool_factory_mempool* tarantool_messages;
         tarantool_factory_mempool* tarantool_call_requests;
@@ -33,7 +34,14 @@ extern "C"
         tarantool_factory_mempool* tarantool_index_index_ids;
     };
 
-    int tarantool_factory_initialize(struct tarantool_factory* factory, tarantool_factory_interactor_memory* memory);
+    struct tarantool_factory_configuration
+    {
+        size_t quota_size;
+        size_t slab_size;
+        size_t preallocation_size;
+    };
+
+    int tarantool_factory_initialize(struct tarantool_factory* factory, struct tarantool_factory_configuration* configuration);
 
     struct interactor_message* tarantool_space_request_prepare(struct tarantool_factory* factory, uint32_t space_id, const char* tuple, size_t tuple_size);
     void tarantool_space_request_free(struct tarantool_factory* factory, struct interactor_message* message);

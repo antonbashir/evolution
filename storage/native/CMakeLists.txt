@@ -27,6 +27,8 @@ set(STORAGE_INCLUDES
   ${storage_tarantool_SOURCE_DIR}/src/lib/msgpuck
   ${storage_tarantool_SOURCE_DIR}/third_party
   ${storage_tarantool_SOURCE_DIR}/third_party/luajit/src
+  ${CORE_INCLUDE_DIRECTORY}
+  ${MEMORY_INCLUDE_DIRECTORY}
   ${INTERACTOR_INCLUDE_DIRECTORY}
 )
 

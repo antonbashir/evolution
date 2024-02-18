@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "memory.h"
+#include "memory_module.h"
 
 #if defined(__cplusplus)
 extern "C"

@@ -2,7 +2,7 @@
 #define MEMORY_IO_BUFFERS_H
 
 #include <stddef.h>
-#include "memory.h"
+#include "memory_module.h"
 
 #if defined(__cplusplus)
 extern "C"

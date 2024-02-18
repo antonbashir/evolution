@@ -4,9 +4,10 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:core/core.dart';
-import 'package:ffi/ffi.dart' as ffi;
+import 'package:ffi/ffi.dart';
 import 'package:interactor/interactor.dart';
 import 'package:memory/memory.dart';
+import 'package:memory/memory/defaults.dart';
 
 import 'bindings.dart';
 import 'configuration.dart';
@@ -121,8 +122,14 @@ class StorageExecutor {
     _interactor = Interactor(interactors.interactor());
     await _interactor.initialize();
     _descriptor = tarantool_executor_descriptor();
-    _factory = ffi.calloc<tarantool_factory>(sizeOf<tarantool_factory>());
-    tarantool_factory_initialize(_factory, _interactor.memory.pointer);
+    _factory = calloc<tarantool_factory>(sizeOf<tarantool_factory>());
+    using((Arena arena) {
+      final configuration = arena<tarantool_factory_configuration>();
+      configuration.ref.quota_size = MemoryDefaults.memory.quotaSize;
+      configuration.ref.preallocation_size = MemoryDefaults.memory.preallocationSize;
+      configuration.ref.slab_size = MemoryDefaults.memory.slabSize;
+      tarantool_factory_initialize(_factory, configuration);
+    });
     _interactor.consumer(StorageConsumer());
     _producer = _interactor.producer(StorageProducer(_box));
     _tuples = MemoryTuples(_interactor.memory.pointer);
@@ -135,7 +142,7 @@ class StorageExecutor {
 
   Future<void> destroy() async {
     tarantool_factory_destroy(_factory);
-    ffi.calloc.free(_factory.cast());
+    calloc.free(_factory.cast());
     await interactors.shutdown();
   }
 

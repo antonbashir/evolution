@@ -1,13 +1,13 @@
 import 'dart:io';
 
 void main() {
-  final result = Process.runSync("dart", ["run", "ffigen"]);
+  final result = Process.runSync("dart", ["run", "ffigen"], workingDirectory: "dart");
   if (result.exitCode != 0) {
     print(result.stdout);
     print(result.stderr);
     throw Exception("dart run ffigen");
   }
-  final file = File("lib/memory/bindings.dart");
+  final file = File("dart/lib/memory/bindings.dart");
   var content = file.readAsStringSync();
   content = content.replaceAll(
     "// ignore_for_file: type=lint",
