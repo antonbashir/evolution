@@ -1,7 +1,8 @@
 import 'dart:ffi';
 
+import 'package:core/core.dart';
+
 import 'bindings.dart';
-import 'constants.dart';
 
 extension StorageTupleExtensions on Pointer<tarantool_tuple_t> {
   @inline

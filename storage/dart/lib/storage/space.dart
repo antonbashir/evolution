@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:ffi';
 import 'dart:typed_data';
 
-import 'package:linux_interactor/linux_interactor.dart';
+import 'package:core/core.dart';
+import 'package:interactor/interactor.dart';
+import 'package:memory/memory.dart';
 
 import 'bindings.dart';
 import 'constants.dart';
@@ -13,7 +15,7 @@ class StorageSpace {
   final int _id;
   final int _descriptor;
   final StorageProducer _producer;
-  final InteractorTuples _tuples;
+  final MemoryTuples _tuples;
   final Pointer<tarantool_factory> _factory;
 
   StorageSpace(

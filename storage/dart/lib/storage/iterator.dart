@@ -1,10 +1,10 @@
 import 'dart:ffi';
 import 'dart:math';
 
-import 'package:linux_interactor/linux_interactor.dart';
+import 'package:core/core.dart';
+import 'package:interactor/interactor.dart';
 
 import 'bindings.dart';
-import 'constants.dart';
 import 'executor.dart';
 
 class StorageIterator {

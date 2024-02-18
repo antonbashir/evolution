@@ -11,8 +11,7 @@ import 'defaults.dart';
 import 'exceptions.dart';
 
 class Memory {
-  late final Pointer<memory_dart> _pointer;
-
+  late final Pointer<memory_dart> pointer;
   late final MemoryStaticBuffers staticBuffers;
   late final MemoryInputOutputBuffers inputOutputBuffers;
   late final MemoryStructurePools structures;
@@ -30,8 +29,8 @@ class Memory {
       return;
     }
     SystemLibrary.loadByName(shared ? memorySharedLibraryName : memoryLibraryName, memoryPackageName);
-    _pointer = calloc<memory_dart>(sizeOf<memory_dart>());
-    if (_pointer == nullptr) throw MemoryException(MemoryErrors.outOfMemory);
+    pointer = calloc<memory_dart>(sizeOf<memory_dart>());
+    if (pointer == nullptr) throw MemoryException(MemoryErrors.outOfMemory);
     final result = using((arena) {
       final nativeConfiguration = arena<memory_dart_configuration>();
       nativeConfiguration.ref.static_buffer_size = configuration.staticBufferSize;
@@ -39,21 +38,21 @@ class Memory {
       nativeConfiguration.ref.slab_size = configuration.slabSize;
       nativeConfiguration.ref.preallocation_size = configuration.preallocationSize;
       nativeConfiguration.ref.quota_size = configuration.quotaSize;
-      return memory_dart_initialize(_pointer, nativeConfiguration);
+      return memory_dart_initialize(pointer, nativeConfiguration);
     });
     if (result < 0) {
-      memory_dart_destroy(_pointer);
-      calloc.free(_pointer);
+      memory_dart_destroy(pointer);
+      calloc.free(pointer);
       throw MemoryException(CoreErrors.systemError(result));
     }
-    staticBuffers = MemoryStaticBuffers(_pointer);
-    inputOutputBuffers = MemoryInputOutputBuffers(_pointer);
-    structures = MemoryStructurePools(_pointer);
-    smallDatas = MemorySmallData(_pointer);
+    staticBuffers = MemoryStaticBuffers(pointer);
+    inputOutputBuffers = MemoryInputOutputBuffers(pointer);
+    structures = MemoryStructurePools(pointer);
+    smallDatas = MemorySmallData(pointer);
     doubles = structures.register(sizeOf<Double>());
   }
 
   void destroy() {
-    memory_dart_destroy(_pointer);
+    memory_dart_destroy(pointer);
   }
 }

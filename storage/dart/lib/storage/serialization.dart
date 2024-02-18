@@ -1,10 +1,8 @@
 import 'dart:ffi';
-import 'dart:typed_data';
 
-import 'package:linux_interactor/interactor/extensions.dart';
+import 'package:core/core.dart';
 
 import 'bindings.dart';
-import 'constants.dart';
 
 class StorageSerialization {
   final Pointer<tarantool_factory> _factory;
@@ -13,15 +11,11 @@ class StorageSerialization {
 
   @inline
   (Pointer<Char>, int) createString(String source) {
-    final units = Uint8List(source.length);
-    fastEncodeString(source, units, 0);
-    final length = source.length;
-    final Pointer<Uint8> result = tarantool_create_string(_factory, length).cast();
-    final unitsLength = units.length;
-    final Uint8List nativeString = result.asTypedList(unitsLength + 1);
-    nativeString.setAll(0, units);
-    nativeString[unitsLength] = 0;
-    return (result.cast(), length);
+    final Pointer<Uint8> result = tarantool_create_string(_factory, source.length + 1).cast();
+    final units = result.asTypedList(source.length + 1);
+    final length = fastEncodeString(source, units, 0);
+    units[length] = 0;
+    return (result.cast(), source.length);
   }
 
   @inline

@@ -1,7 +1,9 @@
 import 'dart:ffi';
 import 'dart:typed_data';
 
-import 'package:linux_interactor/linux_interactor.dart';
+import 'package:interactor/interactor.dart';
+import 'package:memory/memory.dart';
+
 import 'extensions.dart';
 import 'bindings.dart';
 import 'constants.dart';
@@ -76,7 +78,7 @@ class StorageIndexPart {
 
 class StorageSchema {
   final int _descriptor;
-  final InteractorTuples _tuples;
+  final MemoryTuples _tuples;
   final StorageExecutor _executor;
   final StorageSerialization _serialization;
   final StorageProducer _producer;

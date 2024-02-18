@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:ffi';
 import 'dart:typed_data';
 
-import 'package:linux_interactor/linux_interactor.dart';
+import 'package:core/core.dart';
+import 'package:interactor/interactor.dart';
+import 'package:memory/memory.dart';
 
 import 'bindings.dart';
 import 'constants.dart';
@@ -13,7 +15,7 @@ class StorageIndex {
   final int _spaceId;
   final int _indexId;
   final int _descriptor;
-  final InteractorTuples _tuples;
+  final MemoryTuples _tuples;
   final Pointer<tarantool_factory> _factory;
   final StorageProducer _producer;
 

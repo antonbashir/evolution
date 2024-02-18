@@ -13,12 +13,11 @@ dependencies:
   ffi: ^2.1.0
   msgpack_dart: ^1.0.0
   path: ^1.8.3
-  linux_interactor:
-    git:
-      url: https://github.com/antonbashir/dart-linux-interactor
-      path: dart
-dependency_overrides:
-  linux_interactor:
+  memory:
+    path: ../../memory/dart
+  core:
+    path: ../../core/dart
+  interactor:
     path: ../../interactor/dart
 
 ffigen:

@@ -3,19 +3,18 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:ffi/ffi.dart' as ffi;
-import 'package:linux_interactor/linux_interactor.dart';
 import 'bindings.dart';
 import 'configuration.dart';
 import 'constants.dart';
 import 'exception.dart';
 import 'executor.dart';
-import 'lookup.dart';
 import 'script.dart';
+import 'package:core/core.dart';
 
 class Storage {
-  final Map<String, InteractorNativeModule> _loadedModulesByName = {};
-  final Map<String, InteractorNativeModule> _loadedModulesByPath = {};
-  final StorageLibrary _library;
+  final Map<String, SystemLibrary> _loadedModulesByName = {};
+  final Map<String, SystemLibrary> _loadedModulesByPath = {};
+  final SystemLibrary _library;
 
   late final _box = ffi.calloc<tarantool_box>(sizeOf<tarantool_box>());
 
@@ -24,7 +23,7 @@ class Storage {
 
   StreamSubscription<ProcessSignal>? _reloadListener = null;
 
-  Storage({String? libraryPath}) : _library = StorageLibrary.load(libraryPath: libraryPath);
+  Storage({String? libraryPath}) : _library = libraryPath == null ? SystemLibrary.loadByName(storageLibraryName, storagePackageName) : SystemLibrary.loadByPath(libraryPath);
 
   StorageExecutor get executor => _executor;
 
@@ -69,16 +68,16 @@ class Storage {
     //ffi.calloc.free(_box.cast());
   }
 
-  InteractorNativeModule loadModuleByPath(String libraryPath) {
+  SystemLibrary loadModuleByPath(String libraryPath) {
     if (_loadedModulesByPath.containsKey(libraryPath)) return _loadedModulesByPath[libraryPath]!;
-    final module = InteractorNativeModule.loadByPath(libraryPath);
+    final module = SystemLibrary.loadByPath(libraryPath);
     _loadedModulesByName[libraryPath] = module;
     return module;
   }
 
-  InteractorNativeModule loadModuleByName(String libraryName) {
+  SystemLibrary loadModuleByName(String libraryName) {
     if (_loadedModulesByName.containsKey(libraryName)) return _loadedModulesByName[libraryName]!;
-    final module = InteractorNativeModule.loadByName(libraryName);
+    final module = SystemLibrary.loadByName(libraryName, storagePackageName);
     _loadedModulesByName[libraryName] = module;
     return module;
   }

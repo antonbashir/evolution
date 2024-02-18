@@ -3,15 +3,13 @@ import 'dart:ffi';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:linux_interactor/interactor/bindings.dart';
-import 'package:linux_interactor/interactor/buffers.dart';
-import 'package:linux_interactor/linux_interactor.dart';
+import 'package:memory/memory.dart';
 import 'package:tarantool_storage/storage/bindings.dart';
 import 'package:tarantool_storage/storage/lua.dart';
 import 'package:tarantool_storage/tarantool_storage.dart';
 import 'package:test/test.dart';
 
-class TestData implements InteractorTuple {
+class TestData implements MemoryTuple {
   final int a;
   final String b;
   final bool c;
@@ -51,16 +49,16 @@ final testKey = ["key"];
 final testSingleData = TestData(10, "test", true);
 final testMultipleData = Iterable.generate(10, (index) => [index + 1, "key-${index}", "value"]).toList();
 
-({Pointer<Uint8> tuple, int size, void Function() cleaner}) _writeData(InteractorInputOutputBuffers buffers, TestData tuple) {
+({Pointer<Uint8> tuple, int size, void Function() cleaner}) _writeData(MemoryInputOutputBuffers buffers, TestData tuple) {
   final inputBuffer = buffers.allocateInputBuffer(tuple.tupleSize);
-  final reserved = interactor_dart_input_buffer_reserve(inputBuffer, tuple.tupleSize);
+  final reserved = memory_dart_input_buffer_reserve(inputBuffer, tuple.tupleSize);
   final buffer = reserved.cast<Uint8>().asTypedList(tuple.tupleSize);
   final data = ByteData.view(buffer.buffer, buffer.offsetInBytes);
-  interactor_dart_input_buffer_allocate(inputBuffer, tuple.serialize(buffer, data, 0));
-  return (tuple: interactor_dart_input_buffer_read_position(inputBuffer), size: tuple.tupleSize, cleaner: () => buffers.freeInputBuffer(inputBuffer));
+  memory_dart_input_buffer_allocate(inputBuffer, tuple.serialize(buffer, data, 0));
+  return (tuple: memory_dart_input_buffer_read_position(inputBuffer), size: tuple.tupleSize, cleaner: () => buffers.freeInputBuffer(inputBuffer));
 }
 
-TestData _readData(InteractorTuples tuples, Pointer<tarantool_tuple_t> tuple) {
+TestData _readData(MemoryTuples tuples, Pointer<tarantool_tuple_t> tuple) {
   int size = tarantool_tuple_size(tuple);
   final pointer = tarantool_tuple_data(tuple);
   final buffer = pointer.cast<Uint8>().asTypedList(size);

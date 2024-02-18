@@ -3,7 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
-import 'package:linux_interactor/linux_interactor.dart';
+import 'package:memory/memory.dart';
 import 'bindings.dart';
 import 'constants.dart';
 import 'extensions.dart';
@@ -245,7 +245,7 @@ class StorageExecutorConfiguration {
   }
 }
 
-class StorageBootConfiguration implements InteractorTuple {
+class StorageBootConfiguration implements MemoryTuple {
   final String user;
   final String password;
 

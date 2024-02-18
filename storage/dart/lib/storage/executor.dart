@@ -3,8 +3,10 @@ import 'dart:ffi';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:core/core.dart';
 import 'package:ffi/ffi.dart' as ffi;
-import 'package:linux_interactor/linux_interactor.dart';
+import 'package:interactor/interactor.dart';
+import 'package:memory/memory.dart';
 
 import 'bindings.dart';
 import 'configuration.dart';
@@ -97,14 +99,14 @@ class StorageConsumer implements InteractorConsumer {
 }
 
 class StorageExecutor {
-  final interactor = Interactor(load: false);
+  final interactors = Interactors(load: false);
 
   final Pointer<tarantool_box> _box;
 
   late final StorageSchema _schema;
-  late final InteractorWorker _worker;
+  late final Interactor _interactor;
   late final int _descriptor;
-  late final InteractorTuples _tuples;
+  late final MemoryTuples _tuples;
   late final StorageProducer _producer;
   late final Pointer<tarantool_factory> _factory;
   late final StorageSerialization _serialization;
@@ -113,28 +115,28 @@ class StorageExecutor {
 
   StorageSchema get schema => _schema;
 
-  InteractorTuples get tuples => _tuples;
+  MemoryTuples get tuples => _tuples;
 
   Future<void> initialize() async {
-    _worker = InteractorWorker(interactor.worker(InteractorDefaults.worker()));
-    await _worker.initialize();
+    _interactor = Interactor(interactors.interactor());
+    await _interactor.initialize();
     _descriptor = tarantool_executor_descriptor();
     _factory = ffi.calloc<tarantool_factory>(sizeOf<tarantool_factory>());
-    tarantool_factory_initialize(_factory, _worker.memory);
-    _worker.consumer(StorageConsumer());
-    _producer = _worker.producer(StorageProducer(_box));
-    _tuples = _worker.tuples;
+    tarantool_factory_initialize(_factory, _interactor.memory.pointer);
+    _interactor.consumer(StorageConsumer());
+    _producer = _interactor.producer(StorageProducer(_box));
+    _tuples = MemoryTuples(_interactor.memory.pointer);
     _serialization = StorageSerialization(_factory);
     _schema = StorageSchema(_descriptor, _factory, this, _tuples, _serialization, _producer);
-    _worker.activate();
+    _interactor.activate();
   }
 
-  Future<void> stop() => _worker.deactivate();
+  Future<void> stop() => _interactor.deactivate();
 
   Future<void> destroy() async {
     tarantool_factory_destroy(_factory);
     ffi.calloc.free(_factory.cast());
-    await interactor.shutdown();
+    await interactors.shutdown();
   }
 
   @inline

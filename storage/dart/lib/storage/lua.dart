@@ -1,8 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:linux_interactor/linux_interactor.dart';
-
-import 'constants.dart';
+import 'package:core/core.dart';
+import 'package:memory/memory.dart';
 
 @inline
 bool? tarantoolCallExtractBool((Uint8List, void Function()) buffer) {
