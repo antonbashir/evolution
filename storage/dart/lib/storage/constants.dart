@@ -1,36 +1,16 @@
 import 'dart:ffi';
 
-const preferInlinePragma = "vm:prefer-inline";
+import 'package:core/core.dart';
 
-const empty = "";
-const newLine = "\n";
-const slash = "/";
-const dot = ".";
-const star = "*";
-const equalSpaced = " = ";
-const openingBracket = "{";
-const closingBracket = "}";
-const comma = ",";
-const parentDirectorySymbol = '..';
-const currentDirectorySymbol = './';
+const preferInlinePragma = "vm:prefer-inline";
 
 final storageLibraryName = bool.fromEnvironment("DEBUG") ? "libstorage_debug_${Abi.current()}.so" : "libstorage_release_${Abi.current()}.so";
 const storagePackageName = "storage";
 const storageLuaModule = "storage";
 
-const int32Max = 4294967295;
 const batchInitiaSize = 512;
 const awaitStateDuration = Duration(seconds: 1);
 const awaitTransactionDuration = Duration(milliseconds: 1);
-
-const packageConfigJsonFile = "package_config.json";
-
-String loadError(path) => "Unable to load library ${path}";
-
-const unableToFindProjectRoot = "Unable to find project root";
-
-const pubspecYamlFile = 'pubspec.yaml';
-const pubspecYmlFile = 'pubspec.yml';
 
 const universeObjectType = "universe";
 const nil = "nil";
