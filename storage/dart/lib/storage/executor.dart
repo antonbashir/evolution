@@ -120,7 +120,7 @@ class StorageExecutor {
 
   Future<void> initialize() async {
     _interactor = Interactor(interactors.interactor());
-    await _interactor.initialize(sharedMemory: true);
+    await _interactor.initialize(sharedMemoryLibrary: true);
     _descriptor = tarantool_executor_descriptor();
     _factory = calloc<tarantool_factory>(sizeOf<tarantool_factory>());
     using((Arena arena) {
