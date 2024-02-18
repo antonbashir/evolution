@@ -78,6 +78,6 @@ perf.svg
 dependencies
 *.snap
 *.xlog
-!assets/*.so
+!**/assets/*.so
 *-prefix
 Makefile
