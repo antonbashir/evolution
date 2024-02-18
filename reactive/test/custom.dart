@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:iouring_transport/iouring_transport.dart';
-import 'package:reactive_transport/transport/channel.dart';
-import 'package:reactive_transport/transport/configuration.dart';
-import 'package:reactive_transport/transport/defaults.dart';
-import 'package:reactive_transport/transport/producer.dart';
-import 'package:reactive_transport/transport/transport.dart';
+import 'package:reactive_transport/reactive/channel.dart';
+import 'package:reactive_transport/reactive/configuration.dart';
+import 'package:reactive_transport/reactive/defaults.dart';
+import 'package:reactive_transport/reactive/producer.dart';
+import 'package:reactive_transport/reactive/transport.dart';
 import 'package:test/test.dart';
 
 import 'latch.dart';

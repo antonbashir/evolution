@@ -3,9 +3,9 @@ import 'dart:io';
 
 import 'package:iouring_transport/transport/transport.dart';
 import 'package:iouring_transport/transport/worker.dart';
-import 'package:reactive_transport/transport/configuration.dart';
-import 'package:reactive_transport/transport/defaults.dart';
-import 'package:reactive_transport/transport/transport.dart';
+import 'package:reactive_transport/reactive/configuration.dart';
+import 'package:reactive_transport/reactive/defaults.dart';
+import 'package:reactive_transport/reactive/transport.dart';
 import 'package:test/test.dart';
 
 import 'latch.dart';

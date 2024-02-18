@@ -2,10 +2,10 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:iouring_transport/iouring_transport.dart';
-import 'package:reactive_transport/transport/constants.dart';
-import 'package:reactive_transport/transport/defaults.dart';
-import 'package:reactive_transport/transport/producer.dart';
-import 'package:reactive_transport/transport/transport.dart';
+import 'package:reactive_transport/reactive/constants.dart';
+import 'package:reactive_transport/reactive/defaults.dart';
+import 'package:reactive_transport/reactive/producer.dart';
+import 'package:reactive_transport/reactive/transport.dart';
 import 'package:test/test.dart';
 
 import 'latch.dart';
