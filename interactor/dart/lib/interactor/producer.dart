@@ -55,7 +55,7 @@ class InteractorMethodExecutor implements InteractorMethod {
   Future<Pointer<interactor_message>> call(int target, Pointer<interactor_message> message) {
     final completer = Completer<Pointer<interactor_message>>();
     final id;
-    if ((id = nextId) == null) throw InteractorRuntimeException(InteractorErrors.interactorLimitError);
+    if ((id = nextId) == null) throw InteractorException(InteractorErrors.interactorLimitError);
     message.ref.id = id;
     message.ref.owner = _executorId;
     message.ref.method = _methodId;

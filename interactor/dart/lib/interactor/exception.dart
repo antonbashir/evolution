@@ -1,16 +1,7 @@
-class InteractorInitializationException implements Exception {
+class InteractorException implements Exception {
   final String message;
 
-  InteractorInitializationException(this.message);
-
-  @override
-  String toString() => message;
-}
-
-class InteractorRuntimeException implements Exception {
-  final String message;
-
-  InteractorRuntimeException(this.message);
+  InteractorException(this.message);
 
   @override
   String toString() => message;

@@ -1,7 +1,6 @@
 import 'dart:ffi';
 
 import 'package:core/core.dart';
-import 'package:ffi/ffi.dart';
 
 final interactorLibraryName = bool.fromEnvironment("DEBUG") ? "libinteractor_debug_${Abi.current()}.so" : "libinteractor_release_${Abi.current()}.so";
 const interactorPackageName = "interactor";
@@ -12,10 +11,8 @@ class InteractorErrors {
   static const workerMemoryError = "[worker] out of memory";
   static const interactorMemoryError = "[interactor] out of memory";
   static const interactorLimitError = "[interactor] more than $intMaxValue are in execution";
-  static workerError(int result) => "[worker] code = $result, message = ${_kernelErrorToString(result)}";
+  static workerError(int result) => systemError(-result);
   static workerTrace(int id, int result, int data, int fd) => "worker = $id, result = $result,  bid = ${((data >> 16) & 0xffff)}, fd = $fd";
-
-  static _kernelErrorToString(int error) => system_dart_error_to_string(error).cast<Utf8>().toDartString();
 }
 
 const interactorDartCallback = 1 << 0;

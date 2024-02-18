@@ -8,14 +8,22 @@ import 'exceptions.dart';
 import 'lookup.dart';
 import 'system.dart';
 
+final Map<String, SystemLibrary> _loadedByName = {};
+final Map<String, SystemLibrary> _loadedByPath = {};
+
 class SystemLibrary {
   final DynamicLibrary library;
+  final String name;
   final String path;
   final Pointer<Void> _handle;
 
-  SystemLibrary(this.library, this.path) : _handle = using((Arena arena) => dlopen(path.toNativeUtf8(allocator: arena).cast(), rtldGlobal | rtldLazy));
+  SystemLibrary(this.library, this.name, this.path) : _handle = using((Arena arena) => dlopen(path.toNativeUtf8(allocator: arena).cast(), rtldGlobal | rtldLazy));
 
-  void unload() => dlclose(_handle);
+  void unload() {
+    dlclose(_handle);
+    _loadedByName.remove(name);
+    _loadedByPath.remove(path);
+  }
 
   SystemLibrary reload() {
     unload();
@@ -23,26 +31,36 @@ class SystemLibrary {
   }
 
   factory SystemLibrary.loadByName(String libraryName, String packageName) {
+    if (_loadedByName.containsKey(libraryName)) return _loadedByName[libraryName]!;
     try {
-      return SystemLibrary(
+      final library = SystemLibrary(
         Platform.isLinux ? DynamicLibrary.open(libraryName) : throw CoreException(CoreErrors.nonLinuxError),
+        libraryName,
         Directory.current.path + slash + libraryName,
       );
+      _loadedByName[libraryName] = library;
+      return library;
     } on ArgumentError {
       final dotDartTool = _findDotDartTool();
       if (dotDartTool != null) {
         final packageNativeRoot = Directory(findPackageRoot(dotDartTool, packageName).toFilePath() + SourcesDirectories.assets);
         final libraryFile = File(packageNativeRoot.path + slash + libraryName);
         if (libraryFile.existsSync()) {
-          return SystemLibrary(DynamicLibrary.open(libraryFile.path), libraryFile.path);
+          return SystemLibrary(DynamicLibrary.open(libraryFile.path), libraryName, libraryFile.path);
         }
         throw CoreException(CoreErrors.systemLibraryLoadError(libraryFile.path));
       }
       throw CoreException(CoreErrors.unableToFindProjectRoot);
     }
   }
-  factory SystemLibrary.loadByPath(String libraryPath) =>
-      File(libraryPath).existsSync() ? SystemLibrary(DynamicLibrary.open(libraryPath), libraryPath) : throw CoreException(CoreErrors.systemLibraryLoadError(libraryPath));
+  factory SystemLibrary.loadByPath(String libraryPath) {
+    if (_loadedByPath.containsKey(libraryPath)) return _loadedByPath[libraryPath]!;
+    final library = File(libraryPath).existsSync()
+        ? SystemLibrary(DynamicLibrary.open(libraryPath), libraryPath.substring(libraryPath.lastIndexOf(slash), libraryPath.length), libraryPath)
+        : throw CoreException(CoreErrors.systemLibraryLoadError(libraryPath));
+    _loadedByPath[libraryPath] = library;
+    return library;
+  }
 
   static Uri? _findDotDartTool() {
     Uri root = Platform.script.resolve(currentDirectorySymbol);

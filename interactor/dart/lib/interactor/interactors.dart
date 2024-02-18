@@ -17,6 +17,7 @@ class Interactors {
   final _workerDestroyer = ReceivePort();
 
   Interactors({String? libraryPath, bool load = true}) {
+    Core.load();
     if (libraryPath != null) {
       SystemLibrary.loadByPath(libraryPath);
       return;
@@ -36,7 +37,7 @@ class Interactors {
       SendPort toWorker = ports[0];
       _workerClosers.add(ports[1]);
       final interactorPointer = ffi.calloc<interactor_dart>(sizeOf<interactor_dart>());
-      if (interactorPointer == nullptr) throw InteractorInitializationException(InteractorErrors.workerMemoryError);
+      if (interactorPointer == nullptr) throw InteractorException(InteractorErrors.workerMemoryError);
       final result = ffi.using((arena) {
         final nativeConfiguration = arena<interactor_dart_configuration>();
         nativeConfiguration.ref.ring_flags = configuration.ringFlags;
@@ -57,7 +58,7 @@ class Interactors {
       if (result < 0) {
         interactor_dart_destroy(interactorPointer);
         ffi.calloc.free(interactorPointer);
-        throw InteractorInitializationException(InteractorErrors.workerError(result));
+        throw InteractorException(InteractorErrors.workerError(result));
       }
       final workerInput = [interactorPointer.address, _workerDestroyer.sendPort, result];
       toWorker.send(workerInput);

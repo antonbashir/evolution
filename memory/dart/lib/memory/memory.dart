@@ -4,7 +4,6 @@ import 'package:core/core.dart';
 import 'package:ffi/ffi.dart';
 
 import '../memory.dart';
-import 'bindings.dart';
 import 'configuration.dart';
 import 'constants.dart';
 import 'defaults.dart';
@@ -24,6 +23,7 @@ class Memory {
     bool shared = false,
     bool load = false,
   }) {
+    Core.load();
     if (libraryPath != null) {
       SystemLibrary.loadByPath(libraryPath);
       return;

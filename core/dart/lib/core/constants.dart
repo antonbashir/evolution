@@ -1,6 +1,9 @@
-import '../core.dart';
+import 'dart:ffi';
 
 const inline = pragma("vm:prefer-inline");
+
+final coreLibraryName = bool.fromEnvironment("DEBUG") ? "libcore_debug_${Abi.current()}.so" : "libcore_release_${Abi.current()}.so";
+const corePackageName = "core";
 
 const empty = "";
 const unknown = "unknown";
@@ -22,7 +25,7 @@ class CoreErrors {
   CoreErrors._();
 
   static String systemLibraryLoadError(path) => "Unable to load library ${path}";
-  static String systemError(code) => "code = $code, message = ${system_dart_error_to_string(-code)}";
+  static String systemError(code) => "code = $code, message = ${systemError(-code)}";
   static const nonLinuxError = "You should use Linux";
   static const unableToFindProjectRoot = "Unable to find project root";
 }
