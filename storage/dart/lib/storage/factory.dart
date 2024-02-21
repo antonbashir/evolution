@@ -263,4 +263,19 @@ class StorageFactory {
     _strings.free(request.ref.expression, request.ref.expression_length);
     _evaluateRequests.release(request);
   }
+
+  @inline
+  Pointer<interactor_message> createIndexIterator(int spaceId, int indexId, int type, Pointer<Uint8> key, int keySize) {
+    final request = _indexIteratorRequests.allocate();
+    request.ref.space_id = spaceId;
+    request.ref.index_id = indexId;
+    request.ref.type = type;
+    request.ref.key = key;
+    request.ref.key_size = keySize;
+    request.ref.message.input = request.cast();
+    return Pointer.fromAddress(request.address + _indexIteratorRequestMessageOffset);
+  }
+
+  @inline
+  void releaseIndexIterator(Pointer<tarantool_index_iterator_request> request) => _indexIteratorRequests.release(request);
 }
