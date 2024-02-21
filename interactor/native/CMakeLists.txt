@@ -7,6 +7,7 @@ include_directories(${interactor_liburing_BINARY_DIR}/src/include)
 
 include_directories(${PROJECT_BINARY_DIR})
 include_directories(${PROJECT_SOURCE_DIR})
+include_directories(${CORE_INCLUDE_DIRECTORY})
 include_directories(include)
 
 file(GLOB sources

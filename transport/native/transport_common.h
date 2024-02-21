@@ -6,8 +6,8 @@ extern "C"
 {
 #endif
 
+#include <core_common.h>
 #include <liburing.h>
-#include "common/common.h"
 
     static inline struct io_uring_sqe* transport_provide_sqe(struct io_uring* ring)
     {

@@ -1,5 +1,5 @@
-#ifndef MEMORY_COMMON_H_INCLUDED
-#define MEMORY_COMMON_H_INCLUDED
+#ifndef COMMON_NATIVE_H
+#define COMMON_NATIVE_H
 
 #if defined(__cplusplus)
 extern "C"

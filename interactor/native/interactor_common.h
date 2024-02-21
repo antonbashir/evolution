@@ -7,7 +7,7 @@ extern "C"
 #endif
 
 #include <liburing.h>
-#include "common/common.h"
+#include <core_common.h>
 
   static inline struct io_uring_sqe *interactor_provide_sqe(struct io_uring *ring)
   {
