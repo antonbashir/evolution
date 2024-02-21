@@ -14,7 +14,7 @@ extern "C"
         return strerror(-error);
     }
 
-    static inline void system_dart_close_descriptor(int fd)
+    static inline void system_dart_shutdown_descriptor(int fd)
     {
         shutdown(fd, SHUT_RDWR);
         close(fd);

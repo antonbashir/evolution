@@ -45,7 +45,7 @@ class MemoryModule {
     if (result < 0) {
       memory_dart_destroy(pointer);
       calloc.free(pointer);
-      throw MemoryException(CoreErrors.systemError(result));
+      throw MemoryException(systemError(result));
     }
     staticBuffers = MemoryStaticBuffers(pointer);
     inputOutputBuffers = MemoryInputOutputBuffers(pointer);

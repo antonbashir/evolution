@@ -25,7 +25,6 @@ class CoreErrors {
   CoreErrors._();
 
   static String systemLibraryLoadError(path) => "Unable to load library ${path}";
-  static String systemError(code) => "code = $code, message = ${systemError(-code)}";
   static const nonLinuxError = "You should use Linux";
   static const unableToFindProjectRoot = "Unable to find project root";
 }

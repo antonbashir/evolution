@@ -6,7 +6,7 @@ extern "C"
 {
 #endif
     const char* system_dart_error_to_string(int error);
-    void system_dart_close_descriptor(int fd);
+    void system_dart_shutdown_descriptor(int fd);
 #if defined(__cplusplus)
 }
 #endif

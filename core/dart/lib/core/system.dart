@@ -13,5 +13,5 @@ external int dlclose(Pointer<Void> handle);
 @Native<Pointer<Void> Function(Pointer<Char>, Int)>()
 external Pointer<Void> dlopen(Pointer<Char> file, int mode);
 
-String systemError(int code) => system_dart_error_to_string(code).cast<Utf8>().toDartString();
-void systemShutdownDescriptor(int code, int descriptor) => system_dart_close_descriptor(descriptor);
+String systemError(code) => "code = $code, message = ${system_dart_error_to_string(-code).cast<Utf8>().toDartString()}";
+void systemShutdownDescriptor(int code, int descriptor) => system_dart_shutdown_descriptor(descriptor);
