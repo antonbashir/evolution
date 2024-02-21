@@ -17,6 +17,9 @@ extension InteractorMessageExtensions on Pointer<interactor_message> {
   int get inputSize => ref.input_size;
 
   @inline
+  void set inputSize(int size) => ref.input_size = size;
+
+  @inline
   bool get inputBool => ref.input.address == 1;
 
   @inline

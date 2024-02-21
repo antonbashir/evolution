@@ -19,35 +19,40 @@ class StorageIterator {
   @inline
   Pointer<tarantool_tuple_t> _completeNextSingle(Pointer<interactor_message> message) {
     final tuple = Pointer<tarantool_tuple_t>.fromAddress(message.outputInt);
-    tarantool_iterator_next_free(_factory, message);
+    _factory.releaseMessage(message);
     return tuple;
   }
 
   @inline
   Future<Pointer<tarantool_tuple_t>> nextSingle() {
-    final request = tarantool_iterator_next_prepare(_factory, _iterator, 1);
+    final request = _factory.createMessage();
+    request.inputInt = _iterator;
+    request.inputSize = 1;
     return _producer.iteratorNextSingle(_descriptor, request).then(_completeNextSingle);
   }
 
   @inline
   Pointer<tarantool_tuple_port_t> _completeNextMany(Pointer<interactor_message> message) {
     final tuple = Pointer<tarantool_tuple_port_t>.fromAddress(message.outputInt);
-    tarantool_iterator_next_free(_factory, message);
+    _factory.releaseMessage(message);
     return tuple;
   }
 
   @inline
   Future<Pointer<tarantool_tuple_port_t>> nextMany({int count = 1}) {
-    final request = tarantool_iterator_next_prepare(_factory, _iterator, count);
+    final request = _factory.createMessage();
+    request.inputInt = _iterator;
+    request.inputSize = count;
     return _producer.iteratorNextMany(_descriptor, request).then(_completeNextMany);
   }
 
   @inline
-  void _completeDestroy(Pointer<interactor_message> message) => tarantool_iterator_destroy_free(_factory, message);
+  void _completeDestroy(Pointer<interactor_message> message) => _factory.releaseMessage(message);
 
   @inline
   Future<void> destroy() {
-    final request = tarantool_iterator_destroy_prepare(_factory, _iterator);
+    final request = _factory.createMessage();
+    request.inputInt = _iterator;
     return _producer.iteratorDestroy(_descriptor, request).then(_completeDestroy);
   }
 

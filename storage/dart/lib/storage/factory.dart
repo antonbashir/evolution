@@ -77,11 +77,7 @@ class StorageFactory {
   }
 
   @inline
-  Pointer<interactor_message> createMessage(Pointer<Void> input) {
-    final message = _messages.allocate();
-    message.ref.input = input;
-    return message;
-  }
+  Pointer<interactor_message> createMessage() => _messages.allocate();
 
   @inline
   void releaseMessage(Pointer<interactor_message> message) => _messages.release(message);
@@ -114,7 +110,7 @@ class StorageFactory {
   void releaseSpaceCount(Pointer<tarantool_space_count_request> request) => _spaceCountRequests.release(request);
 
   @inline
-  Pointer<interactor_message> createSpaceSelect(int spaceId, int iteratorType, Pointer<Uint8> key, int keySize, int offset, int limit) {
+  Pointer<interactor_message> createSpaceSelect(int spaceId, Pointer<Uint8> key, int keySize, int offset, int limit, int iteratorType) {
     final request = _spaceSelectRequests.allocate();
     request.ref.space_id = spaceId;
     request.ref.key = key;
