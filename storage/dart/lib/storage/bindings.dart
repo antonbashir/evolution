@@ -420,20 +420,13 @@ external int tarantool_factory_initialize(
 );
 
 @ffi.Native<
-        ffi.Pointer<interactor.interactor_message> Function(
-            ffi.Pointer<tarantool_factory>,
-            ffi.Uint32,
-            ffi.Pointer<ffi.Char>,
-            ffi.Size)>(
+        ffi.Pointer<tarantool_space_request> Function(
+            ffi.Pointer<tarantool_factory>)>(
     symbol: 'tarantool_space_request_prepare',
     assetId: 'tarantool-bindings',
     isLeaf: true)
-external ffi.Pointer<interactor.interactor_message>
-    tarantool_space_request_prepare(
+external ffi.Pointer<tarantool_space_request> tarantool_space_request_prepare(
   ffi.Pointer<tarantool_factory> factory1,
-  int space_id,
-  ffi.Pointer<ffi.Char> tuple,
-  int tuple_size,
 );
 
 @ffi.Native<
@@ -1267,8 +1260,6 @@ final class tarantool_space_request extends ffi.Struct {
   external int space_id;
 
   external interactor.interactor_message message;
-
-  external ffi.Pointer<interactor.interactor_message> message_pointer;
 }
 
 final class tarantool_space_count_request extends ffi.Struct {
@@ -1284,8 +1275,6 @@ final class tarantool_space_count_request extends ffi.Struct {
   external int iterator_type;
 
   external interactor.interactor_message message;
-
-  external ffi.Pointer<interactor.interactor_message> message_pointer;
 }
 
 final class tarantool_space_select_request extends ffi.Struct {
@@ -1307,8 +1296,6 @@ final class tarantool_space_select_request extends ffi.Struct {
   external int iterator_type;
 
   external interactor.interactor_message message;
-
-  external ffi.Pointer<interactor.interactor_message> message_pointer;
 }
 
 final class tarantool_space_update_request extends ffi.Struct {
@@ -1326,8 +1313,6 @@ final class tarantool_space_update_request extends ffi.Struct {
   external int space_id;
 
   external interactor.interactor_message message;
-
-  external ffi.Pointer<interactor.interactor_message> message_pointer;
 }
 
 final class tarantool_space_upsert_request extends ffi.Struct {
@@ -1345,8 +1330,6 @@ final class tarantool_space_upsert_request extends ffi.Struct {
   external int space_id;
 
   external interactor.interactor_message message;
-
-  external ffi.Pointer<interactor.interactor_message> message_pointer;
 }
 
 final class tarantool_space_iterator_request extends ffi.Struct {
@@ -1362,8 +1345,6 @@ final class tarantool_space_iterator_request extends ffi.Struct {
   external int type;
 
   external interactor.interactor_message message;
-
-  external ffi.Pointer<interactor.interactor_message> message_pointer;
 }
 
 final class tarantool_index_request extends ffi.Struct {
@@ -1379,8 +1360,6 @@ final class tarantool_index_request extends ffi.Struct {
   external int index_id;
 
   external interactor.interactor_message message;
-
-  external ffi.Pointer<interactor.interactor_message> message_pointer;
 }
 
 final class tarantool_index_count_request extends ffi.Struct {
@@ -1399,8 +1378,6 @@ final class tarantool_index_count_request extends ffi.Struct {
   external int iterator_type;
 
   external interactor.interactor_message message;
-
-  external ffi.Pointer<interactor.interactor_message> message_pointer;
 }
 
 final class tarantool_index_id_request extends ffi.Struct {
@@ -1413,8 +1390,6 @@ final class tarantool_index_id_request extends ffi.Struct {
   external int space_id;
 
   external interactor.interactor_message message;
-
-  external ffi.Pointer<interactor.interactor_message> message_pointer;
 }
 
 final class tarantool_index_update_request extends ffi.Struct {
@@ -1435,8 +1410,6 @@ final class tarantool_index_update_request extends ffi.Struct {
   external int index_id;
 
   external interactor.interactor_message message;
-
-  external ffi.Pointer<interactor.interactor_message> message_pointer;
 }
 
 final class tarantool_call_request extends ffi.Struct {
@@ -1451,8 +1424,6 @@ final class tarantool_call_request extends ffi.Struct {
   external int function_length;
 
   external interactor.interactor_message message;
-
-  external ffi.Pointer<interactor.interactor_message> message_pointer;
 }
 
 final class tarantool_evaluate_request extends ffi.Struct {
@@ -1467,8 +1438,6 @@ final class tarantool_evaluate_request extends ffi.Struct {
   external int expression_length;
 
   external interactor.interactor_message message;
-
-  external ffi.Pointer<interactor.interactor_message> message_pointer;
 }
 
 final class tarantool_index_iterator_request extends ffi.Struct {
@@ -1487,8 +1456,6 @@ final class tarantool_index_iterator_request extends ffi.Struct {
   external int type;
 
   external interactor.interactor_message message;
-
-  external ffi.Pointer<interactor.interactor_message> message_pointer;
 }
 
 final class tarantool_index_select_request extends ffi.Struct {
@@ -1513,8 +1480,6 @@ final class tarantool_index_select_request extends ffi.Struct {
   external int iterator_type;
 
   external interactor.interactor_message message;
-
-  external ffi.Pointer<interactor.interactor_message> message_pointer;
 }
 
 final class tarantool_index_id extends ffi.Struct {
