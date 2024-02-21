@@ -39,15 +39,17 @@ class StorageSpace {
   @inline
   int _completeCountBy(Pointer<interactor_message> message) {
     final count = message.outputInt;
-    tarantool_space_count_request_free(_factory, message);
+    _factory.releaseSpaceCount(message.getInputObject());
     return count;
   }
 
   @inline
-  Future<int> countBy(Pointer<Uint8> key, int keySize, {StorageIteratorType iteratorType = StorageIteratorType.eq}) {
-    final request = tarantool_space_count_request_prepare(_factory, _id, iteratorType.index, key.cast(), keySize);
-    return _producer.spaceCount(_descriptor, request).then(_completeCountBy);
-  }
+  Future<int> countBy(
+    Pointer<Uint8> key,
+    int keySize, {
+    StorageIteratorType iteratorType = StorageIteratorType.eq,
+  }) =>
+      _producer.spaceCount(_descriptor, _factory.createSpaceCount(_id, iteratorType.index, key, keySize)).then(_completeCountBy);
 
   @inline
   Future<bool> isEmpty() => length().then((value) => value == 0);
