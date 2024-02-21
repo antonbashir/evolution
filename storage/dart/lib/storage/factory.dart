@@ -311,4 +311,18 @@ class StorageFactory {
 
   @inline
   void releaseIndexSelect(Pointer<tarantool_index_select_request> request) => _indexSelectRequests.release(request);
+
+  Pointer<interactor_message> createString(String string) {
+    final (nativeString, nativeStringLength) = _strings.allocate(string);
+    final message = _messages.allocate();
+    message.ref.input = nativeString.cast();
+    message.ref.input_size = nativeStringLength;
+    return message;
+  }
+
+  @inline
+  void releaseString(Pointer<interactor_message> message) {
+    _strings.free(message.getInputObject(), message.inputSize);
+    _messages.release(message);
+  }
 }

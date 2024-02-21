@@ -97,15 +97,11 @@ class StorageSchema {
 
   Future<StorageSpace> spaceByName(String space) => spaceId(space).then((id) => StorageSpace(id, _descriptor, _producer, _factory, _tuples));
 
-  Future<int> spaceId(String space) {
-    final (spaceString, spaceStringLength) = _strings.createString(space);
-    final message = tarantool_space_id_by_name_prepare(_factory, spaceString, spaceStringLength);
-    return _producer.spaceIdByName(_descriptor, message).then(_parseSpaceId);
-  }
+  Future<int> spaceId(String space) => _producer.spaceIdByName(_descriptor, _factory.createString(space)).then(_completeSpaceId);
 
-  int _parseSpaceId(Pointer<interactor_message> message) {
+  int _completeSpaceId(Pointer<interactor_message> message) {
     final id = message.outputInt;
-    tarantool_space_id_by_name_free(_factory, message);
+    _factory.releaseString(message);
     return id;
   }
 
@@ -124,10 +120,12 @@ class StorageSchema {
         ),
       );
 
-  Future<int> indexId(int spaceId, String index) {
-    final (indexString, indexStringLength) = _strings.createString(index);
-    final message = tarantool_index_id_request_prepare(_factory, spaceId, indexString, indexStringLength);
-    return _producer.indexIdByName(_descriptor, message).then(_parseSpaceId);
+  Future<int> indexId(int spaceId, String index) => _producer.indexIdByName(_descriptor, _factory.createIndexIdByName(spaceId, index)).then(_completeIndexId);
+
+  int _completeIndexId(Pointer<interactor_message> message) {
+    final id = message.outputInt;
+    _factory.releaseIndexIdByName(message.getInputObject());
+    return id;
   }
 
   Future<bool> indexExists(int spaceId, String indexName) => indexId(spaceId, indexName).then((id) => id != tarantoolIdNil);
