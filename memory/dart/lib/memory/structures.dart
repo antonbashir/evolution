@@ -2,8 +2,11 @@ import 'dart:ffi';
 
 import 'package:core/core.dart';
 
+import '../memory.dart';
 import '../memory/bindings.dart';
+import 'configuration.dart';
 import 'constants.dart';
+import 'defaults.dart';
 import 'exceptions.dart';
 
 class MemoryStructurePools {
@@ -47,6 +50,15 @@ class MemoryStructurePool<T extends NativeType> {
   final Pointer<memory_dart_structure_pool> _pool;
 
   MemoryStructurePool(this._pool);
+
+  MemoryObjectPool<Pointer<T>> asObjectPool({
+    MemoryObjectPoolConfiguration configuration = MemoryDefaults.objectPool,
+  }) =>
+      MemoryObjectPool(
+        allocate,
+        free,
+        configuration: configuration,
+      );
 
   @inline
   int size() => memory_dart_structure_pool_size(_pool);

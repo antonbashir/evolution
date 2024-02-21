@@ -67,7 +67,7 @@ void tarantool_evaluate(struct interactor_message* message)
     struct port out_port, in_port;
     struct obuf out_buffer;
     obuf_create(&out_buffer, cord_slab_cache(), 1);
-    port_msgpack_create(&in_port, request->input, request->input_size);
+    port_msgpack_create(&in_port, (const char*)request->input, request->input_size);
     box_lua_eval(request->expression, request->expression_length, &in_port, &out_port);
     port_destroy(&in_port);
     size_t return_count = ((struct port_lua*)&out_port)->size;
@@ -92,7 +92,7 @@ void tarantool_call(struct interactor_message* message)
     struct port out_port, in_port;
     struct obuf out_buffer;
     obuf_create(&out_buffer, cord_slab_cache(), 1);
-    port_msgpack_create(&in_port, request->input, request->input_size);
+    port_msgpack_create(&in_port, (const char*)request->input, request->input_size);
     box_lua_call(request->function, request->function_length, &in_port, &out_port);
     port_destroy(&in_port);
     size_t return_count = ((struct port_lua*)&out_port)->size;
@@ -117,8 +117,8 @@ void tarantool_space_iterator(struct interactor_message* message)
     message->output = (void*)box_index_iterator(request->space_id,
                                                 TARANTOOL_PRIMARY_INDEX_ID,
                                                 request->type,
-                                                request->key,
-                                                request->key + request->key_size);
+                                                (const char*)request->key,
+                                                (const char*)(request->key + request->key_size));
 }
 
 void tarantool_space_count(struct interactor_message* message)
@@ -127,8 +127,8 @@ void tarantool_space_count(struct interactor_message* message)
     message->output = (void*)box_index_count(request->space_id,
                                              TARANTOOL_PRIMARY_INDEX_ID,
                                              request->iterator_type,
-                                             request->key,
-                                             request->key + request->key_size);
+                                             (const char*)request->key,
+                                             (const char*)(request->key + request->key_size));
 }
 
 void tarantool_space_length(struct interactor_message* message)
@@ -141,8 +141,8 @@ void tarantool_space_put_single(struct interactor_message* message)
     struct tarantool_space_request* request = (struct tarantool_space_request*)message->input;
     box_tuple_t* result;
     if (unlikely(box_replace(request->space_id,
-                             request->tuple,
-                             request->tuple + request->tuple_size,
+                             (const char*)request->tuple,
+                             (const char*)(request->tuple + request->tuple_size),
                              &result) < 0))
     {
         return;
@@ -156,8 +156,8 @@ void tarantool_space_insert_single(struct interactor_message* message)
     struct tarantool_space_request* request = (struct tarantool_space_request*)message->input;
     box_tuple_t* result;
     if (unlikely(box_insert(request->space_id,
-                            request->tuple,
-                            request->tuple + request->tuple_size,
+                            (const char*)request->tuple,
+                            (const char*)(request->tuple + request->tuple_size),
                             &result) < 0))
     {
         diag_log();
@@ -173,8 +173,8 @@ void tarantool_space_delete_single(struct interactor_message* message)
     box_tuple_t* result;
     if (unlikely(box_delete(request->space_id,
                             TARANTOOL_PRIMARY_INDEX_ID,
-                            request->tuple,
-                            request->tuple + request->tuple_size,
+                            (const char*)request->tuple,
+                            (const char*)(request->tuple + request->tuple_size),
                             &result) < 0))
     {
         return;
@@ -189,10 +189,10 @@ void tarantool_space_update_single(struct interactor_message* message)
     box_tuple_t* result;
     if (unlikely(box_update(request->space_id,
                             TARANTOOL_PRIMARY_INDEX_ID,
-                            request->key,
-                            request->key + request->key_size,
-                            request->operations,
-                            request->operations + request->operations_size,
+                            (const char*)request->key,
+                            (const char*)(request->key + request->key_size),
+                            (const char*)request->operations,
+                            (const char*)(request->operations + request->operations_size),
                             TARANTOOL_INDEX_BASE_C,
                             &result) < 0))
     {
@@ -207,7 +207,7 @@ void tarantool_space_put_many(struct interactor_message* message)
     struct tarantool_space_request* request = (struct tarantool_space_request*)message->input;
     struct port* port = mempool_alloc(&tarantool_tuple_ports);
     port_c_create(port);
-    const char* batch = request->tuple;
+    const char* batch = (const char*)request->tuple;
     uint32_t count = mp_decode_array(&batch);
     const char* tuple_next = batch;
     const char* tuple_data = tuple_next;
@@ -250,7 +250,7 @@ void tarantool_space_insert_many(struct interactor_message* message)
     struct tarantool_space_request* request = (struct tarantool_space_request*)message->input;
     struct port* port = mempool_alloc(&tarantool_tuple_ports);
     port_c_create(port);
-    const char* batch = request->tuple;
+    const char* batch = (const char*)request->tuple;
     uint32_t count = mp_decode_array(&batch);
     const char* tuple_next = batch;
     const char* tuple_data = tuple_next;
@@ -294,13 +294,13 @@ void tarantool_space_update_many(struct interactor_message* message)
     struct port* port = mempool_alloc(&tarantool_tuple_ports);
     port_c_create(port);
 
-    const char* key_batch = request->key;
+    const char* key_batch = (const char*)request->key;
     uint32_t count = mp_decode_array(&key_batch);
     const char* key_next = key_batch;
     const char* key_data = key_next;
     const char* key_next_size = key_next;
 
-    const char* operation_batch = request->operations;
+    const char* operation_batch = (const char*)request->operations;
     uint32_t operations_count = mp_decode_array(&operation_batch);
     const char* operation_next = operation_batch;
     const char* operation_data = operation_next;
@@ -352,7 +352,7 @@ void tarantool_space_delete_many(struct interactor_message* message)
     struct tarantool_space_request* request = (struct tarantool_space_request*)message->input;
     struct port* port = mempool_alloc(&tarantool_tuple_ports);
     port_c_create(port);
-    const char* batch = request->tuple;
+    const char* batch = (const char*)request->tuple;
     uint32_t count = mp_decode_array(&batch);
     const char* tuple_next = batch;
     const char* tuple_data = tuple_next;
@@ -397,10 +397,10 @@ void tarantool_space_upsert(struct interactor_message* message)
     box_tuple_t* result;
     if (unlikely(box_upsert(request->space_id,
                             TARANTOOL_PRIMARY_INDEX_ID,
-                            request->tuple,
-                            request->tuple + request->tuple_size,
-                            request->operations,
-                            request->operations + request->operations_size,
+                            (const char*)request->tuple,
+                            (const char*)(request->tuple + request->tuple_size),
+                            (const char*)request->operations,
+                            (const char*)(request->operations + request->operations_size),
                             TARANTOOL_INDEX_BASE_C,
                             &result) < 0))
     {
@@ -416,8 +416,8 @@ void tarantool_space_get(struct interactor_message* message)
     box_tuple_t* result;
     if (unlikely(box_index_get(request->space_id,
                                TARANTOOL_PRIMARY_INDEX_ID,
-                               request->tuple,
-                               request->tuple + request->tuple_size,
+                               (const char*)request->tuple,
+                               (const char*)(request->tuple + request->tuple_size),
                                &result) < 0))
     {
         return;
@@ -432,8 +432,8 @@ void tarantool_space_min(struct interactor_message* message)
     box_tuple_t* result;
     if (unlikely(box_index_min(request->space_id,
                                TARANTOOL_PRIMARY_INDEX_ID,
-                               request->tuple,
-                               request->tuple + request->tuple_size,
+                               (const char*)request->tuple,
+                               (const char*)(request->tuple + request->tuple_size),
                                &result) < 0))
     {
         return;
@@ -448,8 +448,8 @@ void tarantool_space_max(struct interactor_message* message)
     box_tuple_t* result;
     if (unlikely(box_index_max(request->space_id,
                                TARANTOOL_PRIMARY_INDEX_ID,
-                               request->tuple,
-                               request->tuple + request->tuple_size,
+                               (const char*)request->tuple,
+                               (const char*)(request->tuple + request->tuple_size),
                                &result) < 0))
     {
         return;
@@ -467,8 +467,8 @@ void tarantool_space_select(struct interactor_message* message)
                             request->iterator_type,
                             request->offset,
                             request->limit,
-                            request->key,
-                            request->key + request->key_size,
+                            (const char*)request->key,
+                            (const char*)(request->key + request->key_size),
                             NULL, NULL, false,
                             port) < 0))
     {
@@ -494,7 +494,7 @@ void tarantool_index_iterator(struct interactor_message* message)
     message->output = (void*)box_index_iterator(request->space_id,
                                                 request->index_id,
                                                 request->type,
-                                                request->key, request->key + request->key_size);
+                                                (const char*)request->key, (const char*)(request->key + request->key_size));
 }
 
 void tarantool_index_count(struct interactor_message* message)
@@ -503,8 +503,8 @@ void tarantool_index_count(struct interactor_message* message)
     message->output = (void*)box_index_count(request->space_id,
                                              request->index_id,
                                              request->iterator_type,
-                                             request->key,
-                                             request->key + request->key_size);
+                                             (const char*)request->key,
+                                             (const char*)(request->key + request->key_size));
 }
 
 void tarantool_index_length(struct interactor_message* message)
@@ -525,8 +525,8 @@ void tarantool_index_get(struct interactor_message* message)
     box_tuple_t* result;
     if (unlikely(box_index_get(request->space_id,
                                request->index_id,
-                               request->tuple,
-                               request->tuple + request->tuple_size,
+                               (const char*)request->tuple,
+                               (const char*)(request->tuple + request->tuple_size),
                                &result) < 0))
     {
         return;
@@ -541,8 +541,8 @@ void tarantool_index_min(struct interactor_message* message)
     box_tuple_t* result;
     if (unlikely(box_index_min(request->space_id,
                                request->index_id,
-                               request->tuple,
-                               request->tuple + request->tuple_size,
+                               (const char*)request->tuple,
+                               (const char*)(request->tuple + request->tuple_size),
                                &result) < 0))
     {
         return;
@@ -557,8 +557,8 @@ void tarantool_index_max(struct interactor_message* message)
     box_tuple_t* result;
     if (unlikely(box_index_max(request->space_id,
                                request->index_id,
-                               request->tuple,
-                               request->tuple + request->tuple_size,
+                               (const char*)request->tuple,
+                               (const char*)(request->tuple + request->tuple_size),
                                &result) < 0))
     {
         return;
@@ -576,8 +576,8 @@ void tarantool_index_select(struct interactor_message* message)
                             request->iterator_type,
                             request->offset,
                             request->limit,
-                            request->key,
-                            request->key + request->key_size,
+                            (const char*)request->key,
+                            (const char*)(request->key + request->key_size),
                             NULL, NULL, false,
                             port) < 0))
     {
@@ -592,10 +592,10 @@ void tarantool_index_update_single(struct interactor_message* message)
     box_tuple_t* result;
     if (unlikely(box_update(request->space_id,
                             request->index_id,
-                            request->key,
-                            request->key + request->key_size,
-                            request->operations,
-                            request->operations + request->operations_size,
+                            (const char*)request->key,
+                            (const char*)(request->key + request->key_size),
+                            (const char*)request->operations,
+                            (const char*)(request->operations + request->operations_size),
                             TARANTOOL_INDEX_BASE_C,
                             &result) < 0))
     {
@@ -622,13 +622,13 @@ void tarantool_index_update_many(struct interactor_message* message)
     struct port* port = mempool_alloc(&tarantool_tuple_ports);
     port_c_create(port);
 
-    const char* key_batch = request->key;
+    const char* key_batch = (const char*)request->key;
     uint32_t count = mp_decode_array(&key_batch);
     const char* key_next = key_batch;
     const char* key_data = key_next;
     const char* key_next_size = key_next;
 
-    const char* operation_batch = request->operations;
+    const char* operation_batch = (const char*)request->operations;
     uint32_t operations_count = mp_decode_array(&operation_batch);
     const char* operation_next = operation_batch;
     const char* operation_data = operation_next;

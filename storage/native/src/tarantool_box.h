@@ -49,7 +49,7 @@ extern "C"
     struct tarantool_space_request
     {
         size_t tuple_size;
-        const char* tuple;
+        const uint8_t* tuple;
         uint32_t space_id;
         struct interactor_message message;
     };
@@ -57,7 +57,7 @@ extern "C"
     struct tarantool_space_count_request
     {
         size_t key_size;
-        const char* key;
+        const uint8_t* key;
         uint32_t space_id;
         int iterator_type;
         struct interactor_message message;
@@ -66,7 +66,7 @@ extern "C"
     struct tarantool_space_select_request
     {
         size_t key_size;
-        const char* key;
+        const uint8_t* key;
         uint32_t space_id;
         uint32_t offset;
         uint32_t limit;
@@ -78,8 +78,8 @@ extern "C"
     {
         size_t key_size;
         size_t operations_size;
-        const char* key;
-        const char* operations;
+        const uint8_t* key;
+        const uint8_t* operations;
         uint32_t space_id;
         struct interactor_message message;
     };
@@ -87,8 +87,8 @@ extern "C"
     struct tarantool_space_upsert_request
     {
         size_t tuple_size;
-        const char* tuple;
-        const char* operations;
+        const uint8_t* tuple;
+        const uint8_t* operations;
         size_t operations_size;
         uint32_t space_id;
         struct interactor_message message;
@@ -97,7 +97,7 @@ extern "C"
     struct tarantool_space_iterator_request
     {
         size_t key_size;
-        const char* key;
+        const uint8_t* key;
         uint32_t space_id;
         int type;
         struct interactor_message message;
@@ -106,7 +106,7 @@ extern "C"
     struct tarantool_index_request
     {
         size_t tuple_size;
-        const char* tuple;
+        const uint8_t* tuple;
         uint32_t space_id;
         uint32_t index_id;
         struct interactor_message message;
@@ -115,7 +115,7 @@ extern "C"
     struct tarantool_index_count_request
     {
         size_t key_size;
-        const char* key;
+        const uint8_t* key;
         uint32_t space_id;
         uint32_t index_id;
         int iterator_type;
@@ -132,9 +132,9 @@ extern "C"
 
     struct tarantool_index_update_request
     {
-        const char* key;
+        const uint8_t* key;
         size_t key_size;
-        const char* operations;
+        const uint8_t* operations;
         size_t operations_size;
         uint32_t space_id;
         uint32_t index_id;
@@ -144,7 +144,7 @@ extern "C"
     struct tarantool_call_request
     {
         const char* function;
-        const char* input;
+        const uint8_t* input;
         size_t input_size;
         uint32_t function_length;
         struct interactor_message message;
@@ -153,7 +153,7 @@ extern "C"
     struct tarantool_evaluate_request
     {
         const char* expression;
-        const char* input;
+        const uint8_t* input;
         size_t input_size;
         uint32_t expression_length;
         struct interactor_message message;
@@ -161,7 +161,7 @@ extern "C"
 
     struct tarantool_index_iterator_request
     {
-        const char* key;
+        const uint8_t* key;
         size_t key_size;
         uint32_t space_id;
         uint32_t index_id;
@@ -171,7 +171,7 @@ extern "C"
 
     struct tarantool_index_select_request
     {
-        const char* key;
+        const uint8_t* key;
         size_t key_size;
         uint32_t space_id;
         uint32_t index_id;

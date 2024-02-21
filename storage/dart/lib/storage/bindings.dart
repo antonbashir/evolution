@@ -1254,7 +1254,7 @@ final class tarantool_space_request extends ffi.Struct {
   @ffi.Size()
   external int tuple_size;
 
-  external ffi.Pointer<ffi.Char> tuple;
+  external ffi.Pointer<ffi.Uint8> tuple;
 
   @ffi.Uint32()
   external int space_id;
@@ -1266,7 +1266,7 @@ final class tarantool_space_count_request extends ffi.Struct {
   @ffi.Size()
   external int key_size;
 
-  external ffi.Pointer<ffi.Char> key;
+  external ffi.Pointer<ffi.Uint8> key;
 
   @ffi.Uint32()
   external int space_id;
@@ -1281,7 +1281,7 @@ final class tarantool_space_select_request extends ffi.Struct {
   @ffi.Size()
   external int key_size;
 
-  external ffi.Pointer<ffi.Char> key;
+  external ffi.Pointer<ffi.Uint8> key;
 
   @ffi.Uint32()
   external int space_id;
@@ -1305,9 +1305,9 @@ final class tarantool_space_update_request extends ffi.Struct {
   @ffi.Size()
   external int operations_size;
 
-  external ffi.Pointer<ffi.Char> key;
+  external ffi.Pointer<ffi.Uint8> key;
 
-  external ffi.Pointer<ffi.Char> operations;
+  external ffi.Pointer<ffi.Uint8> operations;
 
   @ffi.Uint32()
   external int space_id;
@@ -1319,9 +1319,9 @@ final class tarantool_space_upsert_request extends ffi.Struct {
   @ffi.Size()
   external int tuple_size;
 
-  external ffi.Pointer<ffi.Char> tuple;
+  external ffi.Pointer<ffi.Uint8> tuple;
 
-  external ffi.Pointer<ffi.Char> operations;
+  external ffi.Pointer<ffi.Uint8> operations;
 
   @ffi.Size()
   external int operations_size;
@@ -1336,7 +1336,7 @@ final class tarantool_space_iterator_request extends ffi.Struct {
   @ffi.Size()
   external int key_size;
 
-  external ffi.Pointer<ffi.Char> key;
+  external ffi.Pointer<ffi.Uint8> key;
 
   @ffi.Uint32()
   external int space_id;
@@ -1351,7 +1351,7 @@ final class tarantool_index_request extends ffi.Struct {
   @ffi.Size()
   external int tuple_size;
 
-  external ffi.Pointer<ffi.Char> tuple;
+  external ffi.Pointer<ffi.Uint8> tuple;
 
   @ffi.Uint32()
   external int space_id;
@@ -1366,7 +1366,7 @@ final class tarantool_index_count_request extends ffi.Struct {
   @ffi.Size()
   external int key_size;
 
-  external ffi.Pointer<ffi.Char> key;
+  external ffi.Pointer<ffi.Uint8> key;
 
   @ffi.Uint32()
   external int space_id;
@@ -1393,12 +1393,12 @@ final class tarantool_index_id_request extends ffi.Struct {
 }
 
 final class tarantool_index_update_request extends ffi.Struct {
-  external ffi.Pointer<ffi.Char> key;
+  external ffi.Pointer<ffi.Uint8> key;
 
   @ffi.Size()
   external int key_size;
 
-  external ffi.Pointer<ffi.Char> operations;
+  external ffi.Pointer<ffi.Uint8> operations;
 
   @ffi.Size()
   external int operations_size;
@@ -1415,7 +1415,7 @@ final class tarantool_index_update_request extends ffi.Struct {
 final class tarantool_call_request extends ffi.Struct {
   external ffi.Pointer<ffi.Char> function;
 
-  external ffi.Pointer<ffi.Char> input;
+  external ffi.Pointer<ffi.Uint8> input;
 
   @ffi.Size()
   external int input_size;
@@ -1429,7 +1429,7 @@ final class tarantool_call_request extends ffi.Struct {
 final class tarantool_evaluate_request extends ffi.Struct {
   external ffi.Pointer<ffi.Char> expression;
 
-  external ffi.Pointer<ffi.Char> input;
+  external ffi.Pointer<ffi.Uint8> input;
 
   @ffi.Size()
   external int input_size;
@@ -1441,7 +1441,7 @@ final class tarantool_evaluate_request extends ffi.Struct {
 }
 
 final class tarantool_index_iterator_request extends ffi.Struct {
-  external ffi.Pointer<ffi.Char> key;
+  external ffi.Pointer<ffi.Uint8> key;
 
   @ffi.Size()
   external int key_size;
@@ -1459,7 +1459,7 @@ final class tarantool_index_iterator_request extends ffi.Struct {
 }
 
 final class tarantool_index_select_request extends ffi.Struct {
-  external ffi.Pointer<ffi.Char> key;
+  external ffi.Pointer<ffi.Uint8> key;
 
   @ffi.Size()
   external int key_size;
