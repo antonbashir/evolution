@@ -420,6 +420,7 @@ void tarantool_space_get(struct interactor_message* message)
                                (const char*)(request->tuple + request->tuple_size),
                                &result) < 0))
     {
+        diag_log();
         return;
     }
     tuple_ref(result);

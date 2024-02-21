@@ -45,7 +45,7 @@ late final StorageModule _storage;
 late final StorageSpace _space;
 late final StorageIndex _index;
 
-final testKey = ["key"];
+final testKey = [10];
 final testSingleData = TestData(10, "test", true);
 final testMultipleData = Iterable.generate(10, (index) => [index + 1, "key-${index}", "value"]).toList();
 
@@ -64,6 +64,15 @@ TestData _readData(MemoryTuples tuples, Pointer<tarantool_tuple_t> tuple) {
   final buffer = pointer.cast<Uint8>().asTypedList(size);
   final data = ByteData.view(buffer.buffer, buffer.offsetInBytes);
   return TestData.deserialize(buffer, data, 0);
+}
+
+({Pointer<Uint8> tuple, int size, void Function() cleaner}) _writeKey(MemoryInputOutputBuffers buffers, List tuple) {
+  final inputBuffer = buffers.allocateInputBuffer(tuple.computeTupleSize());
+  final reserved = memory_dart_input_buffer_reserve(inputBuffer, tuple.computeTupleSize());
+  final buffer = reserved.cast<Uint8>().asTypedList(tuple.computeTupleSize());
+  final data = ByteData.view(buffer.buffer, buffer.offsetInBytes);
+  memory_dart_input_buffer_allocate(inputBuffer, tuple.serializeToTuple(buffer, data, 0));
+  return (tuple: memory_dart_input_buffer_read_position(inputBuffer), size: tuple.computeTupleSize(), cleaner: () => buffers.freeInputBuffer(inputBuffer));
 }
 
 Future<void> main() async {
@@ -95,24 +104,32 @@ Future<void> main() async {
   });
 
   group("[crud]", () {
+    Future<({Pointer<Uint8> tuple, int size, void Function() cleaner})> _write() => Future.value(_writeData(_executor.memory.inputOutputBuffers, testSingleData));
+
+    Future<({Pointer<Uint8> tuple, int size, void Function() cleaner})> _key() => Future.value(_writeKey(_executor.memory.inputOutputBuffers, testKey));
+
+    Future<TestData> _read(
+      Future<Pointer<tarantool_tuple_t>> response,
+      void Function() requestCleaner,
+    ) =>
+        response.whenComplete(requestCleaner).then((value) => _readData(_executor.tuples, value));
+
+    test("insert", () async => expect(await _write().then((value) => _read(_space.insertSingle(value.tuple, value.size), value.cleaner)), equals(testSingleData)));
+
+    test("put", () async => expect(await _write().then((value) => _read(_space.putSingle(value.tuple, value.size), value.cleaner)), equals(testSingleData)));
+
     test(
-      "insert",
+      "get",
       () async => expect(
-        await Future.value(_writeData(_executor.memory.inputOutputBuffers, testSingleData)).then(
-          (value) => _space.insertSingle(value.tuple, value.size).whenComplete(value.cleaner).then((value) => _readData(_executor.tuples, value)),
-        ),
+        await _write().then((value) => _read(_space.putSingle(value.tuple, value.size), value.cleaner)).then(
+              (value) => _key().then(
+                (key) => _read(_space.get(key.tuple, key.size), key.cleaner),
+              ),
+            ),
         equals(testSingleData),
       ),
     );
-    test(
-      "put",
-      () async => expect(
-        await Future.value(_writeData(_executor.memory.inputOutputBuffers, testSingleData)).then(
-          (value) => _space.putSingle(value.tuple, value.size).whenComplete(value.cleaner).then((value) => _readData(_executor.tuples, value)),
-        ),
-        equals(testSingleData),
-      ),
-    );
+
     // test("get", () async {
     //   _space.insert(testSingleData);
     //   expect(await _space.get([1]), equals(testSingleData));
