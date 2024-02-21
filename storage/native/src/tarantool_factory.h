@@ -73,7 +73,7 @@ extern "C"
     struct interactor_message* tarantool_index_update_request_prepare(struct tarantool_factory* factory, uint32_t space_id, uint32_t index_id, const char* key, size_t key_size, const char* operations, size_t operations_size);
     void tarantool_index_update_request_free(struct tarantool_factory* factory, struct interactor_message* message);
 
-    struct interactor_message* tarantool_call_request_prepare(struct tarantool_factory* factory, const char* function, size_t function_length, const char* input, size_t input_size);
+    struct tarantool_call_request* tarantool_call_request_prepare(struct tarantool_factory* factory);
     void tarantool_call_request_free(struct tarantool_factory* factory, struct interactor_message* message);
 
     struct interactor_message* tarantool_evaluate_request_prepare(struct tarantool_factory* factory, const char* script, size_t script_length, const char* input, size_t input_size);

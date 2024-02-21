@@ -730,22 +730,13 @@ external void tarantool_index_update_request_free(
 );
 
 @ffi.Native<
-        ffi.Pointer<interactor.interactor_message> Function(
-            ffi.Pointer<tarantool_factory>,
-            ffi.Pointer<ffi.Char>,
-            ffi.Size,
-            ffi.Pointer<ffi.Char>,
-            ffi.Size)>(
+        ffi.Pointer<tarantool_call_request> Function(
+            ffi.Pointer<tarantool_factory>)>(
     symbol: 'tarantool_call_request_prepare',
     assetId: 'tarantool-bindings',
     isLeaf: true)
-external ffi.Pointer<interactor.interactor_message>
-    tarantool_call_request_prepare(
+external ffi.Pointer<tarantool_call_request> tarantool_call_request_prepare(
   ffi.Pointer<tarantool_factory> factory1,
-  ffi.Pointer<ffi.Char> function,
-  int function_length,
-  ffi.Pointer<ffi.Char> input,
-  int input_size,
 );
 
 @ffi.Native<
@@ -1418,6 +1409,10 @@ final class tarantool_call_request extends ffi.Struct {
 
   @ffi.Uint32()
   external int function_length;
+
+  external interactor.interactor_message message;
+
+  external ffi.Pointer<interactor.interactor_message> message_pointer;
 }
 
 final class tarantool_evaluate_request extends ffi.Struct {

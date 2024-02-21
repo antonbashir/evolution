@@ -11,39 +11,39 @@ extern "C"
 #endif
     struct tarantool_box
     {
-          void (*tarantool_evaluate_address)(struct interactor_message*);
-          void (*tarantool_call_address)(struct interactor_message*);
-          void (*tarantool_iterator_next_single_address)(struct interactor_message*);
-          void (*tarantool_iterator_next_many_address)(struct interactor_message*);
-          void (*tarantool_iterator_destroy_address)(struct interactor_message*);
-          void (*tarantool_free_output_buffer_address)(struct interactor_message*);
-          void (*tarantool_space_id_by_name_address)(struct interactor_message*);
-          void (*tarantool_space_count_address)(struct interactor_message*);
-          void (*tarantool_space_length_address)(struct interactor_message*);
-          void (*tarantool_space_iterator_address)(struct interactor_message*);
-          void (*tarantool_space_insert_single_address)(struct interactor_message*);
-          void (*tarantool_space_insert_many_address)(struct interactor_message*);
-          void (*tarantool_space_put_single_address)(struct interactor_message*);
-          void (*tarantool_space_put_many_address)(struct interactor_message*);
-          void (*tarantool_space_delete_single_address)(struct interactor_message*);
-          void (*tarantool_space_delete_many_address)(struct interactor_message*);
-          void (*tarantool_space_update_single_address)(struct interactor_message*);
-          void (*tarantool_space_update_many_address)(struct interactor_message*);
-          void (*tarantool_space_get_address)(struct interactor_message*);
-          void (*tarantool_space_min_address)(struct interactor_message*);
-          void (*tarantool_space_max_address)(struct interactor_message*);
-          void (*tarantool_space_truncate_address)(struct interactor_message*);
-          void (*tarantool_space_upsert_address)(struct interactor_message*);
-          void (*tarantool_index_count_address)(struct interactor_message*);
-          void (*tarantool_index_length_address)(struct interactor_message*);
-          void (*tarantool_index_iterator_address)(struct interactor_message*);
-          void (*tarantool_index_get_address)(struct interactor_message*);
-          void (*tarantool_index_max_address)(struct interactor_message*);
-          void (*tarantool_index_min_address)(struct interactor_message*);
-          void (*tarantool_index_update_single_address)(struct interactor_message*);
-          void (*tarantool_index_update_many_address)(struct interactor_message*);
-          void (*tarantool_index_select_address)(struct interactor_message*);
-          void (*tarantool_index_id_by_name_address)(struct interactor_message*);
+        void (*tarantool_evaluate_address)(struct interactor_message*);
+        void (*tarantool_call_address)(struct interactor_message*);
+        void (*tarantool_iterator_next_single_address)(struct interactor_message*);
+        void (*tarantool_iterator_next_many_address)(struct interactor_message*);
+        void (*tarantool_iterator_destroy_address)(struct interactor_message*);
+        void (*tarantool_free_output_buffer_address)(struct interactor_message*);
+        void (*tarantool_space_id_by_name_address)(struct interactor_message*);
+        void (*tarantool_space_count_address)(struct interactor_message*);
+        void (*tarantool_space_length_address)(struct interactor_message*);
+        void (*tarantool_space_iterator_address)(struct interactor_message*);
+        void (*tarantool_space_insert_single_address)(struct interactor_message*);
+        void (*tarantool_space_insert_many_address)(struct interactor_message*);
+        void (*tarantool_space_put_single_address)(struct interactor_message*);
+        void (*tarantool_space_put_many_address)(struct interactor_message*);
+        void (*tarantool_space_delete_single_address)(struct interactor_message*);
+        void (*tarantool_space_delete_many_address)(struct interactor_message*);
+        void (*tarantool_space_update_single_address)(struct interactor_message*);
+        void (*tarantool_space_update_many_address)(struct interactor_message*);
+        void (*tarantool_space_get_address)(struct interactor_message*);
+        void (*tarantool_space_min_address)(struct interactor_message*);
+        void (*tarantool_space_max_address)(struct interactor_message*);
+        void (*tarantool_space_truncate_address)(struct interactor_message*);
+        void (*tarantool_space_upsert_address)(struct interactor_message*);
+        void (*tarantool_index_count_address)(struct interactor_message*);
+        void (*tarantool_index_length_address)(struct interactor_message*);
+        void (*tarantool_index_iterator_address)(struct interactor_message*);
+        void (*tarantool_index_get_address)(struct interactor_message*);
+        void (*tarantool_index_max_address)(struct interactor_message*);
+        void (*tarantool_index_min_address)(struct interactor_message*);
+        void (*tarantool_index_update_single_address)(struct interactor_message*);
+        void (*tarantool_index_update_many_address)(struct interactor_message*);
+        void (*tarantool_index_select_address)(struct interactor_message*);
+        void (*tarantool_index_id_by_name_address)(struct interactor_message*);
     };
 
     struct tarantool_space_request
@@ -137,6 +137,8 @@ extern "C"
         const char* input;
         size_t input_size;
         uint32_t function_length;
+        struct interactor_message message;
+        struct interactor_message* message_pointer;
     };
 
     struct tarantool_evaluate_request

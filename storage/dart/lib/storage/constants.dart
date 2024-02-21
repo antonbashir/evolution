@@ -2,13 +2,11 @@ import 'dart:ffi';
 
 import 'package:core/core.dart';
 
-const preferInlinePragma = "vm:prefer-inline";
-
 final storageLibraryName = bool.fromEnvironment("DEBUG") ? "libstorage_debug_${Abi.current()}.so" : "libstorage_release_${Abi.current()}.so";
 const storagePackageName = "storage";
 const storageLuaModule = "storage";
 
-const batchInitiaSize = 512;
+const batchInitialSize = 512;
 const awaitStateDuration = Duration(seconds: 1);
 const awaitTransactionDuration = Duration(milliseconds: 1);
 

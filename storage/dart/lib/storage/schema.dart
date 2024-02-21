@@ -81,7 +81,7 @@ class StorageSchema {
   final int _descriptor;
   final MemoryTuples _tuples;
   final StorageExecutor _executor;
-  final StorageSerialization _serialization;
+  final StorageStrings _serialization;
   final StorageProducer _producer;
   final Pointer<tarantool_factory> _factory;
 

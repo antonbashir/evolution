@@ -4,3 +4,4 @@ export 'memory/tuples.dart';
 export 'memory/structures.dart';
 export 'memory/module.dart';
 export 'memory/bindings.dart';
+export 'memory/pool.dart';

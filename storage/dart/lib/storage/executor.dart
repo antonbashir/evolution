@@ -12,6 +12,7 @@ import 'package:memory/memory/defaults.dart';
 import 'bindings.dart';
 import 'configuration.dart';
 import 'constants.dart';
+import 'factory.dart';
 import 'schema.dart';
 import 'serialization.dart';
 
@@ -109,8 +110,9 @@ class StorageExecutor {
   late final int _descriptor;
   late final MemoryTuples _tuples;
   late final StorageProducer _producer;
-  late final Pointer<tarantool_factory> _factory;
-  late final StorageSerialization _serialization;
+  late final Pointer<tarantool_factory> _nativeFactory;
+  late final StorageStrings _strings;
+  late final StorageFactory _factory;
 
   StorageExecutor(this._box);
 
@@ -122,27 +124,28 @@ class StorageExecutor {
     _interactor = Interactor(interactors.interactor());
     await _interactor.initialize(sharedMemoryLibrary: true);
     _descriptor = tarantool_executor_descriptor();
-    _factory = calloc<tarantool_factory>(sizeOf<tarantool_factory>());
+    _nativeFactory = calloc<tarantool_factory>(sizeOf<tarantool_factory>());
     using((Arena arena) {
       final configuration = arena<tarantool_factory_configuration>();
       configuration.ref.quota_size = MemoryDefaults.memory.quotaSize;
       configuration.ref.preallocation_size = MemoryDefaults.memory.preallocationSize;
       configuration.ref.slab_size = MemoryDefaults.memory.slabSize;
-      tarantool_factory_initialize(_factory, configuration);
+      tarantool_factory_initialize(_nativeFactory, configuration);
     });
     _interactor.consumer(StorageConsumer());
     _producer = _interactor.producer(StorageProducer(_box));
     _tuples = MemoryTuples(_interactor.memory.pointer);
-    _serialization = StorageSerialization(_factory);
-    _schema = StorageSchema(_descriptor, _factory, this, _tuples, _serialization, _producer);
+    _strings = StorageStrings(_nativeFactory);
+    _schema = StorageSchema(_descriptor, _nativeFactory, this, _tuples, _strings, _producer);
+    _factory = StorageFactory(memory, _strings);
     _interactor.activate();
   }
 
   Future<void> stop() => _interactor.deactivate();
 
   Future<void> destroy() async {
-    tarantool_factory_destroy(_factory);
-    calloc.free(_factory.cast());
+    tarantool_factory_destroy(_nativeFactory);
+    calloc.free(_nativeFactory.cast());
     await interactors.shutdown();
   }
 
@@ -165,26 +168,25 @@ class StorageExecutor {
 
   @inline
   Future<(Uint8List, void Function())> evaluate(String expression, {Pointer<Uint8>? input, int size = 0}) {
-    final (expressionString, expressionLength) = _serialization.createString(expression);
+    final (expressionString, expressionLength) = _strings.createString(expression);
     if (input != null) {
-      final message = tarantool_evaluate_request_prepare(_factory, expressionString, expressionLength, input.cast(), size);
-      return _producer.evaluate(_descriptor, message).then(_parseLuaEvaluate).whenComplete(() => _serialization.freeString(expressionString, expressionLength));
+      final message = tarantool_evaluate_request_prepare(_nativeFactory, expressionString, expressionLength, input.cast(), size);
+      return _producer.evaluate(_descriptor, message).then(_parseLuaEvaluate).whenComplete(() => _strings.freeString(expressionString, expressionLength));
     }
     (input, size) = _tuples.emptyList;
-    final message = tarantool_evaluate_request_prepare(_factory, expressionString, expressionLength, input.cast(), size);
-    return _producer.evaluate(_descriptor, message).then(_parseLuaEvaluate).whenComplete(() => _serialization.freeString(expressionString, expressionLength));
+    final message = tarantool_evaluate_request_prepare(_nativeFactory, expressionString, expressionLength, input.cast(), size);
+    return _producer.evaluate(_descriptor, message).then(_parseLuaEvaluate).whenComplete(() => _strings.freeString(expressionString, expressionLength));
   }
 
   @inline
   Future<(Uint8List, void Function())> call(String function, {Pointer<Uint8>? input, int size = 0}) {
-    final (functionString, functionLength) = _serialization.createString(function);
     if (input != null) {
-      final message = tarantool_call_request_prepare(_factory, functionString, functionLength, input.cast(), size);
-      return _producer.call(_descriptor, message).then(_parseLuaCall).whenComplete(() => _serialization.freeString(functionString, functionLength));
+      final request = _factory.prepareCall(function, input, size);
+      return _producer.call(_descriptor, request.ref.message_pointer).then(_parseLuaCall);
     }
     (input, size) = _tuples.emptyList;
-    final message = tarantool_call_request_prepare(_factory, functionString, functionLength, input.cast(), size);
-    return _producer.call(_descriptor, message).then(_parseLuaCall).whenComplete(() => _serialization.freeString(functionString, functionLength));
+    final request = _factory.prepareCall(function, input, size);
+    return _producer.call(_descriptor, request.ref.message_pointer).then(_parseLuaCall);
   }
 
   @inline
@@ -194,14 +196,14 @@ class StorageExecutor {
   Future<void> require(String module) => evaluate(LuaExpressions.require(module));
 
   @inline
-  void _freeOutputBuffer(Pointer<interactor_message> freeMessage) => tarantool_free_output_buffer_free(_factory, freeMessage);
+  void _freeOutputBuffer(Pointer<interactor_message> freeMessage) => tarantool_free_output_buffer_free(_nativeFactory, freeMessage);
 
   @inline
   (Uint8List, void Function()) _parseLuaEvaluate(Pointer<interactor_message> message) {
     final buffer = message.outputPointer;
     final bufferSize = message.outputSize;
     final result = buffer.cast<Uint8>().asTypedList(message.outputSize);
-    tarantool_evaluate_request_free(_factory, message);
+    tarantool_evaluate_request_free(_nativeFactory, message);
     return (result, () {});
   }
 
@@ -210,7 +212,7 @@ class StorageExecutor {
     final buffer = message.outputPointer;
     final bufferSize = message.outputSize;
     final result = message.outputPointer.cast<Uint8>().asTypedList(message.outputSize);
-    tarantool_call_request_free(_factory, message);
+    _factory.releaseCall(message.inputPointer.cast());
     return (result, () {});
   }
 }

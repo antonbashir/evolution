@@ -4,10 +4,10 @@ import 'package:core/core.dart';
 
 import 'bindings.dart';
 
-class StorageSerialization {
+class StorageStrings {
   final Pointer<tarantool_factory> _factory;
 
-  StorageSerialization(this._factory);
+  StorageStrings(this._factory);
 
   @inline
   (Pointer<Char>, int) createString(String source) {

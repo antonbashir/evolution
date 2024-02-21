@@ -1,11 +1,6 @@
 import 'dart:ffi';
 
 import 'package:core/core.dart';
-import 'package:ffi/ffi.dart';
-
-import 'bindings.dart';
-
-const preferInlinePragma = "vm:prefer-inline";
 
 const empty = "";
 const unknown = "unknown";

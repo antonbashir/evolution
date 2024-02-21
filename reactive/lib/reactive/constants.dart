@@ -4,7 +4,6 @@ const octetStreamMimeType = 'application/octet-stream';
 const textMimeType = 'application/text';
 final emptyBytes = Uint8List.fromList([]);
 
-const preferInlinePragma = "vm:prefer-inline";
 const reactiveFrameReserved = 0x00;
 const reactiveFrameSetup = 0x01;
 const reactiveFrameLease = 0x02;
