@@ -369,6 +369,48 @@ external void tarantool_executor_destroy();
 external int tarantool_executor_descriptor();
 
 @ffi.Native<
+        ffi.Int Function(ffi.Pointer<tarantool_factory>,
+            ffi.Pointer<tarantool_factory_configuration>)>(
+    symbol: 'tarantool_factory_initialize',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
+external int tarantool_factory_initialize(
+  ffi.Pointer<tarantool_factory> factory1,
+  ffi.Pointer<tarantool_factory_configuration> configuration,
+);
+
+@ffi.Native<
+        ffi.Pointer<ffi.Char> Function(
+            ffi.Pointer<tarantool_factory>, ffi.Size)>(
+    symbol: 'tarantool_create_string',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
+external ffi.Pointer<ffi.Char> tarantool_create_string(
+  ffi.Pointer<tarantool_factory> factory1,
+  int size,
+);
+
+@ffi.Native<
+        ffi.Void Function(
+            ffi.Pointer<tarantool_factory>, ffi.Pointer<ffi.Char>, ffi.Size)>(
+    symbol: 'tarantool_free_string',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
+external void tarantool_free_string(
+  ffi.Pointer<tarantool_factory> factory1,
+  ffi.Pointer<ffi.Char> string,
+  int size,
+);
+
+@ffi.Native<ffi.Void Function(ffi.Pointer<tarantool_factory>)>(
+    symbol: 'tarantool_factory_destroy',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
+external void tarantool_factory_destroy(
+  ffi.Pointer<tarantool_factory> factory1,
+);
+
+@ffi.Native<
         ffi.Pointer<tarantool_tuple_port_entry_t> Function(
             ffi.Pointer<tarantool_tuple_port_t>)>(
     symbol: 'tarantool_port_first', assetId: 'tarantool-bindings', isLeaf: true)
@@ -406,681 +448,6 @@ external int tarantool_tuple_size(
     symbol: 'tarantool_tuple_data', assetId: 'tarantool-bindings', isLeaf: true)
 external ffi.Pointer<ffi.Void> tarantool_tuple_data(
   ffi.Pointer<tarantool_tuple_t> tuple,
-);
-
-@ffi.Native<
-        ffi.Int Function(ffi.Pointer<tarantool_factory>,
-            ffi.Pointer<tarantool_factory_configuration>)>(
-    symbol: 'tarantool_factory_initialize',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external int tarantool_factory_initialize(
-  ffi.Pointer<tarantool_factory> factory1,
-  ffi.Pointer<tarantool_factory_configuration> configuration,
-);
-
-@ffi.Native<
-        ffi.Pointer<tarantool_space_request> Function(
-            ffi.Pointer<tarantool_factory>)>(
-    symbol: 'tarantool_space_request_prepare',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external ffi.Pointer<tarantool_space_request> tarantool_space_request_prepare(
-  ffi.Pointer<tarantool_factory> factory1,
-);
-
-@ffi.Native<
-        ffi.Void Function(ffi.Pointer<tarantool_factory>,
-            ffi.Pointer<interactor.interactor_message>)>(
-    symbol: 'tarantool_space_request_free',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external void tarantool_space_request_free(
-  ffi.Pointer<tarantool_factory> factory1,
-  ffi.Pointer<interactor.interactor_message> message,
-);
-
-@ffi.Native<
-        ffi.Pointer<interactor.interactor_message> Function(
-            ffi.Pointer<tarantool_factory>,
-            ffi.Uint32,
-            ffi.Int,
-            ffi.Pointer<ffi.Char>,
-            ffi.Size)>(
-    symbol: 'tarantool_space_count_request_prepare',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external ffi.Pointer<interactor.interactor_message>
-    tarantool_space_count_request_prepare(
-  ffi.Pointer<tarantool_factory> factory1,
-  int space_id,
-  int iterator_type,
-  ffi.Pointer<ffi.Char> key,
-  int key_size,
-);
-
-@ffi.Native<
-        ffi.Void Function(ffi.Pointer<tarantool_factory>,
-            ffi.Pointer<interactor.interactor_message>)>(
-    symbol: 'tarantool_space_count_request_free',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external void tarantool_space_count_request_free(
-  ffi.Pointer<tarantool_factory> factory1,
-  ffi.Pointer<interactor.interactor_message> message,
-);
-
-@ffi.Native<
-        ffi.Pointer<interactor.interactor_message> Function(
-            ffi.Pointer<tarantool_factory>,
-            ffi.Uint32,
-            ffi.Pointer<ffi.Char>,
-            ffi.Size,
-            ffi.Uint32,
-            ffi.Uint32,
-            ffi.Int)>(
-    symbol: 'tarantool_space_select_request_prepare',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external ffi.Pointer<interactor.interactor_message>
-    tarantool_space_select_request_prepare(
-  ffi.Pointer<tarantool_factory> factory1,
-  int space_id,
-  ffi.Pointer<ffi.Char> key,
-  int key_size,
-  int offset,
-  int limit,
-  int iterator_type,
-);
-
-@ffi.Native<
-        ffi.Void Function(ffi.Pointer<tarantool_factory>,
-            ffi.Pointer<interactor.interactor_message>)>(
-    symbol: 'tarantool_space_select_request_free',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external void tarantool_space_select_request_free(
-  ffi.Pointer<tarantool_factory> factory1,
-  ffi.Pointer<interactor.interactor_message> message,
-);
-
-@ffi.Native<
-        ffi.Pointer<interactor.interactor_message> Function(
-            ffi.Pointer<tarantool_factory>,
-            ffi.Uint32,
-            ffi.Pointer<ffi.Char>,
-            ffi.Size,
-            ffi.Pointer<ffi.Char>,
-            ffi.Size)>(
-    symbol: 'tarantool_space_update_request_prepare',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external ffi.Pointer<interactor.interactor_message>
-    tarantool_space_update_request_prepare(
-  ffi.Pointer<tarantool_factory> factory1,
-  int space_id,
-  ffi.Pointer<ffi.Char> key,
-  int key_size,
-  ffi.Pointer<ffi.Char> operations,
-  int operations_size,
-);
-
-@ffi.Native<
-        ffi.Void Function(ffi.Pointer<tarantool_factory>,
-            ffi.Pointer<interactor.interactor_message>)>(
-    symbol: 'tarantool_space_update_request_free',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external void tarantool_space_update_request_free(
-  ffi.Pointer<tarantool_factory> factory1,
-  ffi.Pointer<interactor.interactor_message> message,
-);
-
-@ffi.Native<
-        ffi.Pointer<interactor.interactor_message> Function(
-            ffi.Pointer<tarantool_factory>,
-            ffi.Uint32,
-            ffi.Pointer<ffi.Char>,
-            ffi.Size,
-            ffi.Pointer<ffi.Char>,
-            ffi.Size)>(
-    symbol: 'tarantool_space_upsert_request_prepare',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external ffi.Pointer<interactor.interactor_message>
-    tarantool_space_upsert_request_prepare(
-  ffi.Pointer<tarantool_factory> factory1,
-  int space_id,
-  ffi.Pointer<ffi.Char> tuple,
-  int tuple_size,
-  ffi.Pointer<ffi.Char> operations,
-  int operations_size,
-);
-
-@ffi.Native<
-        ffi.Void Function(ffi.Pointer<tarantool_factory>,
-            ffi.Pointer<interactor.interactor_message>)>(
-    symbol: 'tarantool_space_upsert_request_free',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external void tarantool_space_upsert_request_free(
-  ffi.Pointer<tarantool_factory> factory1,
-  ffi.Pointer<interactor.interactor_message> message,
-);
-
-@ffi.Native<
-        ffi.Pointer<interactor.interactor_message> Function(
-            ffi.Pointer<tarantool_factory>,
-            ffi.Uint32,
-            ffi.Int,
-            ffi.Pointer<ffi.Char>,
-            ffi.Size)>(
-    symbol: 'tarantool_space_iterator_request_prepare',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external ffi.Pointer<interactor.interactor_message>
-    tarantool_space_iterator_request_prepare(
-  ffi.Pointer<tarantool_factory> factory1,
-  int space_id,
-  int type,
-  ffi.Pointer<ffi.Char> key,
-  int key_size,
-);
-
-@ffi.Native<
-        ffi.Void Function(ffi.Pointer<tarantool_factory>,
-            ffi.Pointer<interactor.interactor_message>)>(
-    symbol: 'tarantool_space_iterator_request_free',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external void tarantool_space_iterator_request_free(
-  ffi.Pointer<tarantool_factory> factory1,
-  ffi.Pointer<interactor.interactor_message> message,
-);
-
-@ffi.Native<
-        ffi.Pointer<interactor.interactor_message> Function(
-            ffi.Pointer<tarantool_factory>,
-            ffi.Uint32,
-            ffi.Uint32,
-            ffi.Pointer<ffi.Char>,
-            ffi.Size)>(
-    symbol: 'tarantool_index_request_prepare',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external ffi.Pointer<interactor.interactor_message>
-    tarantool_index_request_prepare(
-  ffi.Pointer<tarantool_factory> factory1,
-  int space_id,
-  int index_id,
-  ffi.Pointer<ffi.Char> tuple,
-  int tuple_size,
-);
-
-@ffi.Native<
-        ffi.Void Function(ffi.Pointer<tarantool_factory>,
-            ffi.Pointer<interactor.interactor_message>)>(
-    symbol: 'tarantool_index_request_free',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external void tarantool_index_request_free(
-  ffi.Pointer<tarantool_factory> factory1,
-  ffi.Pointer<interactor.interactor_message> message,
-);
-
-@ffi.Native<
-        ffi.Pointer<interactor.interactor_message> Function(
-            ffi.Pointer<tarantool_factory>,
-            ffi.Uint32,
-            ffi.Uint32,
-            ffi.Pointer<ffi.Char>,
-            ffi.Size,
-            ffi.Int)>(
-    symbol: 'tarantool_index_count_request_prepare',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external ffi.Pointer<interactor.interactor_message>
-    tarantool_index_count_request_prepare(
-  ffi.Pointer<tarantool_factory> factory1,
-  int space_id,
-  int index_id,
-  ffi.Pointer<ffi.Char> key,
-  int key_size,
-  int iterator_type,
-);
-
-@ffi.Native<
-        ffi.Void Function(ffi.Pointer<tarantool_factory>,
-            ffi.Pointer<interactor.interactor_message>)>(
-    symbol: 'tarantool_index_count_request_free',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external void tarantool_index_count_request_free(
-  ffi.Pointer<tarantool_factory> factory1,
-  ffi.Pointer<interactor.interactor_message> message,
-);
-
-@ffi.Native<
-        ffi.Pointer<interactor.interactor_message> Function(
-            ffi.Pointer<tarantool_factory>,
-            ffi.Uint32,
-            ffi.Pointer<ffi.Char>,
-            ffi.Size)>(
-    symbol: 'tarantool_index_id_request_prepare',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external ffi.Pointer<interactor.interactor_message>
-    tarantool_index_id_request_prepare(
-  ffi.Pointer<tarantool_factory> factory1,
-  int space_id,
-  ffi.Pointer<ffi.Char> name,
-  int name_length,
-);
-
-@ffi.Native<
-        ffi.Void Function(ffi.Pointer<tarantool_factory>,
-            ffi.Pointer<interactor.interactor_message>)>(
-    symbol: 'tarantool_index_id_request_free',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external void tarantool_index_id_request_free(
-  ffi.Pointer<tarantool_factory> factory1,
-  ffi.Pointer<interactor.interactor_message> message,
-);
-
-@ffi.Native<
-        ffi.Pointer<interactor.interactor_message> Function(
-            ffi.Pointer<tarantool_factory>,
-            ffi.Uint32,
-            ffi.Uint32,
-            ffi.Pointer<ffi.Char>,
-            ffi.Size,
-            ffi.Pointer<ffi.Char>,
-            ffi.Size)>(
-    symbol: 'tarantool_index_update_request_prepare',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external ffi.Pointer<interactor.interactor_message>
-    tarantool_index_update_request_prepare(
-  ffi.Pointer<tarantool_factory> factory1,
-  int space_id,
-  int index_id,
-  ffi.Pointer<ffi.Char> key,
-  int key_size,
-  ffi.Pointer<ffi.Char> operations,
-  int operations_size,
-);
-
-@ffi.Native<
-        ffi.Void Function(ffi.Pointer<tarantool_factory>,
-            ffi.Pointer<interactor.interactor_message>)>(
-    symbol: 'tarantool_index_update_request_free',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external void tarantool_index_update_request_free(
-  ffi.Pointer<tarantool_factory> factory1,
-  ffi.Pointer<interactor.interactor_message> message,
-);
-
-@ffi.Native<
-        ffi.Pointer<tarantool_call_request> Function(
-            ffi.Pointer<tarantool_factory>)>(
-    symbol: 'tarantool_call_request_prepare',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external ffi.Pointer<tarantool_call_request> tarantool_call_request_prepare(
-  ffi.Pointer<tarantool_factory> factory1,
-);
-
-@ffi.Native<
-        ffi.Void Function(ffi.Pointer<tarantool_factory>,
-            ffi.Pointer<interactor.interactor_message>)>(
-    symbol: 'tarantool_call_request_free',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external void tarantool_call_request_free(
-  ffi.Pointer<tarantool_factory> factory1,
-  ffi.Pointer<interactor.interactor_message> message,
-);
-
-@ffi.Native<
-        ffi.Pointer<interactor.interactor_message> Function(
-            ffi.Pointer<tarantool_factory>,
-            ffi.Pointer<ffi.Char>,
-            ffi.Size,
-            ffi.Pointer<ffi.Char>,
-            ffi.Size)>(
-    symbol: 'tarantool_evaluate_request_prepare',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external ffi.Pointer<interactor.interactor_message>
-    tarantool_evaluate_request_prepare(
-  ffi.Pointer<tarantool_factory> factory1,
-  ffi.Pointer<ffi.Char> script,
-  int script_length,
-  ffi.Pointer<ffi.Char> input,
-  int input_size,
-);
-
-@ffi.Native<
-        ffi.Void Function(ffi.Pointer<tarantool_factory>,
-            ffi.Pointer<interactor.interactor_message>)>(
-    symbol: 'tarantool_evaluate_request_free',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external void tarantool_evaluate_request_free(
-  ffi.Pointer<tarantool_factory> factory1,
-  ffi.Pointer<interactor.interactor_message> message,
-);
-
-@ffi.Native<
-        ffi.Pointer<interactor.interactor_message> Function(
-            ffi.Pointer<tarantool_factory>,
-            ffi.Uint32,
-            ffi.Uint32,
-            ffi.Int,
-            ffi.Pointer<ffi.Char>,
-            ffi.Size)>(
-    symbol: 'tarantool_index_iterator_request_prepare',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external ffi.Pointer<interactor.interactor_message>
-    tarantool_index_iterator_request_prepare(
-  ffi.Pointer<tarantool_factory> factory1,
-  int space_id,
-  int index_id,
-  int type,
-  ffi.Pointer<ffi.Char> key,
-  int key_size,
-);
-
-@ffi.Native<
-        ffi.Void Function(ffi.Pointer<tarantool_factory>,
-            ffi.Pointer<interactor.interactor_message>)>(
-    symbol: 'tarantool_index_iterator_request_free',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external void tarantool_index_iterator_request_free(
-  ffi.Pointer<tarantool_factory> factory1,
-  ffi.Pointer<interactor.interactor_message> message,
-);
-
-@ffi.Native<
-        ffi.Pointer<interactor.interactor_message> Function(
-            ffi.Pointer<tarantool_factory>,
-            ffi.Uint32,
-            ffi.Uint32,
-            ffi.Pointer<ffi.Char>,
-            ffi.Size,
-            ffi.Uint32,
-            ffi.Uint32,
-            ffi.Int)>(
-    symbol: 'tarantool_index_select_request_prepare',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external ffi.Pointer<interactor.interactor_message>
-    tarantool_index_select_request_prepare(
-  ffi.Pointer<tarantool_factory> factory1,
-  int space_id,
-  int index_id,
-  ffi.Pointer<ffi.Char> key,
-  int key_size,
-  int offset,
-  int limit,
-  int iterator_type,
-);
-
-@ffi.Native<
-        ffi.Void Function(ffi.Pointer<tarantool_factory>,
-            ffi.Pointer<interactor.interactor_message>)>(
-    symbol: 'tarantool_index_select_request_free',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external void tarantool_index_select_request_free(
-  ffi.Pointer<tarantool_factory> factory1,
-  ffi.Pointer<interactor.interactor_message> message,
-);
-
-@ffi.Native<
-        ffi.Pointer<interactor.interactor_message> Function(
-            ffi.Pointer<tarantool_factory>, ffi.Uint32, ffi.Uint32)>(
-    symbol: 'tarantool_index_id_prepare',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external ffi.Pointer<interactor.interactor_message> tarantool_index_id_prepare(
-  ffi.Pointer<tarantool_factory> factory1,
-  int space_id,
-  int index_id,
-);
-
-@ffi.Native<
-        ffi.Void Function(ffi.Pointer<tarantool_factory>,
-            ffi.Pointer<interactor.interactor_message>)>(
-    symbol: 'tarantool_index_id_free',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external void tarantool_index_id_free(
-  ffi.Pointer<tarantool_factory> factory1,
-  ffi.Pointer<interactor.interactor_message> message,
-);
-
-@ffi.Native<
-        ffi.Pointer<interactor.interactor_message> Function(
-            ffi.Pointer<tarantool_factory>, ffi.Pointer<ffi.Char>, ffi.Size)>(
-    symbol: 'tarantool_space_id_by_name_prepare',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external ffi.Pointer<interactor.interactor_message>
-    tarantool_space_id_by_name_prepare(
-  ffi.Pointer<tarantool_factory> factory1,
-  ffi.Pointer<ffi.Char> name,
-  int name_length,
-);
-
-@ffi.Native<
-        ffi.Void Function(ffi.Pointer<tarantool_factory>,
-            ffi.Pointer<interactor.interactor_message>)>(
-    symbol: 'tarantool_space_id_by_name_free',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external void tarantool_space_id_by_name_free(
-  ffi.Pointer<tarantool_factory> factory1,
-  ffi.Pointer<interactor.interactor_message> message,
-);
-
-@ffi.Native<
-        ffi.Pointer<interactor.interactor_message> Function(
-            ffi.Pointer<tarantool_factory>, ffi.Uint32)>(
-    symbol: 'tarantool_space_length_prepare',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external ffi.Pointer<interactor.interactor_message>
-    tarantool_space_length_prepare(
-  ffi.Pointer<tarantool_factory> factory1,
-  int space_id,
-);
-
-@ffi.Native<
-        ffi.Void Function(ffi.Pointer<tarantool_factory>,
-            ffi.Pointer<interactor.interactor_message>)>(
-    symbol: 'tarantool_space_length_free',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external void tarantool_space_length_free(
-  ffi.Pointer<tarantool_factory> factory1,
-  ffi.Pointer<interactor.interactor_message> message,
-);
-
-@ffi.Native<
-        ffi.Pointer<interactor.interactor_message> Function(
-            ffi.Pointer<tarantool_factory>, ffi.Uint32)>(
-    symbol: 'tarantool_space_truncate_prepare',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external ffi.Pointer<interactor.interactor_message>
-    tarantool_space_truncate_prepare(
-  ffi.Pointer<tarantool_factory> factory1,
-  int space_id,
-);
-
-@ffi.Native<
-        ffi.Void Function(ffi.Pointer<tarantool_factory>,
-            ffi.Pointer<interactor.interactor_message>)>(
-    symbol: 'tarantool_space_truncate_free',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external void tarantool_space_truncate_free(
-  ffi.Pointer<tarantool_factory> factory1,
-  ffi.Pointer<interactor.interactor_message> message,
-);
-
-@ffi.Native<
-        ffi.Pointer<interactor.interactor_message> Function(
-            ffi.Pointer<tarantool_factory>, ffi.IntPtr, ffi.Uint32)>(
-    symbol: 'tarantool_iterator_next_prepare',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external ffi.Pointer<interactor.interactor_message>
-    tarantool_iterator_next_prepare(
-  ffi.Pointer<tarantool_factory> factory1,
-  int iterator,
-  int count,
-);
-
-@ffi.Native<
-        ffi.Void Function(ffi.Pointer<tarantool_factory>,
-            ffi.Pointer<interactor.interactor_message>)>(
-    symbol: 'tarantool_iterator_next_free',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external void tarantool_iterator_next_free(
-  ffi.Pointer<tarantool_factory> factory1,
-  ffi.Pointer<interactor.interactor_message> message,
-);
-
-@ffi.Native<
-        ffi.Pointer<interactor.interactor_message> Function(
-            ffi.Pointer<tarantool_factory>, ffi.IntPtr)>(
-    symbol: 'tarantool_iterator_destroy_prepare',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external ffi.Pointer<interactor.interactor_message>
-    tarantool_iterator_destroy_prepare(
-  ffi.Pointer<tarantool_factory> factory1,
-  int iterator,
-);
-
-@ffi.Native<
-        ffi.Void Function(ffi.Pointer<tarantool_factory>,
-            ffi.Pointer<interactor.interactor_message>)>(
-    symbol: 'tarantool_iterator_destroy_free',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external void tarantool_iterator_destroy_free(
-  ffi.Pointer<tarantool_factory> factory1,
-  ffi.Pointer<interactor.interactor_message> message,
-);
-
-@ffi.Native<
-        ffi.Pointer<interactor.interactor_message> Function(
-            ffi.Pointer<tarantool_factory>, ffi.Pointer<ffi.Void>, ffi.Size)>(
-    symbol: 'tarantool_free_output_buffer_prepare',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external ffi.Pointer<interactor.interactor_message>
-    tarantool_free_output_buffer_prepare(
-  ffi.Pointer<tarantool_factory> factory1,
-  ffi.Pointer<ffi.Void> buffer,
-  int buffer_size,
-);
-
-@ffi.Native<
-        ffi.Void Function(ffi.Pointer<tarantool_factory>,
-            ffi.Pointer<interactor.interactor_message>)>(
-    symbol: 'tarantool_free_output_buffer_free',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external void tarantool_free_output_buffer_free(
-  ffi.Pointer<tarantool_factory> factory1,
-  ffi.Pointer<interactor.interactor_message> message,
-);
-
-@ffi.Native<
-        ffi.Pointer<interactor.interactor_message> Function(
-            ffi.Pointer<tarantool_factory>,
-            ffi.Pointer<tarantool_tuple_port_t>)>(
-    symbol: 'tarantool_free_output_port_prepare',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external ffi.Pointer<interactor.interactor_message>
-    tarantool_free_output_port_prepare(
-  ffi.Pointer<tarantool_factory> factory1,
-  ffi.Pointer<tarantool_tuple_port_t> port,
-);
-
-@ffi.Native<
-        ffi.Void Function(ffi.Pointer<tarantool_factory>,
-            ffi.Pointer<interactor.interactor_message>)>(
-    symbol: 'tarantool_free_output_port_free',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external void tarantool_free_output_port_free(
-  ffi.Pointer<tarantool_factory> factory1,
-  ffi.Pointer<interactor.interactor_message> message,
-);
-
-@ffi.Native<
-        ffi.Pointer<interactor.interactor_message> Function(
-            ffi.Pointer<tarantool_factory>, ffi.Pointer<tarantool_tuple_t>)>(
-    symbol: 'tarantool_free_output_tuple_prepare',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external ffi.Pointer<interactor.interactor_message>
-    tarantool_free_output_tuple_prepare(
-  ffi.Pointer<tarantool_factory> factory1,
-  ffi.Pointer<tarantool_tuple_t> tuple,
-);
-
-@ffi.Native<
-        ffi.Void Function(ffi.Pointer<tarantool_factory>,
-            ffi.Pointer<interactor.interactor_message>)>(
-    symbol: 'tarantool_free_output_tuple_free',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external void tarantool_free_output_tuple_free(
-  ffi.Pointer<tarantool_factory> factory1,
-  ffi.Pointer<interactor.interactor_message> message,
-);
-
-@ffi.Native<
-        ffi.Pointer<ffi.Char> Function(
-            ffi.Pointer<tarantool_factory>, ffi.Size)>(
-    symbol: 'tarantool_create_string',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external ffi.Pointer<ffi.Char> tarantool_create_string(
-  ffi.Pointer<tarantool_factory> factory1,
-  int size,
-);
-
-@ffi.Native<
-        ffi.Void Function(
-            ffi.Pointer<tarantool_factory>, ffi.Pointer<ffi.Char>, ffi.Size)>(
-    symbol: 'tarantool_free_string',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external void tarantool_free_string(
-  ffi.Pointer<tarantool_factory> factory1,
-  ffi.Pointer<ffi.Char> string,
-  int size,
-);
-
-@ffi.Native<ffi.Void Function(ffi.Pointer<tarantool_factory>)>(
-    symbol: 'tarantool_factory_destroy',
-    assetId: 'tarantool-bindings',
-    isLeaf: true)
-external void tarantool_factory_destroy(
-  ffi.Pointer<tarantool_factory> factory1,
 );
 
 final class tarantool_box extends ffi.Struct {
@@ -1538,18 +905,6 @@ final class tarantool_executor_configuration extends ffi.Struct {
   external int interactor_id;
 }
 
-final class tuple extends ffi.Opaque {}
-
-final class port extends ffi.Opaque {}
-
-final class tuple_iterator extends ffi.Opaque {}
-
-final class port_c_entry extends ffi.Opaque {}
-
-typedef tarantool_tuple_port_entry_t = port_c_entry;
-typedef tarantool_tuple_port_t = port;
-typedef tarantool_tuple_t = tuple;
-
 final class mempool extends ffi.Opaque {}
 
 final class small_alloc extends ffi.Opaque {}
@@ -1575,3 +930,15 @@ final class tarantool_factory_configuration extends ffi.Struct {
   @ffi.Size()
   external int preallocation_size;
 }
+
+final class tuple extends ffi.Opaque {}
+
+final class port extends ffi.Opaque {}
+
+final class tuple_iterator extends ffi.Opaque {}
+
+final class port_c_entry extends ffi.Opaque {}
+
+typedef tarantool_tuple_port_entry_t = port_c_entry;
+typedef tarantool_tuple_port_t = port;
+typedef tarantool_tuple_t = tuple;
