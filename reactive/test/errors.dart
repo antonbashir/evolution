@@ -1,17 +1,15 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:test/test.dart';
 import 'package:transport/transport.dart';
-import 'package:reactive_transport/reactive/defaults.dart';
-import 'package:reactive_transport/reactive/producer.dart';
-import 'package:reactive_transport/reactive/transport.dart';
+import 'package:reactive/reactive.dart';
+import 'package:test/test.dart';
 
 import 'latch.dart';
 
 void errors() {
   test("1 - request -> 1 - server throw", () async {
-    final transport = Transport();
+    final transport = TransportModule();
     final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport().workerConfiguration));
     await worker.initialize();
     final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport());
@@ -56,7 +54,7 @@ void errors() {
   });
 
   test("1 - request -> 1 - response -> 1 - client throw", () async {
-    final transport = Transport();
+    final transport = TransportModule();
     final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport().workerConfiguration));
     await worker.initialize();
     final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport());

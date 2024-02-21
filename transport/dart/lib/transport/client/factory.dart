@@ -21,12 +21,11 @@ import 'package:meta/meta.dart';
 
 class TransportClientsFactory {
   final TransportClientRegistry _registry;
-  final TransportBindings _bindings;
   final Pointer<transport_worker_t> _workerPointer;
   final TransportBuffers _buffers;
   final TransportPayloadPool _payloadPool;
 
-  const TransportClientsFactory(this._registry, this._bindings, this._workerPointer, this._buffers, this._payloadPool);
+  const TransportClientsFactory(this._registry, this._workerPointer, this._buffers, this._payloadPool);
 
   Future<TransportClientConnectionPool> tcp(
     InternetAddress address,
@@ -41,7 +40,7 @@ class TransportClientsFactory {
         throw TransportInitializationException(TransportMessages.clientMemoryError);
       }
       final result = using(
-        (arena) => _bindings.transport_client_initialize_tcp(
+        (arena) => transport_client_initialize_tcp(
           clientPointer,
           _tcpConfiguration(configuration!, arena),
           address.address.toNativeUtf8(allocator: arena).cast(),
@@ -50,7 +49,7 @@ class TransportClientsFactory {
       );
       if (result < 0) {
         if (clientPointer.ref.fd > 0) {
-          _bindings.transport_close_descriptor(clientPointer.ref.fd);
+          transport_close_descriptor(clientPointer.ref.fd);
           calloc.free(clientPointer);
           throw TransportInitializationException(TransportMessages.clientError(result, _bindings));
         }
@@ -61,7 +60,6 @@ class TransportClientsFactory {
         TransportChannel(
           _workerPointer,
           clientPointer.ref.fd,
-          _bindings,
           _buffers,
         ),
         clientPointer,
@@ -93,7 +91,7 @@ class TransportClientsFactory {
       if (pointer == nullptr) {
         throw TransportInitializationException(TransportMessages.clientMemoryError);
       }
-      final result = _bindings.transport_client_initialize_udp(
+      final result = transport_client_initialize_udp(
         pointer,
         _udpConfiguration(configuration!, arena),
         sourceAddress.address.toNativeUtf8(allocator: arena).cast(),
@@ -103,7 +101,7 @@ class TransportClientsFactory {
       );
       if (result < 0) {
         if (pointer.ref.fd > 0) {
-          _bindings.transport_close_descriptor(pointer.ref.fd);
+          transport_close_descriptor(pointer.ref.fd);
           calloc.free(pointer);
           throw TransportInitializationException(TransportMessages.clientError(result, _bindings));
         }
@@ -113,7 +111,7 @@ class TransportClientsFactory {
       if (configuration.multicastManager != null) {
         configuration.multicastManager!.subscribe(
           onAddMembership: (configuration) => using(
-            (arena) => _bindings.transport_socket_multicast_add_membership(
+            (arena) => transport_socket_multicast_add_membership(
               pointer.ref.fd,
               configuration.groupAddress.toNativeUtf8(allocator: arena).cast(),
               configuration.localAddress.toNativeUtf8(allocator: arena).cast(),
@@ -121,7 +119,7 @@ class TransportClientsFactory {
             ),
           ),
           onDropMembership: (configuration) => using(
-            (arena) => _bindings.transport_socket_multicast_drop_membership(
+            (arena) => transport_socket_multicast_drop_membership(
               pointer.ref.fd,
               configuration.groupAddress.toNativeUtf8(allocator: arena).cast(),
               configuration.localAddress.toNativeUtf8(allocator: arena).cast(),
@@ -129,7 +127,7 @@ class TransportClientsFactory {
             ),
           ),
           onAddSourceMembership: (configuration) => using(
-            (arena) => _bindings.transport_socket_multicast_add_source_membership(
+            (arena) => transport_socket_multicast_add_source_membership(
               pointer.ref.fd,
               configuration.groupAddress.toNativeUtf8(allocator: arena).cast(),
               configuration.localAddress.toNativeUtf8(allocator: arena).cast(),
@@ -137,7 +135,7 @@ class TransportClientsFactory {
             ),
           ),
           onDropSourceMembership: (configuration) => using(
-            (arena) => _bindings.transport_socket_multicast_drop_source_membership(
+            (arena) => transport_socket_multicast_drop_source_membership(
               pointer.ref.fd,
               configuration.groupAddress.toNativeUtf8(allocator: arena).cast(),
               configuration.localAddress.toNativeUtf8(allocator: arena).cast(),
@@ -180,7 +178,7 @@ class TransportClientsFactory {
         throw TransportInitializationException(TransportMessages.clientMemoryError);
       }
       final result = using(
-        (arena) => _bindings.transport_client_initialize_unix_stream(
+        (arena) => transport_client_initialize_unix_stream(
           clientPointer,
           _unixStreamConfiguration(configuration!, arena),
           path.toNativeUtf8(allocator: arena).cast(),
@@ -188,7 +186,7 @@ class TransportClientsFactory {
       );
       if (result < 0) {
         if (clientPointer.ref.fd > 0) {
-          _bindings.transport_close_descriptor(clientPointer.ref.fd);
+          transport_close_descriptor(clientPointer.ref.fd);
           calloc.free(clientPointer);
           throw TransportInitializationException(TransportMessages.clientError(result, _bindings));
         }
@@ -217,7 +215,7 @@ class TransportClientsFactory {
       clients.add(client.connect().then(TransportClientConnection.new, onError: (error, stackTrace) {
         channel.close();
         _registry.remove(clientPointer.ref.fd);
-        _bindings.transport_client_destroy(clientPointer);
+        transport_client_destroy(clientPointer);
         throw error;
       }));
     }
@@ -319,7 +317,7 @@ class TransportClientsFactory {
       flags |= transportSocketOptionIpMulticastIf;
       final interface = clientConfiguration.ipMulticastInterface!;
       nativeClientConfiguration.ref.ip_multicast_interface = allocator<ip_mreqn>();
-      _bindings.transport_socket_initialize_multicast_request(
+      transport_socket_initialize_multicast_request(
         nativeClientConfiguration.ref.ip_multicast_interface,
         interface.groupAddress.toNativeUtf8(allocator: allocator).cast(),
         interface.localAddress.toNativeUtf8(allocator: allocator).cast(),
@@ -359,7 +357,7 @@ class TransportClientsFactory {
   int _getMembershipIndex(TransportUdpMulticastConfiguration configuration) => using(
         (arena) {
           if (configuration.calculateInterfaceIndex) {
-            return _bindings.transport_socket_get_interface_index(configuration.localInterface!.toNativeUtf8(allocator: arena).cast());
+            return transport_socket_get_interface_index(configuration.localInterface!.toNativeUtf8(allocator: arena).cast());
           }
           return configuration.interfaceIndex!;
         },

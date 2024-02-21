@@ -142,7 +142,7 @@ class TransportServerConnectionChannel {
     if (_pending > 0) {
       if (gracefulTimeout == null) {
         _active = false;
-        _bindings.transport_worker_cancel_by_fd(_workerPointer, _fd);
+        transport_worker_cancel_by_fd(_workerPointer, _fd);
         await _closer.future;
       }
       if (gracefulTimeout != null) {
@@ -150,7 +150,7 @@ class TransportServerConnectionChannel {
           gracefulTimeout,
           onTimeout: () {
             _active = false;
-            _bindings.transport_worker_cancel_by_fd(_workerPointer, _fd);
+            transport_worker_cancel_by_fd(_workerPointer, _fd);
             return _closer.future;
           },
         );
@@ -159,7 +159,7 @@ class TransportServerConnectionChannel {
     _active = false;
     if (_inboundEvents.hasListener) await _inboundEvents.close();
     _server._removeConnection(_fd);
-    _bindings.transport_close_descriptor(_fd);
+    transport_close_descriptor(_fd);
   }
 
   Future<void> closeServer({Duration? gracefulTimeout}) => _server.close(gracefulTimeout: gracefulTimeout);
@@ -209,7 +209,7 @@ class TransportServerChannel implements TransportServer {
   void accept(void Function(TransportServerConnection connection) onAccept) {
     if (_closing) throw TransportClosedException.forServer();
     _acceptor = onAccept;
-    _bindings.transport_worker_accept(_workerPointer, pointer);
+    transport_worker_accept(_workerPointer, pointer);
   }
 
   Future<void> receive({int? flags}) async {
@@ -310,7 +310,7 @@ class TransportServerChannel implements TransportServer {
               _buffers.read(bufferId),
               this,
               _datagramChannel!,
-              _bindings.transport_worker_get_datagram_address(_workerPointer, pointer.ref.family, bufferId),
+              transport_worker_get_datagram_address(_workerPointer, pointer.ref.family, bufferId),
             ),
           );
           return;
@@ -355,7 +355,7 @@ class TransportServerChannel implements TransportServer {
       _connections[fd] = connection;
       _acceptor(TransportServerConnection(connection));
     }
-    _bindings.transport_worker_accept(_workerPointer, pointer);
+    transport_worker_accept(_workerPointer, pointer);
   }
 
   @inline
@@ -380,7 +380,7 @@ class TransportServerChannel implements TransportServer {
     if (_pending > 0) {
       if (gracefulTimeout == null) {
         _active = false;
-        _bindings.transport_worker_cancel_by_fd(_workerPointer, pointer.ref.fd);
+        transport_worker_cancel_by_fd(_workerPointer, pointer.ref.fd);
         await _closer.future;
       }
       if (gracefulTimeout != null) {
@@ -388,7 +388,7 @@ class TransportServerChannel implements TransportServer {
           gracefulTimeout,
           onTimeout: () {
             _active = false;
-            _bindings.transport_worker_cancel_by_fd(_workerPointer, pointer.ref.fd);
+            transport_worker_cancel_by_fd(_workerPointer, pointer.ref.fd);
             return _closer.future;
           },
         );
@@ -397,7 +397,7 @@ class TransportServerChannel implements TransportServer {
     _active = false;
     if (_inboundEvents.hasListener) await _inboundEvents.close();
     _registry.removeServer(pointer.ref.fd);
-    _bindings.transport_close_descriptor(pointer.ref.fd);
-    _bindings.transport_server_destroy(pointer);
+    transport_close_descriptor(pointer.ref.fd);
+    transport_server_destroy(pointer);
   }
 }

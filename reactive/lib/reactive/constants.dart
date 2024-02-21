@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 
-const messagePackMimeType = 'application/message-pack';
 const octetStreamMimeType = 'application/octet-stream';
 const textMimeType = 'application/text';
 final emptyBytes = Uint8List.fromList([]);

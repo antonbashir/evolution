@@ -19,7 +19,6 @@ class TransportFileChannel {
   final String path;
   final int _fd;
   final Pointer<transport_worker_t> _workerPointer;
-  final TransportBindings _bindings;
   final TransportChannel _channel;
   final TransportBuffers buffers;
   final TransportPayloadPool _payloadPool;
@@ -36,7 +35,6 @@ class TransportFileChannel {
   TransportFileChannel(
     this.path,
     this._fd,
-    this._bindings,
     this._workerPointer,
     this._channel,
     this.buffers,
@@ -164,7 +162,7 @@ class TransportFileChannel {
     if (_pending > 0) {
       if (gracefulTimeout == null) {
         _active = false;
-        _bindings.transport_worker_cancel_by_fd(_workerPointer, _fd);
+        transport_worker_cancel_by_fd(_workerPointer, _fd);
         await _closer.future;
       }
       if (gracefulTimeout != null) {
@@ -172,7 +170,7 @@ class TransportFileChannel {
           gracefulTimeout,
           onTimeout: () {
             _active = false;
-            _bindings.transport_worker_cancel_by_fd(_workerPointer, _fd);
+            transport_worker_cancel_by_fd(_workerPointer, _fd);
             return _closer.future;
           },
         );

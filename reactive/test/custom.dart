@@ -2,11 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:transport/transport.dart';
-import 'package:reactive_transport/reactive/channel.dart';
-import 'package:reactive_transport/reactive/configuration.dart';
-import 'package:reactive_transport/reactive/defaults.dart';
-import 'package:reactive_transport/reactive/producer.dart';
-import 'package:reactive_transport/reactive/transport.dart';
+import 'package:reactive/reactive.dart';
 import 'package:test/test.dart';
 
 import 'latch.dart';
@@ -132,7 +128,7 @@ class _ServerChannel with ReactiveChannel {
 
 void custom() {
   test('channel', timeout: Timeout(Duration(seconds: 60)), () async {
-    final transport = Transport();
+    final transport = TransportModule();
     final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport().workerConfiguration));
     await worker.initialize();
     final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport());
@@ -181,7 +177,7 @@ void custom() {
   });
 
   test('channel (server error)', timeout: Timeout(Duration(seconds: 60)), () async {
-    final transport = Transport();
+    final transport = TransportModule();
     final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport().workerConfiguration));
     await worker.initialize();
     final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport());
@@ -233,7 +229,7 @@ void custom() {
   });
 
   test('channel (client error)', timeout: Timeout(Duration(seconds: 60)), () async {
-    final transport = Transport();
+    final transport = TransportModule();
     final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport().workerConfiguration));
     await worker.initialize();
     final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport());

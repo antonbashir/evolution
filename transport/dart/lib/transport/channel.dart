@@ -1,6 +1,8 @@
 import 'dart:ffi';
 import 'dart:typed_data';
 
+import 'package:core/core.dart';
+
 import 'bindings.dart';
 import 'buffers.dart';
 import 'constants.dart';
@@ -8,10 +10,9 @@ import 'constants.dart';
 class TransportChannel {
   final int fd;
   final Pointer<transport_worker_t> _workerPointer;
-  final TransportBindings _bindings;
   final TransportBuffers _buffers;
 
-  const TransportChannel(this._workerPointer, this.fd, this._bindings, this._buffers);
+  const TransportChannel(this._workerPointer, this.fd, this._buffers);
 
   @inline
   void read(
@@ -21,7 +22,7 @@ class TransportChannel {
     int offset = 0,
     int? timeout,
   }) {
-    _bindings.transport_worker_read(
+    transport_worker_read(
       _workerPointer,
       fd,
       bufferId,
@@ -42,7 +43,7 @@ class TransportChannel {
     int? timeout,
   }) {
     _buffers.write(bufferId, bytes);
-    _bindings.transport_worker_write(
+    transport_worker_write(
       _workerPointer,
       fd,
       bufferId,
@@ -62,7 +63,7 @@ class TransportChannel {
     int? timeout,
     int sqeFlags = 0,
   }) {
-    _bindings.transport_worker_receive_message(
+    transport_worker_receive_message(
       _workerPointer,
       fd,
       bufferId,
@@ -86,7 +87,7 @@ class TransportChannel {
     int sqeFlags = 0,
   }) {
     _buffers.write(bufferId, bytes);
-    _bindings.transport_worker_send_message(
+    transport_worker_send_message(
       _workerPointer,
       fd,
       bufferId,
@@ -100,5 +101,5 @@ class TransportChannel {
   }
 
   @inline
-  void close() => _bindings.transport_close_descriptor(fd);
+  void close() => transport_close_descriptor(fd);
 }

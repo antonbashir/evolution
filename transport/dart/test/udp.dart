@@ -13,7 +13,7 @@ import 'validators.dart';
 
 void testUdpSingle({required int index, required int clients}) {
   test("(single) [clients = $clients]", () async {
-    final transport = Transport();
+    final transport = TransportModule();
     final worker = TransportWorker(transport.worker(TransportDefaults.worker()));
     await worker.initialize();
     worker.servers.udp(io.InternetAddress("0.0.0.0"), 12345).stream().listen(
@@ -38,7 +38,7 @@ void testUdpSingle({required int index, required int clients}) {
 
 void testUdpMany({required int index, required int clients, required int count}) {
   test("(many) [clients = $clients, count = $count]", () async {
-    final transport = Transport();
+    final transport = TransportModule();
     final worker = TransportWorker(transport.worker(TransportDefaults.worker()));
     await worker.initialize();
     final serverRequests = BytesBuilder();

@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:core/core.dart';
+
 import 'assembler.dart';
 import 'channel.dart';
 import 'codec.dart';
-import 'constants.dart';
 import 'producer.dart';
 import 'requester.dart';
 

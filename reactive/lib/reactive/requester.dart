@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:core/core.dart';
+
 import 'assembler.dart';
 import 'buffer.dart';
 import 'configuration.dart';

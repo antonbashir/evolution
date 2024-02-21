@@ -11,7 +11,7 @@ import 'server.dart';
 import 'subscriber.dart';
 
 class ReactiveTransport {
-  final Transport _transport;
+  final TransportModule _transport;
   final TransportWorker _worker;
   final ReactiveTransportConfiguration _configuration;
   final List<ReactiveServer> _servers = [];

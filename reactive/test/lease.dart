@@ -1,11 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:iouring_transport/transport/transport.dart';
-import 'package:iouring_transport/transport/worker.dart';
-import 'package:reactive_transport/reactive/configuration.dart';
-import 'package:reactive_transport/reactive/defaults.dart';
-import 'package:reactive_transport/reactive/transport.dart';
+import 'package:transport/transport.dart';
+import 'package:reactive/reactive.dart';
 import 'package:test/test.dart';
 
 import 'latch.dart';
@@ -13,7 +10,7 @@ import 'latch.dart';
 void lease() {
   test("pass", () async {
     final latch = Latch(4);
-    final transport = Transport();
+    final transport = TransportModule();
     final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport().workerConfiguration));
     await worker.initialize();
     final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport());
@@ -61,7 +58,7 @@ void lease() {
 
   test("fail", () async {
     final latch = Latch(1);
-    final transport = Transport();
+    final transport = TransportModule();
     final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport().workerConfiguration));
     await worker.initialize();
     final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport());
@@ -105,7 +102,7 @@ void lease() {
   test("pass -> fail -> pass", () async {
     final payloadLatch = Latch(4);
     final errorLatch = Latch(1);
-    final transport = Transport();
+    final transport = TransportModule();
     final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport().workerConfiguration));
     await worker.initialize();
     final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport());

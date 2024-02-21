@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'constants.dart';
+import 'package:core/core.dart';
 
 class ReactiveLeaseLimiter {
   var _available = 0;

@@ -1,7 +1,7 @@
 library reactive;
 
 export 'package:reactive/reactive/channel.dart' show ReactiveFunctionalChannel, ReactiveChannel;
-export 'package:reactive/reactive/codec.dart' show ReactiveMessagePackCodec, ReactiveRawCodec, ReactiveCodec, ReactiveUtf8Codec;
+export 'package:reactive/reactive/codec.dart' show ReactiveRawCodec, ReactiveCodec, ReactiveUtf8Codec;
 export 'package:reactive/reactive/configuration.dart'
     show ReactiveBrokerConfiguration, ReactiveChannelConfiguration, ReactiveLeaseConfiguration, ReactiveSetupConfiguration, ReactiveTransportConfiguration;
 export 'package:reactive/reactive/defaults.dart' show ReactiveTransportDefaults;

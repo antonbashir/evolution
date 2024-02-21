@@ -2,18 +2,16 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
-import 'package:iouring_transport/transport/transport.dart';
-import 'package:iouring_transport/transport/worker.dart';
-import 'package:reactive_transport/reactive/constants.dart';
-import 'package:reactive_transport/reactive/defaults.dart';
-import 'package:reactive_transport/reactive/transport.dart';
+import 'package:reactive/reactive/constants.dart';
+import 'package:transport/transport.dart';
+import 'package:reactive/reactive.dart';
 import 'package:test/test.dart';
 
 import 'latch.dart';
 
 void fragmentation() {
   test('1 fragmented request', timeout: Timeout(Duration(seconds: 60)), () async {
-    final transport = Transport();
+    final transport = TransportModule();
     final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport().workerConfiguration));
     await worker.initialize();
     final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport());
@@ -51,7 +49,7 @@ void fragmentation() {
   });
 
   test('1 simple request -> 1 fragmented request', timeout: Timeout(Duration(seconds: 60)), () async {
-    final transport = Transport();
+    final transport = TransportModule();
     final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport().workerConfiguration));
     await worker.initialize();
     final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport());
@@ -98,7 +96,7 @@ void fragmentation() {
   });
 
   test('1 simple request -> 1 fragmented request -> 1 simple request', timeout: Timeout(Duration(seconds: 60)), () async {
-    final transport = Transport();
+    final transport = TransportModule();
     final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport().workerConfiguration));
     await worker.initialize();
     final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport());
@@ -152,7 +150,7 @@ void fragmentation() {
   });
 
   test('1 simple request -> 1 fragmented request -> 1 simple request -> 1 fragmented request', timeout: Timeout(Duration(seconds: 60)), () async {
-    final transport = Transport();
+    final transport = TransportModule();
     final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport().workerConfiguration));
     await worker.initialize();
     final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport());

@@ -1,3 +1,5 @@
+import 'package:core/core.dart';
+
 import 'payload.dart';
 import 'bindings.dart';
 import 'constants.dart';
@@ -20,8 +22,7 @@ class TransportInternalException implements Exception {
   TransportInternalException({
     required this.event,
     required this.code,
-    required TransportBindings bindings,
-  }) : this.message = TransportMessages.internalError(event, code, bindings);
+  }) : this.message = TransportMessages.internalError(event, code);
 
   @override
   String toString() => message;
@@ -65,7 +66,7 @@ class TransportZeroDataException implements Exception {
 }
 
 @inline
-Exception createTransportException(TransportEvent event, int result, TransportBindings bindings) {
+Exception createTransportException(TransportEvent event, int result) {
   if (result < 0) {
     if (result == -ECANCELED) {
       return TransportCanceledException(event);
@@ -73,7 +74,6 @@ Exception createTransportException(TransportEvent event, int result, TransportBi
     return TransportInternalException(
       event: event,
       code: result,
-      bindings: bindings,
     );
   }
   return TransportZeroDataException(event);

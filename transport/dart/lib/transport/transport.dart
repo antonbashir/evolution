@@ -3,27 +3,26 @@ import 'dart:ffi';
 import 'dart:isolate';
 import 'dart:math';
 
+import 'package:core/core.dart';
 import 'package:ffi/ffi.dart';
+import 'package:interactor/interactor.dart';
 
 import 'bindings.dart';
 import 'configuration.dart';
 import 'constants.dart';
 import 'exception.dart';
-import 'lookup.dart';
 
-class Transport {
+class TransportModule {
   final _workerClosers = <SendPort>[];
   final _workerPorts = <RawReceivePort>[];
   final _workerDestroyer = ReceivePort();
 
   late final String? _libraryPath;
-  late final TransportBindings _bindings;
-  late final TransportLibrary _library;
 
-  Transport({String? libraryPath}) {
+  TransportModule({String? libraryPath}) {
     this._libraryPath = libraryPath;
-    _library = TransportLibrary.load(libraryPath: libraryPath);
-    _bindings = TransportBindings(_library.library);
+    libraryPath == null ? SystemLibrary.loadByName(transportLibraryName, transportPackageName) : SystemLibrary.loadByPath(libraryPath);
+    InteractorModule();
   }
 
   Future<void> shutdown({Duration? gracefulTimeout}) async {
@@ -53,11 +52,11 @@ class Transport {
         nativeConfiguration.ref.cqe_wait_count = configuration.cqeWaitCount;
         nativeConfiguration.ref.cqe_wait_timeout_millis = configuration.cqeWaitTimeout.inMilliseconds;
         nativeConfiguration.ref.trace = configuration.trace;
-        return _bindings.transport_worker_initialize(workerPointer, nativeConfiguration, _workerClosers.length);
+        return transport_worker_initialize(workerPointer, nativeConfiguration, _workerClosers.length);
       });
       if (result < 0) {
-        _bindings.transport_worker_destroy(workerPointer);
-        throw TransportInitializationException(TransportMessages.workerError(result, _bindings));
+        transport_worker_destroy(workerPointer);
+        throw TransportInitializationException(TransportMessages.workerError(result));
       }
       final workerInput = [_libraryPath, workerPointer.address, _workerDestroyer.sendPort];
       toWorker.send(workerInput);

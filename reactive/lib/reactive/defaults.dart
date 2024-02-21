@@ -22,15 +22,14 @@ class ReactiveTransportDefaults {
 
   static ReactiveBrokerConfiguration broker() => ReactiveBrokerConfiguration(
         codecs: {
-          messagePackMimeType: ReactiveMessagePackCodec(),
           octetStreamMimeType: ReactiveRawCodec(),
           textMimeType: ReactiveUtf8Codec(),
         },
       );
 
   static ReactiveSetupConfiguration setup() => ReactiveSetupConfiguration(
-        metadataMimeType: messagePackMimeType,
-        dataMimeType: messagePackMimeType,
+        metadataMimeType: octetStreamMimeType,
+        dataMimeType: octetStreamMimeType,
         keepAliveInterval: Duration(seconds: 20),
         keepAliveMaxLifetime: Duration(seconds: 90),
         lease: false,

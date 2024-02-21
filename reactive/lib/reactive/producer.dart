@@ -1,3 +1,5 @@
+import 'package:core/core.dart';
+
 import 'codec.dart';
 import 'constants.dart';
 import 'requester.dart';

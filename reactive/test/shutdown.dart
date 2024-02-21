@@ -2,18 +2,16 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
+import 'package:reactive/reactive.dart';
+import 'package:reactive/reactive/constants.dart';
 import 'package:transport/transport.dart';
-import 'package:reactive_transport/reactive/constants.dart';
-import 'package:reactive_transport/reactive/defaults.dart';
-import 'package:reactive_transport/reactive/producer.dart';
-import 'package:reactive_transport/reactive/transport.dart';
 import 'package:test/test.dart';
 
 import 'latch.dart';
 
 void shutdown() {
   test("shutdown (before initialization)", () async {
-    final transport = Transport();
+    final transport = TransportModule();
     final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport().workerConfiguration));
     await worker.initialize();
     final serverReactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport());
@@ -45,7 +43,7 @@ void shutdown() {
   });
 
   test("shutdown (after initialization)", () async {
-    final transport = Transport();
+    final transport = TransportModule();
     final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport().workerConfiguration));
     await worker.initialize();
     final serverReactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport());
@@ -85,7 +83,7 @@ void shutdown() {
   });
 
   test("graceful shutdown", () async {
-    final transport = Transport();
+    final transport = TransportModule();
     final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport().workerConfiguration));
     await worker.initialize();
     final serverReactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport().copyWith(gracefulTimeout: Duration(seconds: 1)));
@@ -141,7 +139,7 @@ void shutdown() {
   });
 
   test("graceful shutdown (fragmentation)", () async {
-    final transport = Transport();
+    final transport = TransportModule();
     final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport().workerConfiguration));
     await worker.initialize();
     final serverReactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport().copyWith(gracefulTimeout: Duration(seconds: 1)));

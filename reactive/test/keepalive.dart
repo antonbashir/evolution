@@ -1,12 +1,9 @@
 import 'dart:io';
 
-import 'package:iouring_transport/transport/transport.dart';
-import 'package:iouring_transport/transport/worker.dart';
-import 'package:reactive_transport/reactive/defaults.dart';
-import 'package:reactive_transport/reactive/frame.dart';
-import 'package:reactive_transport/reactive/transport.dart';
+import 'package:reactive/reactive/frame.dart';
+import 'package:transport/transport.dart';
+import 'package:reactive/reactive.dart';
 import 'package:test/test.dart';
-
 import 'latch.dart';
 
 void keepalive() {
@@ -23,7 +20,7 @@ void keepalive() {
       }
     }
 
-    final transport = Transport();
+    final transport = TransportModule();
     final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport().workerConfiguration));
     await worker.initialize();
     final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport().copyWith(tracer: _trace));
@@ -49,7 +46,7 @@ void keepalive() {
   test('fail', timeout: Timeout(Duration(seconds: 60)), () async {
     final latch = Latch(2);
 
-    final transport = Transport();
+    final transport = TransportModule();
     final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport().workerConfiguration));
     await worker.initialize();
     final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport());

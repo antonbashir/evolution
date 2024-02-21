@@ -12,7 +12,6 @@ import 'client/registry.dart';
 import 'constants.dart';
 import 'file/factory.dart';
 import 'file/registry.dart';
-import 'lookup.dart';
 import 'payload.dart';
 import 'server/factory.dart';
 import 'server/registry.dart';
@@ -22,7 +21,6 @@ import 'timeout.dart';
 class TransportWorker {
   final _fromTransport = ReceivePort();
 
-  late final TransportBindings _bindings;
   late final Pointer<transport_worker_t> _workerPointer;
   late final Pointer<io_uring> _ring;
   late final Pointer<Pointer<io_uring_cqe>> _cqes;
@@ -58,7 +56,7 @@ class TransportWorker {
       await _serverRegistry.close(gracefulTimeout: gracefulTimeout);
       _active = false;
       await _done.future;
-      _bindings.transport_worker_destroy(_workerPointer);
+      transport_worker_destroy(_workerPointer);
       _closer.close();
       _destroyer.send(null);
     });
@@ -71,9 +69,7 @@ class TransportWorker {
     _workerPointer = Pointer.fromAddress(configuration[1] as int).cast<transport_worker_t>();
     _destroyer = configuration[2] as SendPort;
     _fromTransport.close();
-    _bindings = TransportBindings(TransportLibrary.load(libraryPath: libraryPath).library);
     _buffers = TransportBuffers(
-      _bindings,
       _workerPointer.ref.buffers,
       _workerPointer,
     );
@@ -83,7 +79,6 @@ class TransportWorker {
     _serverRegistry = TransportServerRegistry();
     _serversFactory = TransportServersFactory(
       _serverRegistry,
-      _bindings,
       _workerPointer,
       _buffers,
       _payloadPool,
@@ -91,7 +86,6 @@ class TransportWorker {
     );
     _clientsFactory = TransportClientsFactory(
       _clientRegistry,
-      _bindings,
       _workerPointer,
       _buffers,
       _payloadPool,
@@ -99,7 +93,6 @@ class TransportWorker {
     _filesRegistry = TransportFileRegistry();
     _filesFactory = TransportFilesFactory(
       _filesRegistry,
-      _bindings,
       _workerPointer,
       _buffers,
       _payloadPool,
@@ -107,7 +100,6 @@ class TransportWorker {
     _ring = _workerPointer.ref.ring;
     _cqes = _workerPointer.ref.cqes;
     _timeoutChecker = TransportTimeoutChecker(
-      _bindings,
       _workerPointer,
       Duration(milliseconds: _workerPointer.ref.timeout_checker_period_millis),
     );
@@ -133,12 +125,12 @@ class TransportWorker {
   }
 
   bool _handleCqes() {
-    final cqeCount = _bindings.transport_worker_peek(_workerPointer);
+    final cqeCount = transport_worker_peek(_workerPointer);
     if (cqeCount == 0) return false;
     for (var cqeIndex = 0; cqeIndex < cqeCount; cqeIndex++) {
       final cqe = _cqes.elementAt(cqeIndex).value;
       final data = cqe.ref.user_data;
-      _bindings.transport_worker_remove_event(_workerPointer, data);
+      transport_worker_remove_event(_workerPointer, data);
       final result = cqe.ref.res;
       var event = data & 0xffff;
       final fd = (data >> 32) & 0xffffffff;
@@ -174,7 +166,7 @@ class TransportWorker {
         continue;
       }
     }
-    _bindings.transport_cqe_advance(_ring, cqeCount);
+    transport_cqe_advance(_ring, cqeCount);
     return true;
   }
 

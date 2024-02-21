@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:core/core.dart';
+
 import 'buffer.dart';
 import 'constants.dart';
 import 'exception.dart';

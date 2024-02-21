@@ -48,7 +48,7 @@ class TransportServersFactory {
         if (pointer == nullptr) {
           throw TransportInitializationException(TransportMessages.serverMemoryError);
         }
-        final result = _bindings.transport_server_initialize_tcp(
+        final result = transport_server_initialize_tcp(
           pointer,
           _tcpConfiguration(configuration!, arena),
           address.address.toNativeUtf8(allocator: arena).cast(),
@@ -56,7 +56,7 @@ class TransportServersFactory {
         );
         if (result < 0) {
           if (pointer.ref.fd > 0) {
-            _bindings.transport_close_descriptor(pointer.ref.fd);
+            transport_close_descriptor(pointer.ref.fd);
             calloc.free(pointer);
             throw TransportInitializationException(TransportMessages.serverError(result, _bindings));
           }
@@ -92,7 +92,7 @@ class TransportServersFactory {
         if (pointer == nullptr) {
           throw TransportInitializationException(TransportMessages.serverMemoryError);
         }
-        final result = _bindings.transport_server_initialize_udp(
+        final result = transport_server_initialize_udp(
           pointer,
           _udpConfiguration(configuration!, arena),
           address.address.toNativeUtf8(allocator: arena).cast(),
@@ -100,7 +100,7 @@ class TransportServersFactory {
         );
         if (result < 0) {
           if (pointer.ref.fd > 0) {
-            _bindings.transport_close_descriptor(pointer.ref.fd);
+            transport_close_descriptor(pointer.ref.fd);
             calloc.free(pointer);
             throw TransportInitializationException(TransportMessages.serverError(result, _bindings));
           }
@@ -110,7 +110,7 @@ class TransportServersFactory {
         if (configuration.multicastManager != null) {
           configuration.multicastManager!.subscribe(
             onAddMembership: (configuration) => using(
-              (arena) => _bindings.transport_socket_multicast_add_membership(
+              (arena) => transport_socket_multicast_add_membership(
                 pointer.ref.fd,
                 configuration.groupAddress.toNativeUtf8(allocator: arena).cast(),
                 configuration.localAddress.toNativeUtf8(allocator: arena).cast(),
@@ -118,7 +118,7 @@ class TransportServersFactory {
               ),
             ),
             onDropMembership: (configuration) => using(
-              (arena) => _bindings.transport_socket_multicast_drop_membership(
+              (arena) => transport_socket_multicast_drop_membership(
                 pointer.ref.fd,
                 configuration.groupAddress.toNativeUtf8(allocator: arena).cast(),
                 configuration.localAddress.toNativeUtf8(allocator: arena).cast(),
@@ -126,7 +126,7 @@ class TransportServersFactory {
               ),
             ),
             onAddSourceMembership: (configuration) => using(
-              (arena) => _bindings.transport_socket_multicast_add_source_membership(
+              (arena) => transport_socket_multicast_add_source_membership(
                 pointer.ref.fd,
                 configuration.groupAddress.toNativeUtf8(allocator: arena).cast(),
                 configuration.localAddress.toNativeUtf8(allocator: arena).cast(),
@@ -134,7 +134,7 @@ class TransportServersFactory {
               ),
             ),
             onDropSourceMembership: (configuration) => using(
-              (arena) => _bindings.transport_socket_multicast_drop_source_membership(
+              (arena) => transport_socket_multicast_drop_source_membership(
                 pointer.ref.fd,
                 configuration.groupAddress.toNativeUtf8(allocator: arena).cast(),
                 configuration.localAddress.toNativeUtf8(allocator: arena).cast(),
@@ -178,14 +178,14 @@ class TransportServersFactory {
         if (pointer == nullptr) {
           throw TransportInitializationException(TransportMessages.serverMemoryError);
         }
-        final result = _bindings.transport_server_initialize_unix_stream(
+        final result = transport_server_initialize_unix_stream(
           pointer,
           _unixStreamConfiguration(configuration!, arena),
           path.toNativeUtf8(allocator: arena).cast(),
         );
         if (result < 0) {
           if (pointer.ref.fd > 0) {
-            _bindings.transport_close_descriptor(pointer.ref.fd);
+            transport_close_descriptor(pointer.ref.fd);
             calloc.free(pointer);
             throw TransportInitializationException(TransportMessages.serverError(result, _bindings));
           }
@@ -308,7 +308,7 @@ class TransportServersFactory {
       flags |= transportSocketOptionIpMulticastIf;
       final interface = serverConfiguration.ipMulticastInterface!;
       nativeServerConfiguration.ref.ip_multicast_interface = allocator<ip_mreqn>();
-      _bindings.transport_socket_initialize_multicast_request(
+      transport_socket_initialize_multicast_request(
         nativeServerConfiguration.ref.ip_multicast_interface,
         interface.groupAddress.toNativeUtf8(allocator: allocator).cast(),
         interface.localAddress.toNativeUtf8(allocator: allocator).cast(),
@@ -351,7 +351,7 @@ class TransportServersFactory {
   int _getMembershipIndex(TransportUdpMulticastConfiguration configuration) => using(
         (arena) {
           if (configuration.calculateInterfaceIndex) {
-            return _bindings.transport_socket_get_interface_index(configuration.localInterface!.toNativeUtf8(allocator: arena).cast());
+            return transport_socket_get_interface_index(configuration.localInterface!.toNativeUtf8(allocator: arena).cast());
           }
           return configuration.interfaceIndex!;
         },

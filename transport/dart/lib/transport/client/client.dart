@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ffi';
 import 'dart:typed_data';
 
+import 'package:core/core.dart';
 import 'package:meta/meta.dart';
 
 import '../bindings.dart';
@@ -20,7 +21,6 @@ class TransportClientChannel {
   final Pointer<transport_client_t> _pointer;
   final Pointer<transport_worker_t> _workerPointer;
   final TransportChannel _channel;
-  final TransportBindings _bindings;
   final int? _connectTimeout;
   final int? _readTimeout;
   final int? _writeTimeout;
@@ -43,7 +43,6 @@ class TransportClientChannel {
     this._channel,
     this._pointer,
     this._workerPointer,
-    this._bindings,
     this._readTimeout,
     this._writeTimeout,
     this._buffers,
@@ -51,7 +50,7 @@ class TransportClientChannel {
     this._payloadPool, {
     int? connectTimeout,
   }) : _connectTimeout = connectTimeout {
-    _destination = _bindings.transport_client_get_destination_address(_pointer);
+    _destination = transport_client_get_destination_address(_pointer);
   }
 
   Future<void> read() async {
@@ -178,7 +177,7 @@ class TransportClientChannel {
   @inline
   Future<TransportClientChannel> connect() {
     if (_closing) return Future.error(TransportClosedException.forClient());
-    _bindings.transport_worker_connect(_workerPointer, _pointer, _connectTimeout!);
+    transport_worker_connect(_workerPointer, _pointer, _connectTimeout!);
     _pending++;
     return _connector.future.then((_) => this);
   }
@@ -202,7 +201,6 @@ class TransportClientChannel {
         TransportInternalException(
           event: TransportEvent.connect,
           code: result,
-          bindings: _bindings,
         ),
       );
       return;
@@ -225,7 +223,7 @@ class TransportClientChannel {
         }
         _buffers.release(bufferId);
         if (result < 0) {
-          _inboundEvents.addError(createTransportException(TransportEvent.clientEvent(event), result, _bindings));
+          _inboundEvents.addError(createTransportException(TransportEvent.clientEvent(event), result));
         }
         unawaited(close());
         return;
@@ -237,7 +235,7 @@ class TransportClientChannel {
           return;
         }
         _buffers.release(bufferId);
-        _inboundEvents.addError(createTransportException(TransportEvent.clientEvent(event), result, _bindings));
+        _inboundEvents.addError(createTransportException(TransportEvent.clientEvent(event), result));
         return;
       }
       if (event == transportEventWrite) {
@@ -246,7 +244,7 @@ class TransportClientChannel {
           _outboundDoneHandlers.remove(bufferId)?.call();
           return;
         }
-        _outboundErrorHandlers.remove(bufferId)?.call(createTransportException(TransportEvent.clientEvent(event), result, _bindings));
+        _outboundErrorHandlers.remove(bufferId)?.call(createTransportException(TransportEvent.clientEvent(event), result));
         return;
       }
       if (event == transportEventSendMessage) {
@@ -255,7 +253,7 @@ class TransportClientChannel {
           _outboundDoneHandlers.remove(bufferId)?.call();
           return;
         }
-        _outboundErrorHandlers.remove(bufferId)?.call(createTransportException(TransportEvent.clientEvent(event), result, _bindings));
+        _outboundErrorHandlers.remove(bufferId)?.call(createTransportException(TransportEvent.clientEvent(event), result));
         return;
       }
       _buffers.release(bufferId);
@@ -276,25 +274,15 @@ class TransportClientChannel {
     if (_pending > 0) {
       if (gracefulTimeout == null) {
         _active = false;
-        _bindings.transport_worker_cancel_by_fd(_workerPointer, _pointer.ref.fd);
+        transport_worker_cancel_by_fd(_workerPointer, _pointer.ref.fd);
         await _closer.future;
-      }
-      if (gracefulTimeout != null) {
-        await _closer.future.timeout(
-          gracefulTimeout,
-          onTimeout: () async {
-            _active = false;
-            _bindings.transport_worker_cancel_by_fd(_workerPointer, _pointer.ref.fd);
-            await _closer.future;
-          },
-        );
       }
     }
     _active = false;
     if (_inboundEvents.hasListener) await _inboundEvents.close();
     _channel.close();
     _registry.remove(_pointer.ref.fd);
-    _bindings.transport_client_destroy(_pointer);
+    transport_client_destroy(_pointer);
   }
 
   @visibleForTesting

@@ -3,6 +3,8 @@ import 'dart:collection';
 import 'dart:ffi';
 import 'dart:typed_data';
 
+import 'package:core/core.dart';
+
 import 'bindings.dart';
 import 'constants.dart';
 
@@ -22,7 +24,7 @@ class TransportBuffers {
 
   @inline
   void release(int bufferId) {
-    _bindings.transport_worker_release_buffer(_worker, bufferId);
+    transport_worker_release_buffer(_worker, bufferId);
     if (_finalizers.isNotEmpty) _finalizers.removeLast().complete();
   }
 
@@ -45,23 +47,23 @@ class TransportBuffers {
 
   @inline
   int? get() {
-    final buffer = _bindings.transport_worker_get_buffer(_worker);
+    final buffer = transport_worker_get_buffer(_worker);
     if (buffer == transportBufferUsed) return null;
     return buffer;
   }
 
   Future<int> allocate() async {
-    var bufferId = _bindings.transport_worker_get_buffer(_worker);
+    var bufferId = transport_worker_get_buffer(_worker);
     while (bufferId == transportBufferUsed) {
       if (_finalizers.isNotEmpty) {
         await _finalizers.last.future;
-        bufferId = _bindings.transport_worker_get_buffer(_worker);
+        bufferId = transport_worker_get_buffer(_worker);
         continue;
       }
       final completer = Completer();
       _finalizers.add(completer);
       await completer.future;
-      bufferId = _bindings.transport_worker_get_buffer(_worker);
+      bufferId = transport_worker_get_buffer(_worker);
     }
     return bufferId;
   }
@@ -73,10 +75,10 @@ class TransportBuffers {
   }
 
   @inline
-  int available() => _bindings.transport_worker_available_buffers(_worker);
+  int available() => transport_worker_available_buffers(_worker);
 
   @inline
-  int used() => _bindings.transport_worker_used_buffers(_worker);
+  int used() => transport_worker_used_buffers(_worker);
 
   @inline
   void releaseArray(List<int> buffers) {

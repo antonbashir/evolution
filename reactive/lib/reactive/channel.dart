@@ -1,7 +1,8 @@
 import 'dart:async';
 
+import 'package:core/core.dart';
+
 import 'configuration.dart';
-import 'constants.dart';
 import 'producer.dart';
 
 abstract mixin class ReactiveChannel {
