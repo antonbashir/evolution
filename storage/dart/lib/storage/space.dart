@@ -9,6 +9,7 @@ import 'package:memory/memory.dart';
 import 'bindings.dart';
 import 'constants.dart';
 import 'executor.dart';
+import 'factory.dart';
 import 'iterator.dart';
 
 class StorageSpace {
@@ -16,7 +17,7 @@ class StorageSpace {
   final int _descriptor;
   final StorageProducer _producer;
   final MemoryTuples _tuples;
-  final Pointer<tarantool_factory> _factory;
+  final StorageFactory _factory;
 
   StorageSpace(
     this._id,

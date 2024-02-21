@@ -6,14 +6,15 @@ import 'package:interactor/interactor.dart';
 
 import 'bindings.dart';
 import 'executor.dart';
+import 'factory.dart';
 
 class StorageIterator {
-  final Pointer<tarantool_factory> _factory;
   final int _iterator;
-  final StorageProducer _producer;
   final int _descriptor;
+  final StorageFactory _factory;
+  final StorageProducer _producer;
 
-  const StorageIterator(this._factory, this._iterator, this._producer, this._descriptor);
+  const StorageIterator(this._iterator, this._descriptor, this._factory, this._producer);
 
   @inline
   Pointer<tarantool_tuple_t> _completeNextSingle(Pointer<interactor_message> message) {

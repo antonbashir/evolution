@@ -5,7 +5,7 @@ import 'package:interactor/interactor.dart';
 import 'package:memory/memory.dart';
 
 import 'bindings.dart';
-import 'serialization.dart';
+import 'strings.dart';
 
 class StorageFactory {
   final StorageStrings _strings;
@@ -95,8 +95,8 @@ class StorageFactory {
   }
 
   @inline
-  Pointer<interactor_message> prepareEvaluate(String function, Pointer<Uint8> input, int inputSize) {
-    final (expressionString, expressionLength) = _strings.createString(function);
+  Pointer<interactor_message> prepareEvaluate(String expression, Pointer<Uint8> input, int inputSize) {
+    final (expressionString, expressionLength) = _strings.createString(expression);
     final request = _evaluateRequests.allocate();
     request.ref.expression = expressionString;
     request.ref.expression_length = expressionLength;

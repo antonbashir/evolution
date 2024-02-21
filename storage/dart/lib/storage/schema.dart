@@ -9,9 +9,10 @@ import 'extensions.dart';
 import 'bindings.dart';
 import 'constants.dart';
 import 'executor.dart';
+import 'factory.dart';
 import 'index.dart';
 import 'lua.dart';
-import 'serialization.dart';
+import 'strings.dart';
 import 'space.dart';
 
 class StorageSpaceField {
@@ -81,17 +82,15 @@ class StorageSchema {
   final int _descriptor;
   final MemoryTuples _tuples;
   final StorageExecutor _executor;
-  final StorageStrings _serialization;
   final StorageProducer _producer;
-  final Pointer<tarantool_factory> _factory;
+  final StorageFactory _factory;
 
   const StorageSchema(
     this._descriptor,
-    this._factory,
     this._executor,
     this._tuples,
-    this._serialization,
     this._producer,
+    this._factory,
   );
 
   StorageSpace spaceById(int id) => StorageSpace(id, _descriptor, _producer, _factory, _tuples);
@@ -99,7 +98,7 @@ class StorageSchema {
   Future<StorageSpace> spaceByName(String space) => spaceId(space).then((id) => StorageSpace(id, _descriptor, _producer, _factory, _tuples));
 
   Future<int> spaceId(String space) {
-    final (spaceString, spaceStringLength) = _serialization.createString(space);
+    final (spaceString, spaceStringLength) = _strings.createString(space);
     final message = tarantool_space_id_by_name_prepare(_factory, spaceString, spaceStringLength);
     return _producer.spaceIdByName(_descriptor, message).then(_parseSpaceId);
   }
@@ -126,7 +125,7 @@ class StorageSchema {
       );
 
   Future<int> indexId(int spaceId, String index) {
-    final (indexString, indexStringLength) = _serialization.createString(index);
+    final (indexString, indexStringLength) = _strings.createString(index);
     final message = tarantool_index_id_request_prepare(_factory, spaceId, indexString, indexStringLength);
     return _producer.indexIdByName(_descriptor, message).then(_parseSpaceId);
   }
@@ -235,7 +234,7 @@ class StorageSchema {
         .call(
           LuaExpressions.userExists,
           input: tuple,
-          size: tupleSize,
+          inputSize: tupleSize,
         )
         .then(tarantoolCallExtractBool)
         .then((value) => value ?? false)

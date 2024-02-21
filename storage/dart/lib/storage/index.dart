@@ -9,6 +9,7 @@ import 'package:memory/memory.dart';
 import 'bindings.dart';
 import 'constants.dart';
 import 'executor.dart';
+import 'factory.dart';
 import 'iterator.dart';
 
 class StorageIndex {
@@ -16,7 +17,7 @@ class StorageIndex {
   final int _indexId;
   final int _descriptor;
   final MemoryTuples _tuples;
-  final Pointer<tarantool_factory> _factory;
+  final StorageFactory _factory;
   final StorageProducer _producer;
 
   StorageIndex(this._spaceId, this._indexId, this._descriptor, this._tuples, this._factory, this._producer);

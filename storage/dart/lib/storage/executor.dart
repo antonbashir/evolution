@@ -14,7 +14,7 @@ import 'configuration.dart';
 import 'constants.dart';
 import 'factory.dart';
 import 'schema.dart';
-import 'serialization.dart';
+import 'strings.dart';
 
 class StorageProducer implements InteractorProducer {
   final Pointer<tarantool_box> _box;
@@ -163,28 +163,25 @@ class StorageExecutor {
     final size = configuration.tupleSize;
     final (pointer, buffer, data) = _tuples.prepare(size);
     configuration.serialize(buffer, data, 0);
-    return call(LuaExpressions.boot, input: pointer, size: size);
+    return call(LuaExpressions.boot, input: pointer, inputSize: size);
   }
 
   @inline
-  Future<(Uint8List, void Function())> evaluate(String expression, {Pointer<Uint8>? input, int size = 0}) {
-    final (expressionString, expressionLength) = _strings.createString(expression);
+  Future<(Uint8List, void Function())> evaluate(String expression, {Pointer<Uint8>? input, int inputSize = 0}) {
     if (input != null) {
-      final message = tarantool_evaluate_request_prepare(_nativeFactory, expressionString, expressionLength, input.cast(), size);
-      return _producer.evaluate(_descriptor, message).then(_parseLuaEvaluate).whenComplete(() => _strings.freeString(expressionString, expressionLength));
+      return _producer.evaluate(_descriptor, _factory.prepareEvaluate(expression, input, inputSize)).then(_parseLuaEvaluate);
     }
-    (input, size) = _tuples.emptyList;
-    final message = tarantool_evaluate_request_prepare(_nativeFactory, expressionString, expressionLength, input.cast(), size);
-    return _producer.evaluate(_descriptor, message).then(_parseLuaEvaluate).whenComplete(() => _strings.freeString(expressionString, expressionLength));
+    (input, inputSize) = _tuples.emptyList;
+    return _producer.evaluate(_descriptor, _factory.prepareEvaluate(expression, input, inputSize)).then(_parseLuaEvaluate);
   }
 
   @inline
-  Future<(Uint8List, void Function())> call(String function, {Pointer<Uint8>? input, int size = 0}) {
+  Future<(Uint8List, void Function())> call(String function, {Pointer<Uint8>? input, int inputSize = 0}) {
     if (input != null) {
-      return _producer.call(_descriptor, _factory.prepareCall(function, input, size)).then(_parseLuaCall);
+      return _producer.call(_descriptor, _factory.prepareCall(function, input, inputSize)).then(_parseLuaCall);
     }
-    (input, size) = _tuples.emptyList;
-    return _producer.call(_descriptor, _factory.prepareCall(function, input, size)).then(_parseLuaCall);
+    (input, inputSize) = _tuples.emptyList;
+    return _producer.call(_descriptor, _factory.prepareCall(function, input, inputSize)).then(_parseLuaCall);
   }
 
   @inline
@@ -194,14 +191,11 @@ class StorageExecutor {
   Future<void> require(String module) => evaluate(LuaExpressions.require(module));
 
   @inline
-  void _freeOutputBuffer(Pointer<interactor_message> freeMessage) => tarantool_free_output_buffer_free(_nativeFactory, freeMessage);
-
-  @inline
   (Uint8List, void Function()) _parseLuaEvaluate(Pointer<interactor_message> message) {
     final buffer = message.outputPointer;
     final bufferSize = message.outputSize;
     final result = buffer.cast<Uint8>().asTypedList(message.outputSize);
-    tarantool_evaluate_request_free(_nativeFactory, message);
+    _factory.releaseEvaluate(message.getInputObject());
     return (result, () {});
   }
 
@@ -210,7 +204,7 @@ class StorageExecutor {
     final buffer = message.outputPointer;
     final bufferSize = message.outputSize;
     final result = message.outputPointer.cast<Uint8>().asTypedList(message.outputSize);
-    _factory.releaseCall(message.inputPointer.cast());
+    _factory.releaseCall(message.getInputObject());
     return (result, () {});
   }
 }
