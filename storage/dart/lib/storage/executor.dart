@@ -181,12 +181,10 @@ class StorageExecutor {
   @inline
   Future<(Uint8List, void Function())> call(String function, {Pointer<Uint8>? input, int size = 0}) {
     if (input != null) {
-      final request = _factory.prepareCall(function, input, size);
-      return _producer.call(_descriptor, request.ref.message_pointer).then(_parseLuaCall);
+      return _producer.call(_descriptor, _factory.prepareCall(function, input, size)).then(_parseLuaCall);
     }
     (input, size) = _tuples.emptyList;
-    final request = _factory.prepareCall(function, input, size);
-    return _producer.call(_descriptor, request.ref.message_pointer).then(_parseLuaCall);
+    return _producer.call(_descriptor, _factory.prepareCall(function, input, size)).then(_parseLuaCall);
   }
 
   @inline

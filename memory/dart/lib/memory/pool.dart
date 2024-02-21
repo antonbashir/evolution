@@ -18,9 +18,7 @@ class MemoryObjectPool<T> {
       : _queue = ListQueue(configuration.initialCapacity),
         _extensionFactor = configuration.extensionFactor,
         _shrinkFactor = configuration.shrinkFactor {
-    for (var i = 0; i < configuration.preallocation; i++) {
-      release(_allocator());
-    }
+    for (var i = 0; i < configuration.preallocation; i++) _queue.add(_allocator());
   }
 
   @inline
@@ -28,11 +26,14 @@ class MemoryObjectPool<T> {
     if (_queue.isEmpty) {
       final message = _allocator();
       release(message);
-      Future.microtask(_extend);
+      Future.microtask(() => _extend((_queue.length * _extensionFactor).ceil()));
       return message;
     }
-    if (_queue.length < configuration.minimalAvailableCapacity) Future.microtask(_extend);
-    return _queue.removeLast();
+    final allocated = _queue.removeLast();
+    if (_queue.length < configuration.minimalAvailableCapacity) {
+      Future.microtask(() => _extend((_queue.length * _extensionFactor).ceil()));
+    }
+    return allocated;
   }
 
   @inline
@@ -43,16 +44,14 @@ class MemoryObjectPool<T> {
 
   void _shrink() {
     var shrink = _queue.length * _shrinkFactor;
-    while (--shrink > 0 && _queue.isNotEmpty) {
+    while (--shrink > 0 && _queue.isNotEmpty && _queue.length > configuration.minimalAvailableCapacity) {
       _releaser(_queue.removeLast());
     }
   }
 
-  void _extend() {
-    final newSize = _queue.length * _extensionFactor;
-    final toAllocate = newSize - _queue.length;
-    for (var i = 0; i < toAllocate; i++) {
-      release(_allocator());
-    }
+  void _extend(int nextCapacity) {
+    if (_queue.length >= nextCapacity) return;
+    final toAllocate = nextCapacity - _queue.length;
+    for (var i = 0; i < toAllocate; i++) _queue.add(_allocator());
   }
 }

@@ -16,22 +16,6 @@ extern "C"
     {
         tarantool_factory_memory* memory;
         tarantool_factory_small_alloc* tarantool_datas;
-        tarantool_factory_mempool* tarantool_messages;
-        tarantool_factory_mempool* tarantool_call_requests;
-        tarantool_factory_mempool* tarantool_evaluate_requests;
-        tarantool_factory_mempool* tarantool_space_requests;
-        tarantool_factory_mempool* tarantool_space_count_requests;
-        tarantool_factory_mempool* tarantool_space_select_requests;
-        tarantool_factory_mempool* tarantool_space_update_requests;
-        tarantool_factory_mempool* tarantool_space_upsert_requests;
-        tarantool_factory_mempool* tarantool_space_iterator_requests;
-        tarantool_factory_mempool* tarantool_index_requests;
-        tarantool_factory_mempool* tarantool_index_count_requests;
-        tarantool_factory_mempool* tarantool_index_id_requests;
-        tarantool_factory_mempool* tarantool_index_update_requests;
-        tarantool_factory_mempool* tarantool_index_iterator_requests;
-        tarantool_factory_mempool* tarantool_index_select_requests;
-        tarantool_factory_mempool* tarantool_index_index_ids;
     };
 
     struct tarantool_factory_configuration
@@ -43,7 +27,7 @@ extern "C"
 
     int tarantool_factory_initialize(struct tarantool_factory* factory, struct tarantool_factory_configuration* configuration);
 
-    struct interactor_message* tarantool_space_request_prepare(struct tarantool_factory* factory, uint32_t space_id, const char* tuple, size_t tuple_size);
+    struct tarantool_space_request* tarantool_space_request_prepare(struct tarantool_factory* factory);
     void tarantool_space_request_free(struct tarantool_factory* factory, struct interactor_message* message);
 
     struct interactor_message* tarantool_space_count_request_prepare(struct tarantool_factory* factory, uint32_t space_id, int iterator_type, const char* key, size_t key_size);

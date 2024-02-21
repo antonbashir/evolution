@@ -100,3 +100,5 @@ extension InteractorMessageExtensions on Pointer<interactor_message> {
   @inline
   T parseOutputObject<T, O extends Struct>(T Function(Pointer<O> object) mapper) => mapper(getOutputObject<O>());
 }
+
+final interactorMessageSize = sizeOf<interactor_message>();

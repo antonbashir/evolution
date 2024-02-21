@@ -1265,6 +1265,10 @@ final class tarantool_space_request extends ffi.Struct {
 
   @ffi.Uint32()
   external int space_id;
+
+  external interactor.interactor_message message;
+
+  external ffi.Pointer<interactor.interactor_message> message_pointer;
 }
 
 final class tarantool_space_count_request extends ffi.Struct {
@@ -1278,6 +1282,10 @@ final class tarantool_space_count_request extends ffi.Struct {
 
   @ffi.Int()
   external int iterator_type;
+
+  external interactor.interactor_message message;
+
+  external ffi.Pointer<interactor.interactor_message> message_pointer;
 }
 
 final class tarantool_space_select_request extends ffi.Struct {
@@ -1297,6 +1305,10 @@ final class tarantool_space_select_request extends ffi.Struct {
 
   @ffi.Int()
   external int iterator_type;
+
+  external interactor.interactor_message message;
+
+  external ffi.Pointer<interactor.interactor_message> message_pointer;
 }
 
 final class tarantool_space_update_request extends ffi.Struct {
@@ -1312,6 +1324,10 @@ final class tarantool_space_update_request extends ffi.Struct {
 
   @ffi.Uint32()
   external int space_id;
+
+  external interactor.interactor_message message;
+
+  external ffi.Pointer<interactor.interactor_message> message_pointer;
 }
 
 final class tarantool_space_upsert_request extends ffi.Struct {
@@ -1327,6 +1343,10 @@ final class tarantool_space_upsert_request extends ffi.Struct {
 
   @ffi.Uint32()
   external int space_id;
+
+  external interactor.interactor_message message;
+
+  external ffi.Pointer<interactor.interactor_message> message_pointer;
 }
 
 final class tarantool_space_iterator_request extends ffi.Struct {
@@ -1340,6 +1360,10 @@ final class tarantool_space_iterator_request extends ffi.Struct {
 
   @ffi.Int()
   external int type;
+
+  external interactor.interactor_message message;
+
+  external ffi.Pointer<interactor.interactor_message> message_pointer;
 }
 
 final class tarantool_index_request extends ffi.Struct {
@@ -1353,6 +1377,10 @@ final class tarantool_index_request extends ffi.Struct {
 
   @ffi.Uint32()
   external int index_id;
+
+  external interactor.interactor_message message;
+
+  external ffi.Pointer<interactor.interactor_message> message_pointer;
 }
 
 final class tarantool_index_count_request extends ffi.Struct {
@@ -1369,6 +1397,10 @@ final class tarantool_index_count_request extends ffi.Struct {
 
   @ffi.Int()
   external int iterator_type;
+
+  external interactor.interactor_message message;
+
+  external ffi.Pointer<interactor.interactor_message> message_pointer;
 }
 
 final class tarantool_index_id_request extends ffi.Struct {
@@ -1379,6 +1411,10 @@ final class tarantool_index_id_request extends ffi.Struct {
 
   @ffi.Uint32()
   external int space_id;
+
+  external interactor.interactor_message message;
+
+  external ffi.Pointer<interactor.interactor_message> message_pointer;
 }
 
 final class tarantool_index_update_request extends ffi.Struct {
@@ -1397,6 +1433,10 @@ final class tarantool_index_update_request extends ffi.Struct {
 
   @ffi.Uint32()
   external int index_id;
+
+  external interactor.interactor_message message;
+
+  external ffi.Pointer<interactor.interactor_message> message_pointer;
 }
 
 final class tarantool_call_request extends ffi.Struct {
@@ -1425,6 +1465,10 @@ final class tarantool_evaluate_request extends ffi.Struct {
 
   @ffi.Uint32()
   external int expression_length;
+
+  external interactor.interactor_message message;
+
+  external ffi.Pointer<interactor.interactor_message> message_pointer;
 }
 
 final class tarantool_index_iterator_request extends ffi.Struct {
@@ -1441,6 +1485,10 @@ final class tarantool_index_iterator_request extends ffi.Struct {
 
   @ffi.Int()
   external int type;
+
+  external interactor.interactor_message message;
+
+  external ffi.Pointer<interactor.interactor_message> message_pointer;
 }
 
 final class tarantool_index_select_request extends ffi.Struct {
@@ -1463,6 +1511,10 @@ final class tarantool_index_select_request extends ffi.Struct {
 
   @ffi.Int()
   external int iterator_type;
+
+  external interactor.interactor_message message;
+
+  external ffi.Pointer<interactor.interactor_message> message_pointer;
 }
 
 final class tarantool_index_id extends ffi.Struct {
@@ -1471,22 +1523,6 @@ final class tarantool_index_id extends ffi.Struct {
 
   @ffi.Uint32()
   external int index_id;
-}
-
-final class tarantool_native_module_request extends ffi.Struct {
-  external ffi.Pointer<ffi.Char> module_name;
-
-  @ffi.Size()
-  external int module_name_length;
-}
-
-final class tarantool_native_function_request extends ffi.Struct {
-  external ffi.Pointer<ffi.Char> module_name;
-
-  external ffi.Pointer<ffi.Char> function_name;
-
-  @ffi.Size()
-  external int module_name_length;
 }
 
 final class tarantool_configuration extends ffi.Struct {
@@ -1559,52 +1595,10 @@ final class tarantool_factory extends ffi.Struct {
   external ffi.Pointer<tarantool_factory_memory> memory;
 
   external ffi.Pointer<tarantool_factory_small_alloc> tarantool_datas;
-
-  external ffi.Pointer<tarantool_factory_mempool> tarantool_messages;
-
-  external ffi.Pointer<tarantool_factory_mempool> tarantool_call_requests;
-
-  external ffi.Pointer<tarantool_factory_mempool> tarantool_evaluate_requests;
-
-  external ffi.Pointer<tarantool_factory_mempool> tarantool_space_requests;
-
-  external ffi.Pointer<tarantool_factory_mempool>
-      tarantool_space_count_requests;
-
-  external ffi.Pointer<tarantool_factory_mempool>
-      tarantool_space_select_requests;
-
-  external ffi.Pointer<tarantool_factory_mempool>
-      tarantool_space_update_requests;
-
-  external ffi.Pointer<tarantool_factory_mempool>
-      tarantool_space_upsert_requests;
-
-  external ffi.Pointer<tarantool_factory_mempool>
-      tarantool_space_iterator_requests;
-
-  external ffi.Pointer<tarantool_factory_mempool> tarantool_index_requests;
-
-  external ffi.Pointer<tarantool_factory_mempool>
-      tarantool_index_count_requests;
-
-  external ffi.Pointer<tarantool_factory_mempool> tarantool_index_id_requests;
-
-  external ffi.Pointer<tarantool_factory_mempool>
-      tarantool_index_update_requests;
-
-  external ffi.Pointer<tarantool_factory_mempool>
-      tarantool_index_iterator_requests;
-
-  external ffi.Pointer<tarantool_factory_mempool>
-      tarantool_index_select_requests;
-
-  external ffi.Pointer<tarantool_factory_mempool> tarantool_index_index_ids;
 }
 
 typedef tarantool_factory_memory = memory;
 typedef tarantool_factory_small_alloc = small_alloc;
-typedef tarantool_factory_mempool = mempool;
 
 final class tarantool_factory_configuration extends ffi.Struct {
   @ffi.Size()
