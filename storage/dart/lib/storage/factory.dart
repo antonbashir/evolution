@@ -73,40 +73,14 @@ class StorageFactory {
   }
 
   @inline
-  Pointer<interactor_message> createCall(String function, Pointer<Uint8> input, int inputSize) {
-    final (functionString, functionLength) = _strings.createString(function);
-    final request = _callRequests.allocate();
-    request.ref.function = functionString;
-    request.ref.function_length = functionLength;
-    request.ref.input = input;
-    request.ref.input_size = inputSize;
-    request.ref.message.input = request.cast();
-    return Pointer.fromAddress(request.address + _callRequestMessageOffset);
+  Pointer<interactor_message> createMessage(Pointer<Void> input) {
+    final message = _messages.allocate();
+    message.ref.input = input;
+    return message;
   }
 
   @inline
-  void releaseCall(Pointer<tarantool_call_request> request) {
-    _strings.freeString(request.ref.function, request.ref.function_length);
-    _callRequests.release(request);
-  }
-
-  @inline
-  Pointer<interactor_message> createEvaluate(String expression, Pointer<Uint8> input, int inputSize) {
-    final (expressionString, expressionLength) = _strings.createString(expression);
-    final request = _evaluateRequests.allocate();
-    request.ref.expression = expressionString;
-    request.ref.expression_length = expressionLength;
-    request.ref.input = input;
-    request.ref.input_size = inputSize;
-    request.ref.message.input = request.cast();
-    return Pointer.fromAddress(request.address + _evaluateRequestMessageOffset);
-  }
-
-  @inline
-  void releaseEvaluate(Pointer<tarantool_evaluate_request> request) {
-    _strings.freeString(request.ref.expression, request.ref.expression_length);
-    _evaluateRequests.release(request);
-  }
+  void releaseMessage(Pointer<interactor_message> message) => _messages.release(message);
 
   @inline
   Pointer<interactor_message> createSpace(int spaceId, Pointer<Uint8> tuple, int tupleSize) {
@@ -128,11 +102,165 @@ class StorageFactory {
     request.ref.key = key;
     request.ref.key_size = keySize;
     request.ref.iterator_type = iteratorType;
-    request.ref.iterator_type = iteratorType;
     request.ref.message.input = request.cast();
     return Pointer.fromAddress(request.address + _spaceCountRequestMessageOffset);
   }
 
   @inline
   void releaseSpaceCount(Pointer<tarantool_space_count_request> request) => _spaceCountRequests.release(request);
+
+  @inline
+  Pointer<interactor_message> createSpaceSelect(int spaceId, int iteratorType, Pointer<Uint8> key, int keySize, int offset, int limit) {
+    final request = _spaceSelectRequests.allocate();
+    request.ref.space_id = spaceId;
+    request.ref.key = key;
+    request.ref.key_size = keySize;
+    request.ref.iterator_type = iteratorType;
+    request.ref.offset = offset;
+    request.ref.limit = limit;
+    request.ref.message.input = request.cast();
+    return Pointer.fromAddress(request.address + _spaceSelectRequestMessageOffset);
+  }
+
+  @inline
+  void releaseSpaceSelect(Pointer<tarantool_space_select_request> request) => _spaceSelectRequests.release(request);
+
+  @inline
+  Pointer<interactor_message> createSpaceUpdate(int spaceId, Pointer<Uint8> key, int keySize, Pointer<Uint8> operations, int operationsSize) {
+    final request = _spaceUpdateRequests.allocate();
+    request.ref.space_id = spaceId;
+    request.ref.key = key;
+    request.ref.key_size = keySize;
+    request.ref.operations = operations;
+    request.ref.operations_size = operationsSize;
+    request.ref.message.input = request.cast();
+    return Pointer.fromAddress(request.address + _spaceUpdateRequestMessageOffset);
+  }
+
+  @inline
+  void releaseSpaceUpdate(Pointer<tarantool_space_update_request> request) => _spaceUpdateRequests.release(request);
+
+  @inline
+  Pointer<interactor_message> createSpaceUpsert(int spaceId, Pointer<Uint8> tuple, int tupleSize, Pointer<Uint8> operations, int operationsSize) {
+    final request = _spaceUpsertRequests.allocate();
+    request.ref.space_id = spaceId;
+    request.ref.tuple = tuple;
+    request.ref.tuple_size = tupleSize;
+    request.ref.operations = operations;
+    request.ref.operations_size = operationsSize;
+    request.ref.message.input = request.cast();
+    return Pointer.fromAddress(request.address + _spaceUpsertRequestMessageOffset);
+  }
+
+  @inline
+  void releaseSpaceUpsert(Pointer<tarantool_space_upsert_request> request) => _spaceUpsertRequests.release(request);
+
+  @inline
+  Pointer<interactor_message> createSpaceIterator(int spaceId, int type, Pointer<Uint8> key, int keySize) {
+    final request = _spaceIteratorRequests.allocate();
+    request.ref.space_id = spaceId;
+    request.ref.key = key;
+    request.ref.key_size = keySize;
+    request.ref.type = type;
+    request.ref.message.input = request.cast();
+    return Pointer.fromAddress(request.address + _spaceIteratorRequestMessageOffset);
+  }
+
+  @inline
+  void releaseSpaceIterator(Pointer<tarantool_space_iterator_request> request) => _spaceIteratorRequests.release(request);
+
+  @inline
+  Pointer<interactor_message> createIndex(int spaceId, int indexId, Pointer<Uint8> tuple, int tupleSize) {
+    final request = _indexRequests.allocate();
+    request.ref.space_id = spaceId;
+    request.ref.index_id = indexId;
+    request.ref.tuple = tuple;
+    request.ref.tuple_size = tupleSize;
+    request.ref.message.input = request.cast();
+    return Pointer.fromAddress(request.address + _indexRequestMessageOffset);
+  }
+
+  @inline
+  void releaseIndex(Pointer<tarantool_index_request> request) => _indexRequests.release(request);
+
+  @inline
+  Pointer<interactor_message> createIndexCount(int spaceId, int indexId, Pointer<Uint8> key, int keySize) {
+    final request = _indexCountRequests.allocate();
+    request.ref.space_id = spaceId;
+    request.ref.index_id = indexId;
+    request.ref.key = key;
+    request.ref.key_size = keySize;
+    request.ref.message.input = request.cast();
+    return Pointer.fromAddress(request.address + _indexCountRequestMessageOffset);
+  }
+
+  @inline
+  void releaseIndexCount(Pointer<tarantool_index_count_request> request) => _indexCountRequests.release(request);
+
+  @inline
+  Pointer<interactor_message> createIndexId(int spaceId, String name) {
+    final (nameString, nameLength) = _strings.allocate(name);
+    final request = _indexIdRequestRequests.allocate();
+    request.ref.space_id = spaceId;
+    request.ref.name = nameString;
+    request.ref.name_length = nameLength;
+    request.ref.message.input = request.cast();
+    return Pointer.fromAddress(request.address + _indexIdRequestMessageOffset);
+  }
+
+  @inline
+  void releaseIndexId(Pointer<tarantool_index_id_request> request) {
+    _strings.free(request.ref.name, request.ref.name_length);
+    _indexIdRequestRequests.release(request);
+  }
+
+  @inline
+  Pointer<interactor_message> createIndexUpdate(int spaceId, int indexId, Pointer<Uint8> key, int keySize, Pointer<Uint8> operations, int operationsSize) {
+    final request = _indexUpdateRequests.allocate();
+    request.ref.space_id = spaceId;
+    request.ref.index_id = indexId;
+    request.ref.key = key;
+    request.ref.key_size = keySize;
+    request.ref.message.input = request.cast();
+    return Pointer.fromAddress(request.address + _indexUpdateRequestMessageOffset);
+  }
+
+  @inline
+  void releaseIndexUpdate(Pointer<tarantool_index_update_request> request) => _indexUpdateRequests.release(request);
+
+  @inline
+  Pointer<interactor_message> createCall(String function, Pointer<Uint8> input, int inputSize) {
+    final (functionString, functionLength) = _strings.allocate(function);
+    final request = _callRequests.allocate();
+    request.ref.function = functionString;
+    request.ref.function_length = functionLength;
+    request.ref.input = input;
+    request.ref.input_size = inputSize;
+    request.ref.message.input = request.cast();
+    return Pointer.fromAddress(request.address + _callRequestMessageOffset);
+  }
+
+  @inline
+  void releaseCall(Pointer<tarantool_call_request> request) {
+    _strings.free(request.ref.function, request.ref.function_length);
+    _callRequests.release(request);
+  }
+
+  @inline
+  Pointer<interactor_message> createEvaluate(String expression, Pointer<Uint8> input, int inputSize) {
+    final (expressionString, expressionLength) = _strings.allocate(expression);
+    final request = _evaluateRequests.allocate();
+    request.ref.expression = expressionString;
+    request.ref.expression_length = expressionLength;
+    request.ref.input = input;
+    request.ref.input_size = inputSize;
+    request.ref.message.input = request.cast();
+    return Pointer.fromAddress(request.address + _evaluateRequestMessageOffset);
+  }
+
+  @inline
+  void releaseEvaluate(Pointer<tarantool_evaluate_request> request) {
+    _strings.free(request.ref.expression, request.ref.expression_length);
+    _evaluateRequests.release(request);
+  }
 }

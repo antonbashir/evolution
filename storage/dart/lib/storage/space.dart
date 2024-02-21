@@ -60,12 +60,12 @@ class StorageSpace {
   @inline
   int _completeLength(Pointer<interactor_message> message) {
     final length = message.outputInt;
-    tarantool_space_length_free(_factory, message);
+    _factory.releaseMessage(message);
     return length;
   }
 
   @inline
-  Future<int> length() => _producer.spaceLength(_descriptor, tarantool_space_length_prepare(_factory, _id)).then(_completeLength);
+  Future<int> length() => _producer.spaceLength(_descriptor, _factory.createMessage(Pointer.fromAddress(_id))).then(_completeLength);
 
   @inline
   Future<StorageIterator> iterator({StorageIteratorType iteratorType = StorageIteratorType.eq}) {
@@ -78,7 +78,7 @@ class StorageSpace {
 
   @inline
   StorageIterator _completeIteratorBy(Pointer<interactor_message> message) {
-    final iterator = StorageIterator(_factory, message.outputInt, _producer, _descriptor);
+    final iterator = StorageIterator(message.outputInt, _descriptor, _factory, _producer);
     tarantool_space_iterator_request_free(_factory, message);
     return iterator;
   }
