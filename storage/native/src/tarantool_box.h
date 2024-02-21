@@ -122,7 +122,7 @@ extern "C"
         struct interactor_message message;
     };
 
-    struct tarantool_index_id_request
+    struct tarantool_index_id_by_name_request
     {
         const char* name;
         size_t name_length;
@@ -181,7 +181,7 @@ extern "C"
         struct interactor_message message;
     };
 
-    struct tarantool_index_id
+    struct tarantool_index_id_request
     {
         uint32_t space_id;
         uint32_t index_id;

@@ -747,7 +747,7 @@ final class tarantool_index_count_request extends ffi.Struct {
   external interactor.interactor_message message;
 }
 
-final class tarantool_index_id_request extends ffi.Struct {
+final class tarantool_index_id_by_name_request extends ffi.Struct {
   external ffi.Pointer<ffi.Char> name;
 
   @ffi.Size()
@@ -849,7 +849,7 @@ final class tarantool_index_select_request extends ffi.Struct {
   external interactor.interactor_message message;
 }
 
-final class tarantool_index_id extends ffi.Struct {
+final class tarantool_index_id_request extends ffi.Struct {
   @ffi.Uint32()
   external int space_id;
 

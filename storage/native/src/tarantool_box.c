@@ -509,13 +509,13 @@ void tarantool_index_count(struct interactor_message* message)
 
 void tarantool_index_length(struct interactor_message* message)
 {
-    struct tarantool_index_id* id = (struct tarantool_index_id*)message->input;
+    struct tarantool_index_id_request* id = (struct tarantool_index_id_request*)message->input;
     message->output = (void*)box_index_len(id->space_id, id->index_id);
 }
 
 void tarantool_index_id_by_name(struct interactor_message* message)
 {
-    struct tarantool_index_id_request* request = (struct tarantool_index_id_request*)message->input;
+    struct tarantool_index_id_by_name_request* request = (struct tarantool_index_id_by_name_request*)message->input;
     message->output = (void*)(intptr_t)box_index_id_by_name(request->space_id, request->name, request->name_length);
 }
 

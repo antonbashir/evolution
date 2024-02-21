@@ -33,25 +33,27 @@ class StorageIndex {
   @inline
   int _completeCountBy(Pointer<interactor_message> message) {
     final count = message.outputInt;
-    tarantool_index_count_request_free(_factory, message);
+    _factory.releaseIndexCount(message.getInputObject());
     return count;
   }
 
   @inline
-  Future<int> countBy(Pointer<Uint8> key, int keySize, {StorageIteratorType iteratorType = StorageIteratorType.eq}) {
-    final request = tarantool_index_count_request_prepare(_factory, _spaceId, _indexId, key.cast(), keySize, iteratorType.index);
-    return _producer.indexCount(_descriptor, request).then(_completeCountBy);
-  }
+  Future<int> countBy(
+    Pointer<Uint8> key,
+    int keySize, {
+    StorageIteratorType iteratorType = StorageIteratorType.eq,
+  }) =>
+      _producer.indexCount(_descriptor, _factory.createIndexCount(_spaceId, _indexId, key, keySize, iteratorType.index)).then(_completeCountBy);
 
   @inline
   int _completeLength(Pointer<interactor_message> message) {
     final length = message.outputInt;
-    tarantool_index_id_free(_factory, message);
+    _factory.releaseMessage(message);
     return length;
   }
 
   @inline
-  Future<int> length() => _producer.indexLength(_descriptor, tarantool_index_id_prepare(_factory, _spaceId, _indexId)).then(_completeLength);
+  Future<int> length() => _producer.indexLength(_descriptor, _factory.createIndexId(_spaceId, _indexId)).then(_completeLength);
 
   @inline
   Future<StorageIterator> iterator({StorageIteratorType iteratorType = StorageIteratorType.eq}) {
@@ -64,29 +66,28 @@ class StorageIndex {
 
   @inline
   StorageIterator _completeIteratorBy(Pointer<interactor_message> message) {
-    final iterator = StorageIterator(_factory, message.outputInt, _producer, _descriptor);
-    tarantool_index_iterator_request_free(_factory, message);
+    final iterator = StorageIterator(message.outputInt, _descriptor, _factory, _producer);
+    _factory.releaseIndexIterator(message.getInputObject());
     return iterator;
   }
 
   @inline
-  Future<StorageIterator> iteratorBy(Pointer<Uint8> key, int keySize, {StorageIteratorType iteratorType = StorageIteratorType.eq}) {
-    final request = tarantool_index_iterator_request_prepare(_factory, _spaceId, _indexId, iteratorType.index, key.cast(), keySize);
-    return _producer.indexIterator(_descriptor, request).then(_completeIteratorBy);
-  }
+  Future<StorageIterator> iteratorBy(
+    Pointer<Uint8> key,
+    int keySize, {
+    StorageIteratorType iteratorType = StorageIteratorType.eq,
+  }) =>
+      _producer.indexIterator(_descriptor, _factory.createIndexIterator(_spaceId, _indexId, iteratorType.index, key, keySize)).then(_completeIteratorBy);
 
   @inline
   Pointer<tarantool_tuple_t> _completeGet(Pointer<interactor_message> message) {
     final tuple = Pointer<tarantool_tuple_t>.fromAddress(message.outputInt);
-    tarantool_index_request_free(_factory, message);
+    _factory.releaseIndex(message.getInputObject());
     return tuple;
   }
 
   @inline
-  Future<Pointer<tarantool_tuple_t>> get(Pointer<Uint8> key, int keySize) {
-    final request = tarantool_index_request_prepare(_factory, _spaceId, _indexId, key.cast(), keySize);
-    return _producer.indexGet(_descriptor, request).then(_completeGet);
-  }
+  Future<Pointer<tarantool_tuple_t>> get(Pointer<Uint8> key, int keySize) => _producer.indexGet(_descriptor, _factory.createIndex(_spaceId, _indexId, key, keySize)).then(_completeGet);
 
   @inline
   Future<Pointer<tarantool_tuple_t>> min() {
@@ -100,15 +101,12 @@ class StorageIndex {
   @inline
   Pointer<tarantool_tuple_t> _completeMin(Pointer<interactor_message> message) {
     final tuple = Pointer<tarantool_tuple_t>.fromAddress(message.outputInt);
-    tarantool_index_request_free(_factory, message);
+    _factory.releaseIndex(message.getInputObject());
     return tuple;
   }
 
   @inline
-  Future<Pointer<tarantool_tuple_t>> minBy(Pointer<Uint8> key, int keySize) {
-    final request = tarantool_index_request_prepare(_factory, _spaceId, _indexId, key.cast(), keySize);
-    return _producer.indexMin(_descriptor, request).then(_completeMin);
-  }
+  Future<Pointer<tarantool_tuple_t>> minBy(Pointer<Uint8> key, int keySize) => _producer.indexMin(_descriptor, _factory.createIndex(_spaceId, _indexId, key, keySize)).then(_completeMin);
 
   @inline
   Future<Pointer<tarantool_tuple_t>> max() {
@@ -122,46 +120,49 @@ class StorageIndex {
   @inline
   Pointer<tarantool_tuple_t> _completeMax(Pointer<interactor_message> message) {
     final tuple = Pointer<tarantool_tuple_t>.fromAddress(message.outputInt);
-    tarantool_index_request_free(_factory, message);
+    _factory.releaseIndex(message.getInputObject());
     return tuple;
   }
 
   @inline
-  Future<Pointer<tarantool_tuple_t>> maxBy(Pointer<Uint8> key, int keySize) {
-    final request = tarantool_index_request_prepare(_factory, _spaceId, _indexId, key.cast(), keySize);
-    return _producer.indexMax(_descriptor, request).then(_completeMax);
-  }
+  Future<Pointer<tarantool_tuple_t>> maxBy(Pointer<Uint8> key, int keySize) => _producer.indexMax(_descriptor, _factory.createIndex(_spaceId, _indexId, key, keySize)).then(_completeMax);
 
   @inline
   Pointer<tarantool_tuple_t> _completeUpdateSingle(Pointer<interactor_message> message) {
     final tuple = Pointer<tarantool_tuple_t>.fromAddress(message.outputInt);
-    tarantool_index_update_request_free(_factory, message);
+    _factory.releaseIndexUpdate(message.getInputObject());
     return tuple;
   }
 
   @inline
-  Future<Pointer<tarantool_tuple_t>> updateSingle(Pointer<Uint8> key, int keySize, Pointer<Uint8> operations, int operationsSize) {
-    final request = tarantool_index_update_request_prepare(_factory, _spaceId, _indexId, key.cast(), keySize, operations.cast(), operationsSize);
-    return _producer.indexUpdateSingle(_descriptor, request).then(_completeUpdateSingle);
-  }
+  Future<Pointer<tarantool_tuple_t>> updateSingle(
+    Pointer<Uint8> key,
+    int keySize,
+    Pointer<Uint8> operations,
+    int operationsSize,
+  ) =>
+      _producer.indexUpdateSingle(_descriptor, _factory.createIndexUpdate(_spaceId, _indexId, key, keySize, operations, operationsSize)).then(_completeUpdateSingle);
 
   @inline
   Pointer<tarantool_tuple_port_t> _completeUpdateMany(Pointer<interactor_message> message) {
     final tuple = Pointer<tarantool_tuple_port_t>.fromAddress(message.outputInt);
-    tarantool_index_update_request_free(_factory, message);
+    _factory.releaseIndexUpdate(message.getInputObject());
     return tuple;
   }
 
   @inline
-  Future<Pointer<tarantool_tuple_port_t>> updateMany(Pointer<Uint8> keys, int keysCount, Pointer<Uint8> operations, int operationsCount) {
-    final request = tarantool_index_update_request_prepare(_factory, _spaceId, _indexId, keys.cast(), keysCount, operations.cast(), operationsCount);
-    return _producer.indexUpdateMany(_descriptor, request).then(_completeUpdateMany);
-  }
+  Future<Pointer<tarantool_tuple_port_t>> updateMany(
+    Pointer<Uint8> keys,
+    int keysCount,
+    Pointer<Uint8> operations,
+    int operationsCount,
+  ) =>
+      _producer.indexUpdateMany(_descriptor, _factory.createIndexUpdate(_spaceId, _indexId, keys, keysCount, operations, operationsCount)).then(_completeUpdateMany);
 
   @inline
   Pointer<tarantool_tuple_port_t> _completeSelect(Pointer<interactor_message> message) {
     final tuple = Pointer<tarantool_tuple_port_t>.fromAddress(message.outputInt);
-    tarantool_index_select_request_free(_factory, message);
+    _factory.releaseIndexSelect(message.getInputObject());
     return tuple;
   }
 
@@ -185,8 +186,6 @@ class StorageIndex {
     int offset = 0,
     int limit = int32MaxValue,
     StorageIteratorType iteratorType = StorageIteratorType.eq,
-  }) {
-    final request = tarantool_index_select_request_prepare(_factory, _spaceId, _indexId, key.cast(), keySize, offset, limit, iteratorType.index);
-    return _producer.indexSelect(_descriptor, request).then(_completeSelect);
-  }
+  }) =>
+      _producer.indexSelect(_descriptor, _factory.createIndexSelect(_spaceId, _indexId, key, keySize, offset, limit, iteratorType.index)).then(_completeSelect);
 }

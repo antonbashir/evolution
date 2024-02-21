@@ -136,7 +136,7 @@ class StorageExecutor {
     _producer = _interactor.producer(StorageProducer(_box));
     _tuples = MemoryTuples(_interactor.memory.pointer);
     _strings = StorageStrings(_nativeFactory);
-    _schema = StorageSchema(_descriptor, _nativeFactory, this, _tuples, _strings, _producer);
+    _schema = StorageSchema(_descriptor, this, _tuples, _producer, _factory);
     _factory = StorageFactory(memory, _strings);
     _interactor.activate();
   }
@@ -169,19 +169,19 @@ class StorageExecutor {
   @inline
   Future<(Uint8List, void Function())> evaluate(String expression, {Pointer<Uint8>? input, int inputSize = 0}) {
     if (input != null) {
-      return _producer.evaluate(_descriptor, _factory.prepareEvaluate(expression, input, inputSize)).then(_parseLuaEvaluate);
+      return _producer.evaluate(_descriptor, _factory.createEvaluate(expression, input, inputSize)).then(_parseLuaEvaluate);
     }
     (input, inputSize) = _tuples.emptyList;
-    return _producer.evaluate(_descriptor, _factory.prepareEvaluate(expression, input, inputSize)).then(_parseLuaEvaluate);
+    return _producer.evaluate(_descriptor, _factory.createEvaluate(expression, input, inputSize)).then(_parseLuaEvaluate);
   }
 
   @inline
   Future<(Uint8List, void Function())> call(String function, {Pointer<Uint8>? input, int inputSize = 0}) {
     if (input != null) {
-      return _producer.call(_descriptor, _factory.prepareCall(function, input, inputSize)).then(_parseLuaCall);
+      return _producer.call(_descriptor, _factory.createCall(function, input, inputSize)).then(_parseLuaCall);
     }
     (input, inputSize) = _tuples.emptyList;
-    return _producer.call(_descriptor, _factory.prepareCall(function, input, inputSize)).then(_parseLuaCall);
+    return _producer.call(_descriptor, _factory.createCall(function, input, inputSize)).then(_parseLuaCall);
   }
 
   @inline
