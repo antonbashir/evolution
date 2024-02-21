@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include "core_common.h"
 #include "memory_module.h"
 
 #if defined(__cplusplus)
@@ -77,7 +78,7 @@ extern "C"
 
     static inline int32_t memory_static_buffers_pop(struct memory_static_buffers* pool)
     {
-        if (memory_unlikely(pool->available == 0))
+        if (unlikely(pool->available == 0))
             return MEMORY_BUFFER_USED;
         return pool->ids[--pool->available];
     }

@@ -4,9 +4,7 @@ import 'dart:ffi';
 import 'package:core/core.dart';
 
 import 'bindings.dart';
-import 'constants.dart';
 import 'declaration.dart';
-import 'exception.dart';
 
 class InteractorProducerExecutor implements InteractorProducerRegistrat {
   final Map<int, InteractorMethodExecutor> _methods = {};
@@ -32,20 +30,6 @@ class InteractorMethodExecutor implements InteractorMethod {
   final int _executorId;
   final Pointer<interactor_dart> _interactor;
 
-  var _nextId = 0;
-
-  @inline
-  int? get nextId {
-    if (_nextId == int64MaxValue) _nextId = 0;
-    while (_calls.containsKey(++_nextId)) {
-      if (_nextId == int64MaxValue) {
-        _nextId = 0;
-        return null;
-      }
-    }
-    return _nextId;
-  }
-
   InteractorMethodExecutor(
     this._methodId,
     this._executorId,
@@ -55,16 +39,20 @@ class InteractorMethodExecutor implements InteractorMethod {
   @override
   Future<Pointer<interactor_message>> call(int target, Pointer<interactor_message> message) {
     final completer = Completer<Pointer<interactor_message>>();
-    final id;
-    if ((id = nextId) == null) throw InteractorException(InteractorErrors.interactorLimitError);
-    message.ref.id = id;
+    message.ref.id = message.address;
     message.ref.owner = _executorId;
     message.ref.method = _methodId;
-    _calls[id] = completer;
+    _calls[message.address] = completer;
     interactor_dart_call_native(_interactor, target, message);
-    return completer.future.whenComplete(() => _calls.remove(id));
+    return completer.future.then(_onComplete);
   }
 
   @inline
   void callback(Pointer<interactor_message> message) => _calls[message.ref.id]?.complete(message);
+
+  @inline
+  Pointer<interactor_message> _onComplete(Pointer<interactor_message> message) {
+    _calls.remove(message.address);
+    return message;
+  }
 }

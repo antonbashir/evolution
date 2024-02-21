@@ -16,15 +16,6 @@ extern "C"
 #endif
 
 #define MEMORY_BUFFER_USED -1
-
-#if __has_builtin(__builtin_expect) || defined(__GNUC__)
-#define memory_likely(x) __builtin_expect(!!(x), 1)
-#define memory_unlikely(x) __builtin_expect(!!(x), 0)
-#else
-#define memory_likely(x) (x)
-#define memory_unlikely(x) (x)
-#endif
-
     struct memory
     {
         struct quota quota;
