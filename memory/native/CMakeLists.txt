@@ -18,8 +18,6 @@ include_directories(include)
 file(GLOB sources
   *.c
   *.h
-  common/*.c
-  common/*.h
 )
 
 add_library(memory_debug_linux_x64 SHARED ${sources})

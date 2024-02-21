@@ -11,10 +11,6 @@ include_directories(${CORE_INCLUDE_DIRECTORY})
 file(GLOB sources
   *.c
   *.h
-  collections/*.h
-  collections/*.c
-  common/*.h
-  common/*.c
 )
 
 add_library(transport_debug_linux_x64 SHARED ${sources})

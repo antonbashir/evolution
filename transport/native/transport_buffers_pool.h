@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include "common/common.h"
+#include "core_common.h"
 #include "transport_constants.h"
 
 struct transport_buffers_pool

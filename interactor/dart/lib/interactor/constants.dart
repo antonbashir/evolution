@@ -2,8 +2,6 @@ import 'dart:ffi';
 
 import 'package:core/core.dart';
 
-import 'bindings.dart';
-
 final interactorLibraryName = bool.fromEnvironment("DEBUG") ? "libinteractor_debug_${Abi.current()}.so" : "libinteractor_release_${Abi.current()}.so";
 const interactorPackageName = "interactor";
 
