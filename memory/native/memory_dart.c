@@ -1,7 +1,7 @@
 #include "memory_dart.h"
 #include <liburing.h>
 #include <liburing/io_uring.h>
-#include <memory.h>
+#include <memory_module.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>

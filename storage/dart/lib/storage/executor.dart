@@ -136,8 +136,8 @@ class StorageExecutor {
     _producer = _interactor.producer(StorageProducer(_box));
     _tuples = MemoryTuples(_interactor.memory.pointer);
     _strings = StorageStrings(_nativeFactory);
-    _schema = StorageSchema(_descriptor, this, _tuples, _producer, _factory);
     _factory = StorageFactory(memory, _strings);
+    _schema = StorageSchema(_descriptor, this, _tuples, _producer, _factory);
     _interactor.activate();
   }
 

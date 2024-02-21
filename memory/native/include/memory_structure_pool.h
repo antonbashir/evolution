@@ -1,7 +1,7 @@
 #ifndef MEMORY_PAYLOADS_POOL_INCLUDED
 #define MEMORY_PAYLOADS_POOL_INCLUDED
 
-#include <memory.h>
+#include <memory_module.h>
 
 #if defined(__cplusplus)
 extern "C"

@@ -12,8 +12,9 @@ class MemoryDefaults {
   );
 
   static const objectPool = MemoryObjectPoolConfiguration(
-    initialCapacity: 2048,
-    preallocation: 1024,
+    initialCapacity: 16,
+    minimalAvailableCapacity: 8,
+    preallocation: 16,
     extensionFactor: 2,
     shrinkFactor: 0.5,
   );

@@ -2,7 +2,7 @@
 
 #include "test.h"
 #include <bits/pthreadtypes.h>
-#include <memory.h>
+#include <memory_module.h>
 #include <stdlib.h>
 #include "interactor_message.h"
 #include "interactor_native.h"
