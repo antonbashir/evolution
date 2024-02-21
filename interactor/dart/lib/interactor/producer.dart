@@ -33,6 +33,8 @@ class InteractorMethodExecutor implements InteractorMethod {
   final Pointer<interactor_dart> _interactor;
 
   var _nextId = 0;
+
+  @inline
   int? get nextId {
     if (_nextId == int64MaxValue) _nextId = 0;
     while (_calls.containsKey(++_nextId)) {
@@ -51,7 +53,6 @@ class InteractorMethodExecutor implements InteractorMethod {
   );
 
   @override
-  @inline
   Future<Pointer<interactor_message>> call(int target, Pointer<interactor_message> message) {
     final completer = Completer<Pointer<interactor_message>>();
     final id;
