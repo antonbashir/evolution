@@ -4,17 +4,16 @@ import 'package:core/core.dart';
 import 'package:memory/memory.dart';
 
 import 'bindings.dart';
-import 'constants.dart';
 import 'serialization.dart';
 
 class StorageFactory {
   final StorageStrings _strings;
   late final MemoryStructurePool<tarantool_call_request> _callRequestsMemory;
-  late final ObjectPool<Pointer<tarantool_call_request>> _callRequestsObjects;
+  late final MemoryObjectPool<Pointer<tarantool_call_request>> _callRequestsObjects;
 
   StorageFactory(MemoryModule memory, this._strings) {
     _callRequestsMemory = memory.structures.register(sizeOf<tarantool_call_request>());
-    _callRequestsObjects = ObjectPool(
+    _callRequestsObjects = MemoryObjectPool(
       _callRequestsMemory.allocate,
       _callRequestsMemory.free,
       initialCapacity: 1024,

@@ -28,3 +28,19 @@ class MemoryConfiguration {
         quotaSize: quotaSize ?? this.quotaSize,
       );
 }
+
+class MemoryObjectPoolConfiguration {
+  final int initialCapacity;
+  final int minimalAvailableCapacity;
+  final int preallocation;
+  final double extensionFactor;
+  final double shrinkFactor;
+
+  const MemoryObjectPoolConfiguration({
+    required this.initialCapacity,
+    required this.minimalAvailableCapacity,
+    required this.preallocation,
+    required this.extensionFactor,
+    required this.shrinkFactor,
+  });
+}

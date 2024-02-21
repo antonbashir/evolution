@@ -2,29 +2,23 @@ import 'dart:collection';
 
 import 'package:core/core.dart';
 
-class ObjectPool<T> {
+import 'configuration.dart';
+import 'defaults.dart';
+
+class MemoryObjectPool<T> {
   final T Function() _allocator;
   final void Function(T object) _releaser;
-  final int initialCapacity;
-  final int preallocation;
-  final double maxExtensionFactor;
-  final double shrinkFactor;
+  final MemoryObjectPoolConfiguration configuration;
 
-  final int _maxExtension;
-  final int _shrinkSize;
+  final double _extensionFactor;
+  final double _shrinkFactor;
   final ListQueue<T> _queue;
 
-  ObjectPool(
-    this._allocator,
-    this._releaser, {
-    required this.initialCapacity,
-    required this.preallocation,
-    required this.maxExtensionFactor,
-    required this.shrinkFactor,
-  })  : _queue = ListQueue(initialCapacity),
-        _maxExtension = (initialCapacity * maxExtensionFactor).ceil(),
-        _shrinkSize = (shrinkFactor * initialCapacity * maxExtensionFactor).floor() {
-    for (var i = 0; i < preallocation; i++) {
+  MemoryObjectPool(this._allocator, this._releaser, {this.configuration = MemoryDefaults.objectPool})
+      : _queue = ListQueue(configuration.initialCapacity),
+        _extensionFactor = configuration.extensionFactor,
+        _shrinkFactor = configuration.shrinkFactor {
+    for (var i = 0; i < configuration.preallocation; i++) {
       release(_allocator());
     }
   }
@@ -34,21 +28,31 @@ class ObjectPool<T> {
     if (_queue.isEmpty) {
       final message = _allocator();
       release(message);
+      Future.microtask(_extend);
       return message;
     }
+    if (_queue.length < configuration.minimalAvailableCapacity) Future.microtask(_extend);
     return _queue.removeLast();
   }
 
   @inline
   void release(T message) {
     _queue.add(message);
-    if (_queue.length > _maxExtension) Future.microtask(_shrink);
+    if (_queue.length > _extensionFactor) Future.microtask(_shrink);
   }
 
   void _shrink() {
-    var shrink = _shrinkSize;
+    var shrink = _queue.length * _shrinkFactor;
     while (--shrink > 0 && _queue.isNotEmpty) {
       _releaser(_queue.removeLast());
+    }
+  }
+
+  void _extend() {
+    final newSize = _queue.length * _extensionFactor;
+    final toAllocate = newSize - _queue.length;
+    for (var i = 0; i < toAllocate; i++) {
+      release(_allocator());
     }
   }
 }
