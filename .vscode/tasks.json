@@ -32,6 +32,16 @@
       ],
       "group": "build",
       "problemMatcher": [],
-    }
+    },
+    {
+      "type": "cmake",
+      "label": "fiber-native-build",
+      "command": "build",
+      "targets": [
+        "fiber_native"
+      ],
+      "group": "build",
+      "problemMatcher": [],
+    },
   ]
 }

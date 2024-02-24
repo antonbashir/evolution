@@ -107,5 +107,26 @@
       "cwd": "${workspaceFolder}/reactive",
       "program": "${workspaceFolder}/reactive/test/test.dart",
     },
+    {
+      "name": "fiber-test-gdb",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "/usr/bin/dart",
+      "args": [
+        "-DDEBUG=true",
+        "${workspaceFolder}/fiber/dart/lib/fiber/main.dart"
+      ],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}/fiber/dart",
+      "MIMode": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ],
+      "preLaunchTask": "fiber-native-build"
+    },
   ]
 }
