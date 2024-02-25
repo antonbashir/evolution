@@ -568,8 +568,6 @@ final class transport_server extends ffi.Struct {
 typedef transport_server_t = transport_server;
 typedef transport_server_configuration_t = transport_server_configuration;
 
-final class memory_static_buffers extends ffi.Opaque {}
-
 final class mh_events_t extends ffi.Opaque {}
 
 final class io_uring extends ffi.Opaque {}
@@ -617,8 +615,6 @@ final class transport_configuration extends ffi.Struct {
 final class transport extends ffi.Struct {
   @ffi.Uint8()
   external int id;
-
-  external ffi.Pointer<memory_static_buffers> free_buffers;
 
   external ffi.Pointer<io_uring> ring;
 
