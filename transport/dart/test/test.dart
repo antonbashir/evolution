@@ -12,14 +12,14 @@ import 'unix.dart';
 
 void main() {
   final initialization = true;
-  final shutdown = false;
-  final bulk = false;
-  final tcp = false;
-  final udp = false;
-  final unixStream = false;
-  final file = false;
-  final timeout = false;
-  final buffers = false;
+  final shutdown = true;
+  final bulk = true;
+  final tcp = true;
+  final udp = true;
+  final unixStream = true;
+  final file = true;
+  final timeout = true;
+  final buffers = true;
 
   group("[initialization]", timeout: Timeout(Duration(hours: 1)), skip: !initialization, () {
     testInitialization();

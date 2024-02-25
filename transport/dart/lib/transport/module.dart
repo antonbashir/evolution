@@ -39,8 +39,8 @@ class TransportModule {
         final nativeConfiguration = arena<transport_configuration_t>();
         nativeConfiguration.ref.ring_flags = configuration.ringFlags;
         nativeConfiguration.ref.ring_size = configuration.ringSize;
-        nativeConfiguration.ref.buffer_size = configuration.bufferSize;
-        nativeConfiguration.ref.buffers_capacity = max(configuration.buffersCapacity, 2);
+        nativeConfiguration.ref.buffer_size = configuration.memoryConfiguration.staticBufferSize;
+        nativeConfiguration.ref.buffers_capacity = max(configuration.memoryConfiguration.staticBuffersCapacity, 2);
         nativeConfiguration.ref.timeout_checker_period_millis = configuration.timeoutCheckerPeriod.inMilliseconds;
         nativeConfiguration.ref.base_delay_micros = configuration.baseDelay.inMicroseconds;
         nativeConfiguration.ref.max_delay_micros = configuration.maxDelay.inMicroseconds;

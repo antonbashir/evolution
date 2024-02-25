@@ -2,8 +2,6 @@ import 'package:memory/memory/configuration.dart';
 
 class TransportConfiguration {
   final MemoryConfiguration memoryConfiguration;
-  final int buffersCapacity;
-  final int bufferSize;
   final int ringSize;
   final int ringFlags;
   final Duration timeoutCheckerPeriod;
@@ -17,8 +15,6 @@ class TransportConfiguration {
 
   const TransportConfiguration({
     required this.memoryConfiguration,
-    required this.buffersCapacity,
-    required this.bufferSize,
     required this.ringSize,
     required this.ringFlags,
     required this.timeoutCheckerPeriod,
@@ -33,8 +29,6 @@ class TransportConfiguration {
 
   TransportConfiguration copyWith({
     MemoryConfiguration? memoryConfiguration,
-    int? buffersCapacity,
-    int? bufferSize,
     int? ringSize,
     int? ringFlags,
     Duration? timeoutCheckerPeriod,
@@ -48,8 +42,6 @@ class TransportConfiguration {
   }) =>
       TransportConfiguration(
         memoryConfiguration: memoryConfiguration ?? this.memoryConfiguration,
-        buffersCapacity: buffersCapacity ?? this.buffersCapacity,
-        bufferSize: bufferSize ?? this.bufferSize,
         ringSize: ringSize ?? this.ringSize,
         ringFlags: ringFlags ?? this.ringFlags,
         timeoutCheckerPeriod: timeoutCheckerPeriod ?? this.timeoutCheckerPeriod,

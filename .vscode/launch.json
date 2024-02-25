@@ -48,11 +48,9 @@
       "name": "transport-test-gdb",
       "type": "cppdbg",
       "request": "launch",
-      "program": "/usr/bin/dart",
-      "args": [
-        "-DDEBUG=true",
-        "${workspaceFolder}/transport/dart/test/test.dart"
-      ],
+      "customLaunchSetupCommands": [],
+      "program": "/usr/bin/bash",
+      "args": ["-c", "${workspaceFolder}/transport/tests.sh"],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}/transport/dart",
       "MIMode": "gdb",

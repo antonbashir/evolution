@@ -10,8 +10,6 @@ class TransportDefaults {
   static const worker = TransportConfiguration(
     memoryConfiguration: MemoryDefaults.memory,
     trace: false,
-    buffersCapacity: 4096,
-    bufferSize: 4096,
     ringSize: 16384,
     ringFlags: 0,
     timeoutCheckerPeriod: Duration(milliseconds: 500),

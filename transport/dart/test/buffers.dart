@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'dart:io' as io;
 
+import 'package:memory/memory/defaults.dart';
 import 'package:test/test.dart';
 import 'package:transport/transport.dart';
 
@@ -169,7 +170,7 @@ void testFileBuffers() {
 void testBuffersOverflow() {
   test("(overflow)", () async {
     final transport = TransportModule();
-    final worker = Transport(transport.createTransport(TransportDefaults.worker.copyWith(buffersCapacity: 2)));
+    final worker = Transport(transport.createTransport(TransportDefaults.worker.copyWith(memoryConfiguration: MemoryDefaults.memory.copyWith(staticBuffersCapacity: 2))));
     await worker.initialize();
 
     worker.servers.tcp(io.InternetAddress("0.0.0.0"), 12345, (connection) {
