@@ -2,12 +2,10 @@
 #define TRANSPORT_H_INCLUDED
 
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
-#include <stdio.h>
 #include "transport_client.h"
 #include "transport_server.h"
-
-typedef struct io_uring transport_io_uring;
 
 #if defined(__cplusplus)
 extern "C"
@@ -15,6 +13,7 @@ extern "C"
 #endif
     struct memory_static_buffers;
     struct mh_events_t;
+    struct io_uring;
 
     typedef struct transport_configuration
     {
@@ -58,42 +57,42 @@ extern "C"
     } transport_t;
 
     int transport_initialize(transport_t* transport,
-                                    transport_configuration_t* configuration,
-                                    uint8_t id);
+                             transport_configuration_t* configuration,
+                             uint8_t id);
 
     int transport_setup(transport_t* transport);
 
     void transport_write(transport_t* transport,
+                         uint32_t fd,
+                         uint16_t buffer_id,
+                         uint32_t offset,
+                         int64_t timeout,
+                         uint16_t event,
+                         uint8_t sqe_flags);
+    void transport_read(transport_t* transport,
+                        uint32_t fd,
+                        uint16_t buffer_id,
+                        uint32_t offset,
+                        int64_t timeout,
+                        uint16_t event,
+                        uint8_t sqe_flags);
+    void transport_send_message(transport_t* transport,
                                 uint32_t fd,
                                 uint16_t buffer_id,
-                                uint32_t offset,
+                                struct sockaddr* address,
+                                transport_socket_family_t socket_family,
+                                int message_flags,
                                 int64_t timeout,
                                 uint16_t event,
                                 uint8_t sqe_flags);
-    void transport_read(transport_t* transport,
-                               uint32_t fd,
-                               uint16_t buffer_id,
-                               uint32_t offset,
-                               int64_t timeout,
-                               uint16_t event,
-                               uint8_t sqe_flags);
-    void transport_send_message(transport_t* transport,
-                                       uint32_t fd,
-                                       uint16_t buffer_id,
-                                       struct sockaddr* address,
-                                       transport_socket_family_t socket_family,
-                                       int message_flags,
-                                       int64_t timeout,
-                                       uint16_t event,
-                                       uint8_t sqe_flags);
     void transport_receive_message(transport_t* transport,
-                                          uint32_t fd,
-                                          uint16_t buffer_id,
-                                          transport_socket_family_t socket_family,
-                                          int message_flags,
-                                          int64_t timeout,
-                                          uint16_t event,
-                                          uint8_t sqe_flags);
+                                   uint32_t fd,
+                                   uint16_t buffer_id,
+                                   transport_socket_family_t socket_family,
+                                   int message_flags,
+                                   int64_t timeout,
+                                   uint16_t event,
+                                   uint8_t sqe_flags);
     void transport_connect(transport_t* transport, transport_client_t* client, int64_t timeout);
     void transport_accept(transport_t* transport, transport_server_t* server);
 
@@ -108,7 +107,7 @@ extern "C"
 
     void transport_destroy(transport_t* transport);
 
-    void transport_cqe_advance(transport_io_uring* ring, int count);
+    void transport_cqe_advance(struct io_uring* ring, int count);
 #if defined(__cplusplus)
 }
 #endif

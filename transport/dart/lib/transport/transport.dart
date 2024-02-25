@@ -61,6 +61,7 @@ class Transport {
       transport_destroy(_pointer);
       _closer.close();
       _destroyer.send(null);
+      _memory.destroy();
     });
     toTransport.send([_fromTransport.sendPort, _closer.sendPort]);
   }
@@ -72,6 +73,7 @@ class Transport {
     _fromTransport.close();
     _memory = MemoryModule()..initialize();
     _buffers = MemoryStaticBuffers(_memory.pointer, _pointer.ref.buffers_capacity, _pointer.ref.buffer_size);
+    for (var i = 0; i < _pointer.ref.buffers_capacity; i++) _buffers.release(i);
     _pointer.ref.buffers = _buffers.buffers;
     transport_setup(_pointer);
     _payloadPool = TransportPayloadPool(_pointer.ref.buffers_capacity, _buffers);

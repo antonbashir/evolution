@@ -36,7 +36,7 @@ class TransportClientsFactory {
     configuration = configuration ?? TransportDefaults.tcpClient;
     final clients = <Future<TransportClientConnection>>[];
     for (var clientIndex = 0; clientIndex < configuration.pool; clientIndex++) {
-      final clientPointer = calloc<transport_client_t>();
+      final clientPointer = calloc<transport_client_t>(sizeOf<transport_client_t>());
       if (clientPointer == nullptr) {
         throw TransportInitializationException(TransportMessages.clientMemoryError);
       }
@@ -87,7 +87,7 @@ class TransportClientsFactory {
   }) {
     configuration = configuration ?? TransportDefaults.udpClient;
     final clientPointer = using((arena) {
-      final pointer = calloc<transport_client_t>();
+      final pointer = calloc<transport_client_t>(sizeOf<transport_client_t>());
       if (pointer == nullptr) {
         throw TransportInitializationException(TransportMessages.clientMemoryError);
       }
@@ -171,7 +171,7 @@ class TransportClientsFactory {
     configuration = configuration ?? TransportDefaults.unixStreamClient;
     final clients = <Future<TransportClientConnection>>[];
     for (var clientIndex = 0; clientIndex < configuration.pool; clientIndex++) {
-      final clientPointer = calloc<transport_client_t>();
+      final clientPointer = calloc<transport_client_t>(sizeOf<transport_client_t>());
       if (clientPointer == nullptr) {
         throw TransportInitializationException(TransportMessages.clientMemoryError);
       }

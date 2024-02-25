@@ -33,7 +33,7 @@ class TransportModule {
     final port = RawReceivePort((ports) async {
       SendPort toTransport = ports[0];
       _transportClosers.add(ports[1]);
-      final transportPointer = calloc<transport>();
+      final transportPointer = calloc<transport>(sizeOf<transport>());
       if (transportPointer == nullptr) throw TransportInitializationException(TransportMessages.workerMemoryError);
       final result = using((arena) {
         final nativeConfiguration = arena<transport_configuration_t>();

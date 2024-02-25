@@ -1,5 +1,6 @@
 #ifndef TRANSPORT_FILE_H_INCLUDED
 #define TRANSPORT_FILE_H_INCLUDED
+
 #include <stdbool.h>
 
 #if defined(__cplusplus)

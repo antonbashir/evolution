@@ -43,7 +43,7 @@ class TransportServersFactory {
     configuration = configuration ?? TransportDefaults.tcpServer;
     final server = using(
       (Arena arena) {
-        final pointer = calloc<transport_server_t>();
+        final pointer = calloc<transport_server_t>(sizeOf<transport_server_t>());
         if (pointer == nullptr) {
           throw TransportInitializationException(TransportMessages.serverMemoryError);
         }
@@ -86,7 +86,7 @@ class TransportServersFactory {
     configuration = configuration ?? TransportDefaults.udpServer;
     final server = using(
       (Arena arena) {
-        final pointer = calloc<transport_server_t>();
+        final pointer = calloc<transport_server_t>(sizeOf<transport_server_t>());
         if (pointer == nullptr) {
           throw TransportInitializationException(TransportMessages.serverMemoryError);
         }
@@ -170,7 +170,7 @@ class TransportServersFactory {
     configuration = configuration ?? TransportDefaults.unixStreamServer;
     final server = using(
       (Arena arena) {
-        final pointer = calloc<transport_server_t>();
+        final pointer = calloc<transport_server_t>(sizeOf<transport_server_t>());
         if (pointer == nullptr) {
           throw TransportInitializationException(TransportMessages.serverMemoryError);
         }
