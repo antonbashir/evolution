@@ -119,6 +119,7 @@ void transport_client_destroy(transport_client_t* client)
         {
             free(client->inet_destination_address);
         }
+
         if (client->inet_source_address)
         {
             free(client->inet_source_address);

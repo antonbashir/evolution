@@ -214,8 +214,8 @@ void transport_connect(transport_t* transport, transport_client_t* client, int64
     struct io_uring_sqe* sqe = transport_provide_sqe(ring);
     uint64_t data = ((uint64_t)(client->fd) << 32) | ((uint64_t)TRANSPORT_EVENT_CONNECT | (uint64_t)TRANSPORT_EVENT_CLIENT);
     struct sockaddr* address = client->family == INET
-                                   ? (struct sockaddr*)&client->inet_destination_address
-                                   : (struct sockaddr*)&client->unix_destination_address;
+                                   ? (struct sockaddr*)client->inet_destination_address
+                                   : (struct sockaddr*)client->unix_destination_address;
     io_uring_prep_connect(sqe, client->fd, address, client->client_address_length);
     io_uring_sqe_set_data64(sqe, data);
     transport_add_event(transport, client->fd, data, timeout);
@@ -227,8 +227,8 @@ void transport_accept(transport_t* transport, transport_server_t* server)
     struct io_uring_sqe* sqe = transport_provide_sqe(ring);
     uint64_t data = ((uint64_t)(server->fd) << 32) | ((uint64_t)TRANSPORT_EVENT_ACCEPT | (uint64_t)TRANSPORT_EVENT_SERVER);
     struct sockaddr* address = server->family == INET
-                                   ? (struct sockaddr*)&server->inet_server_address
-                                   : (struct sockaddr*)&server->unix_server_address;
+                                   ? (struct sockaddr*)server->inet_server_address
+                                   : (struct sockaddr*)server->unix_server_address;
     io_uring_prep_accept(sqe, server->fd, address, &server->server_address_length, 0);
     io_uring_sqe_set_data64(sqe, data);
     transport_add_event(transport, server->fd, data, TRANSPORT_TIMEOUT_INFINITY);

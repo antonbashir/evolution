@@ -123,6 +123,7 @@ void transport_server_destroy(transport_server_t* server)
     if (server->family == UNIX)
     {
         unlink(server->unix_server_address->sun_path);
+        free(server->unix_server_address);
     }
     free(server);
 }
