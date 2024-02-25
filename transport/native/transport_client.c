@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/time.h>
+#include <sys/un.h>
 #include <unistd.h>
 #include "transport_constants.h"
 #include "transport_socket.h"
@@ -15,11 +16,11 @@ int transport_client_initialize_tcp(transport_client_t* client,
                                     int32_t port)
 {
     client->family = INET;
-    memset(&client->inet_destination_address, 0, sizeof(client->inet_destination_address));
-    client->inet_destination_address.sin_addr.s_addr = inet_addr(ip);
-    client->inet_destination_address.sin_port = htons(port);
-    client->inet_destination_address.sin_family = AF_INET;
-    client->client_address_length = sizeof(client->inet_destination_address);
+    client->inet_destination_address = calloc(1, sizeof(struct sockaddr_in));
+    client->inet_destination_address->sin_addr.s_addr = inet_addr(ip);
+    client->inet_destination_address->sin_port = htons(port);
+    client->inet_destination_address->sin_family = AF_INET;
+    client->client_address_length = sizeof(*client->inet_destination_address);
     int64_t result = transport_socket_create_tcp(
         configuration->socket_configuration_flags,
         configuration->socket_receive_buffer_size,
@@ -50,15 +51,15 @@ int transport_client_initialize_udp(transport_client_t* client,
     client->family = INET;
     client->client_address_length = sizeof(struct sockaddr_in);
 
-    memset(&client->inet_destination_address, 0, sizeof(client->inet_destination_address));
-    client->inet_destination_address.sin_addr.s_addr = inet_addr(destination_ip);
-    client->inet_destination_address.sin_port = htons(destination_port);
-    client->inet_destination_address.sin_family = AF_INET;
+    client->inet_destination_address = calloc(1, sizeof(struct sockaddr_in));
+    client->inet_destination_address->sin_addr.s_addr = inet_addr(destination_ip);
+    client->inet_destination_address->sin_port = htons(destination_port);
+    client->inet_destination_address->sin_family = AF_INET;
 
-    memset(&client->inet_source_address, 0, sizeof(client->inet_source_address));
-    client->inet_source_address.sin_addr.s_addr = inet_addr(source_ip);
-    client->inet_source_address.sin_port = htons(source_port);
-    client->inet_source_address.sin_family = AF_INET;
+    client->inet_source_address = calloc(1, sizeof(struct sockaddr_in));
+    client->inet_source_address->sin_addr.s_addr = inet_addr(source_ip);
+    client->inet_source_address->sin_port = htons(source_port);
+    client->inet_source_address->sin_family = AF_INET;
     int64_t result = transport_socket_create_udp(
         configuration->socket_configuration_flags,
         configuration->socket_receive_buffer_size,
@@ -87,10 +88,10 @@ int transport_client_initialize_unix_stream(transport_client_t* client,
                                             const char* path)
 {
     client->family = UNIX;
-    memset(&client->unix_destination_address, 0, sizeof(client->unix_destination_address));
-    client->unix_destination_address.sun_family = AF_UNIX;
-    strcpy(client->unix_destination_address.sun_path, path);
-    client->client_address_length = sizeof(client->unix_destination_address);
+    client->unix_destination_address = calloc(1, sizeof(struct sockaddr_un));
+    client->unix_destination_address->sun_family = AF_UNIX;
+    strcpy(client->unix_destination_address->sun_path, path);
+    client->client_address_length = sizeof(*client->unix_destination_address);
     int64_t result = transport_socket_create_unix_stream(
         configuration->socket_configuration_flags,
         configuration->socket_receive_buffer_size,
@@ -114,11 +115,7 @@ void transport_client_destroy(transport_client_t* client)
 {
     if (client->family == UNIX)
     {
-        unlink(client->unix_destination_address.sun_path);
-        if (strlen(client->unix_source_address.sun_path))
-        {
-            unlink(client->unix_source_address.sun_path);
-        }
+        unlink(client->unix_destination_address->sun_path);
     }
     free(client);
 }

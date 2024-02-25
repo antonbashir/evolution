@@ -10,6 +10,8 @@ abstract interface class ReactiveCodec {
 }
 
 class ReactiveUtf8Codec implements ReactiveCodec {
+  const ReactiveUtf8Codec();
+
   @override
   dynamic decode(Uint8List input) => utf8.decode(input);
 
@@ -21,6 +23,8 @@ class ReactiveUtf8Codec implements ReactiveCodec {
 }
 
 class ReactiveRawCodec implements ReactiveCodec {
+  const ReactiveRawCodec();
+
   @override
   dynamic decode(Uint8List input) => input;
 

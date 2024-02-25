@@ -1,6 +1,6 @@
+import 'package:core/core.dart';
 import 'package:meta/meta.dart';
 
-import '../constants.dart';
 import 'client.dart';
 
 class TransportClientRegistry {

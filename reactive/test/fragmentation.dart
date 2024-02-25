@@ -12,9 +12,9 @@ import 'latch.dart';
 void fragmentation() {
   test('1 fragmented request', timeout: Timeout(Duration(seconds: 60)), () async {
     final transport = TransportModule();
-    final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport().workerConfiguration));
+    final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport.workerConfiguration));
     await worker.initialize();
-    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport());
+    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport);
     final fullPayload = Uint8List.fromList(List.generate(1 * 1024 * 1024, (index) => 31));
 
     final latch = Latch(1);
@@ -34,10 +34,10 @@ void fragmentation() {
     reactive.connect(
       InternetAddress.loopbackIPv4,
       12345,
-      setupConfiguration: ReactiveTransportDefaults.setup().copyWith(dataMimeType: octetStreamMimeType),
+      setupConfiguration: ReactiveTransportDefaults.setup.copyWith(dataMimeType: octetStreamMimeType),
       (subscriber) => subscriber.subscribe(
         "channel",
-        configuration: ReactiveTransportDefaults.channel().copyWith(frameMaxSize: 1024, fragmentSize: 256, chunksLimit: 2),
+        configuration: ReactiveTransportDefaults.channel.copyWith(frameMaxSize: 1024, fragmentSize: 256, chunksLimit: 2),
         onPayload: (payload, producer) {},
         onRequest: (count, producer) => producer.payload(fullPayload),
       ),
@@ -50,9 +50,9 @@ void fragmentation() {
 
   test('1 simple request -> 1 fragmented request', timeout: Timeout(Duration(seconds: 60)), () async {
     final transport = TransportModule();
-    final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport().workerConfiguration));
+    final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport.workerConfiguration));
     await worker.initialize();
-    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport());
+    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport);
     final simplePayload = Uint8List.fromList("simple".codeUnits);
     final fullPayload = Uint8List.fromList(List.generate(1 * 1024 * 1024, (index) => 31));
 
@@ -79,10 +79,10 @@ void fragmentation() {
     reactive.connect(
       InternetAddress.loopbackIPv4,
       12345,
-      setupConfiguration: ReactiveTransportDefaults.setup().copyWith(dataMimeType: octetStreamMimeType),
+      setupConfiguration: ReactiveTransportDefaults.setup.copyWith(dataMimeType: octetStreamMimeType),
       (subscriber) => subscriber.subscribe(
         "channel",
-        configuration: ReactiveTransportDefaults.channel().copyWith(frameMaxSize: 1024, fragmentSize: 256, chunksLimit: 2),
+        configuration: ReactiveTransportDefaults.channel.copyWith(frameMaxSize: 1024, fragmentSize: 256, chunksLimit: 2),
         onRequest: (count, producer) {
           producer.payload(simplePayload);
           producer.payload(fullPayload);
@@ -97,9 +97,9 @@ void fragmentation() {
 
   test('1 simple request -> 1 fragmented request -> 1 simple request', timeout: Timeout(Duration(seconds: 60)), () async {
     final transport = TransportModule();
-    final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport().workerConfiguration));
+    final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport.workerConfiguration));
     await worker.initialize();
-    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport());
+    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport);
     final simplePayload = Uint8List.fromList("simple".codeUnits);
     final fullPayload = Uint8List.fromList(List.generate(1 * 1024 * 1024, (index) => 31));
 
@@ -131,10 +131,10 @@ void fragmentation() {
     reactive.connect(
       InternetAddress.loopbackIPv4,
       12345,
-      setupConfiguration: ReactiveTransportDefaults.setup().copyWith(dataMimeType: octetStreamMimeType),
+      setupConfiguration: ReactiveTransportDefaults.setup.copyWith(dataMimeType: octetStreamMimeType),
       (subscriber) => subscriber.subscribe(
         "channel",
-        configuration: ReactiveTransportDefaults.channel().copyWith(frameMaxSize: 1024, fragmentSize: 256, chunksLimit: 2),
+        configuration: ReactiveTransportDefaults.channel.copyWith(frameMaxSize: 1024, fragmentSize: 256, chunksLimit: 2),
         onError: (code, error, producer) => print(error),
         onRequest: (count, producer) {
           producer.payload(simplePayload);
@@ -151,9 +151,9 @@ void fragmentation() {
 
   test('1 simple request -> 1 fragmented request -> 1 simple request -> 1 fragmented request', timeout: Timeout(Duration(seconds: 60)), () async {
     final transport = TransportModule();
-    final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport().workerConfiguration));
+    final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport.workerConfiguration));
     await worker.initialize();
-    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport());
+    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport);
     final simplePayload = Uint8List.fromList("simple".codeUnits);
     final fullPayload = Uint8List.fromList(List.generate(1 * 1024 * 1024, (index) => 31));
 
@@ -191,10 +191,10 @@ void fragmentation() {
     reactive.connect(
       InternetAddress.loopbackIPv4,
       12345,
-      setupConfiguration: ReactiveTransportDefaults.setup().copyWith(dataMimeType: octetStreamMimeType),
+      setupConfiguration: ReactiveTransportDefaults.setup.copyWith(dataMimeType: octetStreamMimeType),
       (subscriber) => subscriber.subscribe(
         "channel",
-        configuration: ReactiveTransportDefaults.channel().copyWith(frameMaxSize: 1024, fragmentSize: 256, chunksLimit: 2),
+        configuration: ReactiveTransportDefaults.channel.copyWith(frameMaxSize: 1024, fragmentSize: 256, chunksLimit: 2),
         onError: (code, error, producer) => print(error),
         onRequest: (count, producer) {
           producer.payload(simplePayload);

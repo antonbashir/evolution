@@ -2,10 +2,11 @@ import 'dart:async';
 import 'dart:ffi';
 import 'dart:io';
 
+import 'package:core/core.dart';
 import 'package:ffi/ffi.dart';
+import 'package:memory/memory.dart';
 
 import '../bindings.dart';
-import '../buffers.dart';
 import '../channel.dart';
 import '../configuration.dart';
 import '../constants.dart';
@@ -21,8 +22,8 @@ import 'package:meta/meta.dart';
 
 class TransportClientsFactory {
   final TransportClientRegistry _registry;
-  final Pointer<transport_worker_t> _workerPointer;
-  final TransportBuffers _buffers;
+  final Pointer<transport> _workerPointer;
+  final MemoryStaticBuffers _buffers;
   final TransportPayloadPool _payloadPool;
 
   const TransportClientsFactory(this._registry, this._workerPointer, this._buffers, this._payloadPool);
@@ -32,7 +33,7 @@ class TransportClientsFactory {
     int port, {
     TransportTcpClientConfiguration? configuration,
   }) async {
-    configuration = configuration ?? TransportDefaults.tcpClient();
+    configuration = configuration ?? TransportDefaults.tcpClient;
     final clients = <Future<TransportClientConnection>>[];
     for (var clientIndex = 0; clientIndex < configuration.pool; clientIndex++) {
       final clientPointer = calloc<transport_client_t>();
@@ -49,9 +50,9 @@ class TransportClientsFactory {
       );
       if (result < 0) {
         if (clientPointer.ref.fd > 0) {
-          transport_close_descriptor(clientPointer.ref.fd);
+          systemShutdownDescriptor(clientPointer.ref.fd);
           calloc.free(clientPointer);
-          throw TransportInitializationException(TransportMessages.clientError(result, _bindings));
+          throw TransportInitializationException(TransportMessages.clientError(result));
         }
         calloc.free(clientPointer);
         throw TransportInitializationException(TransportMessages.clientSocketError(result));
@@ -64,7 +65,6 @@ class TransportClientsFactory {
         ),
         clientPointer,
         _workerPointer,
-        _bindings,
         configuration.readTimeout?.inSeconds,
         configuration.writeTimeout?.inSeconds,
         _buffers,
@@ -85,7 +85,7 @@ class TransportClientsFactory {
     int destinationPort, {
     TransportUdpClientConfiguration? configuration,
   }) {
-    configuration = configuration ?? TransportDefaults.udpClient();
+    configuration = configuration ?? TransportDefaults.udpClient;
     final clientPointer = using((arena) {
       final pointer = calloc<transport_client_t>();
       if (pointer == nullptr) {
@@ -101,9 +101,9 @@ class TransportClientsFactory {
       );
       if (result < 0) {
         if (pointer.ref.fd > 0) {
-          transport_close_descriptor(pointer.ref.fd);
+          systemShutdownDescriptor(pointer.ref.fd);
           calloc.free(pointer);
-          throw TransportInitializationException(TransportMessages.clientError(result, _bindings));
+          throw TransportInitializationException(TransportMessages.clientError(result));
         }
         calloc.free(pointer);
         throw TransportInitializationException(TransportMessages.clientSocketError(result));
@@ -150,12 +150,10 @@ class TransportClientsFactory {
       TransportChannel(
         _workerPointer,
         clientPointer.ref.fd,
-        _bindings,
         _buffers,
       ),
       clientPointer,
       _workerPointer,
-      _bindings,
       configuration.readTimeout?.inSeconds,
       configuration.writeTimeout?.inSeconds,
       _buffers,
@@ -170,7 +168,7 @@ class TransportClientsFactory {
     String path, {
     TransportUnixStreamClientConfiguration? configuration,
   }) async {
-    configuration = configuration ?? TransportDefaults.unixStreamClient();
+    configuration = configuration ?? TransportDefaults.unixStreamClient;
     final clients = <Future<TransportClientConnection>>[];
     for (var clientIndex = 0; clientIndex < configuration.pool; clientIndex++) {
       final clientPointer = calloc<transport_client_t>();
@@ -186,9 +184,9 @@ class TransportClientsFactory {
       );
       if (result < 0) {
         if (clientPointer.ref.fd > 0) {
-          transport_close_descriptor(clientPointer.ref.fd);
+          systemShutdownDescriptor(clientPointer.ref.fd);
           calloc.free(clientPointer);
-          throw TransportInitializationException(TransportMessages.clientError(result, _bindings));
+          throw TransportInitializationException(TransportMessages.clientError(result));
         }
         calloc.free(clientPointer);
         throw TransportInitializationException(TransportMessages.clientSocketError(result));
@@ -196,14 +194,12 @@ class TransportClientsFactory {
       final channel = TransportChannel(
         _workerPointer,
         clientPointer.ref.fd,
-        _bindings,
         _buffers,
       );
       final client = TransportClientChannel(
         channel,
         clientPointer,
         _workerPointer,
-        _bindings,
         configuration.readTimeout?.inSeconds,
         configuration.writeTimeout?.inSeconds,
         _buffers,
@@ -316,7 +312,6 @@ class TransportClientsFactory {
     if (clientConfiguration.ipMulticastInterface != null) {
       flags |= transportSocketOptionIpMulticastIf;
       final interface = clientConfiguration.ipMulticastInterface!;
-      nativeClientConfiguration.ref.ip_multicast_interface = allocator<ip_mreqn>();
       transport_socket_initialize_multicast_request(
         nativeClientConfiguration.ref.ip_multicast_interface,
         interface.groupAddress.toNativeUtf8(allocator: allocator).cast(),

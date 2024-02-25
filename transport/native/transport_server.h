@@ -1,16 +1,17 @@
 #ifndef TRANSPORT_SERVER_H_INCLUDED
 #define TRANSPORT_SERVER_H_INCLUDED
 
-#include <netinet/in.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include <sys/un.h>
 #include "transport_constants.h"
 
 #if defined(__cplusplus)
 extern "C"
 {
 #endif
+    struct ip_mreqn;
+    struct sockaddr_in;
+    struct sockaddr_un;
 
     typedef struct transport_server_configuration
     {
@@ -34,9 +35,9 @@ extern "C"
     {
         int fd;
         transport_socket_family_t family;
-        struct sockaddr_in inet_server_address;
-        struct sockaddr_un unix_server_address;
-        socklen_t server_address_length;
+        struct sockaddr_in* inet_server_address;
+        struct sockaddr_un* unix_server_address;
+        __socklen_t server_address_length;
     } transport_server_t;
 
     int transport_server_initialize_tcp(transport_server_t* server,

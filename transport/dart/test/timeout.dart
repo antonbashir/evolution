@@ -1,11 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:iouring_transport/transport/defaults.dart';
-import 'package:iouring_transport/transport/exception.dart';
-import 'package:iouring_transport/transport/transport.dart';
-import 'package:iouring_transport/transport/worker.dart';
+import 'package:transport/transport.dart';
 import 'package:test/test.dart';
+import 'package:transport/transport/exception.dart';
 
 Function _handleTimeout(Stopwatch actual, Duration expected, Completer completer) => (error) {
       if (!(error is TransportCanceledException)) throw TestFailure("actual: $error");
@@ -16,8 +14,8 @@ Function _handleTimeout(Stopwatch actual, Duration expected, Completer completer
 
 void testTcpTimeout({required Duration connection, required Duration serverRead, required Duration clientRead}) {
   test("(timeout tcp single) [connection = ${connection.inSeconds}, serverRead = ${serverRead.inSeconds}, clientRead = ${clientRead.inSeconds}] ", () async {
-    final transport = Transport();
-    final worker = TransportWorker(transport.worker(TransportDefaults.worker()));
+    final transport = TransportModule();
+    final worker = TransportWorker(transport.worker(TransportDefaults.worker));
     await worker.initialize();
 
     final time = Stopwatch();
@@ -25,7 +23,7 @@ void testTcpTimeout({required Duration connection, required Duration serverRead,
     var server = worker.servers.tcp(InternetAddress("0.0.0.0"), 12345, (client) {});
     time.start();
     await worker.clients
-        .tcp(InternetAddress("1.1.1.1"), 12345, configuration: TransportDefaults.tcpClient().copyWith(connectTimeout: connection))
+        .tcp(InternetAddress("1.1.1.1"), 12345, configuration: TransportDefaults.tcpClient.copyWith(connectTimeout: connection))
         .then((_) {}, onError: _handleTimeout(time, connection, completer));
     await completer.future;
     await server.close();
@@ -33,7 +31,7 @@ void testTcpTimeout({required Duration connection, required Duration serverRead,
     server = worker.servers.tcp(InternetAddress("0.0.0.0"), 12345, (client) {});
     time.reset();
     completer = Completer();
-    final clients = await worker.clients.tcp(InternetAddress("127.0.0.1"), 12345, configuration: TransportDefaults.tcpClient().copyWith(readTimeout: clientRead));
+    final clients = await worker.clients.tcp(InternetAddress("127.0.0.1"), 12345, configuration: TransportDefaults.tcpClient.copyWith(readTimeout: clientRead));
     clients.select().stream().listen((_) {}, onError: _handleTimeout(time, clientRead, completer));
     await completer.future;
     await server.close();
@@ -43,7 +41,7 @@ void testTcpTimeout({required Duration connection, required Duration serverRead,
     server = worker.servers.tcp(
       InternetAddress("0.0.0.0"),
       12345,
-      configuration: TransportDefaults.tcpServer().copyWith(readTimeout: serverRead),
+      configuration: TransportDefaults.tcpServer.copyWith(readTimeout: serverRead),
       (connection) => connection.stream().listen((_) {}, onError: _handleTimeout(time, serverRead, completer)),
     );
     await worker.clients.tcp(InternetAddress("127.0.0.1"), 12345);
@@ -55,8 +53,8 @@ void testTcpTimeout({required Duration connection, required Duration serverRead,
 
 void testUdpTimeout({required Duration serverRead, required Duration clientRead}) {
   test("(timeout udp single) [serverRead = ${serverRead.inSeconds}, clientRead = ${clientRead.inSeconds}] ", () async {
-    final transport = Transport();
-    final worker = TransportWorker(transport.worker(TransportDefaults.worker()));
+    final transport = TransportModule();
+    final worker = TransportWorker(transport.worker(TransportDefaults.worker));
     await worker.initialize();
 
     final time = Stopwatch();
@@ -64,13 +62,13 @@ void testUdpTimeout({required Duration serverRead, required Duration clientRead}
     var server = worker.servers.udp(InternetAddress("0.0.0.0"), 12345);
     time.start();
     final clientSubscription = worker.clients
-        .udp(InternetAddress("127.0.0.1"), 12346, InternetAddress("127.0.0.1"), 12345, configuration: TransportDefaults.udpClient().copyWith(readTimeout: clientRead))
+        .udp(InternetAddress("127.0.0.1"), 12346, InternetAddress("127.0.0.1"), 12345, configuration: TransportDefaults.udpClient.copyWith(readTimeout: clientRead))
         .stream()
         .listen((_) {}, onError: _handleTimeout(time, clientRead, completer));
     await completer.future.whenComplete(clientSubscription.cancel);
     await server.closeServer();
 
-    server = worker.servers.udp(InternetAddress("0.0.0.0"), 12345, configuration: TransportDefaults.udpServer().copyWith(readTimeout: serverRead));
+    server = worker.servers.udp(InternetAddress("0.0.0.0"), 12345, configuration: TransportDefaults.udpServer.copyWith(readTimeout: serverRead));
     time.reset();
     completer = Completer();
     final serverSubscription = server.stream().listen((_) {}, onError: _handleTimeout(time, serverRead, completer));

@@ -1,11 +1,10 @@
 import 'dart:typed_data';
 
 import 'package:core/core.dart';
-
-import 'buffers.dart';
+import 'package:memory/memory.dart';
 
 class TransportPayloadPool {
-  final TransportBuffers _buffers;
+  final MemoryStaticBuffers _buffers;
   final _payloads = <TransportPayload>[];
 
   TransportPayloadPool(int buffersCount, this._buffers) {

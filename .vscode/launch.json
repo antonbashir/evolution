@@ -45,16 +45,16 @@
       "preLaunchTask": "storage-native-build"
     },
     {
-      "name": "storage-test-gdb",
+      "name": "transport-test-gdb",
       "type": "cppdbg",
       "request": "launch",
       "program": "/usr/bin/dart",
       "args": [
         "-DDEBUG=true",
-        "${workspaceFolder}/transport/test/dart/lib/test.dart"
+        "${workspaceFolder}/transport/dart/test/test.dart"
       ],
       "stopAtEntry": false,
-      "cwd": "${workspaceFolder}/transport",
+      "cwd": "${workspaceFolder}/transport/dart",
       "MIMode": "gdb",
       "setupCommands": [
         {

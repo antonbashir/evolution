@@ -10,9 +10,9 @@ import 'latch.dart';
 void interaction() {
   test('1 request -> 1 cancel', timeout: Timeout(Duration(seconds: 60)), () async {
     final transport = TransportModule();
-    final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport().workerConfiguration));
+    final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport.workerConfiguration));
     await worker.initialize();
-    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport());
+    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport);
     final clientPayload = "client-payload";
 
     final latch = Latch(2);
@@ -44,9 +44,9 @@ void interaction() {
 
   test('1 request -> 1 response', timeout: Timeout(Duration(seconds: 60)), () async {
     final transport = TransportModule();
-    final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport().workerConfiguration));
+    final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport.workerConfiguration));
     await worker.initialize();
-    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport());
+    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport);
     final clientPayload = "client-payload";
     final serverPayload = "server-payload";
 
@@ -84,9 +84,9 @@ void interaction() {
 
   test('1 request -> 2 responses', timeout: Timeout(Duration(seconds: 60)), () async {
     final transport = TransportModule();
-    final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport().workerConfiguration));
+    final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport.workerConfiguration));
     await worker.initialize();
-    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport());
+    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport);
     final clientPayload = "client-payload";
     final serverPayload = "server-payload";
 
@@ -129,9 +129,9 @@ void interaction() {
 
   test('2 request -> 4 responses', timeout: Timeout(Duration(seconds: 60)), () async {
     final transport = TransportModule();
-    final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport().workerConfiguration));
+    final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport.workerConfiguration));
     await worker.initialize();
-    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport());
+    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport);
     final clientPayload = "client-payload";
     final serverPayload = "server-payload";
 
@@ -176,9 +176,9 @@ void interaction() {
 
   test('infinity requests -> infinity responses', timeout: Timeout(Duration(seconds: 60)), () async {
     final transport = TransportModule();
-    final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport().workerConfiguration));
+    final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport.workerConfiguration));
     await worker.initialize();
-    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport());
+    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport);
     final clientPayload = "client-payload";
     final serverPayload = "server-payload";
 
@@ -212,7 +212,7 @@ void interaction() {
       12345,
       (subscriber) => subscriber.subscribe(
         "channel",
-        configuration: ReactiveTransportDefaults.channel().copyWith(initialRequestCount: reactiveInfinityRequestsCount),
+        configuration: ReactiveTransportDefaults.channel.copyWith(initialRequestCount: reactiveInfinityRequestsCount),
         onPayload: communicate,
         onSubscribe: (producer) {
           producer.request(reactiveInfinityRequestsCount);

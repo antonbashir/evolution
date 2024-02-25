@@ -12,10 +12,10 @@ import 'latch.dart';
 void shutdown() {
   test("shutdown (before initialization)", () async {
     final transport = TransportModule();
-    final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport().workerConfiguration));
+    final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport.workerConfiguration));
     await worker.initialize();
-    final serverReactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport());
-    final clientReactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport());
+    final serverReactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport);
+    final clientReactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport);
 
     serverReactive.serve(
       InternetAddress.anyIPv4,
@@ -44,10 +44,10 @@ void shutdown() {
 
   test("shutdown (after initialization)", () async {
     final transport = TransportModule();
-    final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport().workerConfiguration));
+    final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport.workerConfiguration));
     await worker.initialize();
-    final serverReactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport());
-    final clientReactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport());
+    final serverReactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport);
+    final clientReactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport);
 
     final latch = Latch(2);
 
@@ -84,10 +84,10 @@ void shutdown() {
 
   test("graceful shutdown", () async {
     final transport = TransportModule();
-    final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport().workerConfiguration));
+    final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport.workerConfiguration));
     await worker.initialize();
-    final serverReactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport().copyWith(gracefulTimeout: Duration(seconds: 1)));
-    final clientReactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport().copyWith(gracefulTimeout: Duration(seconds: 1)));
+    final serverReactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport.copyWith(gracefulTimeout: Duration(seconds: 1)));
+    final clientReactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport.copyWith(gracefulTimeout: Duration(seconds: 1)));
     final clientPayload = "client-payload";
     final serverPayload = "server-payload";
 
@@ -140,10 +140,10 @@ void shutdown() {
 
   test("graceful shutdown (fragmentation)", () async {
     final transport = TransportModule();
-    final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport().workerConfiguration));
+    final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport.workerConfiguration));
     await worker.initialize();
-    final serverReactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport().copyWith(gracefulTimeout: Duration(seconds: 1)));
-    final clientReactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport().copyWith(gracefulTimeout: Duration(seconds: 1)));
+    final serverReactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport.copyWith(gracefulTimeout: Duration(seconds: 1)));
+    final clientReactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport.copyWith(gracefulTimeout: Duration(seconds: 1)));
     final fullPayload = Uint8List.fromList(List.generate(1 * 1024 * 1024, (index) => 31));
 
     final latch = Latch(1);
@@ -163,10 +163,10 @@ void shutdown() {
     clientReactive.connect(
       InternetAddress.loopbackIPv4,
       12345,
-      setupConfiguration: ReactiveTransportDefaults.setup().copyWith(dataMimeType: octetStreamMimeType),
+      setupConfiguration: ReactiveTransportDefaults.setup.copyWith(dataMimeType: octetStreamMimeType),
       (subscriber) => subscriber.subscribe(
         "channel",
-        configuration: ReactiveTransportDefaults.channel().copyWith(frameMaxSize: 1024, fragmentSize: 256, chunksLimit: 2),
+        configuration: ReactiveTransportDefaults.channel.copyWith(frameMaxSize: 1024, fragmentSize: 256, chunksLimit: 2),
         onPayload: (payload, producer) {},
         onRequest: (count, producer) {
           producer.payload(fullPayload);

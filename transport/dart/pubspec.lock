@@ -184,7 +184,7 @@ packages:
     source: hosted
     version: "0.12.16+1"
   memory:
-    dependency: transitive
+    dependency: "direct main"
     description:
       path: "../../memory/dart"
       relative: true

@@ -24,7 +24,7 @@ class ReactiveSubscriber {
       _broker.consume(
         ReactiveFunctionalChannel(
           key,
-          configuration ?? ReactiveTransportDefaults.channel(),
+          configuration ?? ReactiveTransportDefaults.channel,
           payloadConsumer: onPayload,
           subscribeConsumer: onSubscribe,
           errorConsumer: onError,

@@ -26,7 +26,7 @@ class TransportTcpClientConfiguration {
   final bool? tcpNoDelay;
   final int? tcpSynCount;
 
-  TransportTcpClientConfiguration({
+  const TransportTcpClientConfiguration({
     required this.pool,
     this.connectTimeout,
     this.readTimeout,
@@ -127,7 +127,7 @@ class TransportUdpClientConfiguration {
   final int? ipMulticastTtl;
   final TransportUdpMulticastManager? multicastManager;
 
-  TransportUdpClientConfiguration({
+  const TransportUdpClientConfiguration({
     this.readTimeout,
     this.writeTimeout,
     this.socketReceiveBufferSize,
@@ -203,7 +203,7 @@ class TransportUnixStreamClientConfiguration {
   final int? socketReceiveLowAt;
   final int? socketSendLowAt;
 
-  TransportUnixStreamClientConfiguration({
+  const TransportUnixStreamClientConfiguration({
     required this.pool,
     this.connectTimeout,
     this.readTimeout,

@@ -1,16 +1,15 @@
 #ifndef TRANSPORT_SOCKET_H_INCLUDED
 #define TRANSPORT_SOCKET_H_INCLUDED
 
-#include <netinet/in.h>
 #include <stdbool.h>
 #include <stdint.h>
-
-typedef struct ip_mreqn transport_ip_mreqn;
 
 #if defined(__cplusplus)
 extern "C"
 {
 #endif
+    struct ip_mreqn;
+
     int64_t transport_socket_create_tcp(uint64_t flags,
                                         uint32_t socket_receive_buffer_size,
                                         uint32_t socket_send_buffer_size,
@@ -28,7 +27,7 @@ extern "C"
                                         uint32_t socket_receive_low_at,
                                         uint32_t socket_send_low_at,
                                         uint16_t ip_ttl,
-                                        transport_ip_mreqn* ip_multicast_interface,
+                                        struct ip_mreqn* ip_multicast_interface,
                                         uint32_t ip_multicast_ttl);
     int64_t transport_socket_create_unix_stream(uint64_t flags,
                                                 uint32_t socket_receive_buffer_size,
@@ -36,7 +35,7 @@ extern "C"
                                                 uint32_t socket_receive_low_at,
                                                 uint32_t socket_send_low_at);
 
-    void transport_socket_initialize_multicast_request(transport_ip_mreqn* request, const char* group_address, const char* local_address, int interface_index);
+    void transport_socket_initialize_multicast_request(struct ip_mreqn* request, const char* group_address, const char* local_address, int interface_index);
 
     int transport_socket_multicast_add_membership(int fd, const char* group_address, const char* local_address, int interface_index);
     int transport_socket_multicast_drop_membership(int fd, const char* group_address, const char* local_address, int interface_index);

@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:iouring_transport/transport/defaults.dart';
-import 'package:iouring_transport/transport/transport.dart';
-import 'package:iouring_transport/transport/worker.dart';
+import 'package:transport/transport.dart';
 import 'package:test/test.dart';
 
 import 'generators.dart';
@@ -11,8 +9,8 @@ import 'validators.dart';
 
 void testBulk() {
   test("bulk", () async {
-    final transport = Transport();
-    final worker = TransportWorker(transport.worker(TransportDefaults.worker()));
+    final transport = TransportModule();
+    final worker = TransportWorker(transport.worker(TransportDefaults.worker));
     await worker.initialize();
     final file1 = File("file1");
     final file2 = File("file2");

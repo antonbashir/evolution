@@ -2,15 +2,15 @@ import 'dart:ffi';
 import 'dart:typed_data';
 
 import 'package:core/core.dart';
+import 'package:memory/memory.dart';
 
 import 'bindings.dart';
-import 'buffers.dart';
 import 'constants.dart';
 
 class TransportChannel {
   final int fd;
-  final Pointer<transport_worker_t> _workerPointer;
-  final TransportBuffers _buffers;
+  final Pointer<transport> _workerPointer;
+  final MemoryStaticBuffers _buffers;
 
   const TransportChannel(this._workerPointer, this.fd, this._buffers);
 
@@ -22,7 +22,7 @@ class TransportChannel {
     int offset = 0,
     int? timeout,
   }) {
-    transport_worker_read(
+    transport_read(
       _workerPointer,
       fd,
       bufferId,
@@ -43,7 +43,7 @@ class TransportChannel {
     int? timeout,
   }) {
     _buffers.write(bufferId, bytes);
-    transport_worker_write(
+    transport_write(
       _workerPointer,
       fd,
       bufferId,
@@ -63,7 +63,7 @@ class TransportChannel {
     int? timeout,
     int sqeFlags = 0,
   }) {
-    transport_worker_receive_message(
+    transport_receive_message(
       _workerPointer,
       fd,
       bufferId,
@@ -87,7 +87,7 @@ class TransportChannel {
     int sqeFlags = 0,
   }) {
     _buffers.write(bufferId, bytes);
-    transport_worker_send_message(
+    transport_send_message(
       _workerPointer,
       fd,
       bufferId,
@@ -101,5 +101,5 @@ class TransportChannel {
   }
 
   @inline
-  void close() => transport_close_descriptor(fd);
+  void close() => systemShutdownDescriptor(fd);
 }

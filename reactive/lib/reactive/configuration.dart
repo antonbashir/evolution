@@ -7,7 +7,7 @@ class ReactiveTransportConfiguration {
   final Duration? gracefulTimeout;
   final TransportWorkerConfiguration workerConfiguration;
 
-  ReactiveTransportConfiguration({
+  const ReactiveTransportConfiguration({
     required this.tracer,
     required this.gracefulTimeout,
     required this.workerConfiguration,
@@ -72,7 +72,11 @@ class ReactiveLeaseConfiguration {
   final Duration timeToLiveCheck;
   final int requests;
 
-  ReactiveLeaseConfiguration({required this.timeToLiveCheck, required this.timeToLiveRefresh, required this.requests});
+  const ReactiveLeaseConfiguration({
+    required this.timeToLiveCheck,
+    required this.timeToLiveRefresh,
+    required this.requests,
+  });
 
   ReactiveLeaseConfiguration copyWith({
     Duration? timeToLiveCheck,
@@ -93,7 +97,7 @@ class ReactiveSetupConfiguration {
   final Duration keepAliveMaxLifetime;
   final bool lease;
 
-  ReactiveSetupConfiguration({
+  const ReactiveSetupConfiguration({
     required this.metadataMimeType,
     required this.dataMimeType,
     required this.keepAliveInterval,

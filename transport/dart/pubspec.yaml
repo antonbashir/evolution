@@ -14,6 +14,8 @@ dependencies:
   test: ^1.24.6
   core:
     path: ../../core/dart
+  memory:
+    path: ../../memory/dart
   interactor:
     path: ../../interactor/dart
 
@@ -26,7 +28,6 @@ ffigen:
   headers:
     entry-points:
       - "../native/transport.h"
-      - "../native/transport_worker.h"
       - "../native/transport_constants.h"
       - "../native/transport_server.h"
       - "../native/transport_client.h"
@@ -38,7 +39,7 @@ ffigen:
   functions:
     leaf:
       include:
-        - "transport_worker_.*"
+        - "transport_.*"
     symbol-address:
       include:
         - ".*"
@@ -57,3 +58,11 @@ ffigen:
       - "_(.*)"
       - "max_align_t"
       - "file_(.*)"
+  type-map:
+    structs:
+      "interactor_completion_event":
+        lib: "interactor"
+        c-type: "interactor_completion_event"
+        dart-type: "interactor_completion_event"
+  library-imports:
+    interactor: package:interactor/interactor.dart

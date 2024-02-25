@@ -47,7 +47,7 @@ class MemoryModule {
       calloc.free(pointer);
       throw MemoryException(systemError(result));
     }
-    staticBuffers = MemoryStaticBuffers(pointer);
+    staticBuffers = MemoryStaticBuffers(pointer, configuration.staticBufferSize);
     inputOutputBuffers = MemoryInputOutputBuffers(pointer);
     structures = MemoryStructurePools(pointer);
     smallDatas = MemorySmallData(pointer);

@@ -3,7 +3,8 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 
-import '../constants.dart';
+import 'package:core/core.dart';
+
 import '../exception.dart';
 import '../payload.dart';
 import 'file.dart';

@@ -1,9 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:iouring_transport/transport/defaults.dart';
-import 'package:iouring_transport/transport/transport.dart';
-import 'package:iouring_transport/transport/worker.dart';
+import 'package:transport/transport.dart';
 import 'package:test/test.dart';
 
 import 'generators.dart';
@@ -12,8 +10,8 @@ import 'validators.dart';
 
 void testUnixStreamSingle({required int index, required int clientsPool}) {
   test("(single) [clients = $clientsPool]", () async {
-    final transport = Transport();
-    final worker = TransportWorker(transport.worker(TransportDefaults.worker()));
+    final transport = TransportModule();
+    final worker = TransportWorker(transport.worker(TransportDefaults.worker));
     await worker.initialize();
     final serverSocket = File(Directory.systemTemp.path + "/dart-iouring-socket_${worker.id}.sock");
     if (serverSocket.existsSync()) serverSocket.deleteSync();
@@ -27,7 +25,7 @@ void testUnixStreamSingle({required int index, required int clientsPool}) {
       ),
     );
     final latch = Latch(clientsPool);
-    final clients = await worker.clients.unixStream(serverSocket.path, configuration: TransportDefaults.unixStreamClient().copyWith(pool: clientsPool));
+    final clients = await worker.clients.unixStream(serverSocket.path, configuration: TransportDefaults.unixStreamClient.copyWith(pool: clientsPool));
     clients.forEach((client) {
       client.writeSingle(Generators.request());
       client.stream().listen((event) {
@@ -42,8 +40,8 @@ void testUnixStreamSingle({required int index, required int clientsPool}) {
 
 void testUnixStreamMany({required int index, required int clientsPool, required int count}) {
   test("(many) [clients = $clientsPool, count = $count]", () async {
-    final transport = Transport();
-    final worker = TransportWorker(transport.worker(TransportDefaults.worker()));
+    final transport = TransportModule();
+    final worker = TransportWorker(transport.worker(TransportDefaults.worker));
     await worker.initialize();
     final serverSocket = File(Directory.systemTemp.path + "/dart-iouring-socket_${worker.id}.sock");
     if (serverSocket.existsSync()) serverSocket.deleteSync();
@@ -63,7 +61,7 @@ void testUnixStreamMany({required int index, required int clientsPool, required 
       },
     );
     final latch = Latch(clientsPool);
-    final clients = await worker.clients.unixStream(serverSocket.path, configuration: TransportDefaults.unixStreamClient().copyWith(pool: clientsPool));
+    final clients = await worker.clients.unixStream(serverSocket.path, configuration: TransportDefaults.unixStreamClient.copyWith(pool: clientsPool));
     clients.forEach((client) async {
       final clientResults = BytesBuilder();
       client.stream().listen(

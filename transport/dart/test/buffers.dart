@@ -2,10 +2,8 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'dart:io' as io;
 
-import 'package:iouring_transport/transport/defaults.dart';
-import 'package:iouring_transport/transport/transport.dart';
-import 'package:iouring_transport/transport/worker.dart';
 import 'package:test/test.dart';
+import 'package:transport/transport.dart';
 
 import 'generators.dart';
 import 'latch.dart';
@@ -13,8 +11,8 @@ import 'validators.dart';
 
 void testTcpBuffers() {
   test("(tcp)", () async {
-    final transport = Transport();
-    final worker = TransportWorker(transport.worker(TransportDefaults.worker()));
+    final transport = TransportModule();
+    final worker = TransportWorker(transport.worker(TransportDefaults.worker));
     await worker.initialize();
 
     var serverCompleter = Completer();
@@ -72,8 +70,8 @@ void testTcpBuffers() {
 
 void testUdpBuffers() {
   test("(udp)", () async {
-    final transport = Transport();
-    final worker = TransportWorker(transport.worker(TransportDefaults.worker()));
+    final transport = TransportModule();
+    final worker = TransportWorker(transport.worker(TransportDefaults.worker));
     await worker.initialize();
 
     var serverCompleter = Completer();
@@ -134,8 +132,8 @@ void testUdpBuffers() {
 
 void testFileBuffers() {
   test("(file)", () async {
-    final transport = Transport();
-    final worker = TransportWorker(transport.worker(TransportDefaults.worker()));
+    final transport = TransportModule();
+    final worker = TransportWorker(transport.worker(TransportDefaults.worker));
     await worker.initialize();
     final file = io.File("file");
     if (file.existsSync()) file.deleteSync();
@@ -170,8 +168,8 @@ void testFileBuffers() {
 
 void testBuffersOverflow() {
   test("(overflow)", () async {
-    final transport = Transport();
-    final worker = TransportWorker(transport.worker(TransportDefaults.worker().copyWith(buffersCount: 2)));
+    final transport = TransportModule();
+    final worker = TransportWorker(transport.worker(TransportDefaults.worker.copyWith(buffersCount: 2)));
     await worker.initialize();
 
     worker.servers.tcp(io.InternetAddress("0.0.0.0"), 12345, (connection) {

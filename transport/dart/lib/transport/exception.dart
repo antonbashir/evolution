@@ -1,7 +1,6 @@
 import 'package:core/core.dart';
 
 import 'payload.dart';
-import 'bindings.dart';
 import 'constants.dart';
 
 class TransportInitializationException implements Exception {
@@ -68,7 +67,7 @@ class TransportZeroDataException implements Exception {
 @inline
 Exception createTransportException(TransportEvent event, int result) {
   if (result < 0) {
-    if (result == -ECANCELED) {
+    if (result == -SystemErrors.ECANCELED.code) {
       return TransportCanceledException(event);
     }
     return TransportInternalException(

@@ -3,65 +3,187 @@ import 'dart:ffi';
 import 'dart:isolate';
 import 'dart:math';
 
-import 'package:core/core.dart';
-import 'package:ffi/ffi.dart';
 import 'package:interactor/interactor.dart';
+import 'package:memory/memory.dart';
+import 'package:meta/meta.dart';
 
 import 'bindings.dart';
-import 'configuration.dart';
+import 'client/factory.dart';
+import 'client/registry.dart';
 import 'constants.dart';
-import 'exception.dart';
+import 'file/factory.dart';
+import 'file/registry.dart';
+import 'payload.dart';
+import 'server/factory.dart';
+import 'server/registry.dart';
+import 'server/responder.dart';
+import 'timeout.dart';
 
-class TransportModule {
-  final _workerClosers = <SendPort>[];
-  final _workerPorts = <RawReceivePort>[];
-  final _workerDestroyer = ReceivePort();
+class TransportWorker {
+  final _fromTransport = ReceivePort();
 
-  late final String? _libraryPath;
+  late final Pointer<transport> _workerPointer;
+  late final Pointer<io_uring> _ring;
+  late final Pointer<Pointer<interactor_completion_event>> _cqes;
+  late final RawReceivePort _closer;
+  late final SendPort _destroyer;
+  late final TransportClientRegistry _clientRegistry;
+  late final TransportServerRegistry _serverRegistry;
+  late final TransportClientsFactory _clientsFactory;
+  late final TransportServersFactory _serversFactory;
+  late final TransportFileRegistry _filesRegistry;
+  late final TransportFilesFactory _filesFactory;
+  late final MemoryModule _memory;
+  late final MemoryStaticBuffers _buffers;
+  late final TransportTimeoutChecker _timeoutChecker;
+  late final TransportPayloadPool _payloadPool;
+  late final TransportServerDatagramResponderPool _datagramResponderPool;
+  late final List<Duration> _delays;
 
-  TransportModule({String? libraryPath}) {
-    this._libraryPath = libraryPath;
-    libraryPath == null ? SystemLibrary.loadByName(transportLibraryName, transportPackageName) : SystemLibrary.loadByPath(libraryPath);
-    InteractorModule();
-  }
+  var _active = true;
+  final _done = Completer();
 
-  Future<void> shutdown({Duration? gracefulTimeout}) async {
-    _workerClosers.forEach((worker) => worker.send(gracefulTimeout));
-    await _workerDestroyer.take(_workerClosers.length).toList();
-    _workerDestroyer.close();
-    _workerPorts.forEach((port) => port.close());
-  }
+  bool get active => _active;
+  int get id => _workerPointer.ref.id;
+  int get descriptor => _workerPointer.ref.descriptor;
+  TransportServersFactory get servers => _serversFactory;
+  TransportClientsFactory get clients => _clientsFactory;
+  TransportFilesFactory get files => _filesFactory;
 
-  SendPort worker(TransportWorkerConfiguration configuration) {
-    final port = RawReceivePort((ports) async {
-      SendPort toWorker = ports[0];
-      _workerClosers.add(ports[1]);
-      final workerPointer = calloc<transport_worker_t>();
-      if (workerPointer == nullptr) throw TransportInitializationException(TransportMessages.workerMemoryError);
-      final result = using((arena) {
-        final nativeConfiguration = arena<transport_worker_configuration_t>();
-        nativeConfiguration.ref.ring_flags = configuration.ringFlags;
-        nativeConfiguration.ref.ring_size = configuration.ringSize;
-        nativeConfiguration.ref.buffer_size = configuration.bufferSize;
-        nativeConfiguration.ref.buffers_count = max(configuration.buffersCount, 2);
-        nativeConfiguration.ref.timeout_checker_period_millis = configuration.timeoutCheckerPeriod.inMilliseconds;
-        nativeConfiguration.ref.base_delay_micros = configuration.baseDelay.inMicroseconds;
-        nativeConfiguration.ref.max_delay_micros = configuration.maxDelay.inMicroseconds;
-        nativeConfiguration.ref.delay_randomization_factor = configuration.delayRandomizationFactor;
-        nativeConfiguration.ref.cqe_peek_count = configuration.cqePeekCount;
-        nativeConfiguration.ref.cqe_wait_count = configuration.cqeWaitCount;
-        nativeConfiguration.ref.cqe_wait_timeout_millis = configuration.cqeWaitTimeout.inMilliseconds;
-        nativeConfiguration.ref.trace = configuration.trace;
-        return transport_worker_initialize(workerPointer, nativeConfiguration, _workerClosers.length);
-      });
-      if (result < 0) {
-        transport_worker_destroy(workerPointer);
-        throw TransportInitializationException(TransportMessages.workerError(result));
-      }
-      final workerInput = [_libraryPath, workerPointer.address, _workerDestroyer.sendPort];
-      toWorker.send(workerInput);
+  TransportWorker(SendPort toTransport) {
+    _closer = RawReceivePort((gracefulTimeout) async {
+      _timeoutChecker.stop();
+      await _filesRegistry.close(gracefulTimeout: gracefulTimeout);
+      await _clientRegistry.close(gracefulTimeout: gracefulTimeout);
+      await _serverRegistry.close(gracefulTimeout: gracefulTimeout);
+      _active = false;
+      await _done.future;
+      transport_destroy(_workerPointer);
+      _closer.close();
+      _destroyer.send(null);
     });
-    _workerPorts.add(port);
-    return port.sendPort;
+    toTransport.send([_fromTransport.sendPort, _closer.sendPort]);
   }
+
+  Future<void> initialize() async {
+    final configuration = await _fromTransport.first as List;
+    _workerPointer = Pointer.fromAddress(configuration[0] as int).cast<transport>();
+    _destroyer = configuration[1] as SendPort;
+    _fromTransport.close();
+    _memory = MemoryModule();
+    _buffers = _memory.staticBuffers;
+    _payloadPool = TransportPayloadPool(_workerPointer.ref.buffers_count, _buffers);
+    _datagramResponderPool = TransportServerDatagramResponderPool(_workerPointer.ref.buffers_count, _buffers);
+    _clientRegistry = TransportClientRegistry();
+    _serverRegistry = TransportServerRegistry();
+    _serversFactory = TransportServersFactory(
+      _serverRegistry,
+      _workerPointer,
+      _buffers,
+      _payloadPool,
+      _datagramResponderPool,
+    );
+    _clientsFactory = TransportClientsFactory(
+      _clientRegistry,
+      _workerPointer,
+      _buffers,
+      _payloadPool,
+    );
+    _filesRegistry = TransportFileRegistry();
+    _filesFactory = TransportFilesFactory(
+      _filesRegistry,
+      _workerPointer,
+      _buffers,
+      _payloadPool,
+    );
+    _ring = _workerPointer.ref.ring;
+    _cqes = _workerPointer.ref.cqes;
+    _timeoutChecker = TransportTimeoutChecker(
+      _workerPointer,
+      Duration(milliseconds: _workerPointer.ref.timeout_checker_period_millis),
+    );
+    _delays = _calculateDelays();
+    _timeoutChecker.start();
+    unawaited(_listen());
+  }
+
+  Future<void> _listen() async {
+    final baseDelay = _workerPointer.ref.base_delay_micros;
+    final regularDelayDuration = Duration(microseconds: baseDelay);
+    var attempt = 0;
+    while (_active) {
+      attempt++;
+      if (_handleCqes()) {
+        attempt = 0;
+        await Future.delayed(regularDelayDuration);
+        continue;
+      }
+      await Future.delayed(_delays[min(attempt, 31)]);
+    }
+    _done.complete();
+  }
+
+  bool _handleCqes() {
+    final cqeCount = transport_peek(_workerPointer);
+    if (cqeCount == 0) return false;
+    for (var cqeIndex = 0; cqeIndex < cqeCount; cqeIndex++) {
+      final cqe = _cqes[cqeIndex].ref;
+      final data = cqe.user_data;
+      transport_remove_event(_workerPointer, data);
+      final result = cqe.res;
+      var event = data & 0xffff;
+      final fd = (data >> 32) & 0xffffffff;
+      final bufferId = (data >> 16) & 0xffff;
+      if (_workerPointer.ref.trace) print(TransportMessages.workerTrace(id, result, data, fd));
+
+      if (event & transportEventClient != 0) {
+        event &= ~transportEventClient;
+        if (event == transportEventConnect) {
+          _clientRegistry.get(fd)?.notifyConnect(fd, result);
+          continue;
+        }
+        _clientRegistry.get(fd)?.notifyData(bufferId, result, event);
+        continue;
+      }
+
+      if (event & transportEventServer != 0) {
+        event &= ~transportEventServer;
+        if (event == transportEventRead || event == transportEventWrite) {
+          _serverRegistry.getConnection(fd)?.notify(bufferId, result, event);
+          continue;
+        }
+        if (event == transportEventReceiveMessage || event == transportEventSendMessage) {
+          _serverRegistry.getServer(fd)?.notifyDatagram(bufferId, result, event);
+          continue;
+        }
+        _serverRegistry.getServer(fd)?.notifyAccept(result);
+        continue;
+      }
+
+      if (event & transportEventFile != 0) {
+        _filesRegistry.get(fd)?.notify(bufferId, result, event & ~transportEventFile);
+        continue;
+      }
+    }
+    transport_cqe_advance(_ring, cqeCount);
+    return true;
+  }
+
+  List<Duration> _calculateDelays() {
+    final baseDelay = _workerPointer.ref.base_delay_micros;
+    final delayRandomizationFactor = _workerPointer.ref.delay_randomization_factor;
+    final maxDelay = _workerPointer.ref.max_delay_micros;
+    final random = Random();
+    final delays = <Duration>[];
+    for (var i = 0; i < 32; i++) {
+      final randomization = (delayRandomizationFactor * (random.nextDouble() * 2 - 1) + 1);
+      final exponent = min(i, 31);
+      final delay = (baseDelay * pow(2.0, exponent) * randomization).toInt();
+      delays.add(Duration(microseconds: delay < maxDelay ? delay : maxDelay));
+    }
+    return delays;
+  }
+
+  @visibleForTesting
+  MemoryStaticBuffers get buffers => _buffers;
 }

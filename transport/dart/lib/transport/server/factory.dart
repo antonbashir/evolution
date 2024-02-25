@@ -1,11 +1,12 @@
 import 'dart:ffi';
 import 'dart:io';
 
+import 'package:core/core.dart';
 import 'package:ffi/ffi.dart';
+import 'package:memory/memory.dart';
 import 'package:meta/meta.dart';
 
 import '../bindings.dart';
-import '../buffers.dart';
 import '../channel.dart';
 import '../configuration.dart';
 import '../constants.dart';
@@ -20,15 +21,13 @@ import 'server.dart';
 
 class TransportServersFactory {
   final TransportServerRegistry _registry;
-  final TransportBindings _bindings;
-  final Pointer<transport_worker_t> _workerPointer;
-  final TransportBuffers _buffers;
+  final Pointer<transport> _workerPointer;
+  final MemoryStaticBuffers _buffers;
   final TransportPayloadPool _payloadPool;
   final TransportServerDatagramResponderPool _datagramResponderPool;
 
   const TransportServersFactory(
     this._registry,
-    this._bindings,
     this._workerPointer,
     this._buffers,
     this._payloadPool,
@@ -41,7 +40,7 @@ class TransportServersFactory {
     void Function(TransportServerConnection connection) onAccept, {
     TransportTcpServerConfiguration? configuration,
   }) {
-    configuration = configuration ?? TransportDefaults.tcpServer();
+    configuration = configuration ?? TransportDefaults.tcpServer;
     final server = using(
       (Arena arena) {
         final pointer = calloc<transport_server_t>();
@@ -56,9 +55,9 @@ class TransportServersFactory {
         );
         if (result < 0) {
           if (pointer.ref.fd > 0) {
-            transport_close_descriptor(pointer.ref.fd);
+            systemShutdownDescriptor(pointer.ref.fd);
             calloc.free(pointer);
-            throw TransportInitializationException(TransportMessages.serverError(result, _bindings));
+            throw TransportInitializationException(TransportMessages.serverError(result));
           }
           calloc.free(pointer);
           throw TransportInitializationException(TransportMessages.serverSocketError(result));
@@ -66,7 +65,6 @@ class TransportServersFactory {
         return TransportServerChannel(
           pointer,
           _workerPointer,
-          _bindings,
           configuration.readTimeout?.inSeconds,
           configuration.writeTimeout?.inSeconds,
           _buffers,
@@ -85,7 +83,7 @@ class TransportServersFactory {
     int port, {
     TransportUdpServerConfiguration? configuration,
   }) {
-    configuration = configuration ?? TransportDefaults.udpServer();
+    configuration = configuration ?? TransportDefaults.udpServer;
     final server = using(
       (Arena arena) {
         final pointer = calloc<transport_server_t>();
@@ -100,9 +98,9 @@ class TransportServersFactory {
         );
         if (result < 0) {
           if (pointer.ref.fd > 0) {
-            transport_close_descriptor(pointer.ref.fd);
+            systemShutdownDescriptor(pointer.ref.fd);
             calloc.free(pointer);
-            throw TransportInitializationException(TransportMessages.serverError(result, _bindings));
+            throw TransportInitializationException(TransportMessages.serverError(result));
           }
           calloc.free(pointer);
           throw TransportInitializationException(TransportMessages.serverSocketError(result));
@@ -146,7 +144,6 @@ class TransportServersFactory {
         return TransportServerChannel(
           pointer,
           _workerPointer,
-          _bindings,
           configuration.readTimeout?.inSeconds,
           configuration.writeTimeout?.inSeconds,
           _buffers,
@@ -156,7 +153,6 @@ class TransportServersFactory {
           datagramChannel: TransportChannel(
             _workerPointer,
             pointer.ref.fd,
-            _bindings,
             _buffers,
           ),
         );
@@ -171,7 +167,7 @@ class TransportServersFactory {
     void Function(TransportServerConnection connection) onAccept, {
     TransportUnixStreamServerConfiguration? configuration,
   }) {
-    configuration = configuration ?? TransportDefaults.unixStreamServer();
+    configuration = configuration ?? TransportDefaults.unixStreamServer;
     final server = using(
       (Arena arena) {
         final pointer = calloc<transport_server_t>();
@@ -185,9 +181,9 @@ class TransportServersFactory {
         );
         if (result < 0) {
           if (pointer.ref.fd > 0) {
-            transport_close_descriptor(pointer.ref.fd);
+            systemShutdownDescriptor(pointer.ref.fd);
             calloc.free(pointer);
-            throw TransportInitializationException(TransportMessages.serverError(result, _bindings));
+            throw TransportInitializationException(TransportMessages.serverError(result));
           }
           calloc.free(pointer);
           throw TransportInitializationException(TransportMessages.serverSocketError(result));
@@ -195,7 +191,6 @@ class TransportServersFactory {
         return TransportServerChannel(
           pointer,
           _workerPointer,
-          _bindings,
           configuration.readTimeout?.inSeconds,
           configuration.writeTimeout?.inSeconds,
           _buffers,
@@ -307,7 +302,6 @@ class TransportServersFactory {
     if (serverConfiguration.ipMulticastInterface != null) {
       flags |= transportSocketOptionIpMulticastIf;
       final interface = serverConfiguration.ipMulticastInterface!;
-      nativeServerConfiguration.ref.ip_multicast_interface = allocator<ip_mreqn>();
       transport_socket_initialize_multicast_request(
         nativeServerConfiguration.ref.ip_multicast_interface,
         interface.groupAddress.toNativeUtf8(allocator: allocator).cast(),

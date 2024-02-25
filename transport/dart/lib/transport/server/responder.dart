@@ -2,14 +2,15 @@ import 'dart:async';
 import 'dart:ffi';
 import 'dart:typed_data';
 
+import 'package:core/core.dart';
+import 'package:memory/memory.dart';
+
 import '../bindings.dart';
-import '../buffers.dart';
 import '../channel.dart';
-import '../constants.dart';
 import 'server.dart';
 
 class TransportServerDatagramResponderPool {
-  final TransportBuffers _buffers;
+  final MemoryStaticBuffers _buffers;
   final _datagramResponders = <TransportServerDatagramResponder>[];
 
   TransportServerDatagramResponderPool(int buffersCount, this._buffers) {

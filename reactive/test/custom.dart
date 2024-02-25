@@ -129,9 +129,9 @@ class _ServerChannel with ReactiveChannel {
 void custom() {
   test('channel', timeout: Timeout(Duration(seconds: 60)), () async {
     final transport = TransportModule();
-    final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport().workerConfiguration));
+    final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport.workerConfiguration));
     await worker.initialize();
-    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport());
+    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport);
 
     final clientLatch = EventLatch("client", {"complete", "payload", "request", "subscribe"});
     final clientPayload = "client-payload";
@@ -145,7 +145,7 @@ void custom() {
       (subscriber) => subscriber.subscribeCustom(
         _ServerChannel(
           key: "channel",
-          configuration: ReactiveTransportDefaults.channel(),
+          configuration: ReactiveTransportDefaults.channel,
           latch: serverLatch,
           clientPayload: clientPayload,
           serverPayload: serverPayload,
@@ -160,7 +160,7 @@ void custom() {
       (subscriber) => subscriber.subscribeCustom(
         _ClientChannel(
           key: "channel",
-          configuration: ReactiveTransportDefaults.channel(),
+          configuration: ReactiveTransportDefaults.channel,
           latch: clientLatch,
           clientPayload: clientPayload,
           serverPayload: serverPayload,
@@ -178,9 +178,9 @@ void custom() {
 
   test('channel (server error)', timeout: Timeout(Duration(seconds: 60)), () async {
     final transport = TransportModule();
-    final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport().workerConfiguration));
+    final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport.workerConfiguration));
     await worker.initialize();
-    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport());
+    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport);
 
     final clientLatch = EventLatch("client", {"complete", "error", "request", "subscribe"});
     final clientPayload = "client-payload";
@@ -195,7 +195,7 @@ void custom() {
       (subscriber) => subscriber.subscribeCustom(
         _ServerChannel(
           key: "channel",
-          configuration: ReactiveTransportDefaults.channel(),
+          configuration: ReactiveTransportDefaults.channel,
           latch: serverLatch,
           clientPayload: clientPayload,
           serverPayload: serverPayload,
@@ -211,7 +211,7 @@ void custom() {
       (subscriber) => subscriber.subscribeCustom(
         _ClientChannel(
           key: "channel",
-          configuration: ReactiveTransportDefaults.channel(),
+          configuration: ReactiveTransportDefaults.channel,
           latch: clientLatch,
           clientPayload: clientPayload,
           serverPayload: serverPayload,
@@ -230,9 +230,9 @@ void custom() {
 
   test('channel (client error)', timeout: Timeout(Duration(seconds: 60)), () async {
     final transport = TransportModule();
-    final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport().workerConfiguration));
+    final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport.workerConfiguration));
     await worker.initialize();
-    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport());
+    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport);
 
     final clientLatch = EventLatch("client", {"payload", "request", "subscribe"});
     final clientError = "client-error";
@@ -247,7 +247,7 @@ void custom() {
       (subscriber) => subscriber.subscribeCustom(
         _ServerChannel(
           key: "channel",
-          configuration: ReactiveTransportDefaults.channel(),
+          configuration: ReactiveTransportDefaults.channel,
           latch: serverLatch,
           clientPayload: clientPayload,
           serverPayload: serverPayload,
@@ -263,7 +263,7 @@ void custom() {
       (subscriber) => subscriber.subscribeCustom(
         _ClientChannel(
           key: "channel",
-          configuration: ReactiveTransportDefaults.channel(),
+          configuration: ReactiveTransportDefaults.channel,
           latch: clientLatch,
           clientPayload: clientPayload,
           serverPayload: serverPayload,

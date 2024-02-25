@@ -2,8 +2,9 @@ import 'dart:async';
 import 'dart:ffi';
 import 'dart:typed_data';
 
+import 'package:memory/memory.dart';
+
 import '../bindings.dart';
-import '../buffers.dart';
 import '../channel.dart';
 import '../constants.dart';
 import '../exception.dart';
@@ -18,9 +19,9 @@ class TransportFileChannel {
 
   final String path;
   final int _fd;
-  final Pointer<transport_worker_t> _workerPointer;
+  final Pointer<transport> _workerPointer;
   final TransportChannel _channel;
-  final TransportBuffers buffers;
+  final MemoryStaticBuffers buffers;
   final TransportPayloadPool _payloadPool;
   final TransportFileRegistry _registry;
 
@@ -132,7 +133,7 @@ class TransportFileChannel {
           return;
         }
         buffers.release(bufferId);
-        _inboundEvents.addError(createTransportException(TransportEvent.fileEvent(event), result, _bindings));
+        _inboundEvents.addError(createTransportException(TransportEvent.fileEvent(event), result));
         return;
       }
       if (event == transportEventWrite) {
@@ -141,7 +142,7 @@ class TransportFileChannel {
           _outboundDoneHandlers.remove(bufferId)?.call();
           return;
         }
-        _outboundErrorHandlers.remove(bufferId)?.call(createTransportException(TransportEvent.fileEvent(event), result, _bindings));
+        _outboundErrorHandlers.remove(bufferId)?.call(createTransportException(TransportEvent.fileEvent(event), result));
         return;
       }
       buffers.release(bufferId);
@@ -162,7 +163,7 @@ class TransportFileChannel {
     if (_pending > 0) {
       if (gracefulTimeout == null) {
         _active = false;
-        transport_worker_cancel_by_fd(_workerPointer, _fd);
+        transport_cancel_by_fd(_workerPointer, _fd);
         await _closer.future;
       }
       if (gracefulTimeout != null) {
@@ -170,7 +171,7 @@ class TransportFileChannel {
           gracefulTimeout,
           onTimeout: () {
             _active = false;
-            transport_worker_cancel_by_fd(_workerPointer, _fd);
+            transport_cancel_by_fd(_workerPointer, _fd);
             return _closer.future;
           },
         );

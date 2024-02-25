@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/time.h>
+#include <sys/un.h>
 #include <unistd.h>
 #include "transport_constants.h"
 #include "transport_socket.h"
@@ -14,11 +15,11 @@ int transport_server_initialize_tcp(transport_server_t* server, transport_server
                                     int32_t port)
 {
     server->family = INET;
-    memset(&server->inet_server_address, 0, sizeof(server->inet_server_address));
-    server->inet_server_address.sin_addr.s_addr = inet_addr(ip);
-    server->inet_server_address.sin_port = htons(port);
-    server->inet_server_address.sin_family = AF_INET;
-    server->server_address_length = sizeof(server->inet_server_address);
+    server->inet_server_address = calloc(1, sizeof(struct sockaddr_in));
+    server->inet_server_address->sin_addr.s_addr = inet_addr(ip);
+    server->inet_server_address->sin_port = htons(port);
+    server->inet_server_address->sin_family = AF_INET;
+    server->server_address_length = sizeof(*server->inet_server_address);
     int64_t result = transport_socket_create_tcp(
         configuration->socket_configuration_flags,
         configuration->socket_receive_buffer_size,
@@ -54,11 +55,11 @@ int transport_server_initialize_udp(transport_server_t* server, transport_server
                                     int32_t port)
 {
     server->family = INET;
-    memset(&server->inet_server_address, 0, sizeof(server->inet_server_address));
-    server->inet_server_address.sin_addr.s_addr = inet_addr(ip);
-    server->inet_server_address.sin_port = htons(port);
-    server->inet_server_address.sin_family = AF_INET;
-    server->server_address_length = sizeof(server->inet_server_address);
+    server->inet_server_address = calloc(1, sizeof(struct sockaddr_in));
+    server->inet_server_address->sin_addr.s_addr = inet_addr(ip);
+    server->inet_server_address->sin_port = htons(port);
+    server->inet_server_address->sin_family = AF_INET;
+    server->server_address_length = sizeof(*server->inet_server_address);
     int64_t result = transport_socket_create_udp(
         configuration->socket_configuration_flags,
         configuration->socket_receive_buffer_size,
@@ -85,10 +86,10 @@ int transport_server_initialize_unix_stream(transport_server_t* server, transpor
                                             const char* path)
 {
     server->family = UNIX;
-    memset(&server->unix_server_address, 0, sizeof(server->unix_server_address));
-    server->unix_server_address.sun_family = AF_UNIX;
-    strcpy(server->unix_server_address.sun_path, path);
-    server->server_address_length = sizeof(server->unix_server_address);
+    server->unix_server_address = calloc(1, sizeof(struct sockaddr_in));
+    server->unix_server_address->sun_family = AF_UNIX;
+    strcpy(server->unix_server_address->sun_path, path);
+    server->server_address_length = sizeof(*server->unix_server_address);
     int64_t result = transport_socket_create_unix_stream(
         configuration->socket_configuration_flags,
         configuration->socket_receive_buffer_size,
@@ -117,7 +118,7 @@ void transport_server_destroy(transport_server_t* server)
 {
     if (server->family == UNIX)
     {
-        unlink(server->unix_server_address.sun_path);
+        unlink(server->unix_server_address->sun_path);
     }
     free(server);
 }

@@ -2,9 +2,9 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:ffi/ffi.dart';
+import 'package:memory/memory.dart';
 
 import '../bindings.dart';
-import '../buffers.dart';
 import '../channel.dart';
 import '../constants.dart';
 import '../exception.dart';
@@ -16,8 +16,8 @@ import 'package:meta/meta.dart';
 
 class TransportFilesFactory {
   final TransportFileRegistry _registry;
-  final Pointer<transport_worker_t> _workerPointer;
-  final TransportBuffers _buffers;
+  final Pointer<transport> _workerPointer;
+  final MemoryStaticBuffers _buffers;
   final TransportPayloadPool _payloadPool;
 
   const TransportFilesFactory(

@@ -3,10 +3,10 @@ import 'dart:ffi';
 import 'dart:typed_data';
 
 import 'package:core/core.dart';
+import 'package:memory/memory.dart';
 import 'package:meta/meta.dart';
 
 import '../bindings.dart';
-import '../buffers.dart';
 import '../channel.dart';
 import '../constants.dart';
 import '../exception.dart';
@@ -19,12 +19,12 @@ class TransportClientChannel {
   final _outboundDoneHandlers = <int, void Function()>{};
   final _outboundErrorHandlers = <int, void Function(Exception error)>{};
   final Pointer<transport_client_t> _pointer;
-  final Pointer<transport_worker_t> _workerPointer;
+  final Pointer<transport> _workerPointer;
   final TransportChannel _channel;
   final int? _connectTimeout;
   final int? _readTimeout;
   final int? _writeTimeout;
-  final TransportBuffers _buffers;
+  final MemoryStaticBuffers _buffers;
   final TransportClientRegistry _registry;
   final TransportPayloadPool _payloadPool;
 
@@ -177,7 +177,7 @@ class TransportClientChannel {
   @inline
   Future<TransportClientChannel> connect() {
     if (_closing) return Future.error(TransportClosedException.forClient());
-    transport_worker_connect(_workerPointer, _pointer, _connectTimeout!);
+    transport_connect(_workerPointer, _pointer, _connectTimeout!);
     _pending++;
     return _connector.future.then((_) => this);
   }
@@ -193,7 +193,7 @@ class TransportClientChannel {
         _connector.complete();
         return;
       }
-      if (result == -ECANCELED) {
+      if (result == -SystemErrors.ECANCELED.code) {
         _connector.completeError(TransportCanceledException(TransportEvent.connect));
         return;
       }
@@ -274,7 +274,7 @@ class TransportClientChannel {
     if (_pending > 0) {
       if (gracefulTimeout == null) {
         _active = false;
-        transport_worker_cancel_by_fd(_workerPointer, _pointer.ref.fd);
+        transport_cancel_by_fd(_workerPointer, _pointer.ref.fd);
         await _closer.future;
       }
     }

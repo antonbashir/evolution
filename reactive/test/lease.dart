@@ -11,9 +11,9 @@ void lease() {
   test("pass", () async {
     final latch = Latch(4);
     final transport = TransportModule();
-    final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport().workerConfiguration));
+    final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport.workerConfiguration));
     await worker.initialize();
-    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport());
+    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport);
     reactive.serve(
       InternetAddress.anyIPv4,
       12345,
@@ -34,7 +34,7 @@ void lease() {
     reactive.connect(
       InternetAddress.loopbackIPv4,
       12345,
-      setupConfiguration: ReactiveTransportDefaults.setup().copyWith(lease: true),
+      setupConfiguration: ReactiveTransportDefaults.setup.copyWith(lease: true),
       (subscriber) {
         subscriber.subscribe(
           "channel",
@@ -59,9 +59,9 @@ void lease() {
   test("fail", () async {
     final latch = Latch(1);
     final transport = TransportModule();
-    final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport().workerConfiguration));
+    final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport.workerConfiguration));
     await worker.initialize();
-    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport());
+    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport);
     reactive.serve(
       InternetAddress.anyIPv4,
       12345,
@@ -80,7 +80,7 @@ void lease() {
     reactive.connect(
       InternetAddress.loopbackIPv4,
       12345,
-      setupConfiguration: ReactiveTransportDefaults.setup().copyWith(lease: true),
+      setupConfiguration: ReactiveTransportDefaults.setup.copyWith(lease: true),
       (subscriber) {
         subscriber.subscribe(
           "channel",
@@ -103,9 +103,9 @@ void lease() {
     final payloadLatch = Latch(4);
     final errorLatch = Latch(1);
     final transport = TransportModule();
-    final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport().workerConfiguration));
+    final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport.workerConfiguration));
     await worker.initialize();
-    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport());
+    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport);
     reactive.serve(
       InternetAddress.anyIPv4,
       12345,
@@ -125,7 +125,7 @@ void lease() {
     reactive.connect(
       InternetAddress.loopbackIPv4,
       12345,
-      setupConfiguration: ReactiveTransportDefaults.setup().copyWith(lease: true),
+      setupConfiguration: ReactiveTransportDefaults.setup.copyWith(lease: true),
       (subscriber) {
         subscriber.subscribe(
           "channel",

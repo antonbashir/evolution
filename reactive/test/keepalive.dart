@@ -21,9 +21,9 @@ void keepalive() {
     }
 
     final transport = TransportModule();
-    final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport().workerConfiguration));
+    final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport.workerConfiguration));
     await worker.initialize();
-    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport().copyWith(tracer: _trace));
+    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport.copyWith(tracer: _trace));
 
     reactive.serve(
       InternetAddress.anyIPv4,
@@ -34,7 +34,7 @@ void keepalive() {
     reactive.connect(
       InternetAddress.loopbackIPv4,
       12345,
-      setupConfiguration: ReactiveTransportDefaults.setup().copyWith(keepAliveInterval: Duration(seconds: 5)),
+      setupConfiguration: ReactiveTransportDefaults.setup.copyWith(keepAliveInterval: Duration(seconds: 5)),
       (subscriber) => subscriber.subscribe("channel"),
     );
 
@@ -47,9 +47,9 @@ void keepalive() {
     final latch = Latch(2);
 
     final transport = TransportModule();
-    final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport().workerConfiguration));
+    final worker = TransportWorker(transport.worker(ReactiveTransportDefaults.transport.workerConfiguration));
     await worker.initialize();
-    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport());
+    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport);
 
     reactive.serve(
       InternetAddress.anyIPv4,
@@ -64,7 +64,7 @@ void keepalive() {
       InternetAddress.loopbackIPv4,
       12345,
       onShutdown: () => latch.notify(),
-      setupConfiguration: ReactiveTransportDefaults.setup().copyWith(keepAliveInterval: Duration(seconds: 10), keepAliveMaxLifetime: Duration(seconds: 5)),
+      setupConfiguration: ReactiveTransportDefaults.setup.copyWith(keepAliveInterval: Duration(seconds: 10), keepAliveMaxLifetime: Duration(seconds: 5)),
       (subscriber) {
         subscriber.subscribe("channel");
       },

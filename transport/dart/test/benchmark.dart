@@ -3,10 +3,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
 
-import 'package:iouring_transport/transport/configuration.dart';
-import 'package:iouring_transport/transport/defaults.dart';
-import 'package:iouring_transport/transport/transport.dart';
-import 'package:iouring_transport/transport/worker.dart';
+import 'package:interactor/interactor/constants.dart';
+import 'package:transport/transport.dart';
 
 Future<void> main(List<String> args) async {
   await _benchMyTcp();
@@ -14,7 +12,7 @@ Future<void> main(List<String> args) async {
 }
 
 Future<void> _benchMyTcp() async {
-  final transport = Transport();
+  final transport = TransportModule();
   final encoder = Utf8Encoder();
   final fromServer = encoder.convert("from server\n");
 
@@ -30,14 +28,14 @@ Future<void> _benchMyTcp() async {
           connection.writeSingle(fromServer);
         }),
       );
-    }, transport.worker(TransportDefaults.worker().copyWith(ringFlags: ringSetupSqpoll)));
+    }, transport.worker(TransportDefaults.worker.copyWith(ringFlags: ringSetupSqpoll)));
   }
   await Future.delayed(Duration(seconds: 1));
   for (var i = 0; i < 2; i++) {
     Isolate.spawn((SendPort message) async {
       final worker = TransportWorker(message);
       await worker.initialize();
-      final connector = await worker.clients.tcp(InternetAddress("127.0.0.1"), 12345, configuration: TransportDefaults.tcpClient().copyWith(pool: 256));
+      final connector = await worker.clients.tcp(InternetAddress("127.0.0.1"), 12345, configuration: TransportDefaults.tcpClient.copyWith(pool: 256));
       var count = 0;
       final time = Stopwatch();
       time.start();
@@ -51,7 +49,7 @@ Future<void> _benchMyTcp() async {
       }
       await Future.delayed(Duration(seconds: 10));
       print("My RPS: ${count / 10}");
-    }, transport.worker(TransportDefaults.worker()));
+    }, transport.worker(TransportDefaults.worker));
   }
 
   await Future.delayed(Duration(seconds: 15));

@@ -16,7 +16,7 @@ const parentDirectorySymbol = '..';
 const currentDirectorySymbol = './';
 
 final transportLibraryName = bool.fromEnvironment("DEBUG") ? "libtransport_debug_${Abi.current()}.so" : "libtransport_release_${Abi.current()}.so";
-const transportPackageName = "iouring_transport";
+const transportPackageName = "transport";
 
 const packageConfigJsonFile = "package_config.json";
 

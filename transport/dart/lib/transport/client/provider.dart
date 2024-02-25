@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import '../constants.dart';
+import 'package:core/core.dart';
+
 import '../payload.dart';
 import 'client.dart';
 

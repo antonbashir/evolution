@@ -12,8 +12,9 @@ class MemoryStaticBuffers {
   final Queue<Completer<void>> _finalizers = Queue();
   final Pointer<memory_dart> _memory;
   final Pointer<iovec> _buffers;
+  final int bufferSize;
 
-  MemoryStaticBuffers(this._memory) : _buffers = memory_dart_static_buffers_inner(_memory);
+  MemoryStaticBuffers(this._memory, this.bufferSize) : _buffers = memory_dart_static_buffers_inner(_memory);
 
   @inline
   void release(int bufferId) {

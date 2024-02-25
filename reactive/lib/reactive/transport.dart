@@ -45,7 +45,7 @@ class ReactiveTransport {
       onClose: onShutdown,
       tcpConfiguration: tcpConfiguration,
       transportConfiguration: _configuration,
-      brokerConfiguration: brokerConfiguration ?? ReactiveTransportDefaults.broker(),
+      brokerConfiguration: brokerConfiguration ?? ReactiveTransportDefaults.broker,
       leaseConfiguration: leaseConfiguration,
     );
     _servers.add(server);
@@ -70,8 +70,8 @@ class ReactiveTransport {
       onClose: onShutdown,
       transportConfiguration: _configuration,
       tcpConfiguration: tcpConfiguration,
-      brokerConfiguration: brokerConfiguration ?? ReactiveTransportDefaults.broker(),
-      setupConfiguration: setupConfiguration ?? ReactiveTransportDefaults.setup(),
+      brokerConfiguration: brokerConfiguration ?? ReactiveTransportDefaults.broker,
+      setupConfiguration: setupConfiguration ?? ReactiveTransportDefaults.setup,
     );
     _clients.add(client);
     _worker.clients

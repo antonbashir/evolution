@@ -2,10 +2,12 @@ import 'dart:async';
 import 'dart:ffi';
 import 'dart:typed_data';
 
+import 'package:core/core.dart';
+import 'package:memory/memory.dart';
+
 import 'provider.dart';
 import 'registry.dart';
 import '../bindings.dart';
-import '../buffers.dart';
 import '../channel.dart';
 import '../constants.dart';
 import '../exception.dart';
@@ -25,10 +27,9 @@ class TransportServerConnectionChannel {
   final int? _readTimeout;
   final int? _writeTimeout;
   final TransportChannel channel;
-  final Pointer<transport_worker_t> _workerPointer;
-  final TransportBindings _bindings;
+  final Pointer<transport> _workerPointer;
   final TransportServerChannel _server;
-  final TransportBuffers _buffers;
+  final MemoryStaticBuffers _buffers;
   final TransportPayloadPool _payloadPool;
   final int _fd;
 
@@ -42,7 +43,6 @@ class TransportServerConnectionChannel {
   TransportServerConnectionChannel(
     this._server,
     this._buffers,
-    this._bindings,
     this._fd,
     this._payloadPool,
     this._readTimeout,
@@ -109,7 +109,7 @@ class TransportServerConnectionChannel {
         }
         _buffers.release(bufferId);
         if (result < 0) {
-          _inboundEvents.addError(createTransportException(TransportEvent.serverEvent(event), result, _bindings));
+          _inboundEvents.addError(createTransportException(TransportEvent.serverEvent(event), result));
         }
         unawaited(close());
         return;
@@ -120,7 +120,7 @@ class TransportServerConnectionChannel {
           _outboundDoneHandlers.remove(bufferId)?.call();
           return;
         }
-        _outboundErrorHandlers.remove(bufferId)?.call(createTransportException(TransportEvent.serverEvent(event), result, _bindings));
+        _outboundErrorHandlers.remove(bufferId)?.call(createTransportException(TransportEvent.serverEvent(event), result));
         unawaited(close());
         return;
       }
@@ -142,7 +142,7 @@ class TransportServerConnectionChannel {
     if (_pending > 0) {
       if (gracefulTimeout == null) {
         _active = false;
-        transport_worker_cancel_by_fd(_workerPointer, _fd);
+        transport_cancel_by_fd(_workerPointer, _fd);
         await _closer.future;
       }
       if (gracefulTimeout != null) {
@@ -150,7 +150,7 @@ class TransportServerConnectionChannel {
           gracefulTimeout,
           onTimeout: () {
             _active = false;
-            transport_worker_cancel_by_fd(_workerPointer, _fd);
+            transport_cancel_by_fd(_workerPointer, _fd);
             return _closer.future;
           },
         );
@@ -159,7 +159,7 @@ class TransportServerConnectionChannel {
     _active = false;
     if (_inboundEvents.hasListener) await _inboundEvents.close();
     _server._removeConnection(_fd);
-    transport_close_descriptor(_fd);
+    systemShutdownDescriptor(_fd);
   }
 
   Future<void> closeServer({Duration? gracefulTimeout}) => _server.close(gracefulTimeout: gracefulTimeout);
@@ -174,11 +174,10 @@ class TransportServerChannel implements TransportServer {
 
   final TransportChannel? _datagramChannel;
   final Pointer<transport_server_t> pointer;
-  final Pointer<transport_worker_t> _workerPointer;
-  final TransportBindings _bindings;
+  final Pointer<transport> _workerPointer;
   final int? _readTimeout;
   final int? _writeTimeout;
-  final TransportBuffers _buffers;
+  final MemoryStaticBuffers _buffers;
   final TransportServerRegistry _registry;
   final TransportPayloadPool _payloadPool;
   final TransportServerDatagramResponderPool _datagramResponderPool;
@@ -195,7 +194,6 @@ class TransportServerChannel implements TransportServer {
   TransportServerChannel(
     this.pointer,
     this._workerPointer,
-    this._bindings,
     this._readTimeout,
     this._writeTimeout,
     this._buffers,
@@ -209,7 +207,7 @@ class TransportServerChannel implements TransportServer {
   void accept(void Function(TransportServerConnection connection) onAccept) {
     if (_closing) throw TransportClosedException.forServer();
     _acceptor = onAccept;
-    transport_worker_accept(_workerPointer, pointer);
+    transport_accept(_workerPointer, pointer);
   }
 
   Future<void> receive({int? flags}) async {
@@ -310,13 +308,13 @@ class TransportServerChannel implements TransportServer {
               _buffers.read(bufferId),
               this,
               _datagramChannel!,
-              transport_worker_get_datagram_address(_workerPointer, pointer.ref.family, bufferId),
+              transport_get_datagram_address(_workerPointer, pointer.ref.family, bufferId),
             ),
           );
           return;
         }
         _buffers.release(bufferId);
-        _inboundEvents.addError(createTransportException(TransportEvent.serverEvent(event), result, _bindings));
+        _inboundEvents.addError(createTransportException(TransportEvent.serverEvent(event), result));
         return;
       }
       if (event == transportEventSendMessage) {
@@ -325,7 +323,7 @@ class TransportServerChannel implements TransportServer {
           _outboundDoneHandlers.remove(bufferId)?.call();
           return;
         }
-        _outboundErrorHandlers.remove(bufferId)?.call(createTransportException(TransportEvent.serverEvent(event), result, _bindings));
+        _outboundErrorHandlers.remove(bufferId)?.call(createTransportException(TransportEvent.serverEvent(event), result));
         return;
       }
       _buffers.release(bufferId);
@@ -339,11 +337,10 @@ class TransportServerChannel implements TransportServer {
   void notifyAccept(int fd) {
     if (_closing) return;
     if (fd > 0) {
-      final channel = TransportChannel(_workerPointer, fd, _bindings, _buffers);
+      final channel = TransportChannel(_workerPointer, fd, _buffers);
       final connection = TransportServerConnectionChannel(
         this,
         _buffers,
-        _bindings,
         fd,
         _payloadPool,
         _readTimeout,
@@ -355,7 +352,7 @@ class TransportServerChannel implements TransportServer {
       _connections[fd] = connection;
       _acceptor(TransportServerConnection(connection));
     }
-    transport_worker_accept(_workerPointer, pointer);
+    transport_accept(_workerPointer, pointer);
   }
 
   @inline
@@ -380,7 +377,7 @@ class TransportServerChannel implements TransportServer {
     if (_pending > 0) {
       if (gracefulTimeout == null) {
         _active = false;
-        transport_worker_cancel_by_fd(_workerPointer, pointer.ref.fd);
+        transport_cancel_by_fd(_workerPointer, pointer.ref.fd);
         await _closer.future;
       }
       if (gracefulTimeout != null) {
@@ -388,7 +385,7 @@ class TransportServerChannel implements TransportServer {
           gracefulTimeout,
           onTimeout: () {
             _active = false;
-            transport_worker_cancel_by_fd(_workerPointer, pointer.ref.fd);
+            transport_cancel_by_fd(_workerPointer, pointer.ref.fd);
             return _closer.future;
           },
         );
@@ -397,7 +394,7 @@ class TransportServerChannel implements TransportServer {
     _active = false;
     if (_inboundEvents.hasListener) await _inboundEvents.close();
     _registry.removeServer(pointer.ref.fd);
-    transport_close_descriptor(pointer.ref.fd);
+    systemShutdownDescriptor(pointer.ref.fd);
     transport_server_destroy(pointer);
   }
 }
