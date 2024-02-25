@@ -37,7 +37,7 @@ int transport_server_initialize_tcp(transport_server_t* server, transport_server
         return result;
     }
     server->fd = result;
-    result = bind(server->fd, (struct sockaddr*)&server->inet_server_address, server->server_address_length);
+    result = bind(server->fd, (struct sockaddr*)server->inet_server_address, server->server_address_length);
     if (result < 0)
     {
         return result;
@@ -74,7 +74,7 @@ int transport_server_initialize_udp(transport_server_t* server, transport_server
         return result;
     }
     server->fd = result;
-    result = bind(server->fd, (struct sockaddr*)&server->inet_server_address, server->server_address_length);
+    result = bind(server->fd, (struct sockaddr*)server->inet_server_address, server->server_address_length);
     if (result < 0)
     {
         return result;
@@ -101,7 +101,7 @@ int transport_server_initialize_unix_stream(transport_server_t* server, transpor
         return result;
     }
     server->fd = result;
-    result = bind(server->fd, (struct sockaddr*)&server->unix_server_address, server->server_address_length);
+    result = bind(server->fd, (struct sockaddr*)server->unix_server_address, server->server_address_length);
     if (result < 0)
     {
         return result;

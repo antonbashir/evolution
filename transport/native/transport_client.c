@@ -74,7 +74,7 @@ int transport_client_initialize_udp(transport_client_t* client,
         return result;
     }
     client->fd = result;
-    result = bind(client->fd, (struct sockaddr*)&client->inet_source_address, client->client_address_length);
+    result = bind(client->fd, (struct sockaddr*)client->inet_source_address, client->client_address_length);
     if (result < 0)
     {
         return result;
@@ -108,7 +108,7 @@ int transport_client_initialize_unix_stream(transport_client_t* client,
 
 struct sockaddr* transport_client_get_destination_address(transport_client_t* client)
 {
-    return client->family == INET ? (struct sockaddr*)&client->inet_destination_address : (struct sockaddr*)&client->unix_destination_address;
+    return client->family == INET ? (struct sockaddr*)client->inet_destination_address : (struct sockaddr*)client->unix_destination_address;
 }
 
 void transport_client_destroy(transport_client_t* client)
