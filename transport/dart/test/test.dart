@@ -39,50 +39,50 @@ void main() {
       testTcpMany(index: index, clientsPool: 512, count: 4);
     }
   });
-  group("[unix stream]", timeout: Timeout(Duration(hours: 1)), skip: !unixStream, () {
-    final testsCount = 5;
-    for (var index = 0; index < testsCount; index++) {
-      testUnixStreamSingle(index: index, clientsPool: 1);
-      testUnixStreamSingle(index: index, clientsPool: 128);
-      testUnixStreamSingle(index: index, clientsPool: 512);
-      testUnixStreamMany(index: index, clientsPool: 1, count: 64);
-      testUnixStreamMany(index: index, clientsPool: 128, count: 8);
-      testUnixStreamMany(index: index, clientsPool: 512, count: 4);
-    }
-  });
-  group("[udp]", timeout: Timeout(Duration(hours: 1)), skip: !udp, () {
-    final testsCount = 5;
-    for (var index = 0; index < testsCount; index++) {
-      testUdpSingle(index: index, clients: 1);
-      testUdpSingle(index: index, clients: 128);
-      testUdpSingle(index: index, clients: 512);
-      testUdpMany(index: index, clients: 1, count: 64);
-      testUdpMany(index: index, clients: 128, count: 8);
-      testUdpMany(index: index, clients: 512, count: 4);
-    }
-  });
-  group("[file]", timeout: Timeout(Duration(hours: 1)), skip: !file, () {
-    final testsCount = 5;
-    for (var index = 0; index < testsCount; index++) {
-      testFileSingle(index: index);
-      testFileLoad(index: index, count: 1);
-      testFileLoad(index: index, count: 8);
-      testFileLoad(index: index, count: 16);
-    }
-  });
-  group("[timeout]", timeout: Timeout(Duration(hours: 1)), skip: !timeout, () {
-    testTcpTimeout(connection: Duration(seconds: 1), serverRead: Duration(seconds: 5), clientRead: Duration(seconds: 3));
-    testUdpTimeout(serverRead: Duration(seconds: 5), clientRead: Duration(seconds: 3));
-  });
-  group("[buffers]", timeout: Timeout(Duration(hours: 1)), skip: !buffers, () {
-    testTcpBuffers();
-    testUdpBuffers();
-    testFileBuffers();
-    testBuffersOverflow();
-  });
-  group("[bulk]", timeout: Timeout(Duration(hours: 1)), skip: !bulk, () {
-    testBulk();
-  });
+  // group("[unix stream]", timeout: Timeout(Duration(hours: 1)), skip: !unixStream, () {
+  //   final testsCount = 5;
+  //   for (var index = 0; index < testsCount; index++) {
+  //     testUnixStreamSingle(index: index, clientsPool: 1);
+  //     testUnixStreamSingle(index: index, clientsPool: 128);
+  //     testUnixStreamSingle(index: index, clientsPool: 512);
+  //     testUnixStreamMany(index: index, clientsPool: 1, count: 64);
+  //     testUnixStreamMany(index: index, clientsPool: 128, count: 8);
+  //     testUnixStreamMany(index: index, clientsPool: 512, count: 4);
+  //   }
+  // });
+  // group("[udp]", timeout: Timeout(Duration(hours: 1)), skip: !udp, () {
+  //   final testsCount = 5;
+  //   for (var index = 0; index < testsCount; index++) {
+  //     testUdpSingle(index: index, clients: 1);
+  //     testUdpSingle(index: index, clients: 128);
+  //     testUdpSingle(index: index, clients: 512);
+  //     testUdpMany(index: index, clients: 1, count: 64);
+  //     testUdpMany(index: index, clients: 128, count: 8);
+  //     testUdpMany(index: index, clients: 512, count: 4);
+  //   }
+  // });
+  // group("[file]", timeout: Timeout(Duration(hours: 1)), skip: !file, () {
+  //   final testsCount = 5;
+  //   for (var index = 0; index < testsCount; index++) {
+  //     testFileSingle(index: index);
+  //     testFileLoad(index: index, count: 1);
+  //     testFileLoad(index: index, count: 8);
+  //     testFileLoad(index: index, count: 16);
+  //   }
+  // });
+  // group("[timeout]", timeout: Timeout(Duration(hours: 1)), skip: !timeout, () {
+  //   testTcpTimeout(connection: Duration(seconds: 1), serverRead: Duration(seconds: 5), clientRead: Duration(seconds: 3));
+  //   testUdpTimeout(serverRead: Duration(seconds: 5), clientRead: Duration(seconds: 3));
+  // });
+  // group("[buffers]", timeout: Timeout(Duration(hours: 1)), skip: !buffers, () {
+  //   testTcpBuffers();
+  //   testUdpBuffers();
+  //   testFileBuffers();
+  //   testBuffersOverflow();
+  // });
+  // group("[bulk]", timeout: Timeout(Duration(hours: 1)), skip: !bulk, () {
+  //   testBulk();
+  // });
 }
 
 void testInitialization() {

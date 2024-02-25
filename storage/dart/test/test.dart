@@ -81,8 +81,8 @@ Future<void> main() async {
   });
   _storage = StorageModule();
   await _storage.boot(
-    StorageBootstrapScript(StorageDefaults.storage())..file(File("test/test.lua")),
-    StorageDefaults.executor(),
+    StorageBootstrapScript(StorageDefaults.storage)..file(File("test/test.lua")),
+    StorageDefaults.executor,
     bootConfiguration: StorageDefaults.boot(),
   );
   setUpAll(() async {
