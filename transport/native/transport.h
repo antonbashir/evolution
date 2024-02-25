@@ -14,6 +14,7 @@ extern "C"
     struct memory_static_buffers;
     struct mh_events_t;
     struct io_uring;
+    typedef struct io_uring_cqe transport_completion_event;
 
     typedef struct transport_configuration
     {
@@ -48,7 +49,7 @@ extern "C"
         struct mh_events_t* events;
         size_t ring_size;
         int ring_flags;
-        struct interactor_completion_event** cqes;
+        transport_completion_event** completions;
         uint64_t cqe_wait_timeout_millis;
         uint32_t cqe_wait_count;
         uint32_t cqe_peek_count;

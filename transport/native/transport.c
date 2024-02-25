@@ -24,7 +24,7 @@ int transport_initialize(transport_t* transport,
     transport->buffer_size = configuration->buffer_size;
     transport->buffers_capacity = configuration->buffers_capacity;
     transport->timeout_checker_period_millis = configuration->timeout_checker_period_millis;
-    transport->cqes = malloc(sizeof(struct io_uring_cqe) * transport->ring_size);
+    transport->completions = malloc(sizeof(struct io_uring_cqe*) * configuration->ring_size);
     transport->cqe_wait_timeout_millis = configuration->cqe_wait_timeout_millis;
     transport->cqe_wait_count = configuration->cqe_wait_count;
     transport->cqe_peek_count = configuration->cqe_peek_count;
@@ -264,9 +264,8 @@ int transport_peek(transport_t* transport)
         .tv_nsec = transport->cqe_wait_timeout_millis * 1e+6,
         .tv_sec = 0,
     };
-    struct io_uring_cqe* cqes = ((struct io_uring_cqe*)transport->cqes[0]);
-    io_uring_submit_and_wait_timeout(transport->ring, &cqes, transport->cqe_wait_count, &timeout, 0);
-    return io_uring_peek_batch_cqe(transport->ring, &cqes, transport->cqe_peek_count);
+    io_uring_submit_and_wait_timeout(transport->ring, &transport->completions[0], transport->cqe_wait_count, &timeout, 0);
+    return io_uring_peek_batch_cqe(transport->ring, &transport->completions[0], transport->cqe_peek_count);
 }
 
 void transport_check_event_timeouts(transport_t* transport)
@@ -325,7 +324,7 @@ void transport_destroy(transport_t* transport)
         free(transport->unix_used_messages[index].msg_name);
     }
     mh_events_delete(transport->events);
-    free(transport->cqes);
+    free(transport->completions);
     free(transport->buffers);
     free(transport->inet_used_messages);
     free(transport->unix_used_messages);

@@ -73,9 +73,9 @@ class Transport {
     _destroyer = configuration[1] as SendPort;
     _fromTransport.close();
     _memory = MemoryModule()..initialize();
-    _buffers = MemoryStaticBuffers(_memory.pointer, _pointer.ref.buffers_capacity, _pointer.ref.buffer_size);
+    _buffers = _memory.staticBuffers;
     for (var i = 0; i < _pointer.ref.buffers_capacity; i++) _buffers.release(i);
-    _pointer.ref.buffers = _buffers.buffers;
+    _pointer.ref.buffers = _buffers.native;
     if (transport_setup(_pointer) != 0) {
       throw TransportInitializationException(TransportMessages.workerMemoryError);
     }
@@ -104,7 +104,7 @@ class Transport {
       _payloadPool,
     );
     _ring = _pointer.ref.ring;
-    _cqes = _pointer.ref.cqes;
+    _cqes = _pointer.ref.completions.cast();
     _timeoutChecker = TransportTimeoutChecker(
       _pointer,
       Duration(milliseconds: _pointer.ref.timeout_checker_period_millis),

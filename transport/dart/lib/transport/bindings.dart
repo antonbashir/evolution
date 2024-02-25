@@ -4,7 +4,6 @@
 // ignore_for_file: type=lint, unused_field
 import 'dart:ffi' as ffi;
 import 'package:memory/memory.dart' as memory;
-import 'package:interactor/interactor.dart' as interactor;
 
 @ffi.Native<
         ffi.Int Function(
@@ -575,6 +574,8 @@ final class mh_events_t extends ffi.Opaque {}
 
 final class io_uring extends ffi.Opaque {}
 
+final class io_uring_cqe extends ffi.Opaque {}
+
 final class transport_configuration extends ffi.Struct {
   @ffi.Uint16()
   external int buffers_capacity;
@@ -653,8 +654,7 @@ final class transport extends ffi.Struct {
   @ffi.Int()
   external int ring_flags;
 
-  external ffi.Pointer<ffi.Pointer<interactor.interactor_completion_event>>
-      cqes;
+  external ffi.Pointer<ffi.Pointer<transport_completion_event>> completions;
 
   @ffi.Uint64()
   external int cqe_wait_timeout_millis;
@@ -674,6 +674,7 @@ final class transport extends ffi.Struct {
 
 final class msghdr extends ffi.Opaque {}
 
+typedef transport_completion_event = io_uring_cqe;
 typedef transport_t = transport;
 typedef transport_configuration_t = transport_configuration;
 
