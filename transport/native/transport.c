@@ -22,43 +22,32 @@ int transport_initialize(transport_t* transport,
     transport->base_delay_micros = configuration->base_delay_micros;
     transport->max_delay_micros = configuration->max_delay_micros;
     transport->buffer_size = configuration->buffer_size;
-    transport->buffers_count = configuration->buffers_count;
+    transport->buffers_capacity = configuration->buffers_capacity;
     transport->timeout_checker_period_millis = configuration->timeout_checker_period_millis;
     transport->cqes = malloc(sizeof(struct io_uring_cqe) * transport->ring_size);
-    transport->buffers = malloc(sizeof(struct iovec) * configuration->buffers_count);
+    transport->buffers = malloc(sizeof(struct iovec) * configuration->buffers_capacity);
     transport->cqe_wait_timeout_millis = configuration->cqe_wait_timeout_millis;
     transport->cqe_wait_count = configuration->cqe_wait_count;
     transport->cqe_peek_count = configuration->cqe_peek_count;
     transport->trace = configuration->trace;
-    if (!transport->buffers)
-    {
-        return -ENOMEM;
-    }
 
     transport->events = mh_events_new();
     if (!transport->events)
     {
         return -ENOMEM;
     }
-    mh_events_reserve(transport->events, transport->buffers_count, 0);
+    mh_events_reserve(transport->events, configuration->buffers_capacity, 0);
 
-    transport->inet_used_messages = malloc(sizeof(struct msghdr) * configuration->buffers_count);
-    transport->unix_used_messages = malloc(sizeof(struct msghdr) * configuration->buffers_count);
+    transport->inet_used_messages = malloc(sizeof(struct msghdr) * configuration->buffers_capacity);
+    transport->unix_used_messages = malloc(sizeof(struct msghdr) * configuration->buffers_capacity);
 
     if (!transport->inet_used_messages || !transport->unix_used_messages)
     {
         return -ENOMEM;
     }
 
-    for (size_t index = 0; index < configuration->buffers_count; index++)
+    for (size_t index = 0; index < configuration->buffers_capacity; index++)
     {
-        if (posix_memalign(&transport->buffers[index].iov_base, getpagesize(), configuration->buffer_size))
-        {
-            return -ENOMEM;
-        }
-        memset(transport->buffers[index].iov_base, 0, configuration->buffer_size);
-        transport->buffers[index].iov_len = configuration->buffer_size;
-
         memset(&transport->inet_used_messages[index], 0, sizeof(struct msghdr));
         transport->inet_used_messages[index].msg_name = malloc(sizeof(struct sockaddr_in));
         if (!transport->inet_used_messages[index].msg_name)
@@ -86,13 +75,18 @@ int transport_initialize(transport_t* transport,
         return result;
     }
 
-    result = io_uring_register_buffers(transport->ring, transport->buffers, transport->buffers_count);
+    transport->descriptor = transport->ring->ring_fd;
+
+    return 0;
+}
+
+int transport_setup(transport_t* transport)
+{
+    int result = io_uring_register_buffers(transport->ring, transport->buffers, transport->buffers_capacity);
     if (result)
     {
         return result;
     }
-
-    transport->descriptor = transport->ring->ring_fd;
 
     return 0;
 }
@@ -326,9 +320,8 @@ struct sockaddr* transport_get_datagram_address(transport_t* transport, transpor
 void transport_destroy(transport_t* transport)
 {
     io_uring_queue_exit(transport->ring);
-    for (size_t index = 0; index < transport->buffers_count; index++)
+    for (size_t index = 0; index < transport->buffers_capacity; index++)
     {
-        free(transport->buffers[index].iov_base);
         free(transport->inet_used_messages[index].msg_name);
         free(transport->unix_used_messages[index].msg_name);
     }

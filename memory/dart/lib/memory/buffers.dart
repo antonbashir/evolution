@@ -9,12 +9,13 @@ import '../memory/bindings.dart';
 import 'constants.dart';
 
 class MemoryStaticBuffers {
+  final Pointer<iovec> buffers;
+  final int bufferSize;
+  final int buffersCapacity;
   final Queue<Completer<void>> _finalizers = Queue();
   final Pointer<memory_dart> _memory;
-  final Pointer<iovec> _buffers;
-  final int bufferSize;
 
-  MemoryStaticBuffers(this._memory, this.bufferSize) : _buffers = memory_dart_static_buffers_inner(_memory);
+  MemoryStaticBuffers(this._memory, this.buffersCapacity, this.bufferSize) : buffers = memory_dart_static_buffers_inner(_memory);
 
   @inline
   void release(int bufferId) {
@@ -24,17 +25,17 @@ class MemoryStaticBuffers {
 
   @inline
   Uint8List read(int bufferId) {
-    final buffer = _buffers + bufferId;
+    final buffer = buffers + bufferId;
     final bufferBytes = buffer.ref.iov_base.cast<Uint8>();
     return bufferBytes.asTypedList(buffer.ref.iov_len);
   }
 
   @inline
-  void setLength(int bufferId, int length) => (_buffers + bufferId).ref.iov_len = length;
+  void setLength(int bufferId, int length) => (buffers + bufferId).ref.iov_len = length;
 
   @inline
   void write(int bufferId, Uint8List bytes) {
-    final buffer = _buffers + bufferId;
+    final buffer = buffers + bufferId;
     buffer.ref.iov_base.cast<Uint8>().asTypedList(bytes.length).setAll(0, bytes);
     buffer.ref.iov_len = bytes.length;
   }

@@ -1,3 +1,5 @@
+import 'package:memory/memory/defaults.dart';
+
 import 'client/configuration.dart';
 import 'configuration.dart';
 import 'server/configuration.dart';
@@ -5,9 +7,10 @@ import 'server/configuration.dart';
 class TransportDefaults {
   TransportDefaults._();
 
-  static const worker = TransportWorkerConfiguration(
+  static const worker = TransportConfiguration(
+    memoryConfiguration: MemoryDefaults.memory,
     trace: false,
-    buffersCount: 4096,
+    buffersCapacity: 4096,
     bufferSize: 4096,
     ringSize: 16384,
     ringFlags: 0,

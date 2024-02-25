@@ -1,5 +1,8 @@
-class TransportWorkerConfiguration {
-  final int buffersCount;
+import 'package:memory/memory/configuration.dart';
+
+class TransportConfiguration {
+  final MemoryConfiguration memoryConfiguration;
+  final int buffersCapacity;
   final int bufferSize;
   final int ringSize;
   final int ringFlags;
@@ -12,8 +15,9 @@ class TransportWorkerConfiguration {
   final Duration maxDelay;
   final bool trace;
 
-  const TransportWorkerConfiguration({
-    required this.buffersCount,
+  const TransportConfiguration({
+    required this.memoryConfiguration,
+    required this.buffersCapacity,
     required this.bufferSize,
     required this.ringSize,
     required this.ringFlags,
@@ -27,8 +31,9 @@ class TransportWorkerConfiguration {
     required this.trace,
   });
 
-  TransportWorkerConfiguration copyWith({
-    int? buffersCount,
+  TransportConfiguration copyWith({
+    MemoryConfiguration? memoryConfiguration,
+    int? buffersCapacity,
     int? bufferSize,
     int? ringSize,
     int? ringFlags,
@@ -41,8 +46,9 @@ class TransportWorkerConfiguration {
     Duration? cqeWaitTimeout,
     bool? trace,
   }) =>
-      TransportWorkerConfiguration(
-        buffersCount: buffersCount ?? this.buffersCount,
+      TransportConfiguration(
+        memoryConfiguration: memoryConfiguration ?? this.memoryConfiguration,
+        buffersCapacity: buffersCapacity ?? this.buffersCapacity,
         bufferSize: bufferSize ?? this.bufferSize,
         ringSize: ringSize ?? this.ringSize,
         ringFlags: ringFlags ?? this.ringFlags,
@@ -94,7 +100,7 @@ class TransportUdpMulticastSourceConfiguration {
   final String localAddress;
   final String sourceAddress;
 
-const  TransportUdpMulticastSourceConfiguration({
+  const TransportUdpMulticastSourceConfiguration({
     required this.groupAddress,
     required this.localAddress,
     required this.sourceAddress,

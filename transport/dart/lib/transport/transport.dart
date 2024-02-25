@@ -19,10 +19,10 @@ import 'server/registry.dart';
 import 'server/responder.dart';
 import 'timeout.dart';
 
-class TransportWorker {
+class Transport {
   final _fromTransport = ReceivePort();
 
-  late final Pointer<transport> _workerPointer;
+  late final Pointer<transport> _pointer;
   late final Pointer<io_uring> _ring;
   late final Pointer<Pointer<interactor_completion_event>> _cqes;
   late final RawReceivePort _closer;
@@ -44,13 +44,13 @@ class TransportWorker {
   final _done = Completer();
 
   bool get active => _active;
-  int get id => _workerPointer.ref.id;
-  int get descriptor => _workerPointer.ref.descriptor;
+  int get id => _pointer.ref.id;
+  int get descriptor => _pointer.ref.descriptor;
   TransportServersFactory get servers => _serversFactory;
   TransportClientsFactory get clients => _clientsFactory;
   TransportFilesFactory get files => _filesFactory;
 
-  TransportWorker(SendPort toTransport) {
+  Transport(SendPort toTransport) {
     _closer = RawReceivePort((gracefulTimeout) async {
       _timeoutChecker.stop();
       await _filesRegistry.close(gracefulTimeout: gracefulTimeout);
@@ -58,7 +58,7 @@ class TransportWorker {
       await _serverRegistry.close(gracefulTimeout: gracefulTimeout);
       _active = false;
       await _done.future;
-      transport_destroy(_workerPointer);
+      transport_destroy(_pointer);
       _closer.close();
       _destroyer.send(null);
     });
@@ -67,40 +67,42 @@ class TransportWorker {
 
   Future<void> initialize() async {
     final configuration = await _fromTransport.first as List;
-    _workerPointer = Pointer.fromAddress(configuration[0] as int).cast<transport>();
+    _pointer = Pointer.fromAddress(configuration[0] as int).cast<transport>();
     _destroyer = configuration[1] as SendPort;
     _fromTransport.close();
-    _memory = MemoryModule();
-    _buffers = _memory.staticBuffers;
-    _payloadPool = TransportPayloadPool(_workerPointer.ref.buffers_count, _buffers);
-    _datagramResponderPool = TransportServerDatagramResponderPool(_workerPointer.ref.buffers_count, _buffers);
+    _memory = MemoryModule()..initialize();
+    _buffers = MemoryStaticBuffers(_memory.pointer, _pointer.ref.buffers_capacity, _pointer.ref.buffer_size);
+    _pointer.ref.buffers = _buffers.buffers;
+    transport_setup(_pointer);
+    _payloadPool = TransportPayloadPool(_pointer.ref.buffers_capacity, _buffers);
+    _datagramResponderPool = TransportServerDatagramResponderPool(_pointer.ref.buffers_capacity, _buffers);
     _clientRegistry = TransportClientRegistry();
     _serverRegistry = TransportServerRegistry();
     _serversFactory = TransportServersFactory(
       _serverRegistry,
-      _workerPointer,
+      _pointer,
       _buffers,
       _payloadPool,
       _datagramResponderPool,
     );
     _clientsFactory = TransportClientsFactory(
       _clientRegistry,
-      _workerPointer,
+      _pointer,
       _buffers,
       _payloadPool,
     );
     _filesRegistry = TransportFileRegistry();
     _filesFactory = TransportFilesFactory(
       _filesRegistry,
-      _workerPointer,
+      _pointer,
       _buffers,
       _payloadPool,
     );
-    _ring = _workerPointer.ref.ring;
-    _cqes = _workerPointer.ref.cqes;
+    _ring = _pointer.ref.ring;
+    _cqes = _pointer.ref.cqes;
     _timeoutChecker = TransportTimeoutChecker(
-      _workerPointer,
-      Duration(milliseconds: _workerPointer.ref.timeout_checker_period_millis),
+      _pointer,
+      Duration(milliseconds: _pointer.ref.timeout_checker_period_millis),
     );
     _delays = _calculateDelays();
     _timeoutChecker.start();
@@ -108,7 +110,7 @@ class TransportWorker {
   }
 
   Future<void> _listen() async {
-    final baseDelay = _workerPointer.ref.base_delay_micros;
+    final baseDelay = _pointer.ref.base_delay_micros;
     final regularDelayDuration = Duration(microseconds: baseDelay);
     var attempt = 0;
     while (_active) {
@@ -124,17 +126,17 @@ class TransportWorker {
   }
 
   bool _handleCqes() {
-    final cqeCount = transport_peek(_workerPointer);
+    final cqeCount = transport_peek(_pointer);
     if (cqeCount == 0) return false;
     for (var cqeIndex = 0; cqeIndex < cqeCount; cqeIndex++) {
       final cqe = _cqes[cqeIndex].ref;
       final data = cqe.user_data;
-      transport_remove_event(_workerPointer, data);
+      transport_remove_event(_pointer, data);
       final result = cqe.res;
       var event = data & 0xffff;
       final fd = (data >> 32) & 0xffffffff;
       final bufferId = (data >> 16) & 0xffff;
-      if (_workerPointer.ref.trace) print(TransportMessages.workerTrace(id, result, data, fd));
+      if (_pointer.ref.trace) print(TransportMessages.workerTrace(id, result, data, fd));
 
       if (event & transportEventClient != 0) {
         event &= ~transportEventClient;
@@ -170,9 +172,9 @@ class TransportWorker {
   }
 
   List<Duration> _calculateDelays() {
-    final baseDelay = _workerPointer.ref.base_delay_micros;
-    final delayRandomizationFactor = _workerPointer.ref.delay_randomization_factor;
-    final maxDelay = _workerPointer.ref.max_delay_micros;
+    final baseDelay = _pointer.ref.base_delay_micros;
+    final delayRandomizationFactor = _pointer.ref.delay_randomization_factor;
+    final maxDelay = _pointer.ref.max_delay_micros;
     final random = Random();
     final delays = <Duration>[];
     for (var i = 0; i < 32; i++) {

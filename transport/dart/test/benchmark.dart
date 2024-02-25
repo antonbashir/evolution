@@ -18,7 +18,7 @@ Future<void> _benchMyTcp() async {
 
   for (var i = 0; i < 2; i++) {
     Isolate.spawn((SendPort message) async {
-      final worker = TransportWorker(message);
+      final worker = Transport(message);
       await worker.initialize();
       worker.servers.tcp(
         InternetAddress("0.0.0.0"),
@@ -28,12 +28,12 @@ Future<void> _benchMyTcp() async {
           connection.writeSingle(fromServer);
         }),
       );
-    }, transport.worker(TransportDefaults.worker.copyWith(ringFlags: ringSetupSqpoll)));
+    }, transport.createTransport(TransportDefaults.worker.copyWith(ringFlags: ringSetupSqpoll)));
   }
   await Future.delayed(Duration(seconds: 1));
   for (var i = 0; i < 2; i++) {
     Isolate.spawn((SendPort message) async {
-      final worker = TransportWorker(message);
+      final worker = Transport(message);
       await worker.initialize();
       final connector = await worker.clients.tcp(InternetAddress("127.0.0.1"), 12345, configuration: TransportDefaults.tcpClient.copyWith(pool: 256));
       var count = 0;
@@ -49,7 +49,7 @@ Future<void> _benchMyTcp() async {
       }
       await Future.delayed(Duration(seconds: 10));
       print("My RPS: ${count / 10}");
-    }, transport.worker(TransportDefaults.worker));
+    }, transport.createTransport(TransportDefaults.worker));
   }
 
   await Future.delayed(Duration(seconds: 15));

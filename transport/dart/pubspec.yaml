@@ -64,5 +64,10 @@ ffigen:
         lib: "interactor"
         c-type: "interactor_completion_event"
         dart-type: "interactor_completion_event"
+      "iovec":
+        lib: "memory"
+        c-type: "iovec"
+        dart-type: "iovec"
   library-imports:
     interactor: package:interactor/interactor.dart
+    memory: package:memory/memory.dart

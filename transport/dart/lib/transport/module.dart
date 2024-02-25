@@ -13,7 +13,7 @@ import 'constants.dart';
 import 'exception.dart';
 
 class TransportModule {
-  final _workerClosers = <SendPort>[];
+  final _transportClosers = <SendPort>[];
   final _workerPorts = <RawReceivePort>[];
   final _workerDestroyer = ReceivePort();
 
@@ -23,24 +23,24 @@ class TransportModule {
   }
 
   Future<void> shutdown({Duration? gracefulTimeout}) async {
-    _workerClosers.forEach((worker) => worker.send(gracefulTimeout));
-    await _workerDestroyer.take(_workerClosers.length).toList();
+    _transportClosers.forEach((worker) => worker.send(gracefulTimeout));
+    await _workerDestroyer.take(_transportClosers.length).toList();
     _workerDestroyer.close();
     _workerPorts.forEach((port) => port.close());
   }
 
-  SendPort worker(TransportWorkerConfiguration configuration) {
+  SendPort createTransport(TransportConfiguration configuration) {
     final port = RawReceivePort((ports) async {
-      SendPort toWorker = ports[0];
-      _workerClosers.add(ports[1]);
-      final workerPointer = calloc<transport>();
-      if (workerPointer == nullptr) throw TransportInitializationException(TransportMessages.workerMemoryError);
+      SendPort toTransport = ports[0];
+      _transportClosers.add(ports[1]);
+      final transportPointer = calloc<transport>();
+      if (transportPointer == nullptr) throw TransportInitializationException(TransportMessages.workerMemoryError);
       final result = using((arena) {
         final nativeConfiguration = arena<transport_configuration_t>();
         nativeConfiguration.ref.ring_flags = configuration.ringFlags;
         nativeConfiguration.ref.ring_size = configuration.ringSize;
         nativeConfiguration.ref.buffer_size = configuration.bufferSize;
-        nativeConfiguration.ref.buffers_count = max(configuration.buffersCount, 2);
+        nativeConfiguration.ref.buffers_capacity = max(configuration.buffersCapacity, 2);
         nativeConfiguration.ref.timeout_checker_period_millis = configuration.timeoutCheckerPeriod.inMilliseconds;
         nativeConfiguration.ref.base_delay_micros = configuration.baseDelay.inMicroseconds;
         nativeConfiguration.ref.max_delay_micros = configuration.maxDelay.inMicroseconds;
@@ -49,14 +49,14 @@ class TransportModule {
         nativeConfiguration.ref.cqe_wait_count = configuration.cqeWaitCount;
         nativeConfiguration.ref.cqe_wait_timeout_millis = configuration.cqeWaitTimeout.inMilliseconds;
         nativeConfiguration.ref.trace = configuration.trace;
-        return transport_initialize(workerPointer, nativeConfiguration, _workerClosers.length);
+        return transport_initialize(transportPointer, nativeConfiguration, _transportClosers.length);
       });
       if (result < 0) {
-        transport_destroy(workerPointer);
+        transport_destroy(transportPointer);
         throw TransportInitializationException(TransportMessages.workerError(result));
       }
-      final workerInput = [workerPointer.address, _workerDestroyer.sendPort];
-      toWorker.send(workerInput);
+      final workerInput = [transportPointer.address, _workerDestroyer.sendPort];
+      toTransport.send(workerInput);
     });
     _workerPorts.add(port);
     return port.sendPort;

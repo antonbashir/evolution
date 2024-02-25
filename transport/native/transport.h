@@ -18,7 +18,7 @@ extern "C"
 
     typedef struct transport_configuration
     {
-        uint16_t buffers_count;
+        uint16_t buffers_capacity;
         uint32_t buffer_size;
         size_t ring_size;
         unsigned int ring_flags;
@@ -38,8 +38,8 @@ extern "C"
         struct memory_static_buffers* free_buffers;
         struct io_uring* ring;
         struct iovec* buffers;
-        uint32_t buffer_size;
-        uint16_t buffers_count;
+        uint16_t buffers_capacity;
+        uint16_t buffer_size;
         uint64_t timeout_checker_period_millis;
         uint32_t base_delay_micros;
         double delay_randomization_factor;
@@ -57,25 +57,27 @@ extern "C"
         bool trace;
     } transport_t;
 
-    int transport_initialize(transport_t* worker,
+    int transport_initialize(transport_t* transport,
                                     transport_configuration_t* configuration,
                                     uint8_t id);
 
-    void transport_write(transport_t* worker,
+    int transport_setup(transport_t* transport);
+
+    void transport_write(transport_t* transport,
                                 uint32_t fd,
                                 uint16_t buffer_id,
                                 uint32_t offset,
                                 int64_t timeout,
                                 uint16_t event,
                                 uint8_t sqe_flags);
-    void transport_read(transport_t* worker,
+    void transport_read(transport_t* transport,
                                uint32_t fd,
                                uint16_t buffer_id,
                                uint32_t offset,
                                int64_t timeout,
                                uint16_t event,
                                uint8_t sqe_flags);
-    void transport_send_message(transport_t* worker,
+    void transport_send_message(transport_t* transport,
                                        uint32_t fd,
                                        uint16_t buffer_id,
                                        struct sockaddr* address,
@@ -84,7 +86,7 @@ extern "C"
                                        int64_t timeout,
                                        uint16_t event,
                                        uint8_t sqe_flags);
-    void transport_receive_message(transport_t* worker,
+    void transport_receive_message(transport_t* transport,
                                           uint32_t fd,
                                           uint16_t buffer_id,
                                           transport_socket_family_t socket_family,
@@ -92,19 +94,19 @@ extern "C"
                                           int64_t timeout,
                                           uint16_t event,
                                           uint8_t sqe_flags);
-    void transport_connect(transport_t* worker, transport_client_t* client, int64_t timeout);
-    void transport_accept(transport_t* worker, transport_server_t* server);
+    void transport_connect(transport_t* transport, transport_client_t* client, int64_t timeout);
+    void transport_accept(transport_t* transport, transport_server_t* server);
 
-    void transport_cancel_by_fd(transport_t* worker, int fd);
+    void transport_cancel_by_fd(transport_t* transport, int fd);
 
-    void transport_check_event_timeouts(transport_t* worker);
-    void transport_remove_event(transport_t* worker, uint64_t data);
+    void transport_check_event_timeouts(transport_t* transport);
+    void transport_remove_event(transport_t* transport, uint64_t data);
 
-    struct sockaddr* transport_get_datagram_address(transport_t* worker, transport_socket_family_t socket_family, int buffer_id);
+    struct sockaddr* transport_get_datagram_address(transport_t* transport, transport_socket_family_t socket_family, int buffer_id);
 
-    int transport_peek(transport_t* worker);
+    int transport_peek(transport_t* transport);
 
-    void transport_destroy(transport_t* worker);
+    void transport_destroy(transport_t* transport);
 
     void transport_cqe_advance(transport_io_uring* ring, int count);
 #if defined(__cplusplus)

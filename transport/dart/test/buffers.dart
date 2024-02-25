@@ -12,7 +12,7 @@ import 'validators.dart';
 void testTcpBuffers() {
   test("(tcp)", () async {
     final transport = TransportModule();
-    final worker = TransportWorker(transport.worker(TransportDefaults.worker));
+    final worker = Transport(transport.createTransport(TransportDefaults.worker));
     await worker.initialize();
 
     var serverCompleter = Completer();
@@ -71,7 +71,7 @@ void testTcpBuffers() {
 void testUdpBuffers() {
   test("(udp)", () async {
     final transport = TransportModule();
-    final worker = TransportWorker(transport.worker(TransportDefaults.worker));
+    final worker = Transport(transport.createTransport(TransportDefaults.worker));
     await worker.initialize();
 
     var serverCompleter = Completer();
@@ -133,7 +133,7 @@ void testUdpBuffers() {
 void testFileBuffers() {
   test("(file)", () async {
     final transport = TransportModule();
-    final worker = TransportWorker(transport.worker(TransportDefaults.worker));
+    final worker = Transport(transport.createTransport(TransportDefaults.worker));
     await worker.initialize();
     final file = io.File("file");
     if (file.existsSync()) file.deleteSync();
@@ -169,7 +169,7 @@ void testFileBuffers() {
 void testBuffersOverflow() {
   test("(overflow)", () async {
     final transport = TransportModule();
-    final worker = TransportWorker(transport.worker(TransportDefaults.worker.copyWith(buffersCount: 2)));
+    final worker = Transport(transport.createTransport(TransportDefaults.worker.copyWith(buffersCapacity: 2)));
     await worker.initialize();
 
     worker.servers.tcp(io.InternetAddress("0.0.0.0"), 12345, (connection) {

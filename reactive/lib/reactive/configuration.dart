@@ -5,7 +5,7 @@ import 'codec.dart';
 class ReactiveTransportConfiguration {
   final void Function(dynamic frame)? tracer;
   final Duration? gracefulTimeout;
-  final TransportWorkerConfiguration workerConfiguration;
+  final TransportConfiguration workerConfiguration;
 
   const ReactiveTransportConfiguration({
     required this.tracer,
@@ -16,7 +16,7 @@ class ReactiveTransportConfiguration {
   ReactiveTransportConfiguration copyWith({
     void Function(dynamic frame)? tracer,
     Duration? gracefulTimeout,
-    TransportWorkerConfiguration? workerConfiguration,
+    TransportConfiguration? workerConfiguration,
   }) =>
       ReactiveTransportConfiguration(
         tracer: tracer ?? this.tracer,
