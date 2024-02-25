@@ -41,8 +41,8 @@
         "--define=DEBUG=true"
       ],
       "cwd": "${workspaceFolder}/transport",
-      "program": "${workspaceFolder}/transport/test/dart/lib/test.dart",
-      "preLaunchTask": "storage-native-build"
+      "program": "${workspaceFolder}/transport/dart/test/test.dart",
+      "preLaunchTask": "transport-native-build"
     },
     {
       "name": "transport-test-gdb",

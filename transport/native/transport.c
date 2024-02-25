@@ -25,7 +25,6 @@ int transport_initialize(transport_t* transport,
     transport->buffers_capacity = configuration->buffers_capacity;
     transport->timeout_checker_period_millis = configuration->timeout_checker_period_millis;
     transport->cqes = malloc(sizeof(struct io_uring_cqe) * transport->ring_size);
-    transport->buffers = malloc(sizeof(struct iovec) * configuration->buffers_capacity);
     transport->cqe_wait_timeout_millis = configuration->cqe_wait_timeout_millis;
     transport->cqe_wait_count = configuration->cqe_wait_count;
     transport->cqe_peek_count = configuration->cqe_peek_count;

@@ -113,9 +113,21 @@ struct sockaddr* transport_client_get_destination_address(transport_client_t* cl
 
 void transport_client_destroy(transport_client_t* client)
 {
+    if (client->family == INET)
+    {
+        if (client->inet_destination_address)
+        {
+            free(client->inet_destination_address);
+        }
+        if (client->inet_source_address)
+        {
+            free(client->inet_source_address);
+        }
+    }
     if (client->family == UNIX)
     {
         unlink(client->unix_destination_address->sun_path);
+        free(client->unix_destination_address);
     }
     free(client);
 }

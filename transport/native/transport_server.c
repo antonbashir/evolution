@@ -116,6 +116,10 @@ int transport_server_initialize_unix_stream(transport_server_t* server, transpor
 
 void transport_server_destroy(transport_server_t* server)
 {
+    if (server->family == INET)
+    {
+        free(server->inet_server_address);
+    }
     if (server->family == UNIX)
     {
         unlink(server->unix_server_address->sun_path);

@@ -11,6 +11,7 @@ import 'bindings.dart';
 import 'client/factory.dart';
 import 'client/registry.dart';
 import 'constants.dart';
+import 'exception.dart';
 import 'file/factory.dart';
 import 'file/registry.dart';
 import 'payload.dart';
@@ -75,7 +76,9 @@ class Transport {
     _buffers = MemoryStaticBuffers(_memory.pointer, _pointer.ref.buffers_capacity, _pointer.ref.buffer_size);
     for (var i = 0; i < _pointer.ref.buffers_capacity; i++) _buffers.release(i);
     _pointer.ref.buffers = _buffers.buffers;
-    transport_setup(_pointer);
+    if (transport_setup(_pointer) != 0) {
+      throw TransportInitializationException(TransportMessages.workerMemoryError);
+    }
     _payloadPool = TransportPayloadPool(_pointer.ref.buffers_capacity, _buffers);
     _datagramResponderPool = TransportServerDatagramResponderPool(_pointer.ref.buffers_capacity, _buffers);
     _clientRegistry = TransportClientRegistry();
