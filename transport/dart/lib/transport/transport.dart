@@ -73,15 +73,12 @@ class Transport {
     _destroyer = configuration[1] as SendPort;
     _fromTransport.close();
     _memory = MemoryModule()..initialize();
-    print("init memory");
     _buffers = _memory.staticBuffers;
-    print("release buffers");
     _pointer.ref.buffers = _buffers.native;
-    print("set native buffers");
-    if (transport_setup(_pointer) != 0) {
-      throw TransportInitializationException(TransportMessages.workerMemoryError);
+    var result = transport_setup(_pointer);
+    if (result != 0) {
+      throw TransportInitializationException(TransportMessages.workerError(result));
     }
-    print("setup done");
     _payloadPool = TransportPayloadPool(_pointer.ref.buffers_capacity, _buffers);
     _datagramResponderPool = TransportServerDatagramResponderPool(_pointer.ref.buffers_capacity, _buffers);
     _clientRegistry = TransportClientRegistry();
@@ -115,7 +112,6 @@ class Transport {
     _delays = _calculateDelays();
     _timeoutChecker.start();
     unawaited(_listen());
-    print("init done");
   }
 
   Future<void> _listen() async {

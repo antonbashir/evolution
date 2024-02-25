@@ -11,7 +11,6 @@
 extern "C"
 {
 #endif
-    struct memory_static_buffers;
     struct mh_events_t;
     struct io_uring;
     typedef struct io_uring_cqe transport_completion_event;
@@ -35,7 +34,6 @@ extern "C"
     typedef struct transport
     {
         uint8_t id;
-        struct memory_static_buffers* free_buffers;
         struct io_uring* ring;
         struct iovec* buffers;
         uint16_t buffers_capacity;

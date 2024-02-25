@@ -325,7 +325,6 @@ void transport_destroy(transport_t* transport)
     }
     mh_events_delete(transport->events);
     free(transport->completions);
-    free(transport->buffers);
     free(transport->inet_used_messages);
     free(transport->unix_used_messages);
     free(transport->ring);
