@@ -7,8 +7,6 @@ class TransportServerRegistry {
   final _servers = <int, TransportServerChannel>{};
   final _serverConnections = <int, TransportServerConnectionChannel>{};
 
-  TransportServerRegistry();
-
   @inline
   TransportServerChannel? getServer(int fd) => _servers[fd];
 

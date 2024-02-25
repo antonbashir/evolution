@@ -6,8 +6,6 @@ import 'client.dart';
 class TransportClientRegistry {
   final _clients = <int, TransportClientChannel>{};
 
-  TransportClientRegistry();
-
   @inline
   TransportClientChannel? get(int fd) => _clients[fd];
 
