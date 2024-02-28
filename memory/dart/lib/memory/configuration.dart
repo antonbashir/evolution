@@ -50,14 +50,14 @@ class MemoryModuleConfiguration {
       );
 }
 
-class MemoryObjectPoolConfiguration {
+class MemoryObjectsConfiguration {
   final int initialCapacity;
   final int minimalAvailableCapacity;
   final int preallocation;
   final double extensionFactor;
   final double shrinkFactor;
 
-  const MemoryObjectPoolConfiguration({
+  const MemoryObjectsConfiguration({
     required this.initialCapacity,
     required this.minimalAvailableCapacity,
     required this.preallocation,

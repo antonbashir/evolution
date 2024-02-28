@@ -170,7 +170,7 @@ void testFileBuffers() {
 void testBuffersOverflow() {
   test("(overflow)", () async {
     final transport = TransportModule();
-    final worker = Transport(transport.transport(configuration: TransportDefaults.transport.copyWith(memoryConfiguration: MemoryDefaults.memory.copyWith(staticBuffersCapacity: 2))));
+    final worker = Transport(transport.transport(configuration: TransportDefaults.transport.copyWith(memoryConfiguration: MemoryDefaults.module.copyWith(staticBuffersCapacity: 2))));
     await worker.initialize();
 
     worker.servers.tcp(io.InternetAddress("0.0.0.0"), 12345, (connection) {

@@ -3,7 +3,7 @@ import 'configuration.dart';
 class MemoryDefaults {
   MemoryDefaults._();
 
-  static const memory = MemoryModuleConfiguration(
+  static const module = MemoryModuleConfiguration(
     staticBuffersCapacity: 4096,
     staticBufferSize: 4096,
     slabSize: 64 * 1024,
@@ -11,7 +11,7 @@ class MemoryDefaults {
     quotaSize: 1 * 1024 * 1024,
   );
 
-  static const objectPool = MemoryObjectPoolConfiguration(
+  static const objects = MemoryObjectsConfiguration(
     initialCapacity: 16,
     minimalAvailableCapacity: 8,
     preallocation: 16,

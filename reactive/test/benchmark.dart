@@ -5,9 +5,9 @@ import 'package:transport/transport.dart';
 
 Future<void> main() async {
   final transport = TransportModule();
-  final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.transport.workerConfiguration));
+  final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
   await worker.initialize();
-  final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport.copyWith());
+  final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module.copyWith());
   final clientPayload = "client-payload";
   final serverPayload = "server-payload";
 

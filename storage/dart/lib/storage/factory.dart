@@ -10,52 +10,52 @@ import 'strings.dart';
 class StorageFactory {
   final StorageStrings _strings;
 
-  late final MemoryObjectPool<Pointer<interactor_message>> _messages;
+  late final MemoryObjects<Pointer<interactor_message>> _messages;
 
   final _spaceMessageOffset = sizeOf<tarantool_space_request>() - interactorMessageSize;
-  late final MemoryObjectPool<Pointer<tarantool_space_request>> _spaceRequests;
+  late final MemoryObjects<Pointer<tarantool_space_request>> _spaceRequests;
 
   final _spaceCountMessageOffset = sizeOf<tarantool_space_count_request>() - interactorMessageSize;
-  late final MemoryObjectPool<Pointer<tarantool_space_count_request>> _spaceCountRequests;
+  late final MemoryObjects<Pointer<tarantool_space_count_request>> _spaceCountRequests;
 
   final _spaceSelectMessageOffset = sizeOf<tarantool_space_select_request>() - interactorMessageSize;
-  late final MemoryObjectPool<Pointer<tarantool_space_select_request>> _spaceSelectRequests;
+  late final MemoryObjects<Pointer<tarantool_space_select_request>> _spaceSelectRequests;
 
   final _spaceUpdateMessageOffset = sizeOf<tarantool_space_update_request>() - interactorMessageSize;
-  late final MemoryObjectPool<Pointer<tarantool_space_update_request>> _spaceUpdateRequests;
+  late final MemoryObjects<Pointer<tarantool_space_update_request>> _spaceUpdateRequests;
 
   final _spaceUpsertMessageOffset = sizeOf<tarantool_space_upsert_request>() - interactorMessageSize;
-  late final MemoryObjectPool<Pointer<tarantool_space_upsert_request>> _spaceUpsertRequests;
+  late final MemoryObjects<Pointer<tarantool_space_upsert_request>> _spaceUpsertRequests;
 
   final _spaceIteratorMessageOffset = sizeOf<tarantool_space_iterator_request>() - interactorMessageSize;
-  late final MemoryObjectPool<Pointer<tarantool_space_iterator_request>> _spaceIteratorRequests;
+  late final MemoryObjects<Pointer<tarantool_space_iterator_request>> _spaceIteratorRequests;
 
   final _indexMessageOffset = sizeOf<tarantool_index_request>() - interactorMessageSize;
-  late final MemoryObjectPool<Pointer<tarantool_index_request>> _indexRequests;
+  late final MemoryObjects<Pointer<tarantool_index_request>> _indexRequests;
 
   final _indexCountMessageOffset = sizeOf<tarantool_index_count_request>() - interactorMessageSize;
-  late final MemoryObjectPool<Pointer<tarantool_index_count_request>> _indexCountRequests;
+  late final MemoryObjects<Pointer<tarantool_index_count_request>> _indexCountRequests;
 
   final _indexIdByNameMessageOffset = sizeOf<tarantool_index_id_by_name_request>() - interactorMessageSize;
-  late final MemoryObjectPool<Pointer<tarantool_index_id_by_name_request>> _indexIdByNameRequests;
+  late final MemoryObjects<Pointer<tarantool_index_id_by_name_request>> _indexIdByNameRequests;
 
   final _indexUpdateMessageOffset = sizeOf<tarantool_index_update_request>() - interactorMessageSize;
-  late final MemoryObjectPool<Pointer<tarantool_index_update_request>> _indexUpdateRequests;
+  late final MemoryObjects<Pointer<tarantool_index_update_request>> _indexUpdateRequests;
 
   final _indexIteratorMessageOffset = sizeOf<tarantool_index_iterator_request>() - interactorMessageSize;
-  late final MemoryObjectPool<Pointer<tarantool_index_iterator_request>> _indexIteratorRequests;
+  late final MemoryObjects<Pointer<tarantool_index_iterator_request>> _indexIteratorRequests;
 
   final _callMessageOffset = sizeOf<tarantool_call_request>() - interactorMessageSize;
-  late final MemoryObjectPool<Pointer<tarantool_call_request>> _callRequests;
+  late final MemoryObjects<Pointer<tarantool_call_request>> _callRequests;
 
   final _evaluateMessageOffset = sizeOf<tarantool_evaluate_request>() - interactorMessageSize;
-  late final MemoryObjectPool<Pointer<tarantool_evaluate_request>> _evaluateRequests;
+  late final MemoryObjects<Pointer<tarantool_evaluate_request>> _evaluateRequests;
 
   final _indexSelectMessageOffset = sizeOf<tarantool_index_select_request>() - interactorMessageSize;
-  late final MemoryObjectPool<Pointer<tarantool_index_select_request>> _indexSelectRequests;
+  late final MemoryObjects<Pointer<tarantool_index_select_request>> _indexSelectRequests;
 
   final _indexIdMessageOffset = sizeOf<tarantool_index_id_request>() - interactorMessageSize;
-  late final MemoryObjectPool<Pointer<tarantool_index_id_request>> _indexIdRequests;
+  late final MemoryObjects<Pointer<tarantool_index_id_request>> _indexIdRequests;
 
   StorageFactory(MemoryModule memory, this._strings) {
     _messages = memory.structures.register<interactor_message>(sizeOf<interactor_message>()).asObjectPool();

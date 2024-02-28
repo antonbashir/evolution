@@ -11,9 +11,9 @@ void backpressure() {
   test("4 + 2 requests -> infinity response", () async {
     final latch = Latch(6);
     final transport = TransportModule();
-    final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.transport.workerConfiguration));
+    final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
     await worker.initialize();
-    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport);
+    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module);
     late final Timer timer;
     reactive.serve(
       InternetAddress.anyIPv4,

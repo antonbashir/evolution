@@ -37,8 +37,10 @@ include(ExternalProject)
 include(infrastructure/cmake/infrastructure.cmake)
 
 add_subdirectory(core)
+add_subdirectory(memory)
 add_subdirectory(interactor)
 add_subdirectory(transport)
-add_subdirectory(memory)
 add_subdirectory(storage)
 #add_subdirectory(fiber)
+
+add_custom_target(bundle_native ALL DEPENDS core_native memory_native interactor_native transport_native storage_native)

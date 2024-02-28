@@ -21,9 +21,9 @@ void keepalive() {
     }
 
     final transport = TransportModule();
-    final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.transport.workerConfiguration));
+    final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
     await worker.initialize();
-    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport.copyWith(tracer: _trace));
+    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module.copyWith(tracer: _trace));
 
     reactive.serve(
       InternetAddress.anyIPv4,
@@ -47,9 +47,9 @@ void keepalive() {
     final latch = Latch(2);
 
     final transport = TransportModule();
-    final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.transport.workerConfiguration));
+    final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
     await worker.initialize();
-    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport);
+    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module);
 
     reactive.serve(
       InternetAddress.anyIPv4,

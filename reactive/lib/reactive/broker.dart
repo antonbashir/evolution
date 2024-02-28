@@ -17,7 +17,7 @@ import 'supplier.dart';
 import 'writer.dart';
 
 class ReactiveBroker {
-  final ReactiveTransportConfiguration _transportConfiguration;
+  final ReactiveModuleConfiguration _transportConfiguration;
   final ReactiveLeaseConfiguration? leaseConfiguration;
   final ReactiveBrokerConfiguration _configuration;
   final ReactiveConnection _connection;

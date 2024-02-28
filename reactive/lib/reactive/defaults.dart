@@ -7,7 +7,7 @@ import 'constants.dart';
 class ReactiveTransportDefaults {
   ReactiveTransportDefaults._();
 
-  static const transport = ReactiveTransportConfiguration(
+  static const module = ReactiveModuleConfiguration(
     tracer: null,
     gracefulTimeout: null,
     workerConfiguration: TransportDefaults.transport,

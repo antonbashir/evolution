@@ -8,7 +8,7 @@ class TransportDefaults {
   TransportDefaults._();
 
   static const transport = TransportConfiguration(
-    memoryConfiguration: MemoryDefaults.memory,
+    memoryConfiguration: MemoryDefaults.module,
     trace: false,
     ringSize: 16384,
     ringFlags: 0,

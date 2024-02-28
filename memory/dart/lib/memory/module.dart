@@ -30,7 +30,7 @@ class MemoryModule {
     if (load) MemoryModule.load(libraryPath: libraryPath, mode: mode);
   }
 
-  void initialize({MemoryModuleConfiguration configuration = MemoryDefaults.memory}) {
+  void initialize({MemoryModuleConfiguration configuration = MemoryDefaults.module}) {
     pointer = calloc<memory_dart>(sizeOf<memory_dart>());
     if (pointer == nullptr) throw MemoryException(MemoryErrors.outOfMemory);
     final result = using((arena) => memory_dart_initialize(pointer, configuration.toNative(arena<memory_module_configuration>())));

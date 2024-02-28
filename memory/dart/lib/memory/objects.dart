@@ -5,16 +5,16 @@ import 'package:core/core.dart';
 import 'configuration.dart';
 import 'defaults.dart';
 
-class MemoryObjectPool<T> {
+class MemoryObjects<T> {
   final T Function() _allocator;
   final void Function(T object) _releaser;
-  final MemoryObjectPoolConfiguration configuration;
+  final MemoryObjectsConfiguration configuration;
 
   final double _extensionFactor;
   final double _shrinkFactor;
   final ListQueue<T> _queue;
 
-  MemoryObjectPool(this._allocator, this._releaser, {this.configuration = MemoryDefaults.objectPool})
+  MemoryObjects(this._allocator, this._releaser, {this.configuration = MemoryDefaults.objects})
       : _queue = ListQueue(configuration.initialCapacity),
         _extensionFactor = configuration.extensionFactor,
         _shrinkFactor = configuration.shrinkFactor {

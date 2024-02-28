@@ -127,9 +127,9 @@ class StorageExecutor {
     _nativeFactory = calloc<tarantool_factory>(sizeOf<tarantool_factory>());
     using((Arena arena) {
       final configuration = arena<tarantool_factory_configuration>();
-      configuration.ref.quota_size = MemoryDefaults.memory.quotaSize;
-      configuration.ref.preallocation_size = MemoryDefaults.memory.preallocationSize;
-      configuration.ref.slab_size = MemoryDefaults.memory.slabSize;
+      configuration.ref.quota_size = MemoryDefaults.module.quotaSize;
+      configuration.ref.preallocation_size = MemoryDefaults.module.preallocationSize;
+      configuration.ref.slab_size = MemoryDefaults.module.slabSize;
       tarantool_factory_initialize(_nativeFactory, configuration);
     });
     _interactor.consumer(StorageConsumer());

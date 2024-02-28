@@ -23,7 +23,7 @@ class ReactiveClient {
   final void Function(ReactiveException exception)? onError;
   final void Function()? onClose;
   final ReactiveBrokerConfiguration brokerConfiguration;
-  final ReactiveTransportConfiguration transportConfiguration;
+  final ReactiveModuleConfiguration transportConfiguration;
   final ReactiveSetupConfiguration setupConfiguration;
   final TransportTcpClientConfiguration? tcpConfiguration;
 
@@ -71,7 +71,7 @@ class ReactiveClientConnection implements ReactiveConnection {
   final TransportClientConnection _connection;
   final ReactiveSetupConfiguration _setupConfiguration;
   final ReactiveBrokerConfiguration _brokerConfiguration;
-  final ReactiveTransportConfiguration _transportConfiguration;
+  final ReactiveModuleConfiguration _transportConfiguration;
   final void Function(ReactiveException exception)? _onError;
   final void Function(ReactiveClientConnection connection)? _onClose;
 
