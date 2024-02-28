@@ -12,3 +12,5 @@ dependencies:
     path: ../transport/dart
   core:
     path: ../core/dart
+  memory:
+    path: ../memory/dart

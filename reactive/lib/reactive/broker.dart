@@ -100,7 +100,7 @@ class ReactiveBroker {
         _connection,
         streamId,
         channel.configuration,
-        _transportConfiguration.workerConfiguration.memoryConfiguration.bufferSize,
+        _transportConfiguration.workerConfiguration.memoryConfiguration.staticBuffersCapacity,
       );
       _streams[streamId] = ReactiveStream(
         streamId,
@@ -129,7 +129,7 @@ class ReactiveBroker {
         _connection,
         remoteStreamId,
         channel.configuration,
-        _transportConfiguration.workerConfiguration.bufferSize,
+        _transportConfiguration.workerConfiguration.memoryConfiguration.staticBuffersCapacity,
       );
       final stream = ReactiveStream(
         remoteStreamId,
