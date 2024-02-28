@@ -450,6 +450,14 @@ external ffi.Pointer<ffi.Void> tarantool_tuple_data(
   ffi.Pointer<tarantool_tuple> tuple,
 );
 
+@ffi.Native<ffi.Void Function(ffi.Pointer<tarantool_tuple>)>(
+    symbol: 'tarantool_tuple_release',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
+external void tarantool_tuple_release(
+  ffi.Pointer<tarantool_tuple> tuple,
+);
+
 final class tarantool_box extends ffi.Struct {
   external ffi.Pointer<
           ffi.NativeFunction<

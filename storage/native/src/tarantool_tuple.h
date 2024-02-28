@@ -17,6 +17,7 @@ extern "C"
     tarantool_tuple* tarantool_port_entry_tuple(tarantool_tuple_port_entry* current);
     size_t tarantool_tuple_size(tarantool_tuple* tuple);
     void* tarantool_tuple_data(tarantool_tuple* tuple);
+    void tarantool_tuple_release(tarantool_tuple* tuple);
 #if defined(__cplusplus)
 }
 #endif

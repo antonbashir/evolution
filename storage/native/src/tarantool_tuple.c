@@ -26,3 +26,8 @@ void* tarantool_tuple_data(tarantool_tuple* tuple)
 {
     return (void*)tuple_data(tuple);
 }
+
+void tarantool_tuple_release(tarantool_tuple* tuple)
+{
+  tuple_unref(tuple);
+}

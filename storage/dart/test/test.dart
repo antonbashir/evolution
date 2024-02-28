@@ -96,30 +96,3 @@ Future<void> main() async {
 //  ports.forEach((port) => port.close());
 //  expect(await _space.select(), equals(data));
 //}
-//
-//Future<void> testMultiIsolateTransactionalInsert() async {
-//  final count = 1000;
-//  final ports = <ReceivePort>[];
-//  final data = [];
-//  for (var i = 0; i < count; i++) {
-//    ReceivePort port = ReceivePort();
-//    ports.add(port);
-//    final element = [...testSingleData];
-//    element[0] = i + 1;
-//    element[1] = "key-${i + 1}";
-//    data.add(element);
-//    Isolate.spawn<dynamic>((element) async {
-//      final storage = Storage();
-//      final executor = storage.executor;
-//      await executor.schema.spaceByName("test").then((space) => executor.transactional((executor) => space.insertSingle(element)));
-//      storage.close();
-//    }, element, onExit: port.sendPort);
-//  }
-//  for (var port in ports) {
-//    await port.first;
-//  }
-//  ports.forEach((port) => port.close());
-//  expect(await _space.length(), equals(data.length));
-//  expect(await _space.select(), containsAll(data));
-//}
-//
