@@ -4,6 +4,7 @@
 #include <bits/types/struct_iovec.h>
 #include <stddef.h>
 #include <stdint.h>
+#include "memory_configuration.h"
 
 typedef struct memory_static_buffers memory_dart_static_buffers;
 typedef struct memory_io_buffers memory_dart_io_buffers;
@@ -15,14 +16,6 @@ typedef struct memory_structure_pool memory_dart_structure_pool;
 extern "C"
 {
 #endif
-    struct memory_dart_configuration
-    {
-        size_t quota_size;
-        size_t preallocation_size;
-        size_t slab_size;
-        size_t static_buffers_capacity;
-        size_t static_buffer_size;
-    };
 
     struct memory_dart
     {
@@ -32,7 +25,7 @@ extern "C"
         memory_dart_memory* memory;
     };
 
-    int memory_dart_initialize(struct memory_dart* memory, struct memory_dart_configuration* configuration);
+    int memory_dart_initialize(struct memory_dart* memory, struct memory_module_configuration* configuration);
 
     int32_t memory_dart_static_buffers_get(struct memory_dart* memory);
     void memory_dart_static_buffers_release(struct memory_dart* memory, int32_t buffer_id);

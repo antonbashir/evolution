@@ -14,9 +14,11 @@ extern "C"
     struct mh_events_t;
     struct io_uring;
     typedef struct io_uring_cqe transport_completion_event;
+    struct memory_module_configuration;
 
     typedef struct transport_configuration
     {
+        struct memory_module_configuration* memory_configuration;
         uint16_t buffers_capacity;
         uint32_t buffer_size;
         size_t ring_size;
@@ -36,8 +38,7 @@ extern "C"
         uint8_t id;
         struct io_uring* ring;
         struct iovec* buffers;
-        uint16_t buffers_capacity;
-        uint16_t buffer_size;
+        struct memory_module_configuration* memory_configuration;
         uint64_t timeout_checker_period_millis;
         uint32_t base_delay_micros;
         double delay_randomization_factor;
@@ -103,10 +104,9 @@ extern "C"
     struct sockaddr* transport_get_datagram_address(transport_t* transport, transport_socket_family_t socket_family, int buffer_id);
 
     int transport_peek(transport_t* transport);
+    void transport_cqe_advance(struct io_uring* ring, int count);
 
     void transport_destroy(transport_t* transport);
-
-    void transport_cqe_advance(struct io_uring* ring, int count);
 #if defined(__cplusplus)
 }
 #endif

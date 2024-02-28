@@ -28,7 +28,7 @@ class TransportClientChannel {
   final TransportClientRegistry _registry;
   final TransportPayloadPool _payloadPool;
 
-  late final Pointer<sockaddr> _destination;
+  final Pointer<sockaddr> _destination;
 
   var _connector = Completer();
   var _pending = 0;
@@ -49,9 +49,8 @@ class TransportClientChannel {
     this._registry,
     this._payloadPool, {
     int? connectTimeout,
-  }) : _connectTimeout = connectTimeout {
-    _destination = transport_client_get_destination_address(_pointer);
-  }
+  })  : _connectTimeout = connectTimeout,
+        _destination = transport_client_get_destination_address(_pointer);
 
   Future<void> read() async {
     final bufferId = _buffers.get() ?? await _buffers.allocate();
@@ -276,6 +275,16 @@ class TransportClientChannel {
         _active = false;
         transport_cancel_by_fd(_workerPointer, _pointer.ref.fd);
         await _closer.future;
+      }
+      if (gracefulTimeout != null) {
+        await _closer.future.timeout(
+          gracefulTimeout,
+          onTimeout: () async {
+            _active = false;
+            transport_cancel_by_fd(_workerPointer, _pointer.ref.fd);
+            await _closer.future;
+          },
+        );
       }
     }
     _active = false;

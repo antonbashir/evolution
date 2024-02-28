@@ -21,7 +21,7 @@ void keepalive() {
     }
 
     final transport = TransportModule();
-    final worker = Transport(transport.createTransport(ReactiveTransportDefaults.transport.workerConfiguration));
+    final worker = Transport(transport.transport(ReactiveTransportDefaults.transport.workerConfiguration));
     await worker.initialize();
     final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport.copyWith(tracer: _trace));
 
@@ -47,7 +47,7 @@ void keepalive() {
     final latch = Latch(2);
 
     final transport = TransportModule();
-    final worker = Transport(transport.createTransport(ReactiveTransportDefaults.transport.workerConfiguration));
+    final worker = Transport(transport.transport(ReactiveTransportDefaults.transport.workerConfiguration));
     await worker.initialize();
     final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport);
 

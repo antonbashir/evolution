@@ -6,8 +6,9 @@ import 'dart:math';
 import 'package:core/core.dart';
 import 'package:ffi/ffi.dart';
 import 'package:interactor/interactor.dart';
+import 'package:memory/memory.dart';
 
-import 'bindings.dart';
+import 'bindings.dart' as bindings;
 import 'configuration.dart';
 import 'constants.dart';
 import 'exception.dart';
@@ -29,14 +30,15 @@ class TransportModule {
     _workerPorts.forEach((port) => port.close());
   }
 
-  SendPort createTransport(TransportConfiguration configuration) {
+  SendPort transport(TransportConfiguration configuration) {
     final port = RawReceivePort((ports) async {
       SendPort toTransport = ports[0];
       _transportClosers.add(ports[1]);
-      final transportPointer = calloc<transport>(sizeOf<transport>());
+      final transportPointer = calloc<bindings.transport>(sizeOf<bindings.transport>());
       if (transportPointer == nullptr) throw TransportInitializationException(TransportMessages.workerMemoryError);
       final result = using((arena) {
-        final nativeConfiguration = arena<transport_configuration_t>();
+        final nativeConfiguration = arena<bindings.transport_configuration_t>();
+        nativeConfiguration.ref.memory_configuration = configuration.memoryConfiguration.toNative(arena<memory_module_configuration>());
         nativeConfiguration.ref.ring_flags = configuration.ringFlags;
         nativeConfiguration.ref.ring_size = configuration.ringSize;
         nativeConfiguration.ref.buffer_size = configuration.memoryConfiguration.staticBufferSize;
@@ -49,10 +51,10 @@ class TransportModule {
         nativeConfiguration.ref.cqe_wait_count = configuration.cqeWaitCount;
         nativeConfiguration.ref.cqe_wait_timeout_millis = configuration.cqeWaitTimeout.inMilliseconds;
         nativeConfiguration.ref.trace = configuration.trace;
-        return transport_initialize(transportPointer, nativeConfiguration, _transportClosers.length);
+        return bindings.transport_initialize(transportPointer, nativeConfiguration, _transportClosers.length);
       });
       if (result < 0) {
-        transport_destroy(transportPointer);
+        bindings.transport_destroy(transportPointer);
         throw TransportInitializationException(TransportMessages.workerError(result));
       }
       final workerInput = [transportPointer.address, _workerDestroyer.sendPort];

@@ -5,6 +5,7 @@ import 'dart:math';
 
 import 'package:interactor/interactor.dart';
 import 'package:memory/memory.dart';
+import 'package:memory/memory/configuration.dart';
 import 'package:meta/meta.dart';
 
 import 'bindings.dart';
@@ -72,15 +73,15 @@ class Transport {
     _pointer = Pointer.fromAddress(configuration[0] as int).cast<transport>();
     _destroyer = configuration[1] as SendPort;
     _fromTransport.close();
-    _memory = MemoryModule()..initialize();
+    _memory = MemoryModule()..initialize(configuration: MemoryConfiguration.fromNative(_pointer.ref.memory_configuration));
     _buffers = _memory.staticBuffers;
     _pointer.ref.buffers = _buffers.native;
-    var result = transport_setup(_pointer);
+    final result = transport_setup(_pointer);
     if (result != 0) {
       throw TransportInitializationException(TransportMessages.workerError(result));
     }
-    _payloadPool = TransportPayloadPool(_pointer.ref.buffers_capacity, _buffers);
-    _datagramResponderPool = TransportServerDatagramResponderPool(_pointer.ref.buffers_capacity, _buffers);
+    _payloadPool = TransportPayloadPool(_memory.staticBuffers.buffersCapacity, _buffers);
+    _datagramResponderPool = TransportServerDatagramResponderPool(_memory.staticBuffers.buffersCapacity, _buffers);
     _clientRegistry = TransportClientRegistry();
     _serverRegistry = TransportServerRegistry();
     _serversFactory = TransportServersFactory(
@@ -141,7 +142,16 @@ class Transport {
       var event = data & 0xffff;
       final fd = (data >> 32) & 0xffffffff;
       final bufferId = (data >> 16) & 0xffff;
-      if (_pointer.ref.trace) print(TransportMessages.workerTrace(id, result, data, fd));
+      if (_pointer.ref.trace) {
+        final server = event & transportEventServer != 0;
+        final client = event & transportEventClient != 0;
+        final parsed = server
+            ? TransportEvent.serverEvent(event & ~transportEventServer)
+            : client
+                ? TransportEvent.clientEvent(event & ~transportEventClient)
+                : TransportEvent.fileEvent(event & ~transportEventFile);
+        print(TransportMessages.workerTrace(parsed, id, result, data, fd));
+      }
 
       if (event & transportEventClient != 0) {
         event &= ~transportEventClient;

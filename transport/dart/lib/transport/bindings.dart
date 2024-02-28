@@ -275,12 +275,6 @@ external int transport_peek(
   ffi.Pointer<transport_t> transport,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<transport_t>)>(
-    symbol: 'transport_destroy', assetId: 'transport-bindings', isLeaf: true)
-external void transport_destroy(
-  ffi.Pointer<transport_t> transport,
-);
-
 @ffi.Native<ffi.Void Function(ffi.Pointer<io_uring>, ffi.Int)>(
     symbol: 'transport_cqe_advance',
     assetId: 'transport-bindings',
@@ -288,6 +282,12 @@ external void transport_destroy(
 external void transport_cqe_advance(
   ffi.Pointer<io_uring> ring,
   int count,
+);
+
+@ffi.Native<ffi.Void Function(ffi.Pointer<transport_t>)>(
+    symbol: 'transport_destroy', assetId: 'transport-bindings', isLeaf: true)
+external void transport_destroy(
+  ffi.Pointer<transport_t> transport,
 );
 
 @ffi.Native<
@@ -575,6 +575,8 @@ final class io_uring extends ffi.Opaque {}
 final class io_uring_cqe extends ffi.Opaque {}
 
 final class transport_configuration extends ffi.Struct {
+  external ffi.Pointer<memory.memory_module_configuration> memory_configuration;
+
   @ffi.Uint16()
   external int buffers_capacity;
 
@@ -620,11 +622,7 @@ final class transport extends ffi.Struct {
 
   external ffi.Pointer<memory.iovec> buffers;
 
-  @ffi.Uint16()
-  external int buffers_capacity;
-
-  @ffi.Uint16()
-  external int buffer_size;
+  external ffi.Pointer<memory.memory_module_configuration> memory_configuration;
 
   @ffi.Uint64()
   external int timeout_checker_period_millis;

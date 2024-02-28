@@ -10,7 +10,7 @@ import 'validators.dart';
 void testBulk() {
   test("bulk", () async {
     final transport = TransportModule();
-    final worker = Transport(transport.createTransport(TransportDefaults.worker));
+    final worker = Transport(transport.transport(TransportDefaults.worker));
     await worker.initialize();
     final file1 = File("file1");
     final file2 = File("file2");

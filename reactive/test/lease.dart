@@ -11,7 +11,7 @@ void lease() {
   test("pass", () async {
     final latch = Latch(4);
     final transport = TransportModule();
-    final worker = Transport(transport.createTransport(ReactiveTransportDefaults.transport.workerConfiguration));
+    final worker = Transport(transport.transport(ReactiveTransportDefaults.transport.workerConfiguration));
     await worker.initialize();
     final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport);
     reactive.serve(
@@ -59,7 +59,7 @@ void lease() {
   test("fail", () async {
     final latch = Latch(1);
     final transport = TransportModule();
-    final worker = Transport(transport.createTransport(ReactiveTransportDefaults.transport.workerConfiguration));
+    final worker = Transport(transport.transport(ReactiveTransportDefaults.transport.workerConfiguration));
     await worker.initialize();
     final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport);
     reactive.serve(
@@ -103,7 +103,7 @@ void lease() {
     final payloadLatch = Latch(4);
     final errorLatch = Latch(1);
     final transport = TransportModule();
-    final worker = Transport(transport.createTransport(ReactiveTransportDefaults.transport.workerConfiguration));
+    final worker = Transport(transport.transport(ReactiveTransportDefaults.transport.workerConfiguration));
     await worker.initialize();
     final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport);
     reactive.serve(

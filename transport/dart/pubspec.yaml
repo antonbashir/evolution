@@ -67,6 +67,10 @@ ffigen:
         lib: "memory"
         c-type: "iovec"
         dart-type: "iovec"
+      "memory_module_configuration":
+        lib: "memory"
+        c-type: "memory_module_configuration"
+        dart-type: "memory_module_configuration"
   library-imports:
     interactor: package:interactor/interactor.dart
     memory: package:memory/memory.dart

@@ -4,9 +4,11 @@
 #include <liburing/io_uring.h>
 #include <netinet/in.h>
 #include <pthread.h>
+#include <stdio.h>
 #include <sys/time.h>
 #include <sys/un.h>
 #include <unistd.h>
+#include "memory_configuration.h"
 #include "transport.h"
 #include "transport_collections.h"
 #include "transport_common.h"
@@ -21,14 +23,18 @@ int transport_initialize(transport_t* transport,
     transport->delay_randomization_factor = configuration->delay_randomization_factor;
     transport->base_delay_micros = configuration->base_delay_micros;
     transport->max_delay_micros = configuration->max_delay_micros;
-    transport->buffer_size = configuration->buffer_size;
-    transport->buffers_capacity = configuration->buffers_capacity;
+    transport->memory_configuration = calloc(1, sizeof(struct memory_module_configuration));
+    *transport->memory_configuration = *configuration->memory_configuration;
     transport->timeout_checker_period_millis = configuration->timeout_checker_period_millis;
-    transport->completions = malloc(sizeof(struct io_uring_cqe*) * configuration->ring_size);
     transport->cqe_wait_timeout_millis = configuration->cqe_wait_timeout_millis;
     transport->cqe_wait_count = configuration->cqe_wait_count;
     transport->cqe_peek_count = configuration->cqe_peek_count;
     transport->trace = configuration->trace;
+    transport->completions = malloc(sizeof(struct io_uring_cqe*) * configuration->ring_size);
+    if (!transport->completions)
+    {
+        return -ENOMEM;
+    }
 
     transport->events = mh_events_new();
     if (!transport->events)
@@ -63,11 +69,13 @@ int transport_initialize(transport_t* transport,
         }
         transport->unix_used_messages[index].msg_namelen = sizeof(struct sockaddr_un);
     }
+
     transport->ring = malloc(sizeof(struct io_uring));
     if (!transport->ring)
     {
         return -ENOMEM;
     }
+
     int result = io_uring_queue_init(configuration->ring_size, transport->ring, configuration->ring_flags);
     if (result)
     {
@@ -81,7 +89,7 @@ int transport_initialize(transport_t* transport,
 
 int transport_setup(transport_t* transport)
 {
-    int result = io_uring_register_buffers(transport->ring, transport->buffers, transport->buffers_capacity);
+    int result = io_uring_register_buffers(transport->ring, transport->buffers, transport->memory_configuration->static_buffers_capacity);
     if (result)
     {
         return result;
@@ -318,7 +326,7 @@ struct sockaddr* transport_get_datagram_address(transport_t* transport, transpor
 void transport_destroy(transport_t* transport)
 {
     io_uring_queue_exit(transport->ring);
-    for (size_t index = 0; index < transport->buffers_capacity; index++)
+    for (size_t index = 0; index < transport->memory_configuration->static_buffers_capacity; index++)
     {
         free(transport->inet_used_messages[index].msg_name);
         free(transport->unix_used_messages[index].msg_name);
@@ -328,6 +336,7 @@ void transport_destroy(transport_t* transport)
     free(transport->inet_used_messages);
     free(transport->unix_used_messages);
     free(transport->ring);
+    free(transport->memory_configuration);
     free(transport);
 }
 

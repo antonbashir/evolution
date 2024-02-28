@@ -5,12 +5,12 @@
 import 'dart:ffi' as ffi;
 
 @ffi.Native<
-        ffi.Int Function(
-            ffi.Pointer<memory_dart>, ffi.Pointer<memory_dart_configuration>)>(
+        ffi.Int Function(ffi.Pointer<memory_dart>,
+            ffi.Pointer<memory_module_configuration>)>(
     symbol: 'memory_dart_initialize', assetId: 'memory-bindings', isLeaf: true)
 external int memory_dart_initialize(
   ffi.Pointer<memory_dart> memory,
-  ffi.Pointer<memory_dart_configuration> configuration,
+  ffi.Pointer<memory_module_configuration> configuration,
 );
 
 @ffi.Native<ffi.Int32 Function(ffi.Pointer<memory_dart>)>(
@@ -281,17 +281,7 @@ final class iovec extends ffi.Struct {
   external int iov_len;
 }
 
-final class memory_static_buffers extends ffi.Opaque {}
-
-final class memory_io_buffers extends ffi.Opaque {}
-
-final class memory_small_data extends ffi.Opaque {}
-
-final class memory extends ffi.Opaque {}
-
-final class memory_structure_pool extends ffi.Opaque {}
-
-final class memory_dart_configuration extends ffi.Struct {
+final class memory_module_configuration extends ffi.Struct {
   @ffi.Size()
   external int quota_size;
 
@@ -307,6 +297,16 @@ final class memory_dart_configuration extends ffi.Struct {
   @ffi.Size()
   external int static_buffer_size;
 }
+
+final class memory_static_buffers extends ffi.Opaque {}
+
+final class memory_io_buffers extends ffi.Opaque {}
+
+final class memory_small_data extends ffi.Opaque {}
+
+final class memory extends ffi.Opaque {}
+
+final class memory_structure_pool extends ffi.Opaque {}
 
 final class memory_dart extends ffi.Struct {
   external ffi.Pointer<memory_dart_static_buffers> static_buffers;

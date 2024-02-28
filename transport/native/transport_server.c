@@ -86,7 +86,7 @@ int transport_server_initialize_unix_stream(transport_server_t* server, transpor
                                             const char* path)
 {
     server->family = UNIX;
-    server->unix_server_address = calloc(1, sizeof(struct sockaddr_in));
+    server->unix_server_address = calloc(1, sizeof(struct sockaddr_un));
     server->unix_server_address->sun_family = AF_UNIX;
     strcpy(server->unix_server_address->sun_path, path);
     server->server_address_length = sizeof(*server->unix_server_address);

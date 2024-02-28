@@ -8,7 +8,7 @@ void main(List<String> args) => test("test replica ${args[0]}", () async {
       final storage = StorageModule();
       final workDirectory = Directory(Directory.current.path + "/test/tarantool_${int.parse(args[0].toString())}");
       final bootConfiguration = StorageDefaults.boot();
-      final configuration = StorageDefaults.storage().copyWith(
+      final configuration = StorageDefaults.storage.copyWith(
         listen: args[0].toString(),
         replication: StorageReplicationConfiguration()
             .addAddressReplica("127.0.0.1", args[1], user: bootConfiguration.user, password: bootConfiguration.password)
@@ -23,7 +23,7 @@ void main(List<String> args) => test("test replica ${args[0]}", () async {
       workDirectory.createSync();
       await storage.boot(
         StorageBootstrapScript(configuration)..includeStorageLuaModule(),
-        StorageDefaults.executor(),
+        StorageDefaults.executor,
         bootConfiguration: StorageDefaults.boot(randomizeDelay: true),
       );
       await storage.waitInitialized();

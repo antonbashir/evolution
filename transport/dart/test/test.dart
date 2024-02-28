@@ -26,7 +26,7 @@ void main() {
   });
   group("[shutdown]", timeout: Timeout(Duration(hours: 1)), skip: !shutdown, () {
     testForceShutdown();
-    //testGracefulShutdown(gracefulTimeout: Duration(seconds: 5));
+    testGracefulShutdown(gracefulTimeout: Duration(seconds: 5));
   });
   group("[tcp]", timeout: Timeout(Duration(hours: 1)), skip: !tcp, () {
     final testsCount = 5;
@@ -88,7 +88,7 @@ void main() {
 void testInitialization() {
   test("(initialize)", () async {
     final transport = TransportModule();
-    final worker = Transport(transport.createTransport(TransportDefaults.worker));
+    final worker = Transport(transport.transport(TransportDefaults.worker));
     await worker.initialize();
     await transport.shutdown();
   });

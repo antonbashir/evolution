@@ -28,7 +28,7 @@ Future<void> _benchMyTcp() async {
           connection.writeSingle(fromServer);
         }),
       );
-    }, transport.createTransport(TransportDefaults.worker.copyWith(ringFlags: ringSetupSqpoll)));
+    }, transport.transport(TransportDefaults.worker.copyWith(ringFlags: ringSetupSqpoll)));
   }
   await Future.delayed(Duration(seconds: 1));
   for (var i = 0; i < 2; i++) {
@@ -49,7 +49,7 @@ Future<void> _benchMyTcp() async {
       }
       await Future.delayed(Duration(seconds: 10));
       print("My RPS: ${count / 10}");
-    }, transport.createTransport(TransportDefaults.worker));
+    }, transport.transport(TransportDefaults.worker));
   }
 
   await Future.delayed(Duration(seconds: 15));

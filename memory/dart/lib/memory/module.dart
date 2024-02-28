@@ -33,15 +33,7 @@ class MemoryModule {
   void initialize({MemoryConfiguration configuration = MemoryDefaults.memory}) {
     pointer = calloc<memory_dart>(sizeOf<memory_dart>());
     if (pointer == nullptr) throw MemoryException(MemoryErrors.outOfMemory);
-    final result = using((arena) {
-      final nativeConfiguration = arena<memory_dart_configuration>();
-      nativeConfiguration.ref.static_buffer_size = configuration.staticBufferSize;
-      nativeConfiguration.ref.static_buffers_capacity = configuration.staticBuffersCapacity;
-      nativeConfiguration.ref.slab_size = configuration.slabSize;
-      nativeConfiguration.ref.preallocation_size = configuration.preallocationSize;
-      nativeConfiguration.ref.quota_size = configuration.quotaSize;
-      return memory_dart_initialize(pointer, nativeConfiguration);
-    });
+    final result = using((arena) => memory_dart_initialize(pointer, configuration.toNative(arena<memory_module_configuration>())));
     if (result < 0) {
       memory_dart_destroy(pointer);
       calloc.free(pointer);

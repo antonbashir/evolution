@@ -9,10 +9,10 @@ import 'constants.dart';
 
 class TransportChannel {
   final int fd;
-  final Pointer<transport> _workerPointer;
+  final Pointer<transport> _pointer;
   final MemoryStaticBuffers _buffers;
 
-  const TransportChannel(this._workerPointer, this.fd, this._buffers);
+  const TransportChannel(this._pointer, this.fd, this._buffers);
 
   @inline
   void read(
@@ -23,7 +23,7 @@ class TransportChannel {
     int? timeout,
   }) {
     transport_read(
-      _workerPointer,
+      _pointer,
       fd,
       bufferId,
       offset,
@@ -44,7 +44,7 @@ class TransportChannel {
   }) {
     _buffers.write(bufferId, bytes);
     transport_write(
-      _workerPointer,
+      _pointer,
       fd,
       bufferId,
       offset,
@@ -64,7 +64,7 @@ class TransportChannel {
     int sqeFlags = 0,
   }) {
     transport_receive_message(
-      _workerPointer,
+      _pointer,
       fd,
       bufferId,
       socketFamily,
@@ -88,7 +88,7 @@ class TransportChannel {
   }) {
     _buffers.write(bufferId, bytes);
     transport_send_message(
-      _workerPointer,
+      _pointer,
       fd,
       bufferId,
       destination,
