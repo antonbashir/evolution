@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include "interactor_message.h"
 #include "interactor_native.h"
-#include <memory_module.h>
+#include "memory_module.h"
 #include "memory_small_data.h"
 
 static pthread_mutex_t mutex;
