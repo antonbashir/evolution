@@ -1,7 +1,12 @@
+import 'dart:ffi';
+
+import 'package:memory/memory.dart';
 import 'package:memory/memory/configuration.dart';
 
-class TransportConfiguration {
-  final MemoryConfiguration memoryConfiguration;
+import 'bindings.dart';
+
+class TransportModuleConfiguration {
+  final MemoryModuleConfiguration memoryConfiguration;
   final int ringSize;
   final int ringFlags;
   final Duration timeoutCheckerPeriod;
@@ -13,7 +18,22 @@ class TransportConfiguration {
   final Duration maxDelay;
   final bool trace;
 
-  const TransportConfiguration({
+  Pointer<transport_module_configuration> toNative(Pointer<transport_module_configuration> native, Pointer<memory_module_configuration> memory) {
+    native.ref.ring_flags = ringFlags;
+    native.ref.ring_size = ringSize;
+    native.ref.memory_configuration = memoryConfiguration.toNative(memory);
+    native.ref.timeout_checker_period_millis = timeoutCheckerPeriod.inMilliseconds;
+    native.ref.base_delay_micros = baseDelay.inMicroseconds;
+    native.ref.max_delay_micros = maxDelay.inMicroseconds;
+    native.ref.delay_randomization_factor = delayRandomizationFactor;
+    native.ref.cqe_peek_count = cqePeekCount;
+    native.ref.cqe_wait_count = cqeWaitCount;
+    native.ref.cqe_wait_timeout_millis = cqeWaitTimeout.inMilliseconds;
+    native.ref.trace = trace;
+    return native;
+  }
+
+  const TransportModuleConfiguration({
     required this.memoryConfiguration,
     required this.ringSize,
     required this.ringFlags,
@@ -27,8 +47,8 @@ class TransportConfiguration {
     required this.trace,
   });
 
-  TransportConfiguration copyWith({
-    MemoryConfiguration? memoryConfiguration,
+  TransportModuleConfiguration copyWith({
+    MemoryModuleConfiguration? memoryConfiguration,
     int? ringSize,
     int? ringFlags,
     Duration? timeoutCheckerPeriod,
@@ -40,7 +60,7 @@ class TransportConfiguration {
     Duration? cqeWaitTimeout,
     bool? trace,
   }) =>
-      TransportConfiguration(
+      TransportModuleConfiguration(
         memoryConfiguration: memoryConfiguration ?? this.memoryConfiguration,
         ringSize: ringSize ?? this.ringSize,
         ringFlags: ringFlags ?? this.ringFlags,

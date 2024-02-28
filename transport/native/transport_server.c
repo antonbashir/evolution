@@ -10,7 +10,7 @@
 #include "transport_constants.h"
 #include "transport_socket.h"
 
-int transport_server_initialize_tcp(transport_server_t* server, transport_server_configuration_t* configuration,
+int transport_server_initialize_tcp(struct transport_server* server, struct transport_server_configuration* configuration,
                                     const char* ip,
                                     int32_t port)
 {
@@ -50,7 +50,7 @@ int transport_server_initialize_tcp(transport_server_t* server, transport_server
     return 0;
 }
 
-int transport_server_initialize_udp(transport_server_t* server, transport_server_configuration_t* configuration,
+int transport_server_initialize_udp(struct transport_server* server, struct transport_server_configuration* configuration,
                                     const char* ip,
                                     int32_t port)
 {
@@ -82,7 +82,7 @@ int transport_server_initialize_udp(transport_server_t* server, transport_server
     return 0;
 }
 
-int transport_server_initialize_unix_stream(transport_server_t* server, transport_server_configuration_t* configuration,
+int transport_server_initialize_unix_stream(struct transport_server* server, struct transport_server_configuration* configuration,
                                             const char* path)
 {
     server->family = UNIX;
@@ -114,7 +114,7 @@ int transport_server_initialize_unix_stream(transport_server_t* server, transpor
     return 0;
 }
 
-void transport_server_destroy(transport_server_t* server)
+void transport_server_destroy(struct transport_server* server)
 {
     if (server->family == INET)
     {

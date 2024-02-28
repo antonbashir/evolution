@@ -6,13 +6,13 @@ import 'dart:ffi' as ffi;
 
 @ffi.Native<
         ffi.Int Function(ffi.Pointer<interactor_dart>,
-            ffi.Pointer<interactor_dart_configuration>, ffi.Uint8)>(
+            ffi.Pointer<interactor_module_dart_configuration>, ffi.Uint8)>(
     symbol: 'interactor_dart_initialize',
     assetId: 'interactor-bindings',
     isLeaf: true)
 external int interactor_dart_initialize(
   ffi.Pointer<interactor_dart> interactor,
-  ffi.Pointer<interactor_dart_configuration> configuration,
+  ffi.Pointer<interactor_module_dart_configuration> configuration,
   int id,
 );
 
@@ -108,11 +108,7 @@ final class interactor_completion_event extends ffi.Struct {
   external ffi.Array<ffi.UnsignedLongLong> big_cqe;
 }
 
-final class io_uring extends ffi.Opaque {}
-
-final class io_uring_cqe extends ffi.Opaque {}
-
-final class interactor_dart_configuration extends ffi.Struct {
+final class interactor_module_dart_configuration extends ffi.Struct {
   @ffi.Size()
   external int quota_size;
 
@@ -153,8 +149,44 @@ final class interactor_dart_configuration extends ffi.Struct {
   external int cqe_peek_count;
 }
 
+final class interactor_module_native_configuration extends ffi.Struct {
+  @ffi.Uint64()
+  external int cqe_wait_timeout_millis;
+
+  @ffi.Size()
+  external int quota_size;
+
+  @ffi.Size()
+  external int preallocation_size;
+
+  @ffi.Size()
+  external int slab_size;
+
+  @ffi.Size()
+  external int static_buffers_capacity;
+
+  @ffi.Size()
+  external int static_buffer_size;
+
+  @ffi.Size()
+  external int ring_size;
+
+  @ffi.Int32()
+  external int ring_flags;
+
+  @ffi.Uint32()
+  external int cqe_wait_count;
+
+  @ffi.Uint32()
+  external int cqe_peek_count;
+}
+
+final class io_uring extends ffi.Opaque {}
+
+final class io_uring_cqe extends ffi.Opaque {}
+
 final class interactor_dart extends ffi.Struct {
-  external ffi.Pointer<interactor_dart_io_uring> ring;
+  external ffi.Pointer<io_uring> ring;
 
   @ffi.Size()
   external int ring_size;
@@ -190,5 +222,4 @@ final class interactor_dart extends ffi.Struct {
   external int id;
 }
 
-typedef interactor_dart_io_uring = io_uring;
 typedef interactor_dart_completion_event = io_uring_cqe;

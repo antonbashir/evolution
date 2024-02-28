@@ -3,7 +3,7 @@ library transport;
 export 'package:transport/transport/module.dart' show TransportModule;
 
 export 'package:transport/transport/client/configuration.dart' show TransportTcpClientConfiguration, TransportUdpClientConfiguration, TransportUnixStreamClientConfiguration;
-export 'package:transport/transport/configuration.dart' show TransportUdpMulticastConfiguration, TransportUdpMulticastManager, TransportUdpMulticastSourceConfiguration, TransportConfiguration;
+export 'package:transport/transport/configuration.dart' show TransportUdpMulticastConfiguration, TransportUdpMulticastManager, TransportUdpMulticastSourceConfiguration, TransportModuleConfiguration;
 export 'package:transport/transport/server/configuration.dart' show TransportTcpServerConfiguration, TransportUdpServerConfiguration, TransportUnixStreamServerConfiguration;
 export 'package:transport/transport/defaults.dart' show TransportDefaults;
 

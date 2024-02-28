@@ -32,6 +32,8 @@ ffigen:
       - "../native/transport_client.h"
       - "../native/transport_file.h"
       - "../native/transport_socket.h"
+  compiler-opts:
+    - "-I../native/include"
   globals:
     exclude:
       - "_(.*)"

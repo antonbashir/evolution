@@ -6,9 +6,10 @@
 #include <sys/socket.h>
 #include "interactor_collections.h"
 #include "interactor_common.h"
+#include "interactor_configuration.h"
 #include "interactor_constants.h"
 
-int interactor_native_initialize(struct interactor_native* interactor, struct interactor_native_configuration* configuration, uint8_t id)
+int interactor_native_initialize(struct interactor_native* interactor, struct interactor_module_native_configuration* configuration, uint8_t id)
 {
     interactor->id = id;
     interactor->ring_size = configuration->ring_size;
@@ -46,7 +47,7 @@ int interactor_native_initialize(struct interactor_native* interactor, struct in
 
 int interactor_native_initialize_default(struct interactor_native* interactor, uint8_t id)
 {
-    struct interactor_native_configuration configuration = {
+    struct interactor_module_native_configuration configuration = {
         .static_buffers_capacity = 4096,
         .static_buffer_size = 4096,
         .ring_size = 16384,

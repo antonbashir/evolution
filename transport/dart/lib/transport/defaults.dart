@@ -7,7 +7,7 @@ import 'server/configuration.dart';
 class TransportDefaults {
   TransportDefaults._();
 
-  static const worker = TransportConfiguration(
+  static const worker = TransportModuleConfiguration(
     memoryConfiguration: MemoryDefaults.memory,
     trace: false,
     ringSize: 16384,

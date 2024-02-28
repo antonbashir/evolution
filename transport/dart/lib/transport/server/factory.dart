@@ -43,7 +43,7 @@ class TransportServersFactory {
     configuration = configuration ?? TransportDefaults.tcpServer;
     final server = using(
       (Arena arena) {
-        final pointer = calloc<transport_server_t>(sizeOf<transport_server_t>());
+        final pointer = calloc<transport_server>(sizeOf<transport_server>());
         if (pointer == nullptr) {
           throw TransportInitializationException(TransportMessages.serverMemoryError);
         }
@@ -86,7 +86,7 @@ class TransportServersFactory {
     configuration = configuration ?? TransportDefaults.udpServer;
     final server = using(
       (Arena arena) {
-        final pointer = calloc<transport_server_t>(sizeOf<transport_server_t>());
+        final pointer = calloc<transport_server>(sizeOf<transport_server>());
         if (pointer == nullptr) {
           throw TransportInitializationException(TransportMessages.serverMemoryError);
         }
@@ -170,7 +170,7 @@ class TransportServersFactory {
     configuration = configuration ?? TransportDefaults.unixStreamServer;
     final server = using(
       (Arena arena) {
-        final pointer = calloc<transport_server_t>(sizeOf<transport_server_t>());
+        final pointer = calloc<transport_server>(sizeOf<transport_server>());
         if (pointer == nullptr) {
           throw TransportInitializationException(TransportMessages.serverMemoryError);
         }
@@ -204,8 +204,8 @@ class TransportServersFactory {
     return server..accept(onAccept);
   }
 
-  Pointer<transport_server_configuration_t> _tcpConfiguration(TransportTcpServerConfiguration serverConfiguration, Allocator allocator) {
-    final nativeServerConfiguration = allocator<transport_server_configuration_t>();
+  Pointer<transport_server_configuration> _tcpConfiguration(TransportTcpServerConfiguration serverConfiguration, Allocator allocator) {
+    final nativeServerConfiguration = allocator<transport_server_configuration>();
     var flags = 0;
     if (serverConfiguration.socketNonblock == true) flags |= transportSocketOptionSocketNonblock;
     if (serverConfiguration.socketCloexec == true) flags |= transportSocketOptionSocketCloexec;
@@ -264,8 +264,8 @@ class TransportServersFactory {
     return nativeServerConfiguration;
   }
 
-  Pointer<transport_server_configuration_t> _udpConfiguration(TransportUdpServerConfiguration serverConfiguration, Allocator allocator) {
-    final nativeServerConfiguration = allocator<transport_server_configuration_t>();
+  Pointer<transport_server_configuration> _udpConfiguration(TransportUdpServerConfiguration serverConfiguration, Allocator allocator) {
+    final nativeServerConfiguration = allocator<transport_server_configuration>();
     var flags = 0;
     if (serverConfiguration.socketNonblock == true) flags |= transportSocketOptionSocketNonblock;
     if (serverConfiguration.socketCloexec == true) flags |= transportSocketOptionSocketCloexec;
@@ -313,8 +313,8 @@ class TransportServersFactory {
     return nativeServerConfiguration;
   }
 
-  Pointer<transport_server_configuration_t> _unixStreamConfiguration(TransportUnixStreamServerConfiguration serverConfiguration, Allocator allocator) {
-    final nativeServerConfiguration = allocator<transport_server_configuration_t>();
+  Pointer<transport_server_configuration> _unixStreamConfiguration(TransportUnixStreamServerConfiguration serverConfiguration, Allocator allocator) {
+    final nativeServerConfiguration = allocator<transport_server_configuration>();
     var flags = 0;
     if (serverConfiguration.socketNonblock == true) flags |= transportSocketOptionSocketNonblock;
     if (serverConfiguration.socketCloexec == true) flags |= transportSocketOptionSocketCloexec;

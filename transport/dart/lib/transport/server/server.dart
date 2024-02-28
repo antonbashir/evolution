@@ -173,7 +173,7 @@ class TransportServerChannel implements TransportServer {
   final _outboundDoneHandlers = <int, void Function()>{};
 
   final TransportChannel? _datagramChannel;
-  final Pointer<transport_server_t> pointer;
+  final Pointer<transport_server> pointer;
   final Pointer<transport> _workerPointer;
   final int? _readTimeout;
   final int? _writeTimeout;

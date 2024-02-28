@@ -36,7 +36,7 @@ class TransportClientsFactory {
     configuration = configuration ?? TransportDefaults.tcpClient;
     final clients = <Future<TransportClientConnection>>[];
     for (var clientIndex = 0; clientIndex < configuration.pool; clientIndex++) {
-      final clientPointer = calloc<transport_client_t>(sizeOf<transport_client_t>());
+      final clientPointer = calloc<transport_client>(sizeOf<transport_client>());
       if (clientPointer == nullptr) {
         throw TransportInitializationException(TransportMessages.clientMemoryError);
       }
@@ -87,7 +87,7 @@ class TransportClientsFactory {
   }) {
     configuration = configuration ?? TransportDefaults.udpClient;
     final clientPointer = using((arena) {
-      final pointer = calloc<transport_client_t>(sizeOf<transport_client_t>());
+      final pointer = calloc<transport_client>(sizeOf<transport_client>());
       if (pointer == nullptr) {
         throw TransportInitializationException(TransportMessages.clientMemoryError);
       }
@@ -171,7 +171,7 @@ class TransportClientsFactory {
     configuration = configuration ?? TransportDefaults.unixStreamClient;
     final clients = <Future<TransportClientConnection>>[];
     for (var clientIndex = 0; clientIndex < configuration.pool; clientIndex++) {
-      final clientPointer = calloc<transport_client_t>(sizeOf<transport_client_t>());
+      final clientPointer = calloc<transport_client>(sizeOf<transport_client>());
       if (clientPointer == nullptr) {
         throw TransportInitializationException(TransportMessages.clientMemoryError);
       }
@@ -218,8 +218,8 @@ class TransportClientsFactory {
     return TransportClientConnectionPool(await Future.wait(clients));
   }
 
-  Pointer<transport_client_configuration_t> _tcpConfiguration(TransportTcpClientConfiguration clientConfiguration, Allocator allocator) {
-    final nativeClientConfiguration = allocator<transport_client_configuration_t>();
+  Pointer<transport_client_configuration> _tcpConfiguration(TransportTcpClientConfiguration clientConfiguration, Allocator allocator) {
+    final nativeClientConfiguration = allocator<transport_client_configuration>();
     var flags = 0;
     if (clientConfiguration.socketNonblock == true) flags |= transportSocketOptionSocketNonblock;
     if (clientConfiguration.socketCloexec == true) flags |= transportSocketOptionSocketCloexec;
@@ -274,8 +274,8 @@ class TransportClientsFactory {
     return nativeClientConfiguration;
   }
 
-  Pointer<transport_client_configuration_t> _udpConfiguration(TransportUdpClientConfiguration clientConfiguration, Allocator allocator) {
-    final nativeClientConfiguration = allocator<transport_client_configuration_t>();
+  Pointer<transport_client_configuration> _udpConfiguration(TransportUdpClientConfiguration clientConfiguration, Allocator allocator) {
+    final nativeClientConfiguration = allocator<transport_client_configuration>();
     var flags = 0;
     if (clientConfiguration.socketNonblock == true) flags |= transportSocketOptionSocketNonblock;
     if (clientConfiguration.socketCloexec == true) flags |= transportSocketOptionSocketCloexec;
@@ -323,8 +323,8 @@ class TransportClientsFactory {
     return nativeClientConfiguration;
   }
 
-  Pointer<transport_client_configuration_t> _unixStreamConfiguration(TransportUnixStreamClientConfiguration clientConfiguration, Allocator allocator) {
-    final nativeClientConfiguration = allocator<transport_client_configuration_t>();
+  Pointer<transport_client_configuration> _unixStreamConfiguration(TransportUnixStreamClientConfiguration clientConfiguration, Allocator allocator) {
+    final nativeClientConfiguration = allocator<transport_client_configuration>();
     var flags = 0;
     if (clientConfiguration.socketNonblock == true) flags |= transportSocketOptionSocketNonblock;
     if (clientConfiguration.socketCloexec == true) flags |= transportSocketOptionSocketCloexec;

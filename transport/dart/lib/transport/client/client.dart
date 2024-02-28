@@ -18,7 +18,7 @@ class TransportClientChannel {
   final _inboundEvents = StreamController<TransportPayload>();
   final _outboundDoneHandlers = <int, void Function()>{};
   final _outboundErrorHandlers = <int, void Function(Exception error)>{};
-  final Pointer<transport_client_t> _pointer;
+  final Pointer<transport_client> _pointer;
   final Pointer<transport> _workerPointer;
   final TransportChannel _channel;
   final int? _connectTimeout;

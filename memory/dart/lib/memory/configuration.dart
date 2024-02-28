@@ -2,14 +2,14 @@ import 'dart:ffi';
 
 import 'bindings.dart';
 
-class MemoryConfiguration {
+class MemoryModuleConfiguration {
   final int staticBuffersCapacity;
   final int staticBufferSize;
   final int slabSize;
   final int preallocationSize;
   final int quotaSize;
 
-  factory MemoryConfiguration.fromNative(Pointer<memory_module_configuration> native) => MemoryConfiguration(
+  factory MemoryModuleConfiguration.fromNative(Pointer<memory_module_configuration> native) => MemoryModuleConfiguration(
         staticBuffersCapacity: native.ref.static_buffers_capacity,
         staticBufferSize: native.ref.static_buffer_size,
         slabSize: native.ref.slab_size,
@@ -26,7 +26,7 @@ class MemoryConfiguration {
     return native;
   }
 
-  const MemoryConfiguration({
+  const MemoryModuleConfiguration({
     required this.staticBuffersCapacity,
     required this.staticBufferSize,
     required this.slabSize,
@@ -34,14 +34,14 @@ class MemoryConfiguration {
     required this.quotaSize,
   });
 
-  MemoryConfiguration copyWith({
+  MemoryModuleConfiguration copyWith({
     int? staticBuffersCapacity,
     int? staticBufferSize,
     int? slabSize,
     int? preallocationSize,
     int? quotaSize,
   }) =>
-      MemoryConfiguration(
+      MemoryModuleConfiguration(
         staticBuffersCapacity: staticBuffersCapacity ?? this.staticBuffersCapacity,
         staticBufferSize: staticBufferSize ?? this.staticBufferSize,
         slabSize: slabSize ?? this.slabSize,

@@ -7,24 +7,24 @@ import 'package:memory/memory.dart' as memory;
 
 @ffi.Native<
         ffi.Int Function(
-            ffi.Pointer<transport_client_t>,
-            ffi.Pointer<transport_client_configuration_t>,
+            ffi.Pointer<transport_client>,
+            ffi.Pointer<transport_client_configuration>,
             ffi.Pointer<ffi.Char>,
             ffi.Int32)>(
     symbol: 'transport_client_initialize_tcp',
     assetId: 'transport-bindings',
     isLeaf: true)
 external int transport_client_initialize_tcp(
-  ffi.Pointer<transport_client_t> client,
-  ffi.Pointer<transport_client_configuration_t> configuration,
+  ffi.Pointer<transport_client> client,
+  ffi.Pointer<transport_client_configuration> configuration,
   ffi.Pointer<ffi.Char> ip,
   int port,
 );
 
 @ffi.Native<
         ffi.Int Function(
-            ffi.Pointer<transport_client_t>,
-            ffi.Pointer<transport_client_configuration_t>,
+            ffi.Pointer<transport_client>,
+            ffi.Pointer<transport_client_configuration>,
             ffi.Pointer<ffi.Char>,
             ffi.Int32,
             ffi.Pointer<ffi.Char>,
@@ -33,8 +33,8 @@ external int transport_client_initialize_tcp(
     assetId: 'transport-bindings',
     isLeaf: true)
 external int transport_client_initialize_udp(
-  ffi.Pointer<transport_client_t> client,
-  ffi.Pointer<transport_client_configuration_t> configuration,
+  ffi.Pointer<transport_client> client,
+  ffi.Pointer<transport_client_configuration> configuration,
   ffi.Pointer<ffi.Char> destination_ip,
   int destination_port,
   ffi.Pointer<ffi.Char> source_ip,
@@ -43,110 +43,110 @@ external int transport_client_initialize_udp(
 
 @ffi.Native<
         ffi.Int Function(
-            ffi.Pointer<transport_client_t>,
-            ffi.Pointer<transport_client_configuration_t>,
+            ffi.Pointer<transport_client>,
+            ffi.Pointer<transport_client_configuration>,
             ffi.Pointer<ffi.Char>)>(
     symbol: 'transport_client_initialize_unix_stream',
     assetId: 'transport-bindings',
     isLeaf: true)
 external int transport_client_initialize_unix_stream(
-  ffi.Pointer<transport_client_t> client,
-  ffi.Pointer<transport_client_configuration_t> configuration,
+  ffi.Pointer<transport_client> client,
+  ffi.Pointer<transport_client_configuration> configuration,
   ffi.Pointer<ffi.Char> path,
 );
 
-@ffi.Native<ffi.Pointer<sockaddr> Function(ffi.Pointer<transport_client_t>)>(
+@ffi.Native<ffi.Pointer<sockaddr> Function(ffi.Pointer<transport_client>)>(
     symbol: 'transport_client_get_destination_address',
     assetId: 'transport-bindings',
     isLeaf: true)
 external ffi.Pointer<sockaddr> transport_client_get_destination_address(
-  ffi.Pointer<transport_client_t> client,
+  ffi.Pointer<transport_client> client,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<transport_client_t>)>(
+@ffi.Native<ffi.Void Function(ffi.Pointer<transport_client>)>(
     symbol: 'transport_client_destroy',
     assetId: 'transport-bindings',
     isLeaf: true)
 external void transport_client_destroy(
-  ffi.Pointer<transport_client_t> client,
+  ffi.Pointer<transport_client> client,
 );
 
 @ffi.Native<
         ffi.Int Function(
-            ffi.Pointer<transport_server_t>,
-            ffi.Pointer<transport_server_configuration_t>,
+            ffi.Pointer<transport_server>,
+            ffi.Pointer<transport_server_configuration>,
             ffi.Pointer<ffi.Char>,
             ffi.Int32)>(
     symbol: 'transport_server_initialize_tcp',
     assetId: 'transport-bindings',
     isLeaf: true)
 external int transport_server_initialize_tcp(
-  ffi.Pointer<transport_server_t> server,
-  ffi.Pointer<transport_server_configuration_t> configuration,
+  ffi.Pointer<transport_server> server,
+  ffi.Pointer<transport_server_configuration> configuration,
   ffi.Pointer<ffi.Char> ip,
   int port,
 );
 
 @ffi.Native<
         ffi.Int Function(
-            ffi.Pointer<transport_server_t>,
-            ffi.Pointer<transport_server_configuration_t>,
+            ffi.Pointer<transport_server>,
+            ffi.Pointer<transport_server_configuration>,
             ffi.Pointer<ffi.Char>,
             ffi.Int32)>(
     symbol: 'transport_server_initialize_udp',
     assetId: 'transport-bindings',
     isLeaf: true)
 external int transport_server_initialize_udp(
-  ffi.Pointer<transport_server_t> server,
-  ffi.Pointer<transport_server_configuration_t> configuration,
+  ffi.Pointer<transport_server> server,
+  ffi.Pointer<transport_server_configuration> configuration,
   ffi.Pointer<ffi.Char> ip,
   int port,
 );
 
 @ffi.Native<
         ffi.Int Function(
-            ffi.Pointer<transport_server_t>,
-            ffi.Pointer<transport_server_configuration_t>,
+            ffi.Pointer<transport_server>,
+            ffi.Pointer<transport_server_configuration>,
             ffi.Pointer<ffi.Char>)>(
     symbol: 'transport_server_initialize_unix_stream',
     assetId: 'transport-bindings',
     isLeaf: true)
 external int transport_server_initialize_unix_stream(
-  ffi.Pointer<transport_server_t> server,
-  ffi.Pointer<transport_server_configuration_t> configuration,
+  ffi.Pointer<transport_server> server,
+  ffi.Pointer<transport_server_configuration> configuration,
   ffi.Pointer<ffi.Char> path,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<transport_server_t>)>(
+@ffi.Native<ffi.Void Function(ffi.Pointer<transport_server>)>(
     symbol: 'transport_server_destroy',
     assetId: 'transport-bindings',
     isLeaf: true)
 external void transport_server_destroy(
-  ffi.Pointer<transport_server_t> server,
+  ffi.Pointer<transport_server> server,
 );
 
 @ffi.Native<
-        ffi.Int Function(ffi.Pointer<transport_t>,
-            ffi.Pointer<transport_configuration_t>, ffi.Uint8)>(
+        ffi.Int Function(ffi.Pointer<transport>,
+            ffi.Pointer<transport_module_configuration>, ffi.Uint8)>(
     symbol: 'transport_initialize', assetId: 'transport-bindings', isLeaf: true)
 external int transport_initialize(
-  ffi.Pointer<transport_t> transport,
-  ffi.Pointer<transport_configuration_t> configuration,
+  ffi.Pointer<transport> transport,
+  ffi.Pointer<transport_module_configuration> configuration,
   int id,
 );
 
-@ffi.Native<ffi.Int Function(ffi.Pointer<transport_t>)>(
+@ffi.Native<ffi.Int Function(ffi.Pointer<transport>)>(
     symbol: 'transport_setup', assetId: 'transport-bindings', isLeaf: true)
 external int transport_setup(
-  ffi.Pointer<transport_t> transport,
+  ffi.Pointer<transport> transport,
 );
 
 @ffi.Native<
-        ffi.Void Function(ffi.Pointer<transport_t>, ffi.Uint32, ffi.Uint16,
+        ffi.Void Function(ffi.Pointer<transport>, ffi.Uint32, ffi.Uint16,
             ffi.Uint32, ffi.Int64, ffi.Uint16, ffi.Uint8)>(
     symbol: 'transport_write', assetId: 'transport-bindings', isLeaf: true)
 external void transport_write(
-  ffi.Pointer<transport_t> transport,
+  ffi.Pointer<transport> transport,
   int fd,
   int buffer_id,
   int offset,
@@ -156,11 +156,11 @@ external void transport_write(
 );
 
 @ffi.Native<
-        ffi.Void Function(ffi.Pointer<transport_t>, ffi.Uint32, ffi.Uint16,
+        ffi.Void Function(ffi.Pointer<transport>, ffi.Uint32, ffi.Uint16,
             ffi.Uint32, ffi.Int64, ffi.Uint16, ffi.Uint8)>(
     symbol: 'transport_read', assetId: 'transport-bindings', isLeaf: true)
 external void transport_read(
-  ffi.Pointer<transport_t> transport,
+  ffi.Pointer<transport> transport,
   int fd,
   int buffer_id,
   int offset,
@@ -171,7 +171,7 @@ external void transport_read(
 
 @ffi.Native<
         ffi.Void Function(
-            ffi.Pointer<transport_t>,
+            ffi.Pointer<transport>,
             ffi.Uint32,
             ffi.Uint16,
             ffi.Pointer<sockaddr>,
@@ -184,7 +184,7 @@ external void transport_read(
     assetId: 'transport-bindings',
     isLeaf: true)
 external void transport_send_message(
-  ffi.Pointer<transport_t> transport,
+  ffi.Pointer<transport> transport,
   int fd,
   int buffer_id,
   ffi.Pointer<sockaddr> address,
@@ -196,13 +196,13 @@ external void transport_send_message(
 );
 
 @ffi.Native<
-        ffi.Void Function(ffi.Pointer<transport_t>, ffi.Uint32, ffi.Uint16,
+        ffi.Void Function(ffi.Pointer<transport>, ffi.Uint32, ffi.Uint16,
             ffi.Int32, ffi.Int, ffi.Int64, ffi.Uint16, ffi.Uint8)>(
     symbol: 'transport_receive_message',
     assetId: 'transport-bindings',
     isLeaf: true)
 external void transport_receive_message(
-  ffi.Pointer<transport_t> transport,
+  ffi.Pointer<transport> transport,
   int fd,
   int buffer_id,
   int socket_family,
@@ -213,66 +213,66 @@ external void transport_receive_message(
 );
 
 @ffi.Native<
-        ffi.Void Function(ffi.Pointer<transport_t>,
-            ffi.Pointer<transport_client_t>, ffi.Int64)>(
+        ffi.Void Function(
+            ffi.Pointer<transport>, ffi.Pointer<transport_client>, ffi.Int64)>(
     symbol: 'transport_connect', assetId: 'transport-bindings', isLeaf: true)
 external void transport_connect(
-  ffi.Pointer<transport_t> transport,
-  ffi.Pointer<transport_client_t> client,
+  ffi.Pointer<transport> transport,
+  ffi.Pointer<transport_client> client,
   int timeout,
 );
 
 @ffi.Native<
         ffi.Void Function(
-            ffi.Pointer<transport_t>, ffi.Pointer<transport_server_t>)>(
+            ffi.Pointer<transport>, ffi.Pointer<transport_server>)>(
     symbol: 'transport_accept', assetId: 'transport-bindings', isLeaf: true)
 external void transport_accept(
-  ffi.Pointer<transport_t> transport,
-  ffi.Pointer<transport_server_t> server,
+  ffi.Pointer<transport> transport,
+  ffi.Pointer<transport_server> server,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<transport_t>, ffi.Int)>(
+@ffi.Native<ffi.Void Function(ffi.Pointer<transport>, ffi.Int)>(
     symbol: 'transport_cancel_by_fd',
     assetId: 'transport-bindings',
     isLeaf: true)
 external void transport_cancel_by_fd(
-  ffi.Pointer<transport_t> transport,
+  ffi.Pointer<transport> transport,
   int fd,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<transport_t>)>(
+@ffi.Native<ffi.Void Function(ffi.Pointer<transport>)>(
     symbol: 'transport_check_event_timeouts',
     assetId: 'transport-bindings',
     isLeaf: true)
 external void transport_check_event_timeouts(
-  ffi.Pointer<transport_t> transport,
+  ffi.Pointer<transport> transport,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<transport_t>, ffi.Uint64)>(
+@ffi.Native<ffi.Void Function(ffi.Pointer<transport>, ffi.Uint64)>(
     symbol: 'transport_remove_event',
     assetId: 'transport-bindings',
     isLeaf: true)
 external void transport_remove_event(
-  ffi.Pointer<transport_t> transport,
+  ffi.Pointer<transport> transport,
   int data,
 );
 
 @ffi.Native<
         ffi.Pointer<sockaddr> Function(
-            ffi.Pointer<transport_t>, ffi.Int32, ffi.Int)>(
+            ffi.Pointer<transport>, ffi.Int32, ffi.Int)>(
     symbol: 'transport_get_datagram_address',
     assetId: 'transport-bindings',
     isLeaf: true)
 external ffi.Pointer<sockaddr> transport_get_datagram_address(
-  ffi.Pointer<transport_t> transport,
+  ffi.Pointer<transport> transport,
   int socket_family,
   int buffer_id,
 );
 
-@ffi.Native<ffi.Int Function(ffi.Pointer<transport_t>)>(
+@ffi.Native<ffi.Int Function(ffi.Pointer<transport>)>(
     symbol: 'transport_peek', assetId: 'transport-bindings', isLeaf: true)
 external int transport_peek(
-  ffi.Pointer<transport_t> transport,
+  ffi.Pointer<transport> transport,
 );
 
 @ffi.Native<ffi.Void Function(ffi.Pointer<io_uring>, ffi.Int)>(
@@ -284,10 +284,10 @@ external void transport_cqe_advance(
   int count,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<transport_t>)>(
+@ffi.Native<ffi.Void Function(ffi.Pointer<transport>)>(
     symbol: 'transport_destroy', assetId: 'transport-bindings', isLeaf: true)
 external void transport_destroy(
-  ffi.Pointer<transport_t> transport,
+  ffi.Pointer<transport> transport,
 );
 
 @ffi.Native<
@@ -502,9 +502,6 @@ final class transport_client extends ffi.Struct {
   external int family;
 }
 
-typedef transport_client_t = transport_client;
-typedef transport_client_configuration_t = transport_client_configuration;
-
 final class sockaddr extends ffi.Opaque {}
 
 final class transport_server_configuration extends ffi.Struct {
@@ -565,23 +562,8 @@ final class transport_server extends ffi.Struct {
   external int server_address_length;
 }
 
-typedef transport_server_t = transport_server;
-typedef transport_server_configuration_t = transport_server_configuration;
-
-final class mh_events_t extends ffi.Opaque {}
-
-final class io_uring extends ffi.Opaque {}
-
-final class io_uring_cqe extends ffi.Opaque {}
-
-final class transport_configuration extends ffi.Struct {
+final class transport_module_configuration extends ffi.Struct {
   external ffi.Pointer<memory.memory_module_configuration> memory_configuration;
-
-  @ffi.Uint16()
-  external int buffers_capacity;
-
-  @ffi.Uint32()
-  external int buffer_size;
 
   @ffi.Size()
   external int ring_size;
@@ -613,6 +595,12 @@ final class transport_configuration extends ffi.Struct {
   @ffi.Bool()
   external bool trace;
 }
+
+final class mh_events_t extends ffi.Opaque {}
+
+final class io_uring extends ffi.Opaque {}
+
+final class io_uring_cqe extends ffi.Opaque {}
 
 final class transport extends ffi.Struct {
   @ffi.Uint8()
@@ -669,8 +657,6 @@ final class transport extends ffi.Struct {
 final class msghdr extends ffi.Opaque {}
 
 typedef transport_completion_event = io_uring_cqe;
-typedef transport_t = transport;
-typedef transport_configuration_t = transport_configuration;
 
 const int NULL = 0;
 

@@ -13,7 +13,7 @@ extern "C"
     struct sockaddr_in;
     struct sockaddr_un;
 
-    typedef struct transport_server_configuration
+    struct transport_server_configuration
     {
         int32_t socket_max_connections;
         uint64_t socket_configuration_flags;
@@ -29,28 +29,28 @@ extern "C"
         uint16_t tcp_syn_count;
         struct ip_mreqn* ip_multicast_interface;
         uint32_t ip_multicast_ttl;
-    } transport_server_configuration_t;
+    };
 
-    typedef struct transport_server
+    struct transport_server
     {
         int fd;
         transport_socket_family_t family;
         struct sockaddr_in* inet_server_address;
         struct sockaddr_un* unix_server_address;
         __socklen_t server_address_length;
-    } transport_server_t;
+    };
 
-    int transport_server_initialize_tcp(transport_server_t* server,
-                                        transport_server_configuration_t* configuration,
+    int transport_server_initialize_tcp(struct transport_server* server,
+                                        struct transport_server_configuration* configuration,
                                         const char* ip,
                                         int32_t port);
-    int transport_server_initialize_udp(transport_server_t* server, transport_server_configuration_t* configuration,
+    int transport_server_initialize_udp(struct transport_server* server, struct transport_server_configuration* configuration,
                                         const char* ip,
                                         int32_t port);
-    int transport_server_initialize_unix_stream(transport_server_t* server,
-                                                transport_server_configuration_t* configuration,
+    int transport_server_initialize_unix_stream(struct transport_server* server,
+                                                struct transport_server_configuration* configuration,
                                                 const char* path);
-    void transport_server_destroy(transport_server_t* server);
+    void transport_server_destroy(struct transport_server* server);
 
 #if defined(__cplusplus)
 }

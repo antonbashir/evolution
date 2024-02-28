@@ -3,7 +3,7 @@ import 'configuration.dart';
 class MemoryDefaults {
   MemoryDefaults._();
 
-  static const memory = MemoryConfiguration(
+  static const memory = MemoryModuleConfiguration(
     staticBuffersCapacity: 4096,
     staticBufferSize: 4096,
     slabSize: 64 * 1024,

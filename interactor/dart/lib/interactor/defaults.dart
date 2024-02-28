@@ -3,7 +3,7 @@ import 'configuration.dart';
 class InteractorDefaults {
   InteractorDefaults._();
 
-  static const InteractorConfiguration interactor = InteractorConfiguration(
+  static const InteractorModuleConfiguration interactor = InteractorModuleConfiguration(
     staticBuffersCapacity: 4096,
     staticBufferSize: 4096,
     ringSize: 16384,

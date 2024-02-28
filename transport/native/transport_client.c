@@ -10,8 +10,8 @@
 #include "transport_constants.h"
 #include "transport_socket.h"
 
-int transport_client_initialize_tcp(transport_client_t* client,
-                                    transport_client_configuration_t* configuration,
+int transport_client_initialize_tcp(struct transport_client* client,
+                                    struct transport_client_configuration* configuration,
                                     const char* ip,
                                     int32_t port)
 {
@@ -41,8 +41,8 @@ int transport_client_initialize_tcp(transport_client_t* client,
     return 0;
 }
 
-int transport_client_initialize_udp(transport_client_t* client,
-                                    transport_client_configuration_t* configuration,
+int transport_client_initialize_udp(struct transport_client* client,
+                                    struct transport_client_configuration* configuration,
                                     const char* destination_ip,
                                     int32_t destination_port,
                                     const char* source_ip,
@@ -83,8 +83,8 @@ int transport_client_initialize_udp(transport_client_t* client,
     return 0;
 }
 
-int transport_client_initialize_unix_stream(transport_client_t* client,
-                                            transport_client_configuration_t* configuration,
+int transport_client_initialize_unix_stream(struct transport_client* client,
+                                            struct transport_client_configuration* configuration,
                                             const char* path)
 {
     client->family = UNIX;
@@ -106,12 +106,12 @@ int transport_client_initialize_unix_stream(transport_client_t* client,
     return 0;
 }
 
-struct sockaddr* transport_client_get_destination_address(transport_client_t* client)
+struct sockaddr* transport_client_get_destination_address(struct transport_client* client)
 {
     return client->family == INET ? (struct sockaddr*)client->inet_destination_address : (struct sockaddr*)client->unix_destination_address;
 }
 
-void transport_client_destroy(transport_client_t* client)
+void transport_client_destroy(struct transport_client* client)
 {
     if (client->family == INET)
     {

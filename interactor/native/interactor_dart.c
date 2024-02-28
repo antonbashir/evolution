@@ -5,9 +5,10 @@
 #include <stdlib.h>
 #include <sys/socket.h>
 #include "interactor_common.h"
+#include "interactor_configuration.h"
 #include "interactor_constants.h"
 
-int interactor_dart_initialize(struct interactor_dart* interactor, struct interactor_dart_configuration* configuration, uint8_t id)
+int interactor_dart_initialize(struct interactor_dart* interactor, struct interactor_module_dart_configuration* configuration, uint8_t id)
 {
     interactor->id = id;
     interactor->ring_size = configuration->ring_size;

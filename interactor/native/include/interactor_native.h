@@ -1,39 +1,27 @@
 #ifndef INTERACTOR_NATIVE_H
 #define INTERACTOR_NATIVE_H
 
+#include <interactor_configuration.h>
 #include <interactor_message.h>
 #include <stddef.h>
 #include <stdint.h>
 
-typedef struct mh_native_callbacks_t interactor_native_callbacks_t;
-typedef struct io_uring interactor_native_io_uring;
+struct mh_native_callbacks_t;
+struct io_uring;
 typedef struct io_uring_cqe interactor_native_completion_event;
 
 #if defined(__cplusplus)
 extern "C"
 {
 #endif
-    struct interactor_native_configuration
-    {
-        uint64_t cqe_wait_timeout_millis;
-        size_t quota_size;
-        size_t preallocation_size;
-        size_t slab_size;
-        size_t static_buffers_capacity;
-        size_t static_buffer_size;
-        size_t ring_size;
-        int32_t ring_flags;
-        uint32_t cqe_wait_count;
-        uint32_t cqe_peek_count;
-    };
 
     struct interactor_native
     {
         uint64_t cqe_wait_timeout_millis;
         size_t ring_size;
-        interactor_native_io_uring* ring;
+        struct io_uring* ring;
         interactor_native_completion_event** completions;
-        interactor_native_callbacks_t* callbacks;
+        struct mh_native_callbacks_t* callbacks;
         int32_t descriptor;
         int32_t ring_flags;
         uint32_t cqe_wait_count;
@@ -41,7 +29,7 @@ extern "C"
         uint8_t id;
     };
 
-    int interactor_native_initialize(struct interactor_native* interactor, struct interactor_native_configuration* configuration, uint8_t id);
+    int interactor_native_initialize(struct interactor_native* interactor, struct interactor_module_native_configuration* configuration, uint8_t id);
 
     int interactor_native_initialize_default(struct interactor_native* interactor, uint8_t id);
 

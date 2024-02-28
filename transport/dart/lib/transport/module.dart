@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:ffi';
 import 'dart:isolate';
-import 'dart:math';
 
 import 'package:core/core.dart';
 import 'package:ffi/ffi.dart';
@@ -30,29 +29,19 @@ class TransportModule {
     _workerPorts.forEach((port) => port.close());
   }
 
-  SendPort transport(TransportConfiguration configuration) {
+  SendPort transport(TransportModuleConfiguration configuration) {
     final port = RawReceivePort((ports) async {
       SendPort toTransport = ports[0];
       _transportClosers.add(ports[1]);
       final transportPointer = calloc<bindings.transport>(sizeOf<bindings.transport>());
       if (transportPointer == nullptr) throw TransportInitializationException(TransportMessages.workerMemoryError);
-      final result = using((arena) {
-        final nativeConfiguration = arena<bindings.transport_configuration_t>();
-        nativeConfiguration.ref.memory_configuration = configuration.memoryConfiguration.toNative(arena<memory_module_configuration>());
-        nativeConfiguration.ref.ring_flags = configuration.ringFlags;
-        nativeConfiguration.ref.ring_size = configuration.ringSize;
-        nativeConfiguration.ref.buffer_size = configuration.memoryConfiguration.staticBufferSize;
-        nativeConfiguration.ref.buffers_capacity = max(configuration.memoryConfiguration.staticBuffersCapacity, 2);
-        nativeConfiguration.ref.timeout_checker_period_millis = configuration.timeoutCheckerPeriod.inMilliseconds;
-        nativeConfiguration.ref.base_delay_micros = configuration.baseDelay.inMicroseconds;
-        nativeConfiguration.ref.max_delay_micros = configuration.maxDelay.inMicroseconds;
-        nativeConfiguration.ref.delay_randomization_factor = configuration.delayRandomizationFactor;
-        nativeConfiguration.ref.cqe_peek_count = configuration.cqePeekCount;
-        nativeConfiguration.ref.cqe_wait_count = configuration.cqeWaitCount;
-        nativeConfiguration.ref.cqe_wait_timeout_millis = configuration.cqeWaitTimeout.inMilliseconds;
-        nativeConfiguration.ref.trace = configuration.trace;
-        return bindings.transport_initialize(transportPointer, nativeConfiguration, _transportClosers.length);
-      });
+      final result = using(
+        (arena) => bindings.transport_initialize(
+          transportPointer,
+          configuration.toNative(arena<bindings.transport_module_configuration>(), arena<memory_module_configuration>()),
+          _transportClosers.length,
+        ),
+      );
       if (result < 0) {
         bindings.transport_destroy(transportPointer);
         throw TransportInitializationException(TransportMessages.workerError(result));

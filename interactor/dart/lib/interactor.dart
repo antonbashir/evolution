@@ -1,4 +1,4 @@
-export 'interactor/configuration.dart' show InteractorConfiguration;
+export 'interactor/configuration.dart' show InteractorModuleConfiguration;
 export 'interactor/declaration.dart' show InteractorCallback, InteractorConsumer, InteractorMethod, InteractorProducer, InteractorProducerRegistrat;
 export 'interactor/defaults.dart' show InteractorDefaults;
 export 'interactor/messages.dart' show InteractorMessages;

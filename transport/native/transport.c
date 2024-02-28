@@ -12,10 +12,11 @@
 #include "transport.h"
 #include "transport_collections.h"
 #include "transport_common.h"
+#include "transport_configuration.h"
 #include "transport_constants.h"
 
-int transport_initialize(transport_t* transport,
-                         transport_configuration_t* configuration,
+int transport_initialize(struct transport* transport,
+                         struct transport_module_configuration* configuration,
                          uint8_t id)
 {
     transport->id = id;
@@ -87,7 +88,7 @@ int transport_initialize(transport_t* transport,
     return 0;
 }
 
-int transport_setup(transport_t* transport)
+int transport_setup(struct transport* transport)
 {
     int result = io_uring_register_buffers(transport->ring, transport->buffers, transport->memory_configuration->static_buffers_capacity);
     if (result)
@@ -98,7 +99,7 @@ int transport_setup(transport_t* transport)
     return 0;
 }
 
-static inline void transport_add_event(transport_t* transport, int fd, uint64_t data, int64_t timeout)
+static inline void transport_add_event(struct transport* transport, int fd, uint64_t data, int64_t timeout)
 {
     struct mh_events_node_t node = {
         .data = data,
@@ -109,7 +110,7 @@ static inline void transport_add_event(transport_t* transport, int fd, uint64_t 
     mh_events_put(transport->events, &node, NULL, 0);
 }
 
-void transport_write(transport_t* transport,
+void transport_write(struct transport* transport,
                      uint32_t fd,
                      uint16_t buffer_id,
                      uint32_t offset,
@@ -127,7 +128,7 @@ void transport_write(transport_t* transport,
     transport_add_event(transport, fd, data, timeout);
 }
 
-void transport_read(transport_t* transport,
+void transport_read(struct transport* transport,
                     uint32_t fd,
                     uint16_t buffer_id,
                     uint32_t offset,
@@ -145,7 +146,7 @@ void transport_read(transport_t* transport,
     transport_add_event(transport, fd, data, timeout);
 }
 
-void transport_send_message(transport_t* transport,
+void transport_send_message(struct transport* transport,
                             uint32_t fd,
                             uint16_t buffer_id,
                             struct sockaddr* address,
@@ -181,7 +182,7 @@ void transport_send_message(transport_t* transport,
     transport_add_event(transport, fd, data, timeout);
 }
 
-void transport_receive_message(transport_t* transport,
+void transport_receive_message(struct transport* transport,
                                uint32_t fd,
                                uint16_t buffer_id,
                                transport_socket_family_t socket_family,
@@ -216,7 +217,7 @@ void transport_receive_message(transport_t* transport,
     transport_add_event(transport, fd, data, timeout);
 }
 
-void transport_connect(transport_t* transport, transport_client_t* client, int64_t timeout)
+void transport_connect(struct transport* transport, struct transport_client* client, int64_t timeout)
 {
     struct io_uring* ring = transport->ring;
     struct io_uring_sqe* sqe = transport_provide_sqe(ring);
@@ -229,7 +230,7 @@ void transport_connect(transport_t* transport, transport_client_t* client, int64
     transport_add_event(transport, client->fd, data, timeout);
 }
 
-void transport_accept(transport_t* transport, transport_server_t* server)
+void transport_accept(struct transport* transport, struct transport_server* server)
 {
     struct io_uring* ring = transport->ring;
     struct io_uring_sqe* sqe = transport_provide_sqe(ring);
@@ -242,7 +243,7 @@ void transport_accept(transport_t* transport, transport_server_t* server)
     transport_add_event(transport, server->fd, data, TRANSPORT_TIMEOUT_INFINITY);
 }
 
-void transport_cancel_by_fd(transport_t* transport, int fd)
+void transport_cancel_by_fd(struct transport* transport, int fd)
 {
     mh_int_t index;
     mh_int_t to_delete[transport->events->size];
@@ -266,7 +267,7 @@ void transport_cancel_by_fd(transport_t* transport, int fd)
     io_uring_submit(transport->ring);
 }
 
-int transport_peek(transport_t* transport)
+int transport_peek(struct transport* transport)
 {
     struct __kernel_timespec timeout = {
         .tv_nsec = transport->cqe_wait_timeout_millis * 1e+6,
@@ -276,7 +277,7 @@ int transport_peek(transport_t* transport)
     return io_uring_peek_batch_cqe(transport->ring, &transport->completions[0], transport->cqe_peek_count);
 }
 
-void transport_check_event_timeouts(transport_t* transport)
+void transport_check_event_timeouts(struct transport* transport)
 {
     mh_int_t index;
     mh_int_t to_delete[transport->events->size];
@@ -308,7 +309,7 @@ void transport_check_event_timeouts(transport_t* transport)
     io_uring_submit(transport->ring);
 }
 
-void transport_remove_event(transport_t* transport, uint64_t data)
+void transport_remove_event(struct transport* transport, uint64_t data)
 {
     mh_int_t event;
     if ((event = mh_events_find(transport->events, data, 0)) != mh_end(transport->events))
@@ -317,13 +318,13 @@ void transport_remove_event(transport_t* transport, uint64_t data)
     }
 }
 
-struct sockaddr* transport_get_datagram_address(transport_t* transport, transport_socket_family_t socket_family, int buffer_id)
+struct sockaddr* transport_get_datagram_address(struct transport* transport, transport_socket_family_t socket_family, int buffer_id)
 {
     return socket_family == INET ? (struct sockaddr*)transport->inet_used_messages[buffer_id].msg_name
                                  : (struct sockaddr*)transport->unix_used_messages[buffer_id].msg_name;
 }
 
-void transport_destroy(transport_t* transport)
+void transport_destroy(struct transport* transport)
 {
     io_uring_queue_exit(transport->ring);
     for (size_t index = 0; index < transport->memory_configuration->static_buffers_capacity; index++)
