@@ -73,7 +73,7 @@ class Transport {
     _pointer = Pointer.fromAddress(configuration[0] as int).cast<transport>();
     _destroyer = configuration[1] as SendPort;
     _fromTransport.close();
-    _memory = MemoryModule()..initialize(configuration: MemoryModuleConfiguration.fromNative(_pointer.ref.memory_configuration));
+    _memory = MemoryModule(load: false)..initialize(configuration: MemoryModuleConfiguration.fromNative(_pointer.ref.memory_configuration));
     _buffers = _memory.staticBuffers;
     _pointer.ref.buffers = _buffers.native;
     final result = transport_setup(_pointer);

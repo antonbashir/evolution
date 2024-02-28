@@ -6,7 +6,6 @@
 #include <stdint.h>
 #include "transport_client.h"
 #include "transport_server.h"
-#include "transport_configuration.h"
 
 #if defined(__cplusplus)
 extern "C"
@@ -15,7 +14,23 @@ extern "C"
     struct mh_events_t;
     struct io_uring;
     typedef struct io_uring_cqe transport_completion_event;
-
+    
+    struct memory_module_configuration;
+    struct transport_configuration
+    {
+        struct memory_module_configuration* memory_configuration;
+        size_t ring_size;
+        unsigned int ring_flags;
+        uint64_t timeout_checker_period_millis;
+        uint32_t base_delay_micros;
+        double delay_randomization_factor;
+        uint64_t max_delay_micros;
+        uint64_t cqe_wait_timeout_millis;
+        uint32_t cqe_wait_count;
+        uint32_t cqe_peek_count;
+        bool trace;
+    };
+    
     struct transport
     {
         uint8_t id;
@@ -40,7 +55,7 @@ extern "C"
     };
 
     int transport_initialize(struct transport* transport,
-                             struct transport_module_configuration* configuration,
+                             struct transport_configuration* configuration,
                              uint8_t id);
 
     int transport_setup(struct transport* transport);

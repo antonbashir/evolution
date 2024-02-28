@@ -2,8 +2,10 @@ import 'dart:async';
 import 'dart:ffi';
 import 'dart:isolate';
 import 'dart:math';
+
 import 'package:ffi/ffi.dart';
 import 'package:memory/memory.dart';
+
 import 'bindings.dart';
 import 'constants.dart';
 import 'declaration.dart';
@@ -43,14 +45,14 @@ class Interactor {
     toInteractor.send([_fromInteractors.sendPort, _closer.sendPort]);
   }
 
-  Future<void> initialize({bool sharedMemoryLibrary = false}) async {
+  Future<void> initialize() async {
     final configuration = await _fromInteractors.first as List;
     _pointer = Pointer.fromAddress(configuration[0] as int).cast<interactor_dart>();
     _destroyer = configuration[1] as SendPort;
     descriptor = configuration[2] as int;
     _fromInteractors.close();
     _completions = _pointer.ref.completions;
-    memory = MemoryModule(shared: sharedMemoryLibrary)..initialize();
+    memory = MemoryModule(load: false)..initialize();
     messages = InteractorMessages(memory);
     _consumers = InteractorConsumerRegistry(_pointer);
     _producers = InteractorProducerRegistry(_pointer);

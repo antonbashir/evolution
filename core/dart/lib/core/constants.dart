@@ -21,6 +21,11 @@ const packageConfigJsonFile = "package_config.json";
 const pubspecYamlFile = 'pubspec.yaml';
 const pubspecYmlFile = 'pubspec.yml';
 
+enum LibraryPackageMode {
+  shared,
+  static,
+}
+
 class CoreErrors {
   CoreErrors._();
 

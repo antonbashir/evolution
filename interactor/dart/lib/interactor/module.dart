@@ -4,6 +4,7 @@ import 'dart:isolate';
 
 import 'package:core/core.dart';
 import 'package:ffi/ffi.dart';
+import 'package:memory/memory.dart';
 
 import 'bindings.dart';
 import 'configuration.dart';
@@ -25,8 +26,9 @@ class InteractorModule {
     SystemLibrary.loadByName(interactorLibraryName, interactorPackageName);
   }
 
-  InteractorModule({String? libraryPath}) {
+  InteractorModule({String? libraryPath, LibraryPackageMode memoryMode = LibraryPackageMode.static}) {
     load(libraryPath: libraryPath);
+    MemoryModule.load(mode: memoryMode);
   }
 
   Future<void> shutdown() async {

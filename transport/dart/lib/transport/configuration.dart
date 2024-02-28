@@ -5,7 +5,7 @@ import 'package:memory/memory/configuration.dart';
 
 import 'bindings.dart';
 
-class TransportModuleConfiguration {
+class TransportConfiguration {
   final MemoryModuleConfiguration memoryConfiguration;
   final int ringSize;
   final int ringFlags;
@@ -18,7 +18,7 @@ class TransportModuleConfiguration {
   final Duration maxDelay;
   final bool trace;
 
-  Pointer<transport_module_configuration> toNative(Pointer<transport_module_configuration> native, Pointer<memory_module_configuration> memory) {
+  Pointer<transport_configuration> toNative(Pointer<transport_configuration> native, Pointer<memory_module_configuration> memory) {
     native.ref.ring_flags = ringFlags;
     native.ref.ring_size = ringSize;
     native.ref.memory_configuration = memoryConfiguration.toNative(memory);
@@ -33,7 +33,7 @@ class TransportModuleConfiguration {
     return native;
   }
 
-  const TransportModuleConfiguration({
+  const TransportConfiguration({
     required this.memoryConfiguration,
     required this.ringSize,
     required this.ringFlags,
@@ -47,7 +47,7 @@ class TransportModuleConfiguration {
     required this.trace,
   });
 
-  TransportModuleConfiguration copyWith({
+  TransportConfiguration copyWith({
     MemoryModuleConfiguration? memoryConfiguration,
     int? ringSize,
     int? ringFlags,
@@ -60,7 +60,7 @@ class TransportModuleConfiguration {
     Duration? cqeWaitTimeout,
     bool? trace,
   }) =>
-      TransportModuleConfiguration(
+      TransportConfiguration(
         memoryConfiguration: memoryConfiguration ?? this.memoryConfiguration,
         ringSize: ringSize ?? this.ringSize,
         ringFlags: ringFlags ?? this.ringFlags,

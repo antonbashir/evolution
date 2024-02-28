@@ -18,9 +18,10 @@ class TransportModule {
   final _workerPorts = <RawReceivePort>[];
   final _workerDestroyer = ReceivePort();
 
-  TransportModule({String? libraryPath}) {
+  TransportModule({String? libraryPath, LibraryPackageMode memoryMode = LibraryPackageMode.static}) {
     libraryPath == null ? SystemLibrary.loadByName(transportLibraryName, transportPackageName) : SystemLibrary.loadByPath(libraryPath);
     InteractorModule.load();
+    MemoryModule.load(mode: memoryMode);
   }
 
   Future<void> shutdown({Duration? gracefulTimeout}) async {
@@ -30,7 +31,7 @@ class TransportModule {
     _workerPorts.forEach((port) => port.close());
   }
 
-  SendPort transport({TransportModuleConfiguration configuration = TransportDefaults.transport}) {
+  SendPort transport({TransportConfiguration configuration = TransportDefaults.transport}) {
     final port = RawReceivePort((ports) async {
       SendPort toTransport = ports[0];
       _transportClosers.add(ports[1]);
@@ -39,7 +40,7 @@ class TransportModule {
       final result = using(
         (arena) => bindings.transport_initialize(
           transportPointer,
-          configuration.toNative(arena<bindings.transport_module_configuration>(), arena<memory_module_configuration>()),
+          configuration.toNative(arena<bindings.transport_configuration>(), arena<memory_module_configuration>()),
           _transportClosers.length,
         ),
       );

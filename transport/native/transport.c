@@ -12,11 +12,10 @@
 #include "transport.h"
 #include "transport_collections.h"
 #include "transport_common.h"
-#include "transport_configuration.h"
 #include "transport_constants.h"
 
 int transport_initialize(struct transport* transport,
-                         struct transport_module_configuration* configuration,
+                         struct transport_configuration* configuration,
                          uint8_t id)
 {
     transport->id = id;

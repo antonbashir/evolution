@@ -127,11 +127,11 @@ external void transport_server_destroy(
 
 @ffi.Native<
         ffi.Int Function(ffi.Pointer<transport>,
-            ffi.Pointer<transport_module_configuration>, ffi.Uint8)>(
+            ffi.Pointer<transport_configuration>, ffi.Uint8)>(
     symbol: 'transport_initialize', assetId: 'transport-bindings', isLeaf: true)
 external int transport_initialize(
   ffi.Pointer<transport> transport,
-  ffi.Pointer<transport_module_configuration> configuration,
+  ffi.Pointer<transport_configuration> configuration,
   int id,
 );
 
@@ -562,7 +562,13 @@ final class transport_server extends ffi.Struct {
   external int server_address_length;
 }
 
-final class transport_module_configuration extends ffi.Struct {
+final class mh_events_t extends ffi.Opaque {}
+
+final class io_uring extends ffi.Opaque {}
+
+final class io_uring_cqe extends ffi.Opaque {}
+
+final class transport_configuration extends ffi.Struct {
   external ffi.Pointer<memory.memory_module_configuration> memory_configuration;
 
   @ffi.Size()
@@ -595,12 +601,6 @@ final class transport_module_configuration extends ffi.Struct {
   @ffi.Bool()
   external bool trace;
 }
-
-final class mh_events_t extends ffi.Opaque {}
-
-final class io_uring extends ffi.Opaque {}
-
-final class io_uring_cqe extends ffi.Opaque {}
 
 final class transport extends ffi.Struct {
   @ffi.Uint8()

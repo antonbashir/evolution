@@ -17,17 +17,17 @@ class MemoryModule {
   late final MemorySmallData smallDatas;
   late final MemoryStructurePool<Double> doubles;
 
-  static void load({String? libraryPath, bool shared = false}) {
+  static void load({String? libraryPath, LibraryPackageMode mode = LibraryPackageMode.static}) {
     CoreModule.load();
     if (libraryPath != null) {
       SystemLibrary.loadByPath(libraryPath);
       return;
     }
-    SystemLibrary.loadByName(shared ? memorySharedLibraryName : memoryLibraryName, memoryPackageName);
+    SystemLibrary.loadByName(mode == LibraryPackageMode.shared ? memorySharedLibraryName : memoryLibraryName, memoryPackageName);
   }
 
-  MemoryModule({String? libraryPath, bool shared = false}) {
-    load(libraryPath: libraryPath, shared: shared);
+  MemoryModule({String? libraryPath, bool load = true, LibraryPackageMode mode = LibraryPackageMode.static}) {
+    if (load) MemoryModule.load(libraryPath: libraryPath, mode: mode);
   }
 
   void initialize({MemoryModuleConfiguration configuration = MemoryDefaults.memory}) {

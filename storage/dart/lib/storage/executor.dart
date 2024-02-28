@@ -101,7 +101,7 @@ class StorageConsumer implements InteractorConsumer {
 }
 
 class StorageExecutor {
-  final interactors = InteractorModule();
+  final interactors = InteractorModule(memoryMode: LibraryPackageMode.shared);
 
   final Pointer<tarantool_box> _box;
 
@@ -122,7 +122,7 @@ class StorageExecutor {
 
   Future<void> initialize() async {
     _interactor = Interactor(interactors.interactor());
-    await _interactor.initialize(sharedMemoryLibrary: true);
+    await _interactor.initialize();
     _descriptor = tarantool_executor_descriptor();
     _nativeFactory = calloc<tarantool_factory>(sizeOf<tarantool_factory>());
     using((Arena arena) {
