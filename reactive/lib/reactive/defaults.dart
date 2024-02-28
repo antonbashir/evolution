@@ -24,12 +24,13 @@ class ReactiveTransportDefaults {
     codecs: {
       octetStreamMimeType: ReactiveRawCodec(),
       textMimeType: ReactiveUtf8Codec(),
+      applicationJsonMimeType: ReactiveJsonCodec(),
     },
   );
 
   static const setup = ReactiveSetupConfiguration(
-    metadataMimeType: octetStreamMimeType,
-    dataMimeType: octetStreamMimeType,
+    metadataMimeType: applicationJsonMimeType,
+    dataMimeType: applicationJsonMimeType,
     keepAliveInterval: Duration(seconds: 20),
     keepAliveMaxLifetime: Duration(seconds: 90),
     lease: false,

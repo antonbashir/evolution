@@ -22,6 +22,19 @@ class ReactiveUtf8Codec implements ReactiveCodec {
   String mimeType() => textMimeType;
 }
 
+class ReactiveJsonCodec implements ReactiveCodec {
+  const ReactiveJsonCodec();
+
+  @override
+  dynamic decode(Uint8List input) => json.decode(utf8.decode(input));
+
+  @override
+  Uint8List encode(dynamic input) => utf8.encode(json.encode(input));
+
+  @override
+  String mimeType() => applicationJsonMimeType;
+}
+
 class ReactiveRawCodec implements ReactiveCodec {
   const ReactiveRawCodec();
 
