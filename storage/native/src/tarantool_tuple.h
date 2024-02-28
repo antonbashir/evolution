@@ -1,5 +1,5 @@
-#ifndef TARANTOOL_TUPLE_H_INCLUDED
-#define TARANTOOL_TUPLE_H_INCLUDED
+#ifndef TARANTOOL_TUPLE_H
+#define TARANTOOL_TUPLE_H
 
 #include <stddef.h>
 

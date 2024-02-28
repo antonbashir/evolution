@@ -10,7 +10,7 @@ class ReactiveTransportDefaults {
   static const transport = ReactiveTransportConfiguration(
     tracer: null,
     gracefulTimeout: null,
-    workerConfiguration: TransportDefaults.worker,
+    workerConfiguration: TransportDefaults.transport,
   );
 
   static const channel = ReactiveChannelConfiguration(

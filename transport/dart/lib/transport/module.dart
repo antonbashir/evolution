@@ -6,6 +6,7 @@ import 'package:core/core.dart';
 import 'package:ffi/ffi.dart';
 import 'package:interactor/interactor.dart';
 import 'package:memory/memory.dart';
+import 'package:transport/transport/defaults.dart';
 
 import 'bindings.dart' as bindings;
 import 'configuration.dart';
@@ -29,7 +30,7 @@ class TransportModule {
     _workerPorts.forEach((port) => port.close());
   }
 
-  SendPort transport(TransportModuleConfiguration configuration) {
+  SendPort transport({TransportModuleConfiguration configuration = TransportDefaults.transport}) {
     final port = RawReceivePort((ports) async {
       SendPort toTransport = ports[0];
       _transportClosers.add(ports[1]);

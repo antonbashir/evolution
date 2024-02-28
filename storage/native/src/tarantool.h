@@ -1,5 +1,5 @@
-#ifndef TARANTOOL_H_INCLUDED
-#define TARANTOOL_H_INCLUDED
+#ifndef TARANTOOL_H
+#define TARANTOOL_H
 
 #include <stdbool.h>
 #include <stddef.h>

@@ -1,5 +1,5 @@
-#ifndef TRANSPORT_FILE_H_INCLUDED
-#define TRANSPORT_FILE_H_INCLUDED
+#ifndef TRANSPORT_FILE_H
+#define TRANSPORT_FILE_H
 
 #include <stdbool.h>
 

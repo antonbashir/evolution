@@ -1,5 +1,5 @@
-#ifndef TARANTOOL_EXECUTOR_H_INCLUDED
-#define TARANTOOL_EXECUTOR_H_INCLUDED
+#ifndef TARANTOOL_EXECUTOR_H
+#define TARANTOOL_EXECUTOR_H
 
 #include <stdbool.h>
 #include "tarantool.h"

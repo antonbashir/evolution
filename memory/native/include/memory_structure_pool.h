@@ -1,5 +1,5 @@
-#ifndef MEMORY_PAYLOADS_POOL_INCLUDED
-#define MEMORY_PAYLOADS_POOL_INCLUDED
+#ifndef MEMORY_PAYLOADS_POOL
+#define MEMORY_PAYLOADS_POOL
 
 #include <memory_module.h>
 

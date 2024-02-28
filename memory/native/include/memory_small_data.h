@@ -1,5 +1,5 @@
-#ifndef MEMORY_DATA_POOL_INCLUDED
-#define MEMORY_DATA_POOL_INCLUDED
+#ifndef MEMORY_DATA_POOL
+#define MEMORY_DATA_POOL
 
 #include <memory_module.h>
 

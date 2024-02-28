@@ -12,7 +12,7 @@ import 'latch.dart';
 void fragmentation() {
   test('1 fragmented request', timeout: Timeout(Duration(seconds: 60)), () async {
     final transport = TransportModule();
-    final worker = Transport(transport.transport(ReactiveTransportDefaults.transport.workerConfiguration));
+    final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.transport.workerConfiguration));
     await worker.initialize();
     final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport);
     final fullPayload = Uint8List.fromList(List.generate(1 * 1024 * 1024, (index) => 31));
@@ -50,7 +50,7 @@ void fragmentation() {
 
   test('1 simple request -> 1 fragmented request', timeout: Timeout(Duration(seconds: 60)), () async {
     final transport = TransportModule();
-    final worker = Transport(transport.transport(ReactiveTransportDefaults.transport.workerConfiguration));
+    final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.transport.workerConfiguration));
     await worker.initialize();
     final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport);
     final simplePayload = Uint8List.fromList("simple".codeUnits);
@@ -97,7 +97,7 @@ void fragmentation() {
 
   test('1 simple request -> 1 fragmented request -> 1 simple request', timeout: Timeout(Duration(seconds: 60)), () async {
     final transport = TransportModule();
-    final worker = Transport(transport.transport(ReactiveTransportDefaults.transport.workerConfiguration));
+    final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.transport.workerConfiguration));
     await worker.initialize();
     final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport);
     final simplePayload = Uint8List.fromList("simple".codeUnits);
@@ -151,7 +151,7 @@ void fragmentation() {
 
   test('1 simple request -> 1 fragmented request -> 1 simple request -> 1 fragmented request', timeout: Timeout(Duration(seconds: 60)), () async {
     final transport = TransportModule();
-    final worker = Transport(transport.transport(ReactiveTransportDefaults.transport.workerConfiguration));
+    final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.transport.workerConfiguration));
     await worker.initialize();
     final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.transport);
     final simplePayload = Uint8List.fromList("simple".codeUnits);

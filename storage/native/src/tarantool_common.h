@@ -1,5 +1,5 @@
-#ifndef TARANTOOL_COMMON_H_INCLUDED
-#define TARANTOOL_COMMON_H_INCLUDED
+#ifndef TARANTOOL_COMMON_H
+#define TARANTOOL_COMMON_H
 
 #if defined(__cplusplus)
 extern "C"

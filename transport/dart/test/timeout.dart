@@ -15,7 +15,7 @@ Function _handleTimeout(Stopwatch actual, Duration expected, Completer completer
 void testTcpTimeout({required Duration connection, required Duration serverRead, required Duration clientRead}) {
   test("(timeout tcp single) [connection = ${connection.inSeconds}, serverRead = ${serverRead.inSeconds}, clientRead = ${clientRead.inSeconds}] ", () async {
     final transport = TransportModule();
-    final worker = Transport(transport.transport(TransportDefaults.worker));
+    final worker = Transport(transport.transport(configuration: TransportDefaults.transport));
     await worker.initialize();
 
     final time = Stopwatch();
@@ -54,7 +54,7 @@ void testTcpTimeout({required Duration connection, required Duration serverRead,
 void testUdpTimeout({required Duration serverRead, required Duration clientRead}) {
   test("(timeout udp single) [serverRead = ${serverRead.inSeconds}, clientRead = ${clientRead.inSeconds}] ", () async {
     final transport = TransportModule();
-    final worker = Transport(transport.transport(TransportDefaults.worker));
+    final worker = Transport(transport.transport(configuration: TransportDefaults.transport));
     await worker.initialize();
 
     final time = Stopwatch();

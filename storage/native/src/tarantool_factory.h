@@ -1,5 +1,5 @@
-#ifndef TARANTOOL_FACTORY_H_INCLUDED
-#define TARANTOOL_FACTORY_H_INCLUDED
+#ifndef TARANTOOL_FACTORY_H
+#define TARANTOOL_FACTORY_H
 
 #include "interactor_message.h"
 

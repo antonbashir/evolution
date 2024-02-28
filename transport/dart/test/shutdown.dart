@@ -9,7 +9,7 @@ import 'generators.dart';
 void testForceShutdown() {
   test("[force]", () async {
     final transport = TransportModule();
-    final worker = Transport(transport.transport(TransportDefaults.worker));
+    final worker = Transport(transport.transport(configuration: TransportDefaults.transport));
     await worker.initialize();
     final file = File("file");
     if (file.existsSync()) file.deleteSync();
@@ -47,7 +47,7 @@ void testForceShutdown() {
 void testGracefulShutdown({required Duration gracefulTimeout}) {
   test("[gracefulTimeout = ${gracefulTimeout.inSeconds}]", () async {
     final transport = TransportModule();
-    final worker = Transport(transport.transport(TransportDefaults.worker));
+    final worker = Transport(transport.transport(configuration: TransportDefaults.transport));
     await worker.initialize();
     final file = File("file");
     if (file.existsSync()) file.deleteSync();

@@ -1,5 +1,5 @@
-#ifndef TRANSPORT_SOCKET_H_INCLUDED
-#define TRANSPORT_SOCKET_H_INCLUDED
+#ifndef TRANSPORT_SOCKET_H
+#define TRANSPORT_SOCKET_H
 
 #include <stdbool.h>
 #include <stdint.h>

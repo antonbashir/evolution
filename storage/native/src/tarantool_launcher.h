@@ -1,5 +1,5 @@
-#ifndef TARANTOOL_LAUNCHER_H_INCLUDED
-#define TARANTOOL_LAUNCHER_H_INCLUDED
+#ifndef TARANTOOL_LAUNCHER_H
+#define TARANTOOL_LAUNCHER_H
 
 #if defined(__cplusplus)
 extern "C"

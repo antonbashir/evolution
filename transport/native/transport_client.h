@@ -1,5 +1,5 @@
-#ifndef TRANSPORT_CLIENT_H_INCLUDED
-#define TRANSPORT_CLIENT_H_INCLUDED
+#ifndef TRANSPORT_CLIENT_H
+#define TRANSPORT_CLIENT_H
 
 #include <stdbool.h>
 #include <stdint.h>

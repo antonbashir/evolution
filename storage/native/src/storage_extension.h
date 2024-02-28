@@ -1,5 +1,5 @@
-#ifndef USER_MODULE_H_INCLUDED
-#define USER_MODULE_H_INCLUDED
+#ifndef USER_MODULE_H
+#define USER_MODULE_H
 
 #include "library.h"
 #include "msgpuck.h"

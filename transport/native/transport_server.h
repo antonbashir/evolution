@@ -1,5 +1,5 @@
-#ifndef TRANSPORT_SERVER_H_INCLUDED
-#define TRANSPORT_SERVER_H_INCLUDED
+#ifndef TRANSPORT_SERVER_H
+#define TRANSPORT_SERVER_H
 
 #include <stdbool.h>
 #include <stdint.h>

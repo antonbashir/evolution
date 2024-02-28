@@ -42,17 +42,17 @@ int transport_initialize(struct transport* transport,
     {
         return -ENOMEM;
     }
-    mh_events_reserve(transport->events, configuration->buffers_capacity, 0);
+    mh_events_reserve(transport->events, configuration->memory_configuration->static_buffers_capacity, 0);
 
-    transport->inet_used_messages = malloc(sizeof(struct msghdr) * configuration->buffers_capacity);
-    transport->unix_used_messages = malloc(sizeof(struct msghdr) * configuration->buffers_capacity);
+    transport->inet_used_messages = malloc(sizeof(struct msghdr) * configuration->memory_configuration->static_buffers_capacity);
+    transport->unix_used_messages = malloc(sizeof(struct msghdr) * configuration->memory_configuration->static_buffers_capacity);
 
     if (!transport->inet_used_messages || !transport->unix_used_messages)
     {
         return -ENOMEM;
     }
 
-    for (size_t index = 0; index < configuration->buffers_capacity; index++)
+    for (size_t index = 0; index < configuration->memory_configuration->static_buffers_capacity; index++)
     {
         memset(&transport->inet_used_messages[index], 0, sizeof(struct msghdr));
         transport->inet_used_messages[index].msg_name = malloc(sizeof(struct sockaddr_in));

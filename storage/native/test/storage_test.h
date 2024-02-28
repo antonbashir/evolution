@@ -1,5 +1,5 @@
-#ifndef STORAGE_TEST_H_INCLUDED
-#define STORAGE_TEST_H_INCLUDED
+#ifndef STORAGE_TEST_H
+#define STORAGE_TEST_H
 
 #if defined(__cplusplus)
 extern "C"

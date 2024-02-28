@@ -1,5 +1,5 @@
-#ifndef TARANTOOL_BOX_H_INCLUDED
-#define TARANTOOL_BOX_H_INCLUDED
+#ifndef TARANTOOL_BOX_H
+#define TARANTOOL_BOX_H
 
 #include <stddef.h>
 #include <stdint.h>
