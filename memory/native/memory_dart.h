@@ -38,13 +38,13 @@ extern "C"
     void memory_dart_io_buffers_free_input(struct memory_dart* memory, struct memory_input_buffer* buffer);
     void memory_dart_io_buffers_free_output(struct memory_dart* memory, struct memory_output_buffer* buffer);
     uint8_t* memory_dart_input_buffer_reserve(struct memory_input_buffer* buffer, size_t size);
-    uint8_t* memory_dart_input_buffer_allocate(struct memory_input_buffer* buffer, size_t size);
-    uint8_t* memory_dart_input_buffer_allocate_reserve(struct memory_input_buffer* buffer, size_t delta, size_t size);
+    uint8_t* memory_dart_input_buffer_finalize(struct memory_input_buffer* buffer, size_t size);
+    uint8_t* memory_dart_input_buffer_finalize_reserve(struct memory_input_buffer* buffer, size_t delta, size_t size);
     uint8_t* memory_dart_input_buffer_read_position(struct memory_input_buffer* buffer);
     uint8_t* memory_dart_input_buffer_write_position(struct memory_input_buffer* buffer);
     uint8_t* memory_dart_output_buffer_reserve(struct memory_output_buffer* buffer, size_t size);
-    uint8_t* memory_dart_output_buffer_allocate(struct memory_output_buffer* buffer, size_t size);
-    uint8_t* memory_dart_output_buffer_allocate_reserve(struct memory_output_buffer* buffer, size_t delta, size_t size);
+    uint8_t* memory_dart_output_buffer_finalize(struct memory_output_buffer* buffer, size_t size);
+    uint8_t* memory_dart_output_buffer_finalize_reserve(struct memory_output_buffer* buffer, size_t delta, size_t size);
     struct iovec* memory_dart_output_buffer_content(struct memory_output_buffer* buffer);
 
     struct memory_dart_structure_pool* memory_dart_structure_pool_create(struct memory_dart* memory, size_t size);

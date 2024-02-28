@@ -4,7 +4,7 @@ import 'package:core/core.dart';
 
 import 'bindings.dart';
 
-extension StorageTupleExtensions on Pointer<tarantool_tuple_t> {
+extension StorageTupleExtensions on Pointer<tarantool_tuple> {
   @inline
   int get size => tarantool_tuple_size(this);
 

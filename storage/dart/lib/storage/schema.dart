@@ -220,7 +220,7 @@ class StorageSchema {
 
   Future<bool> userExists(String name) {
     final tupleSize = tupleSizeOfList(1) + tupleSizeOfString(name.length);
-    final tuple = _tuples.allocate(tupleSize);
+    final tuple = _tuples.allocateSmall(tupleSize);
     final buffer = tuple.asTypedList(tupleSize);
     final data = ByteData.view(buffer.buffer, buffer.offsetInBytes);
     var offset = 0;
@@ -234,7 +234,7 @@ class StorageSchema {
         )
         .then(tarantoolCallExtractBool)
         .then((value) => value ?? false)
-        .whenComplete(() => _tuples.free(tuple, tupleSize));
+        .whenComplete(() => _tuples.freeSmall(tuple, tupleSize));
   }
 
   Future<void> grantUser(

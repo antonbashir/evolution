@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:ffi';
-import 'dart:typed_data';
 
 import 'package:core/core.dart';
 import 'package:interactor/interactor.dart';
@@ -23,11 +22,8 @@ class StorageIndex {
   StorageIndex(this._spaceId, this._indexId, this._descriptor, this._tuples, this._factory, this._producer);
 
   Future<int> count({List<dynamic> key = const [], StorageIteratorType iteratorType = StorageIteratorType.eq}) {
-    final keySize = tupleSizeOfList(1) + tupleSizeOfNull;
-    final key = _tuples.allocate(keySize);
-    final keyBuffer = key.asTypedList(keySize);
-    tupleWriteList(ByteData.view(keyBuffer.buffer, keyBuffer.offsetInBytes), keySize, 0);
-    return countBy(key, keySize, iteratorType: iteratorType).whenComplete(() => _tuples.free(key, keySize));
+    final (key, keySize) = _tuples.emptyList;
+    return countBy(key, keySize, iteratorType: iteratorType);
   }
 
   @inline
@@ -57,11 +53,8 @@ class StorageIndex {
 
   @inline
   Future<StorageIterator> iterator({StorageIteratorType iteratorType = StorageIteratorType.eq}) {
-    final keySize = tupleSizeOfList(1) + tupleSizeOfNull;
-    final key = _tuples.allocate(keySize);
-    final keyBuffer = key.asTypedList(keySize);
-    tupleWriteList(ByteData.view(keyBuffer.buffer, keyBuffer.offsetInBytes), keySize, 0);
-    return iteratorBy(key, keySize, iteratorType: iteratorType).whenComplete(() => _tuples.free(key, keySize));
+    final (key, keySize) = _tuples.emptyList;
+    return iteratorBy(key, keySize, iteratorType: iteratorType);
   }
 
   @inline
@@ -80,62 +73,56 @@ class StorageIndex {
       _producer.indexIterator(_descriptor, _factory.createIndexIterator(_spaceId, _indexId, iteratorType.index, key, keySize)).then(_completeIteratorBy);
 
   @inline
-  Pointer<tarantool_tuple_t> _completeGet(Pointer<interactor_message> message) {
-    final tuple = Pointer<tarantool_tuple_t>.fromAddress(message.outputInt);
+  Pointer<tarantool_tuple> _completeGet(Pointer<interactor_message> message) {
+    final tuple = Pointer<tarantool_tuple>.fromAddress(message.outputInt);
     _factory.releaseIndex(message.getInputObject());
     return tuple;
   }
 
   @inline
-  Future<Pointer<tarantool_tuple_t>> get(Pointer<Uint8> key, int keySize) => _producer.indexGet(_descriptor, _factory.createIndex(_spaceId, _indexId, key, keySize)).then(_completeGet);
+  Future<Pointer<tarantool_tuple>> get(Pointer<Uint8> key, int keySize) => _producer.indexGet(_descriptor, _factory.createIndex(_spaceId, _indexId, key, keySize)).then(_completeGet);
 
   @inline
-  Future<Pointer<tarantool_tuple_t>> min() {
-    final keySize = tupleSizeOfList(1) + tupleSizeOfNull;
-    final key = _tuples.allocate(keySize);
-    final keyBuffer = key.asTypedList(keySize);
-    tupleWriteList(ByteData.view(keyBuffer.buffer, keyBuffer.offsetInBytes), keySize, 0);
-    return minBy(key, keySize).whenComplete(() => _tuples.free(key, keySize));
+  Future<Pointer<tarantool_tuple>> min() {
+    final (key, keySize) = _tuples.emptyList;
+    return minBy(key, keySize);
   }
 
   @inline
-  Pointer<tarantool_tuple_t> _completeMin(Pointer<interactor_message> message) {
-    final tuple = Pointer<tarantool_tuple_t>.fromAddress(message.outputInt);
+  Pointer<tarantool_tuple> _completeMin(Pointer<interactor_message> message) {
+    final tuple = Pointer<tarantool_tuple>.fromAddress(message.outputInt);
     _factory.releaseIndex(message.getInputObject());
     return tuple;
   }
 
   @inline
-  Future<Pointer<tarantool_tuple_t>> minBy(Pointer<Uint8> key, int keySize) => _producer.indexMin(_descriptor, _factory.createIndex(_spaceId, _indexId, key, keySize)).then(_completeMin);
+  Future<Pointer<tarantool_tuple>> minBy(Pointer<Uint8> key, int keySize) => _producer.indexMin(_descriptor, _factory.createIndex(_spaceId, _indexId, key, keySize)).then(_completeMin);
 
   @inline
-  Future<Pointer<tarantool_tuple_t>> max() {
-    final keySize = tupleSizeOfList(1) + tupleSizeOfNull;
-    final key = _tuples.allocate(keySize);
-    final keyBuffer = key.asTypedList(keySize);
-    tupleWriteList(ByteData.view(keyBuffer.buffer, keyBuffer.offsetInBytes), keySize, 0);
-    return maxBy(key, keySize).whenComplete(() => _tuples.free(key, keySize));
+  Future<Pointer<tarantool_tuple>> max() {
+    final (key, keySize) = _tuples.emptyList;
+    return maxBy(key, keySize);
   }
 
   @inline
-  Pointer<tarantool_tuple_t> _completeMax(Pointer<interactor_message> message) {
-    final tuple = Pointer<tarantool_tuple_t>.fromAddress(message.outputInt);
+  Pointer<tarantool_tuple> _completeMax(Pointer<interactor_message> message) {
+    final tuple = Pointer<tarantool_tuple>.fromAddress(message.outputInt);
     _factory.releaseIndex(message.getInputObject());
     return tuple;
   }
 
   @inline
-  Future<Pointer<tarantool_tuple_t>> maxBy(Pointer<Uint8> key, int keySize) => _producer.indexMax(_descriptor, _factory.createIndex(_spaceId, _indexId, key, keySize)).then(_completeMax);
+  Future<Pointer<tarantool_tuple>> maxBy(Pointer<Uint8> key, int keySize) => _producer.indexMax(_descriptor, _factory.createIndex(_spaceId, _indexId, key, keySize)).then(_completeMax);
 
   @inline
-  Pointer<tarantool_tuple_t> _completeUpdateSingle(Pointer<interactor_message> message) {
-    final tuple = Pointer<tarantool_tuple_t>.fromAddress(message.outputInt);
+  Pointer<tarantool_tuple> _completeUpdateSingle(Pointer<interactor_message> message) {
+    final tuple = Pointer<tarantool_tuple>.fromAddress(message.outputInt);
     _factory.releaseIndexUpdate(message.getInputObject());
     return tuple;
   }
 
   @inline
-  Future<Pointer<tarantool_tuple_t>> updateSingle(
+  Future<Pointer<tarantool_tuple>> updateSingle(
     Pointer<Uint8> key,
     int keySize,
     Pointer<Uint8> operations,
@@ -144,14 +131,14 @@ class StorageIndex {
       _producer.indexUpdateSingle(_descriptor, _factory.createIndexUpdate(_spaceId, _indexId, key, keySize, operations, operationsSize)).then(_completeUpdateSingle);
 
   @inline
-  Pointer<tarantool_tuple_port_t> _completeUpdateMany(Pointer<interactor_message> message) {
-    final tuple = Pointer<tarantool_tuple_port_t>.fromAddress(message.outputInt);
+  Pointer<tarantool_tuple_port> _completeUpdateMany(Pointer<interactor_message> message) {
+    final tuple = Pointer<tarantool_tuple_port>.fromAddress(message.outputInt);
     _factory.releaseIndexUpdate(message.getInputObject());
     return tuple;
   }
 
   @inline
-  Future<Pointer<tarantool_tuple_port_t>> updateMany(
+  Future<Pointer<tarantool_tuple_port>> updateMany(
     Pointer<Uint8> keys,
     int keysCount,
     Pointer<Uint8> operations,
@@ -160,27 +147,24 @@ class StorageIndex {
       _producer.indexUpdateMany(_descriptor, _factory.createIndexUpdate(_spaceId, _indexId, keys, keysCount, operations, operationsCount)).then(_completeUpdateMany);
 
   @inline
-  Pointer<tarantool_tuple_port_t> _completeSelect(Pointer<interactor_message> message) {
-    final tuple = Pointer<tarantool_tuple_port_t>.fromAddress(message.outputInt);
+  Pointer<tarantool_tuple_port> _completeSelect(Pointer<interactor_message> message) {
+    final tuple = Pointer<tarantool_tuple_port>.fromAddress(message.outputInt);
     _factory.releaseIndexSelect(message.getInputObject());
     return tuple;
   }
 
   @inline
-  Future<Pointer<tarantool_tuple_port_t>> select({
+  Future<Pointer<tarantool_tuple_port>> select({
     int offset = 0,
     int limit = int32MaxValue,
     StorageIteratorType iteratorType = StorageIteratorType.eq,
   }) {
-    final keySize = tupleSizeOfList(1) + tupleSizeOfNull;
-    final key = _tuples.allocate(keySize);
-    final keyBuffer = key.asTypedList(keySize);
-    tupleWriteList(ByteData.view(keyBuffer.buffer, keyBuffer.offsetInBytes), keySize, 0);
-    return selectBy(key, keySize).whenComplete(() => _tuples.free(key, keySize));
+    final (key, keySize) = _tuples.emptyList;
+    return selectBy(key, keySize);
   }
 
   @inline
-  Future<Pointer<tarantool_tuple_port_t>> selectBy(
+  Future<Pointer<tarantool_tuple_port>> selectBy(
     Pointer<Uint8> key,
     int keySize, {
     int offset = 0,

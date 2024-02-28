@@ -13,4 +13,8 @@ export "storage/configuration.dart" show StorageExecutorConfiguration, StorageCo
 export "storage/defaults.dart" show StorageDefaults;
 export "storage/exception.dart" show StorageExecutionException, StorageLimitException, StorageLauncherException;
 
+export "storage/bindings.dart" show tarantool_tuple;
+
+export "storage/lua.dart";
+
 export "storage/constants.dart" show StorageIteratorType, StorageEngine, StorageIndexType, StorageFieldType, StorageIndexPartType;

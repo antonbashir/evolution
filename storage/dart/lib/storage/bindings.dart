@@ -411,43 +411,43 @@ external void tarantool_factory_destroy(
 );
 
 @ffi.Native<
-        ffi.Pointer<tarantool_tuple_port_entry_t> Function(
-            ffi.Pointer<tarantool_tuple_port_t>)>(
+        ffi.Pointer<tarantool_tuple_port_entry> Function(
+            ffi.Pointer<tarantool_tuple_port>)>(
     symbol: 'tarantool_port_first', assetId: 'tarantool-bindings', isLeaf: true)
-external ffi.Pointer<tarantool_tuple_port_entry_t> tarantool_port_first(
-  ffi.Pointer<tarantool_tuple_port_t> port,
+external ffi.Pointer<tarantool_tuple_port_entry> tarantool_port_first(
+  ffi.Pointer<tarantool_tuple_port> port,
 );
 
 @ffi.Native<
-        ffi.Pointer<tarantool_tuple_port_entry_t> Function(
-            ffi.Pointer<tarantool_tuple_port_entry_t>)>(
+        ffi.Pointer<tarantool_tuple_port_entry> Function(
+            ffi.Pointer<tarantool_tuple_port_entry>)>(
     symbol: 'tarantool_port_entry_next',
     assetId: 'tarantool-bindings',
     isLeaf: true)
-external ffi.Pointer<tarantool_tuple_port_entry_t> tarantool_port_entry_next(
-  ffi.Pointer<tarantool_tuple_port_entry_t> current,
+external ffi.Pointer<tarantool_tuple_port_entry> tarantool_port_entry_next(
+  ffi.Pointer<tarantool_tuple_port_entry> current,
 );
 
 @ffi.Native<
-        ffi.Pointer<tarantool_tuple_t> Function(
-            ffi.Pointer<tarantool_tuple_port_entry_t>)>(
+        ffi.Pointer<tarantool_tuple> Function(
+            ffi.Pointer<tarantool_tuple_port_entry>)>(
     symbol: 'tarantool_port_entry_tuple',
     assetId: 'tarantool-bindings',
     isLeaf: true)
-external ffi.Pointer<tarantool_tuple_t> tarantool_port_entry_tuple(
-  ffi.Pointer<tarantool_tuple_port_entry_t> current,
+external ffi.Pointer<tarantool_tuple> tarantool_port_entry_tuple(
+  ffi.Pointer<tarantool_tuple_port_entry> current,
 );
 
-@ffi.Native<ffi.Size Function(ffi.Pointer<tarantool_tuple_t>)>(
+@ffi.Native<ffi.Size Function(ffi.Pointer<tarantool_tuple>)>(
     symbol: 'tarantool_tuple_size', assetId: 'tarantool-bindings', isLeaf: true)
 external int tarantool_tuple_size(
-  ffi.Pointer<tarantool_tuple_t> tuple,
+  ffi.Pointer<tarantool_tuple> tuple,
 );
 
-@ffi.Native<ffi.Pointer<ffi.Void> Function(ffi.Pointer<tarantool_tuple_t>)>(
+@ffi.Native<ffi.Pointer<ffi.Void> Function(ffi.Pointer<tarantool_tuple>)>(
     symbol: 'tarantool_tuple_data', assetId: 'tarantool-bindings', isLeaf: true)
 external ffi.Pointer<ffi.Void> tarantool_tuple_data(
-  ffi.Pointer<tarantool_tuple_t> tuple,
+  ffi.Pointer<tarantool_tuple> tuple,
 );
 
 final class tarantool_box extends ffi.Struct {
@@ -939,6 +939,6 @@ final class tuple_iterator extends ffi.Opaque {}
 
 final class port_c_entry extends ffi.Opaque {}
 
-typedef tarantool_tuple_port_entry_t = port_c_entry;
-typedef tarantool_tuple_port_t = port;
-typedef tarantool_tuple_t = tuple;
+typedef tarantool_tuple_port_entry = port_c_entry;
+typedef tarantool_tuple_port = port;
+typedef tarantool_tuple = tuple;

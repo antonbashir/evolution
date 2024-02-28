@@ -101,13 +101,13 @@ class MemoryInputOutputBuffers {
 
 extension MemoryInputBufferExtensions on Pointer<memory_input_buffer> {
   @inline
-  Pointer<Uint8> allocate(buffer, int delta) => memory_dart_input_buffer_allocate(buffer, delta);
+  Pointer<Uint8> finalize(int delta) => memory_dart_input_buffer_finalize(this, delta);
 
   @inline
-  Pointer<Uint8> reserve(Pointer<memory_input_buffer> buffer, int size) => memory_dart_input_buffer_reserve(buffer, size);
+  Pointer<Uint8> reserve(int size) => memory_dart_input_buffer_reserve(this, size);
 
   @inline
-  Pointer<Uint8> allocateReserve(Pointer<memory_input_buffer> buffer, int delta, int size) => memory_dart_input_buffer_allocate_reserve(buffer, delta, size);
+  Pointer<Uint8> finalizeReserve(int delta, int size) => memory_dart_input_buffer_finalize_reserve(this, delta, size);
 
   @inline
   Pointer<Uint8> get readPosition => memory_dart_input_buffer_read_position(this);
@@ -118,13 +118,13 @@ extension MemoryInputBufferExtensions on Pointer<memory_input_buffer> {
 
 extension MemoryOutputBufferExtensions on Pointer<memory_output_buffer> {
   @inline
-  Pointer<Uint8> allocate(Pointer<memory_output_buffer> buffer, int delta) => memory_dart_output_buffer_allocate(buffer, delta);
+  Pointer<Uint8> finalize(int delta) => memory_dart_output_buffer_finalize(this, delta);
 
   @inline
-  Pointer<Uint8> reserve(Pointer<memory_output_buffer> buffer, int size) => memory_dart_output_buffer_reserve(buffer, size);
+  Pointer<Uint8> reserve(int size) => memory_dart_output_buffer_reserve(this, size);
 
   @inline
-  Pointer<Uint8> allocateReserve(Pointer<memory_output_buffer> buffer, int delta, int size) => memory_dart_output_buffer_allocate_reserve(buffer, delta, size);
+  Pointer<Uint8> finalizeReserve(int delta, int size) => memory_dart_output_buffer_finalize_reserve(this, delta, size);
 
   @inline
   Pointer<iovec> get content => memory_dart_output_buffer_content(this);

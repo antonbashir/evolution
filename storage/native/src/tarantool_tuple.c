@@ -2,27 +2,27 @@
 #include "box/port.h"
 #include "box/tuple.h"
 
-tarantool_tuple_port_entry_t* tarantool_port_first(tarantool_tuple_port_t* port)
+tarantool_tuple_port_entry* tarantool_port_first(tarantool_tuple_port* port)
 {
-    return (tarantool_tuple_port_entry_t*)&((struct port_c*)port)->first_entry;
+    return (tarantool_tuple_port_entry*)&((struct port_c*)port)->first_entry;
 }
 
-tarantool_tuple_port_entry_t* tarantool_port_entry_next(tarantool_tuple_port_entry_t* current)
+tarantool_tuple_port_entry* tarantool_port_entry_next(tarantool_tuple_port_entry* current)
 {
-    return (tarantool_tuple_port_entry_t*)current->next;
+    return (tarantool_tuple_port_entry*)current->next;
 }
 
-tarantool_tuple_t* tarantool_port_entry_tuple(tarantool_tuple_port_entry_t* current)
+tarantool_tuple* tarantool_port_entry_tuple(tarantool_tuple_port_entry* current)
 {
-    return (tarantool_tuple_t*)current->tuple;
+    return (tarantool_tuple*)current->tuple;
 }
 
-size_t tarantool_tuple_size(tarantool_tuple_t* tuple)
+size_t tarantool_tuple_size(tarantool_tuple* tuple)
 {
     return tuple_size(tuple);
 }
 
-void* tarantool_tuple_data(tarantool_tuple_t* tuple)
+void* tarantool_tuple_data(tarantool_tuple* tuple)
 {
-  return (void*)tuple_data(tuple);
+    return (void*)tuple_data(tuple);
 }

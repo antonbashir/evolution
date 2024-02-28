@@ -18,14 +18,14 @@ class MemoryObjects<T> {
       : _queue = ListQueue(configuration.initialCapacity),
         _extensionFactor = configuration.extensionFactor,
         _shrinkFactor = configuration.shrinkFactor {
-    for (var i = 0; i < configuration.preallocation; i++) _queue.add(_allocator());
+    _extend(configuration.preallocation);
   }
 
   @inline
   T allocate() {
     if (_queue.isEmpty) {
       final message = _allocator();
-      release(message);
+      _queue.add(message);
       Future.microtask(() => _extend((_queue.length * _extensionFactor).ceil()));
       return message;
     }

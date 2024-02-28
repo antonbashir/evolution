@@ -66,13 +66,13 @@ extern "C"
         return ibuf_reserve(&buffer->buffer, size ? size : buffer->buffer.start_capacity);
     }
 
-    static inline uint8_t* memory_input_buffer_allocate(struct memory_input_buffer* buffer, size_t size)
+    static inline uint8_t* memory_input_buffer_finalize(struct memory_input_buffer* buffer, size_t size)
     {
         uint8_t* allocated = ibuf_alloc(&buffer->buffer, size);
         return allocated;
     }
 
-    static inline uint8_t* memory_input_buffer_allocate_reserve(struct memory_input_buffer* buffer, size_t delta, size_t size)
+    static inline uint8_t* memory_input_buffer_finalize_reserve(struct memory_input_buffer* buffer, size_t delta, size_t size)
     {
         ibuf_alloc(&buffer->buffer, size);
         uint8_t* reserved = ibuf_reserve(&buffer->buffer, size ? size : buffer->buffer.start_capacity);
@@ -84,12 +84,12 @@ extern "C"
         return obuf_reserve(&buffer->buffer, size ? size : buffer->buffer.start_capacity);
     }
 
-    static inline uint8_t* memory_output_buffer_allocate(struct memory_output_buffer* buffer, size_t size)
+    static inline uint8_t* memory_output_buffer_finalize(struct memory_output_buffer* buffer, size_t size)
     {
         return obuf_alloc(&buffer->buffer, size);
     }
 
-    static inline uint8_t* memory_output_buffer_allocate_reserve(struct memory_output_buffer* buffer, size_t delta, size_t size)
+    static inline uint8_t* memory_output_buffer_finalize_reserve(struct memory_output_buffer* buffer, size_t delta, size_t size)
     {
         obuf_alloc(&buffer->buffer, size);
         return obuf_reserve(&buffer->buffer, size ? size : buffer->buffer.start_capacity);

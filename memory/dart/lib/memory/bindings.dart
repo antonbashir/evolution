@@ -113,10 +113,10 @@ external ffi.Pointer<ffi.Uint8> memory_dart_input_buffer_reserve(
 @ffi.Native<
         ffi.Pointer<ffi.Uint8> Function(
             ffi.Pointer<memory_input_buffer>, ffi.Size)>(
-    symbol: 'memory_dart_input_buffer_allocate',
+    symbol: 'memory_dart_input_buffer_finalize',
     assetId: 'memory-bindings',
     isLeaf: true)
-external ffi.Pointer<ffi.Uint8> memory_dart_input_buffer_allocate(
+external ffi.Pointer<ffi.Uint8> memory_dart_input_buffer_finalize(
   ffi.Pointer<memory_input_buffer> buffer,
   int size,
 );
@@ -124,10 +124,10 @@ external ffi.Pointer<ffi.Uint8> memory_dart_input_buffer_allocate(
 @ffi.Native<
         ffi.Pointer<ffi.Uint8> Function(
             ffi.Pointer<memory_input_buffer>, ffi.Size, ffi.Size)>(
-    symbol: 'memory_dart_input_buffer_allocate_reserve',
+    symbol: 'memory_dart_input_buffer_finalize_reserve',
     assetId: 'memory-bindings',
     isLeaf: true)
-external ffi.Pointer<ffi.Uint8> memory_dart_input_buffer_allocate_reserve(
+external ffi.Pointer<ffi.Uint8> memory_dart_input_buffer_finalize_reserve(
   ffi.Pointer<memory_input_buffer> buffer,
   int delta,
   int size,
@@ -163,10 +163,10 @@ external ffi.Pointer<ffi.Uint8> memory_dart_output_buffer_reserve(
 @ffi.Native<
         ffi.Pointer<ffi.Uint8> Function(
             ffi.Pointer<memory_output_buffer>, ffi.Size)>(
-    symbol: 'memory_dart_output_buffer_allocate',
+    symbol: 'memory_dart_output_buffer_finalize',
     assetId: 'memory-bindings',
     isLeaf: true)
-external ffi.Pointer<ffi.Uint8> memory_dart_output_buffer_allocate(
+external ffi.Pointer<ffi.Uint8> memory_dart_output_buffer_finalize(
   ffi.Pointer<memory_output_buffer> buffer,
   int size,
 );
@@ -174,10 +174,10 @@ external ffi.Pointer<ffi.Uint8> memory_dart_output_buffer_allocate(
 @ffi.Native<
         ffi.Pointer<ffi.Uint8> Function(
             ffi.Pointer<memory_output_buffer>, ffi.Size, ffi.Size)>(
-    symbol: 'memory_dart_output_buffer_allocate_reserve',
+    symbol: 'memory_dart_output_buffer_finalize_reserve',
     assetId: 'memory-bindings',
     isLeaf: true)
-external ffi.Pointer<ffi.Uint8> memory_dart_output_buffer_allocate_reserve(
+external ffi.Pointer<ffi.Uint8> memory_dart_output_buffer_finalize_reserve(
   ffi.Pointer<memory_output_buffer> buffer,
   int delta,
   int size,

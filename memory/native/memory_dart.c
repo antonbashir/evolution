@@ -150,14 +150,14 @@ uint8_t* memory_dart_input_buffer_reserve(struct memory_input_buffer* buffer, si
     return memory_input_buffer_reserve(buffer, size);
 }
 
-uint8_t* memory_dart_input_buffer_allocate(struct memory_input_buffer* buffer, size_t size)
+uint8_t* memory_dart_input_buffer_finalize(struct memory_input_buffer* buffer, size_t size)
 {
-    return memory_input_buffer_allocate(buffer, size);
+    return memory_input_buffer_finalize(buffer, size);
 }
 
-uint8_t* memory_dart_input_buffer_allocate_reserve(struct memory_input_buffer* buffer, size_t delta, size_t size)
+uint8_t* memory_dart_input_buffer_finalize_reserve(struct memory_input_buffer* buffer, size_t delta, size_t size)
 {
-    return memory_input_buffer_allocate_reserve(buffer, delta, size);
+    return memory_input_buffer_finalize_reserve(buffer, delta, size);
 }
 
 uint8_t* memory_dart_input_buffer_read_position(struct memory_input_buffer* buffer)
@@ -175,9 +175,9 @@ uint8_t* memory_dart_output_buffer_reserve(struct memory_output_buffer* buffer, 
     return memory_output_buffer_reserve(buffer, size);
 }
 
-uint8_t* memory_dart_output_buffer_allocate(struct memory_output_buffer* buffer, size_t size)
+uint8_t* memory_dart_output_buffer_finalize(struct memory_output_buffer* buffer, size_t size)
 {
-    return memory_output_buffer_allocate(buffer, size);
+    return memory_output_buffer_finalize(buffer, size);
 }
 
 struct iovec* memory_dart_output_buffer_content(struct memory_output_buffer* buffer)
@@ -185,9 +185,9 @@ struct iovec* memory_dart_output_buffer_content(struct memory_output_buffer* buf
     return buffer->buffer.iov;
 }
 
-uint8_t* memory_dart_output_buffer_allocate_reserve(struct memory_output_buffer* buffer, size_t delta, size_t size)
+uint8_t* memory_dart_output_buffer_finalize_reserve(struct memory_output_buffer* buffer, size_t delta, size_t size)
 {
-    return memory_output_buffer_allocate_reserve(buffer, delta, size);
+    return memory_output_buffer_finalize_reserve(buffer, delta, size);
 }
 
 void memory_dart_destroy(struct memory_dart* memory)
