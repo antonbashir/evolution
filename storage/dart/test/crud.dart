@@ -15,41 +15,30 @@ Future<void> _put() async => expect(await _writeData().then((value) => _readData
 Future<void> _get() async => expect(await _insert().then((value) => _writeKey().then((key) => _readData(space.get(key.tuple, key.size), key.cleaner))), equals(testSingleData));
 Future<void> _min() async => expect(await _insert().then((value) => _writeKey().then((key) => _readData(space.min(), key.cleaner))), equals(testSingleData));
 Future<void> _max() async => expect(await _insert().then((value) => _writeKey().then((key) => _readData(space.max(), key.cleaner))), equals(testSingleData));
+Future<void> _isEmpty() async => expect(await space.isEmpty(), isTrue);
+Future<void> _count() async => expect(await _insert().then((value) => space.count()), equals(1));
+Future<void> _delete() async {
+  expect(await _insert().then((value) => _writeKey().then((key) => _readData(space.deleteSingle(key.tuple, key.size), key.cleaner))), equals(testSingleData));
+  await _isEmpty();
+}
 
 void testCrud() {
   test("insert", _insert);
   test("put", _put);
   test("get", _get);
-  test("min", _get);
+  test("min", _min);
   test("max", _max);
+  test("isEmpty", _isEmpty);
+  test("count", _count);
+  test("delete", _delete);
 
-  // test("get", () async {
-  //   _space.insert(testSingleData);
-  //   expect(await _space.get([1]), equals(testSingleData));
-  // });
-  // test("min", () async {
-  //   _space.insert(testSingleData);
-  //   expect(await _space.min(), equals(testSingleData));
-  // });
-  // test("max", () async {
-  //   _space.insert(testSingleData);
-  //   expect(await _space.min(), equals(testSingleData));
-  // });
   // test("update", () async {
   //   final data = [...testSingleData];
   //   _space.insert(data);
   //   data[2] = "updated";
   //   expect(await _space.update([1], [StorageUpdateOperation.assign(2, "updated")]), equals(data));
   // });
-  // test("delete", () async {
-  //   _space.insert(testSingleData);
-  //   expect(await _space.delete([1]), equals(testSingleData));
-  // });
-  // test("isEmpty", () async => expect(await _space.isEmpty(), equals(true)));
-  // test("count", () async {
-  //   _space.insert(testSingleData);
-  //   expect(await _space.count(), equals(1));
-  // });
+
   // test("select", () async {
   //   await Future.wait(testMultipleData.map(_space.insert));
   //   expect(await _space.select(), equals(testMultipleData));
