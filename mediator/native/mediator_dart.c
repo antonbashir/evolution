@@ -140,8 +140,3 @@ void mediator_dart_sleep(struct mediator_dart* mediator, uint32_t completions)
     io_uring_submit(mediator->ring);
     mediator->state = MEDIATOR_STATE_IDLE;
 }
-
-void mediator_dart_completions_advance(struct mediator_dart* mediator, uint32_t count)
-{
-    io_uring_cq_advance(mediator->ring, count);
-}

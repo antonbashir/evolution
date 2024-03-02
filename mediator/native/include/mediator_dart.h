@@ -37,8 +37,6 @@ extern "C"
     int8_t mediator_dart_call_native(struct mediator_dart* mediator, int32_t target_ring_fd, struct mediator_message* message);
     int8_t mediator_dart_callback_to_native(struct mediator_dart* mediator, struct mediator_message* message);
 
-    void mediator_dart_completions_advance(struct mediator_dart* mediator, uint32_t count);
-
     void mediator_dart_destroy(struct mediator_dart* mediator);
 #if defined(__cplusplus)
 }

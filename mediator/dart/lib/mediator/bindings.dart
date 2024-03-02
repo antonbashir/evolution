@@ -85,15 +85,6 @@ external int mediator_dart_callback_to_native(
   ffi.Pointer<mediator_message> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<mediator_dart>, ffi.Uint32)>(
-    symbol: 'mediator_dart_completions_advance',
-    assetId: 'mediator-bindings',
-    isLeaf: true)
-external void mediator_dart_completions_advance(
-  ffi.Pointer<mediator_dart> mediator,
-  int count,
-);
-
 @ffi.Native<ffi.Void Function(ffi.Pointer<mediator_dart>)>(
     symbol: 'mediator_dart_destroy', assetId: 'mediator-bindings', isLeaf: true)
 external void mediator_dart_destroy(
