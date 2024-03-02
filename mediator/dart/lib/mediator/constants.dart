@@ -2,7 +2,7 @@ import 'dart:ffi';
 
 import 'package:core/core.dart';
 
-final mediatorLibraryName = "libmediator_release_${Abi.current()}.so";
+final mediatorLibraryName = bool.fromEnvironment("DEBUG") ? "libmediator_debug_${Abi.current()}.so" : "libmediator_release_${Abi.current()}.so";
 const mediatorPackageName = "mediator";
 
 class MediatorErrors {
