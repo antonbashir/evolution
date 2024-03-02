@@ -4,7 +4,6 @@ import 'package:core/core.dart';
 import 'package:ffi/ffi.dart';
 
 import '../memory.dart';
-import 'configuration.dart';
 import 'constants.dart';
 import 'defaults.dart';
 import 'exceptions.dart';
@@ -33,7 +32,7 @@ class MemoryModule {
   void initialize({MemoryModuleConfiguration configuration = MemoryDefaults.module}) {
     pointer = calloc<memory_dart>(sizeOf<memory_dart>());
     if (pointer == nullptr) throw MemoryException(MemoryErrors.outOfMemory);
-    final result = using((arena) => memory_dart_initialize(pointer, configuration.toNative(arena<memory_module_configuration>())));
+    final result = using((arena) => memory_dart_initialize(pointer, configuration.toNativePointer(arena<memory_module_configuration>())));
     if (result < 0) {
       memory_dart_destroy(pointer);
       calloc.free(pointer);

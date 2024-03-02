@@ -8,6 +8,7 @@
 #include <sys/time.h>
 #include <sys/un.h>
 #include <unistd.h>
+#include "mediator_dart.h"
 #include "memory_configuration.h"
 #include "transport.h"
 #include "transport_collections.h"
@@ -15,43 +16,28 @@
 #include "transport_constants.h"
 
 int32_t transport_initialize(struct transport* transport,
-                         struct transport_configuration* configuration,
-                         uint8_t id)
+                             struct transport_configuration* configuration,
+                             uint8_t id)
 {
     transport->id = id;
-    transport->ring_size = configuration->ring_size;
-    transport->delay_randomization_factor = configuration->delay_randomization_factor;
-    transport->base_delay_micros = configuration->base_delay_micros;
-    transport->max_delay_micros = configuration->max_delay_micros;
-    transport->memory_configuration = calloc(1, sizeof(struct memory_module_configuration));
-    *transport->memory_configuration = *configuration->memory_configuration;
-    transport->timeout_checker_period_millis = configuration->timeout_checker_period_millis;
-    transport->cqe_wait_timeout_millis = configuration->cqe_wait_timeout_millis;
-    transport->cqe_wait_count = configuration->cqe_wait_count;
-    transport->cqe_peek_count = configuration->cqe_peek_count;
-    transport->trace = configuration->trace;
-    transport->completions = malloc(sizeof(struct io_uring_cqe*) * configuration->ring_size);
-    if (!transport->completions)
-    {
-        return -ENOMEM;
-    }
+    transport->configuration = *configuration;
 
     transport->events = mh_events_new();
     if (!transport->events)
     {
         return -ENOMEM;
     }
-    mh_events_reserve(transport->events, configuration->memory_configuration->static_buffers_capacity, 0);
+    mh_events_reserve(transport->events, configuration->memory_configuration.static_buffers_capacity, 0);
 
-    transport->inet_used_messages = malloc(sizeof(struct msghdr) * configuration->memory_configuration->static_buffers_capacity);
-    transport->unix_used_messages = malloc(sizeof(struct msghdr) * configuration->memory_configuration->static_buffers_capacity);
+    transport->inet_used_messages = malloc(sizeof(struct msghdr) * configuration->memory_configuration.static_buffers_capacity);
+    transport->unix_used_messages = malloc(sizeof(struct msghdr) * configuration->memory_configuration.static_buffers_capacity);
 
     if (!transport->inet_used_messages || !transport->unix_used_messages)
     {
         return -ENOMEM;
     }
 
-    for (size_t index = 0; index < configuration->memory_configuration->static_buffers_capacity; index++)
+    for (size_t index = 0; index < configuration->memory_configuration.static_buffers_capacity; index++)
     {
         memset(&transport->inet_used_messages[index], 0, sizeof(struct msghdr));
         transport->inet_used_messages[index].msg_name = malloc(sizeof(struct sockaddr_in));
@@ -70,26 +56,14 @@ int32_t transport_initialize(struct transport* transport,
         transport->unix_used_messages[index].msg_namelen = sizeof(struct sockaddr_un);
     }
 
-    transport->ring = malloc(sizeof(struct io_uring));
-    if (!transport->ring)
-    {
-        return -ENOMEM;
-    }
-
-    int32_t result = io_uring_queue_init(configuration->ring_size, transport->ring, configuration->ring_flags);
-    if (result)
-    {
-        return result;
-    }
-
-    transport->descriptor = transport->ring->ring_fd;
-
     return 0;
 }
 
-int32_t transport_setup(struct transport* transport)
+int32_t transport_setup(struct transport* transport, struct mediator_dart* transport_mediator)
 {
-    int32_t result = io_uring_register_buffers(transport->ring, transport->buffers, transport->memory_configuration->static_buffers_capacity);
+    transport->transport_mediator = transport_mediator;
+    struct io_uring* ring = transport_mediator->ring;
+    int32_t result = io_uring_register_buffers(transport->transport_mediator->ring, transport->buffers, transport->configuration.memory_configuration.static_buffers_capacity);
     if (result)
     {
         return result;
@@ -117,7 +91,7 @@ void transport_write(struct transport* transport,
                      uint16_t event,
                      uint8_t sqe_flags)
 {
-    struct io_uring* ring = transport->ring;
+    struct io_uring* ring = transport->transport_mediator->ring;
     struct io_uring_sqe* sqe = transport_provide_sqe(ring);
     uint64_t data = (((uint64_t)(fd) << 32) | (uint64_t)(buffer_id) << 16) | ((uint64_t)event);
     struct iovec* buffer = &transport->buffers[buffer_id];
@@ -135,7 +109,7 @@ void transport_read(struct transport* transport,
                     uint16_t event,
                     uint8_t sqe_flags)
 {
-    struct io_uring* ring = transport->ring;
+    struct io_uring* ring = transport->transport_mediator->ring;
     struct io_uring_sqe* sqe = transport_provide_sqe(ring);
     uint64_t data = (((uint64_t)(fd) << 32) | (uint64_t)(buffer_id) << 16) | ((uint64_t)event);
     struct iovec* buffer = &transport->buffers[buffer_id];
@@ -155,7 +129,7 @@ void transport_send_message(struct transport* transport,
                             uint16_t event,
                             uint8_t sqe_flags)
 {
-    struct io_uring* ring = transport->ring;
+    struct io_uring* ring = transport->transport_mediator->ring;
     struct io_uring_sqe* sqe = transport_provide_sqe(ring);
     uint64_t data = (((uint64_t)(fd) << 32) | (uint64_t)(buffer_id) << 16) | ((uint64_t)event);
     struct msghdr* message;
@@ -190,7 +164,7 @@ void transport_receive_message(struct transport* transport,
                                uint16_t event,
                                uint8_t sqe_flags)
 {
-    struct io_uring* ring = transport->ring;
+    struct io_uring* ring = transport->transport_mediator->ring;
     struct io_uring_sqe* sqe = transport_provide_sqe(ring);
     uint64_t data = (((uint64_t)(fd) << 32) | (uint64_t)(buffer_id) << 16) | ((uint64_t)event);
     struct msghdr* message;
@@ -218,7 +192,7 @@ void transport_receive_message(struct transport* transport,
 
 void transport_connect(struct transport* transport, struct transport_client* client, int64_t timeout)
 {
-    struct io_uring* ring = transport->ring;
+    struct io_uring* ring = transport->transport_mediator->ring;
     struct io_uring_sqe* sqe = transport_provide_sqe(ring);
     uint64_t data = ((uint64_t)(client->fd) << 32) | ((uint64_t)TRANSPORT_EVENT_CONNECT | (uint64_t)TRANSPORT_EVENT_CLIENT);
     struct sockaddr* address = client->family == INET
@@ -231,7 +205,7 @@ void transport_connect(struct transport* transport, struct transport_client* cli
 
 void transport_accept(struct transport* transport, struct transport_server* server)
 {
-    struct io_uring* ring = transport->ring;
+    struct io_uring* ring = transport->transport_mediator->ring;
     struct io_uring_sqe* sqe = transport_provide_sqe(ring);
     uint64_t data = ((uint64_t)(server->fd) << 32) | ((uint64_t)TRANSPORT_EVENT_ACCEPT | (uint64_t)TRANSPORT_EVENT_SERVER);
     struct sockaddr* address = server->family == INET
@@ -252,7 +226,7 @@ void transport_cancel_by_fd(struct transport* transport, int32_t fd)
         struct mh_events_node_t* node = mh_events_node(transport->events, index);
         if (node->fd == fd)
         {
-            struct io_uring* ring = transport->ring;
+            struct io_uring* ring = transport->transport_mediator->ring;
             struct io_uring_sqe* sqe = transport_provide_sqe(ring);
             io_uring_prep_cancel(sqe, (void*)node->data, IORING_ASYNC_CANCEL_ALL);
             sqe->flags |= IOSQE_CQE_SKIP_SUCCESS;
@@ -263,17 +237,7 @@ void transport_cancel_by_fd(struct transport* transport, int32_t fd)
     {
         mh_events_del(transport->events, to_delete[index], 0);
     }
-    io_uring_submit(transport->ring);
-}
-
-int32_t transport_peek(struct transport* transport)
-{
-    struct __kernel_timespec timeout = {
-        .tv_nsec = transport->cqe_wait_timeout_millis * 1e+6,
-        .tv_sec = 0,
-    };
-    io_uring_submit_and_wait_timeout(transport->ring, &transport->completions[0], transport->cqe_wait_count, &timeout, 0);
-    return io_uring_peek_batch_cqe(transport->ring, &transport->completions[0], transport->cqe_peek_count);
+    io_uring_submit(transport->transport_mediator->ring);
 }
 
 void transport_check_event_timeouts(struct transport* transport)
@@ -294,7 +258,7 @@ void transport_check_event_timeouts(struct transport* transport)
         time_t current_time = time(NULL);
         if (current_time - timestamp > timeout)
         {
-            struct io_uring* ring = transport->ring;
+            struct io_uring* ring = transport->transport_mediator->ring;
             struct io_uring_sqe* sqe = transport_provide_sqe(ring);
             io_uring_prep_cancel(sqe, (void*)data, IORING_ASYNC_CANCEL_ALL);
             sqe->flags |= IOSQE_CQE_SKIP_SUCCESS;
@@ -305,7 +269,7 @@ void transport_check_event_timeouts(struct transport* transport)
     {
         mh_events_del(transport->events, to_delete[index], 0);
     }
-    io_uring_submit(transport->ring);
+    io_uring_submit(transport->transport_mediator->ring);
 }
 
 void transport_remove_event(struct transport* transport, uint64_t data)
@@ -325,18 +289,14 @@ struct sockaddr* transport_get_datagram_address(struct transport* transport, tra
 
 void transport_destroy(struct transport* transport)
 {
-    io_uring_queue_exit(transport->ring);
-    for (size_t index = 0; index < transport->memory_configuration->static_buffers_capacity; index++)
+    for (size_t index = 0; index < transport->configuration.memory_configuration.static_buffers_capacity; index++)
     {
         free(transport->inet_used_messages[index].msg_name);
         free(transport->unix_used_messages[index].msg_name);
     }
     mh_events_delete(transport->events);
-    free(transport->completions);
     free(transport->inet_used_messages);
     free(transport->unix_used_messages);
-    free(transport->ring);
-    free(transport->memory_configuration);
     free(transport);
 }
 

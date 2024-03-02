@@ -2,8 +2,9 @@
 #define TRANSPORT_H
 
 #include <stdbool.h>
-#include <stddef.h>
 #include <stdint.h>
+#include "mediator_configuration.h"
+#include "memory_configuration.h"
 #include "transport_client.h"
 #include "transport_server.h"
 
@@ -12,53 +13,32 @@ extern "C"
 {
 #endif
     struct mh_events_t;
-    struct io_uring;
-    typedef struct io_uring_cqe transport_completion_event;
-    
-    struct memory_module_configuration;
+    struct mediator_dart;
+
     struct transport_configuration
     {
-        struct memory_module_configuration* memory_configuration;
-        size_t ring_size;
-        uint32_t ring_flags;
+        struct memory_module_configuration memory_configuration;
+        struct mediator_dart_configuration mediator_configuration;
         uint64_t timeout_checker_period_millis;
-        uint32_t base_delay_micros;
-        double delay_randomization_factor;
-        uint64_t max_delay_micros;
-        uint64_t cqe_wait_timeout_millis;
-        uint32_t cqe_wait_count;
-        uint32_t cqe_peek_count;
         bool trace;
     };
-    
+
     struct transport
     {
         uint8_t id;
-        struct io_uring* ring;
         struct iovec* buffers;
-        struct memory_module_configuration* memory_configuration;
-        uint64_t timeout_checker_period_millis;
-        uint32_t base_delay_micros;
-        double delay_randomization_factor;
-        uint64_t max_delay_micros;
+        struct mediator_dart* transport_mediator;
+        struct transport_configuration configuration;
         struct msghdr* inet_used_messages;
         struct msghdr* unix_used_messages;
         struct mh_events_t* events;
-        size_t ring_size;
-        int32_t ring_flags;
-        transport_completion_event** completions;
-        uint64_t cqe_wait_timeout_millis;
-        uint32_t cqe_wait_count;
-        uint32_t cqe_peek_count;
-        int32_t descriptor;
-        bool trace;
     };
 
     int32_t transport_initialize(struct transport* transport,
-                             struct transport_configuration* configuration,
-                             uint8_t id);
+                                 struct transport_configuration* configuration,
+                                 uint8_t id);
 
-    int32_t transport_setup(struct transport* transport);
+    int32_t transport_setup(struct transport* transport, struct mediator_dart* mediator);
 
     void transport_write(struct transport* transport,
                          uint32_t fd,
@@ -100,9 +80,6 @@ extern "C"
     void transport_remove_event(struct transport* transport, uint64_t data);
 
     struct sockaddr* transport_get_datagram_address(struct transport* transport, transport_socket_family_t socket_family, int32_t buffer_id);
-
-    int32_t transport_peek(struct transport* transport);
-    void transport_cqe_advance(struct io_uring* ring, int32_t count);
 
     void transport_destroy(struct transport* transport);
 #if defined(__cplusplus)

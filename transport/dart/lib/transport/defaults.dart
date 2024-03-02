@@ -1,3 +1,4 @@
+import 'package:mediator/mediator.dart';
 import 'package:memory/memory/defaults.dart';
 
 import 'client/configuration.dart';
@@ -9,16 +10,9 @@ class TransportDefaults {
 
   static const transport = TransportConfiguration(
     memoryConfiguration: MemoryDefaults.module,
+    mediatorConfiguration: MediatorDefaults.mediator,
     trace: false,
-    ringSize: 16384,
-    ringFlags: 0,
     timeoutCheckerPeriod: Duration(milliseconds: 500),
-    baseDelay: Duration(microseconds: 10),
-    maxDelay: Duration(seconds: 5),
-    delayRandomizationFactor: 0.25,
-    cqePeekCount: 1024,
-    cqeWaitCount: 1,
-    cqeWaitTimeout: Duration(milliseconds: 1),
   );
 
   static const tcpClient = TransportTcpClientConfiguration(

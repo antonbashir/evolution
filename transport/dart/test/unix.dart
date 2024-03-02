@@ -10,7 +10,7 @@ import 'validators.dart';
 
 void testUnixStreamSingle({required int index, required int clientsPool}) {
   test("(single) [clients = $clientsPool]", () async {
-    final transport = TransportModule();
+    final transport = TransportModule()..initialize();
     final worker = Transport(transport.transport(configuration: TransportDefaults.transport));
     await worker.initialize();
     final serverSocket = File(Directory.systemTemp.path + "/dart-iouring-socket_${worker.id}.sock");
@@ -40,7 +40,7 @@ void testUnixStreamSingle({required int index, required int clientsPool}) {
 
 void testUnixStreamMany({required int index, required int clientsPool, required int count}) {
   test("(many) [clients = $clientsPool, count = $count]", () async {
-    final transport = TransportModule();
+    final transport = TransportModule()..initialize();
     final worker = Transport(transport.transport(configuration: TransportDefaults.transport));
     await worker.initialize();
     final serverSocket = File(Directory.systemTemp.path + "/dart-iouring-socket_${worker.id}.sock");

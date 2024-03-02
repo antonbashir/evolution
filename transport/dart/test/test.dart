@@ -87,7 +87,7 @@ void main() {
 
 void testInitialization() {
   test("(initialize)", () async {
-    final transport = TransportModule();
+    final transport = TransportModule()..initialize();
     final worker = Transport(transport.transport(configuration: TransportDefaults.transport));
     await worker.initialize();
     await transport.shutdown();

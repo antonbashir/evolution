@@ -34,6 +34,8 @@ ffigen:
       - "../native/transport_socket.h"
   compiler-opts:
     - "-I../native/include"
+    - "-I../../mediator/native/include"
+    - "-I../../memory/native/include"
   globals:
     exclude:
       - "_(.*)"
@@ -61,10 +63,6 @@ ffigen:
       - "file_(.*)"
   type-map:
     structs:
-      "mediator_completion_event":
-        lib: "mediator"
-        c-type: "mediator_completion_event"
-        dart-type: "mediator_completion_event"
       "iovec":
         lib: "memory"
         c-type: "iovec"
@@ -73,6 +71,14 @@ ffigen:
         lib: "memory"
         c-type: "memory_module_configuration"
         dart-type: "memory_module_configuration"
+      "mediator_dart_configuration":
+        lib: "mediator"
+        c-type: "mediator_dart_configuration"
+        dart-type: "mediator_dart_configuration"
+      "mediator_dart":
+        lib: "mediator"
+        c-type: "mediator_dart"
+        dart-type: "mediator_dart"
   library-imports:
     mediator: package:mediator/mediator.dart
     memory: package:memory/memory.dart

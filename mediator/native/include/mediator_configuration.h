@@ -21,7 +21,7 @@ extern "C"
         bool trace;
     };
 
-    struct mediator_module_native_configuration
+    struct mediator_native_configuration
     {
         uint64_t completion_wait_timeout_millis;
         size_t quota_size;

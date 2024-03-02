@@ -37,7 +37,7 @@ struct mh_native_callbacks_node_t
 #undef mh_cmp
 #undef mh_cmp_key
 
-int32_t mediator_native_initialize(struct mediator_native* mediator, struct mediator_module_native_configuration* configuration, uint8_t id)
+int32_t mediator_native_initialize(struct mediator_native* mediator, struct mediator_native_configuration* configuration, uint8_t id)
 {
     mediator->configuration = *configuration;
     mediator->completions = malloc(sizeof(struct io_uring_cqe*) * configuration->ring_size);
@@ -71,7 +71,7 @@ int32_t mediator_native_initialize(struct mediator_native* mediator, struct medi
 
 int32_t mediator_native_initialize_default(struct mediator_native* mediator, uint8_t id)
 {
-    struct mediator_module_native_configuration configuration = {
+    struct mediator_native_configuration configuration = {
         .static_buffers_capacity = 4096,
         .static_buffer_size = 4096,
         .ring_size = 16384,

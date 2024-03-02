@@ -12,7 +12,7 @@ import 'validators.dart';
 
 void testTcpBuffers() {
   test("(tcp)", () async {
-    final transport = TransportModule();
+    final transport = TransportModule()..initialize();
     final worker = Transport(transport.transport(configuration: TransportDefaults.transport));
     await worker.initialize();
 
@@ -71,7 +71,7 @@ void testTcpBuffers() {
 
 void testUdpBuffers() {
   test("(udp)", () async {
-    final transport = TransportModule();
+    final transport = TransportModule()..initialize();
     final worker = Transport(transport.transport(configuration: TransportDefaults.transport));
     await worker.initialize();
 
@@ -133,7 +133,7 @@ void testUdpBuffers() {
 
 void testFileBuffers() {
   test("(file)", () async {
-    final transport = TransportModule();
+    final transport = TransportModule()..initialize();
     final worker = Transport(transport.transport(configuration: TransportDefaults.transport));
     await worker.initialize();
     final file = io.File("file");
@@ -169,7 +169,7 @@ void testFileBuffers() {
 
 void testBuffersOverflow() {
   test("(overflow)", () async {
-    final transport = TransportModule();
+    final transport = TransportModule()..initialize();
     final worker = Transport(transport.transport(configuration: TransportDefaults.transport.copyWith(memoryConfiguration: MemoryDefaults.module.copyWith(staticBuffersCapacity: 2))));
     await worker.initialize();
 

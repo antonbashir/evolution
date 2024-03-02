@@ -11,7 +11,17 @@
 #include "mediator_constants.h"
 #include "mediator_dart.h"
 
-static inline struct io_uring_sqe* mediator_notifier_provide_sqe(struct io_uring* ring)
+struct mediator_dart_notifier_thread
+{
+    pthread_t main_thread_id;
+    pthread_mutex_t initialization_mutex;
+    pthread_cond_t initialization_condition;
+    pthread_mutex_t shutdown_mutex;
+    pthread_cond_t shutdown_condition;
+};
+
+static inline struct io_uring_sqe*
+mediator_notifier_provide_sqe(struct io_uring* ring)
 {
     struct io_uring_sqe* sqe = io_uring_get_sqe(ring);
     while (unlikely(sqe == NULL))
@@ -26,7 +36,7 @@ static void* mediator_notifier_listen(void* input)
 {
     struct mediator_dart_notifier* notifier = (struct mediator_dart_notifier*)input;
     int32_t error;
-    if (error = pthread_mutex_lock(&notifier->initialization_mutex))
+    if (error = pthread_mutex_lock(&notifier->thread->initialization_mutex))
     {
         notifier->initialization_error = strerror(error);
         return NULL;
@@ -46,7 +56,7 @@ static void* mediator_notifier_listen(void* input)
     }
     notifier->active = true;
     notifier->descriptor = ring->ring_fd;
-    if (error = pthread_cond_broadcast(&notifier->initialization_condition))
+    if (error = pthread_cond_broadcast(&notifier->thread->initialization_condition))
     {
         io_uring_queue_exit(ring);
         free(ring);
@@ -54,7 +64,7 @@ static void* mediator_notifier_listen(void* input)
         notifier->initialization_error = strerror(error);
         return NULL;
     }
-    if (error = pthread_mutex_unlock(&notifier->initialization_mutex))
+    if (error = pthread_mutex_unlock(&notifier->thread->initialization_mutex))
     {
         io_uring_queue_exit(ring);
         free(ring);
@@ -81,7 +91,7 @@ static void* mediator_notifier_listen(void* input)
 
             if (unlikely(!notifier->active))
             {
-                if (error = pthread_mutex_lock(&notifier->shutdown_mutex))
+                if (error = pthread_mutex_lock(&notifier->thread->shutdown_mutex))
                 {
                     notifier->shutdown_error = strerror(error);
                     return NULL;
@@ -89,12 +99,12 @@ static void* mediator_notifier_listen(void* input)
                 io_uring_queue_exit(ring);
                 free(ring);
                 notifier->initialized = false;
-                if (error = pthread_cond_broadcast(&notifier->shutdown_condition))
+                if (error = pthread_cond_broadcast(&notifier->thread->shutdown_condition))
                 {
                     notifier->shutdown_error = strerror(error);
                     return NULL;
                 }
-                if (error = pthread_mutex_unlock(&notifier->shutdown_mutex))
+                if (error = pthread_mutex_unlock(&notifier->thread->shutdown_mutex))
                 {
                     notifier->shutdown_error = strerror(error);
                     return NULL;
@@ -158,41 +168,42 @@ static void* mediator_notifier_listen(void* input)
 
 bool mediator_dart_notifier_initialize(struct mediator_dart_notifier* notifier, struct mediator_dart_notifier_configuration* configuration)
 {
+    notifier->thread = malloc(sizeof(struct mediator_dart_notifier_thread));
     notifier->configuration = *configuration;
     struct timespec timeout;
     timespec_get(&timeout, TIME_UTC);
     timeout.tv_sec += configuration->initialization_timeout_seconds;
     int32_t error;
-    if (error = pthread_create(&notifier->main_thread_id, NULL, mediator_notifier_listen, notifier))
+    if (error = pthread_create(&notifier->thread->main_thread_id, NULL, mediator_notifier_listen, notifier))
     {
         notifier->initialization_error = strerror(error);
         return false;
     }
-    if (error = pthread_mutex_lock(&notifier->initialization_mutex))
+    if (error = pthread_mutex_lock(&notifier->thread->initialization_mutex))
     {
         notifier->initialization_error = strerror(error);
         return false;
     }
     while (!notifier->active)
     {
-        if (error = pthread_cond_timedwait(&notifier->initialization_condition, &notifier->initialization_mutex, &timeout))
+        if (error = pthread_cond_timedwait(&notifier->thread->initialization_condition, &notifier->thread->initialization_mutex, &timeout))
         {
             notifier->initialization_error = strerror(error);
             return false;
         }
     }
     notifier->initialized = true;
-    if (error = pthread_mutex_unlock(&notifier->initialization_mutex))
+    if (error = pthread_mutex_unlock(&notifier->thread->initialization_mutex))
     {
         notifier->initialization_error = strerror(error);
         return false;
     }
-    if (error = pthread_cond_destroy(&notifier->initialization_condition))
+    if (error = pthread_cond_destroy(&notifier->thread->initialization_condition))
     {
         notifier->initialization_error = strerror(error);
         return false;
     }
-    if (error = pthread_mutex_destroy(&notifier->initialization_mutex))
+    if (error = pthread_mutex_destroy(&notifier->thread->initialization_mutex))
     {
         notifier->initialization_error = strerror(error);
         return false;
@@ -215,7 +226,7 @@ bool mediator_dart_notifier_shutdown(struct mediator_dart_notifier* notifier)
         io_uring_submit(ring);
     }
     int32_t error;
-    if (error = pthread_mutex_lock(&notifier->shutdown_mutex))
+    if (error = pthread_mutex_lock(&notifier->thread->shutdown_mutex))
     {
         notifier->shutdown_error = strerror(error);
         return false;
@@ -225,23 +236,23 @@ bool mediator_dart_notifier_shutdown(struct mediator_dart_notifier* notifier)
     timeout.tv_sec += notifier->configuration.shutdown_timeout_seconds;
     while (notifier->initialized)
     {
-        if (error = pthread_cond_timedwait(&notifier->shutdown_condition, &notifier->shutdown_mutex, &timeout))
+        if (error = pthread_cond_timedwait(&notifier->thread->shutdown_condition, &notifier->thread->shutdown_mutex, &timeout))
         {
             notifier->shutdown_error = strerror(error);
             return false;
         }
     }
-    if (error = pthread_mutex_unlock(&notifier->shutdown_mutex))
+    if (error = pthread_mutex_unlock(&notifier->thread->shutdown_mutex))
     {
         notifier->shutdown_error = strerror(error);
         return false;
     }
-    if (error = pthread_cond_destroy(&notifier->shutdown_condition))
+    if (error = pthread_cond_destroy(&notifier->thread->shutdown_condition))
     {
         notifier->shutdown_error = strerror(error);
         return false;
     }
-    if (error = pthread_mutex_destroy(&notifier->shutdown_mutex))
+    if (error = pthread_mutex_destroy(&notifier->thread->shutdown_mutex))
     {
         notifier->shutdown_error = strerror(error);
         return false;

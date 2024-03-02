@@ -18,15 +18,16 @@ final _mediators = List<Mediator>.empty(growable: true);
 @inline
 void _awakeMediator(int id) => _mediators[id]._awake();
 
+typedef MediatorProcessor = void Function(Pointer<Pointer<mediator_dart_completion_event>> completions, int count);
+
 class Mediator {
-  final _fromMediators = ReceivePort();
+  final _fromModule = ReceivePort();
   final wakingStopwatch = Stopwatch();
   final _callback = RawReceivePort(Zone.current.bindUnaryCallbackGuarded(_awakeMediator));
 
   late final MediatorConsumerRegistry _consumers;
   late final MediatorProducerRegistry _producers;
 
-  late final Pointer<mediator_dart> _pointer;
   late final Pointer<Pointer<mediator_dart_completion_event>> _completions;
   late final RawReceivePort _closer;
   late final SendPort _destroyer;
@@ -34,49 +35,55 @@ class Mediator {
   late final int descriptor;
   late final MediatorMessages messages;
   late final MemoryModule memory;
+  late final Pointer<mediator_dart> pointer;
+
+  late MediatorProcessor _processor = _process;
 
   @inline
-  int get id => _pointer.ref.id;
+  int get id => pointer.ref.id;
 
   @inline
-  bool get active => _pointer.ref.state & mediatorStateStopped == 0;
+  bool get active => pointer.ref.state & mediatorStateStopped == 0;
 
-  Mediator(SendPort toMediator) {
-    _closer = RawReceivePort((_) async {
-      deactivate();
-      _mediators.remove(_pointer.ref.id);
-      _callback.close();
-      memory.destroy();
-      calloc.free(_pointer);
-      _closer.close();
-      _destroyer.send(null);
-    });
-    toMediator.send([_fromMediators.sendPort, _closer.sendPort]);
+  Mediator(SendPort toModule) {
+    _closer = RawReceivePort(shutdown);
+    toModule.send([_fromModule.sendPort, _closer.sendPort]);
   }
 
-  Future<void> initialize() async {
-    final configuration = await _fromMediators.first as List;
-    _pointer = Pointer.fromAddress(configuration[0] as int).cast<mediator_dart>();
+  Future<void> initialize({MediatorProcessor? processor}) async {
+    _processor = processor ?? _processor;
+    final configuration = await _fromModule.first as List;
+    pointer = Pointer.fromAddress(configuration[0] as int).cast<mediator_dart>();
     _destroyer = configuration[1] as SendPort;
     descriptor = configuration[2] as int;
-    _fromMediators.close();
-    _completions = _pointer.ref.completions;
+    _fromModule.close();
+    _completions = pointer.ref.completions;
     memory = MemoryModule(load: false)..initialize();
     messages = MediatorMessages(memory);
-    _consumers = MediatorConsumerRegistry(_pointer);
-    _producers = MediatorProducerRegistry(_pointer);
-    while (_pointer.ref.id >= _mediators.length) _mediators.add(this);
-    _mediators[_pointer.ref.id] = this;
+    _consumers = MediatorConsumerRegistry(pointer);
+    _producers = MediatorProducerRegistry(pointer);
+    while (pointer.ref.id >= _mediators.length) _mediators.add(this);
+    _mediators[pointer.ref.id] = this;
+  }
+
+  Future<void> shutdown() async {
+    deactivate();
+    _mediators.remove(pointer.ref.id);
+    _callback.close();
+    memory.destroy();
+    calloc.free(pointer);
+    _closer.close();
+    _destroyer.send(null);
   }
 
   void activate() {
-    if (mediator_dart_register(_pointer, _callback.sendPort.nativePort) == mediatorErrorRingFull) {
+    if (mediator_dart_register(pointer, _callback.sendPort.nativePort) == mediatorErrorRingFull) {
       throw MediatorException(MediatorErrors.mediatorRingFullError);
     }
   }
 
   void deactivate() {
-    if (mediator_dart_unregister(_pointer) == mediatorErrorRingFull) {
+    if (mediator_dart_unregister(pointer) == mediatorErrorRingFull) {
       throw MediatorException(MediatorErrors.mediatorRingFullError);
     }
   }
@@ -85,33 +92,39 @@ class Mediator {
 
   T producer<T extends MediatorProducer>(T provider) => _producers.register(provider);
 
+  @inline
   void _awake() {
-    if (_pointer.ref.state & mediatorStateStopped == 0) {
-      if (mediator_dart_awake(_pointer) == mediatorErrorRingFull) {
-        mediator_dart_sleep(_pointer, 0);
+    if (pointer.ref.state & mediatorStateStopped == 0) {
+      if (mediator_dart_awake(pointer) == mediatorErrorRingFull) {
+        mediator_dart_sleep(pointer, 0);
         throw MediatorException(MediatorErrors.mediatorRingFullError);
       }
-      final cqeCount = mediator_dart_peek(_pointer);
-      if (cqeCount == 0) return;
-      for (var cqeIndex = 0; cqeIndex < cqeCount; cqeIndex++) {
-        Pointer<mediator_completion_event> cqe = (_completions + cqeIndex).value.cast();
-        final data = cqe.ref.user_data;
-        final result = cqe.ref.res;
-        if (data > 0) {
-          if (result & mediatorDartCall != 0) {
-            Pointer<mediator_message> message = Pointer.fromAddress(data);
-            _consumers.call(message);
-            continue;
-          }
-          if (result & mediatorDartCallback != 0) {
-            Pointer<mediator_message> message = Pointer.fromAddress(data);
-            _producers.callback(message);
-            continue;
-          }
+      final count = mediator_dart_peek(pointer);
+      if (count == 0) return;
+      _processor(_completions, count);
+      mediator_dart_sleep(pointer, count);
+    }
+  }
+
+  @inline
+  void _process(Pointer<Pointer<mediator_dart_completion_event>> completions, int count) {
+    for (var index = 0; index < count; index++) {
+      Pointer<mediator_completion_event> completion = (_completions + index).value.cast();
+      final data = completion.ref.user_data;
+      final result = completion.ref.res;
+      if (data > 0) {
+        if (result & mediatorDartCall != 0) {
+          Pointer<mediator_message> message = Pointer.fromAddress(data);
+          _consumers.call(message);
           continue;
         }
+        if (result & mediatorDartCallback != 0) {
+          Pointer<mediator_message> message = Pointer.fromAddress(data);
+          _producers.callback(message);
+          continue;
+        }
+        continue;
       }
-      mediator_dart_sleep(_pointer, cqeCount);
     }
   }
 }

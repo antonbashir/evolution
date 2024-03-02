@@ -11,8 +11,6 @@ typedef struct io_uring_cqe mediator_dart_completion_event;
 extern "C"
 {
 #endif
-    typedef void (*mediator_notify_callback)();
-
     struct mediator_dart
     {
         int64_t callback;

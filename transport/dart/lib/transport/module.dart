@@ -15,20 +15,25 @@ import 'exception.dart';
 
 class TransportModule {
   final _transportClosers = <SendPort>[];
-  final _workerPorts = <RawReceivePort>[];
-  final _workerDestroyer = ReceivePort();
+  final _transportPorts = <RawReceivePort>[];
+  final _transportDestroyer = ReceivePort();
+  final _mediator = MediatorModule();
 
   TransportModule({String? libraryPath, LibraryPackageMode memoryMode = LibraryPackageMode.static}) {
     libraryPath == null ? SystemLibrary.loadByName(transportLibraryName, transportPackageName) : SystemLibrary.loadByPath(libraryPath);
-    MediatorModule.load();
     MemoryModule.load(mode: memoryMode);
+  }
+
+  void initialize() {
+    _mediator.initialize();
   }
 
   Future<void> shutdown({Duration? gracefulTimeout}) async {
     _transportClosers.forEach((worker) => worker.send(gracefulTimeout));
-    await _workerDestroyer.take(_transportClosers.length).toList();
-    _workerDestroyer.close();
-    _workerPorts.forEach((port) => port.close());
+    await _transportDestroyer.take(_transportClosers.length).toList();
+    _transportDestroyer.close();
+    _transportPorts.forEach((port) => port.close());
+    await _mediator.shutdown();
   }
 
   SendPort transport({TransportConfiguration configuration = TransportDefaults.transport}) {
@@ -40,7 +45,7 @@ class TransportModule {
       final result = using(
         (arena) => bindings.transport_initialize(
           transportPointer,
-          configuration.toNative(arena<bindings.transport_configuration>(), arena<memory_module_configuration>()),
+          configuration.toNative(arena<bindings.transport_configuration>()),
           _transportClosers.length,
         ),
       );
@@ -48,10 +53,10 @@ class TransportModule {
         bindings.transport_destroy(transportPointer);
         throw TransportInitializationException(TransportMessages.workerError(result));
       }
-      final workerInput = [transportPointer.address, _workerDestroyer.sendPort];
+      final workerInput = [transportPointer.address, _transportDestroyer.sendPort, _mediator.mediator()];
       toTransport.send(workerInput);
     });
-    _workerPorts.add(port);
+    _transportPorts.add(port);
     return port.sendPort;
   }
 }

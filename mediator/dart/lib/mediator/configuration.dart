@@ -22,6 +22,17 @@ class MediatorConfiguration {
     return native;
   }
 
+  mediator_dart_configuration fillNative(mediator_dart_configuration native) {
+    native.ring_flags = ringFlags;
+    native.ring_size = ringSize;
+    native.static_buffer_size = staticBufferSize;
+    native.static_buffers_capacity = staticBuffersCapacity;
+    native.slab_size = memorySlabSize;
+    native.preallocation_size = memoryPreallocationSize;
+    native.quota_size = memoryQuotaSize;
+    return native;
+  }
+
   factory MediatorConfiguration.fromNative(Pointer<mediator_dart_configuration> native) => MediatorConfiguration(
         ringFlags: native.ref.ring_flags,
         ringSize: native.ref.ring_size,

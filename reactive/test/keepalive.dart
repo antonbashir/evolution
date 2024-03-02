@@ -20,7 +20,7 @@ void keepalive() {
       }
     }
 
-    final transport = TransportModule();
+    final transport = TransportModule()..initialize();
     final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
     await worker.initialize();
     final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module.copyWith(tracer: _trace));
@@ -46,7 +46,7 @@ void keepalive() {
   test('fail', timeout: Timeout(Duration(seconds: 60)), () async {
     final latch = Latch(2);
 
-    final transport = TransportModule();
+    final transport = TransportModule()..initialize();
     final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
     await worker.initialize();
     final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module);

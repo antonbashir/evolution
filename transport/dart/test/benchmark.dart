@@ -12,7 +12,7 @@ Future<void> main(List<String> args) async {
 }
 
 Future<void> _benchMyTcp() async {
-  final transport = TransportModule();
+  final transport = TransportModule()..initialize();
   final encoder = Utf8Encoder();
   final fromServer = encoder.convert("from server\n");
 
@@ -28,7 +28,7 @@ Future<void> _benchMyTcp() async {
           connection.writeSingle(fromServer);
         }),
       );
-    }, transport.transport(configuration: TransportDefaults.transport.copyWith(ringFlags: ringSetupSqpoll)));
+    }, transport.transport(configuration: TransportDefaults.transport.copyWith()));
   }
   await Future.delayed(Duration(seconds: 1));
   for (var i = 0; i < 2; i++) {

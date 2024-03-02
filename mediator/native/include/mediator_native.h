@@ -16,14 +16,14 @@ extern "C"
 
     struct mediator_native
     {
-        struct mediator_module_native_configuration configuration;
+        struct mediator_native_configuration configuration;
         struct io_uring* ring;
         mediator_native_completion_event** completions;
         struct mh_native_callbacks_t* callbacks;
         int32_t descriptor;
     };
 
-    int32_t mediator_native_initialize(struct mediator_native* mediator, struct mediator_module_native_configuration* configuration, uint8_t id);
+    int32_t mediator_native_initialize(struct mediator_native* mediator, struct mediator_native_configuration* configuration, uint8_t id);
 
     int32_t mediator_native_initialize_default(struct mediator_native* mediator, uint8_t id);
 

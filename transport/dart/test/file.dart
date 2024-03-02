@@ -9,7 +9,7 @@ import 'validators.dart';
 
 void testFileSingle({required int index}) {
   test("(single) [index = $index]", () async {
-    final transport = TransportModule();
+    final transport = TransportModule()..initialize();
     final worker = Transport(transport.transport(configuration: TransportDefaults.transport));
     await worker.initialize();
     var nativeFile = File("file-${worker.id}");
@@ -25,7 +25,7 @@ void testFileSingle({required int index}) {
 
 void testFileLoad({required int index, required int count}) {
   test("(load) [index = $index, count = $count]", () async {
-    final transport = TransportModule();
+    final transport = TransportModule()..initialize();
     final worker = Transport(transport.transport(configuration: TransportDefaults.transport));
     await worker.initialize();
     var nativeFile = File("file-${worker.id}");

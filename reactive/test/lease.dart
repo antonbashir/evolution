@@ -10,7 +10,7 @@ import 'latch.dart';
 void lease() {
   test("pass", () async {
     final latch = Latch(4);
-    final transport = TransportModule();
+    final transport = TransportModule()..initialize();
     final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
     await worker.initialize();
     final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module);
@@ -58,7 +58,7 @@ void lease() {
 
   test("fail", () async {
     final latch = Latch(1);
-    final transport = TransportModule();
+    final transport = TransportModule()..initialize();
     final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
     await worker.initialize();
     final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module);
@@ -102,7 +102,7 @@ void lease() {
   test("pass -> fail -> pass", () async {
     final payloadLatch = Latch(4);
     final errorLatch = Latch(1);
-    final transport = TransportModule();
+    final transport = TransportModule()..initialize();
     final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
     await worker.initialize();
     final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module);

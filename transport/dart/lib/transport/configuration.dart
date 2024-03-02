@@ -1,76 +1,41 @@
 import 'dart:ffi';
 
+import 'package:mediator/mediator.dart';
 import 'package:memory/memory.dart';
-import 'package:memory/memory/configuration.dart';
 
 import 'bindings.dart';
 
 class TransportConfiguration {
   final MemoryModuleConfiguration memoryConfiguration;
-  final int ringSize;
-  final int ringFlags;
+  final MediatorConfiguration mediatorConfiguration;
   final Duration timeoutCheckerPeriod;
-  final double delayRandomizationFactor;
-  final int cqePeekCount;
-  final int cqeWaitCount;
-  final Duration cqeWaitTimeout;
-  final Duration baseDelay;
-  final Duration maxDelay;
   final bool trace;
 
-  Pointer<transport_configuration> toNative(Pointer<transport_configuration> native, Pointer<memory_module_configuration> memory) {
-    native.ref.ring_flags = ringFlags;
-    native.ref.ring_size = ringSize;
-    native.ref.memory_configuration = memoryConfiguration.toNative(memory);
+  Pointer<transport_configuration> toNative(Pointer<transport_configuration> native) {
+    native.ref.memory_configuration = memoryConfiguration.toNativeValue(native.ref.memory_configuration);
+    native.ref.mediator_configuration = mediatorConfiguration.fillNative(native.ref.mediator_configuration);
     native.ref.timeout_checker_period_millis = timeoutCheckerPeriod.inMilliseconds;
-    native.ref.base_delay_micros = baseDelay.inMicroseconds;
-    native.ref.max_delay_micros = maxDelay.inMicroseconds;
-    native.ref.delay_randomization_factor = delayRandomizationFactor;
-    native.ref.cqe_peek_count = cqePeekCount;
-    native.ref.cqe_wait_count = cqeWaitCount;
-    native.ref.cqe_wait_timeout_millis = cqeWaitTimeout.inMilliseconds;
     native.ref.trace = trace;
     return native;
   }
 
   const TransportConfiguration({
+    required this.mediatorConfiguration,
     required this.memoryConfiguration,
-    required this.ringSize,
-    required this.ringFlags,
     required this.timeoutCheckerPeriod,
-    required this.delayRandomizationFactor,
-    required this.baseDelay,
-    required this.maxDelay,
-    required this.cqePeekCount,
-    required this.cqeWaitCount,
-    required this.cqeWaitTimeout,
     required this.trace,
   });
 
   TransportConfiguration copyWith({
     MemoryModuleConfiguration? memoryConfiguration,
-    int? ringSize,
-    int? ringFlags,
+    MediatorConfiguration? mediatorConfiguration,
     Duration? timeoutCheckerPeriod,
-    double? delayRandomizationFactor,
-    Duration? baseDelay,
-    Duration? maxDelay,
-    int? cqePeekCount,
-    int? cqeWaitCount,
-    Duration? cqeWaitTimeout,
     bool? trace,
   }) =>
       TransportConfiguration(
         memoryConfiguration: memoryConfiguration ?? this.memoryConfiguration,
-        ringSize: ringSize ?? this.ringSize,
-        ringFlags: ringFlags ?? this.ringFlags,
+        mediatorConfiguration: mediatorConfiguration ?? this.mediatorConfiguration,
         timeoutCheckerPeriod: timeoutCheckerPeriod ?? this.timeoutCheckerPeriod,
-        delayRandomizationFactor: delayRandomizationFactor ?? this.delayRandomizationFactor,
-        baseDelay: baseDelay ?? this.baseDelay,
-        maxDelay: maxDelay ?? this.maxDelay,
-        cqePeekCount: cqePeekCount ?? this.cqePeekCount,
-        cqeWaitCount: cqeWaitCount ?? this.cqeWaitCount,
-        cqeWaitTimeout: cqeWaitTimeout ?? this.cqeWaitTimeout,
         trace: trace ?? this.trace,
       );
 }
