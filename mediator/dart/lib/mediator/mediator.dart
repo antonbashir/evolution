@@ -74,54 +74,48 @@ class Mediator {
 
   void _awake() {
     if (_pointer.ref.state & mediatorStateIdle != 0) {
-      _pointer.ref.state = mediatorStateWaking;
       final cqeCount = mediator_dart_peek(_pointer);
-      for (var cqeIndex = 0; cqeIndex < cqeCount; cqeIndex++) {
-        Pointer<mediator_completion_event> cqe = (_completions + cqeIndex).value.cast();
-        final data = cqe.ref.user_data;
-        final result = cqe.ref.res;
-
-        if (data > 0) {
-          if (result & mediatorDartCall > 0) {
-            Pointer<mediator_message> message = Pointer.fromAddress(data);
-            _consumers.call(message);
-            continue;
-          }
-          if (result & mediatorDartCallback > 0) {
-            Pointer<mediator_message> message = Pointer.fromAddress(data);
-            _producers.callback(message);
-            continue;
-          }
-          continue;
-        }
+      if (cqeCount == 0) {
+        return;
       }
-      mediator_dart_completion_advance(_pointer, cqeCount);
+      _pointer.ref.state = mediatorStateWaking;
+      _process(cqeCount);
+      if (_maximumWakingTime == 0) {
+        mediator_dart_submit(_pointer);
+        _pointer.ref.state = mediatorStateIdle;
+        return;
+      }
       wakingStopwatch.start();
       while (wakingStopwatch.elapsedMilliseconds < _maximumWakingTime && _pointer.ref.state & mediatorStateStopped == 0) {
         final cqeCount = mediator_dart_peek_wait(_pointer);
-        for (var cqeIndex = 0; cqeIndex < cqeCount; cqeIndex++) {
-          Pointer<mediator_completion_event> cqe = (_completions + cqeIndex).value.cast();
-          final data = cqe.ref.user_data;
-          final result = cqe.ref.res;
-          if (data > 0) {
-            if (result & mediatorDartCall > 0) {
-              Pointer<mediator_message> message = Pointer.fromAddress(data);
-              _consumers.call(message);
-              continue;
-            }
-            if (result & mediatorDartCallback > 0) {
-              Pointer<mediator_message> message = Pointer.fromAddress(data);
-              _producers.callback(message);
-              continue;
-            }
-            continue;
-          }
-        }
-        mediator_dart_completion_advance(_pointer, cqeCount);
+        if (cqeCount != 0) _process(cqeCount);
       }
-      mediator_dart_submit(_pointer);
       wakingStopwatch.stop();
+      mediator_dart_submit(_pointer);
       _pointer.ref.state = mediatorStateIdle;
     }
+  }
+
+  void _process(int cqeCount) {
+    for (var cqeIndex = 0; cqeIndex < cqeCount; cqeIndex++) {
+      Pointer<mediator_completion_event> cqe = (_completions + cqeIndex).value.cast();
+      final data = cqe.ref.user_data;
+      final result = cqe.ref.res;
+
+      if (data > 0) {
+        if (result & mediatorDartCall != 0) {
+          Pointer<mediator_message> message = Pointer.fromAddress(data);
+          _consumers.call(message);
+          continue;
+        }
+        if (result & mediatorDartCallback != 0) {
+          Pointer<mediator_message> message = Pointer.fromAddress(data);
+          _producers.callback(message);
+          continue;
+        }
+        continue;
+      }
+    }
+    mediator_dart_completion_advance(_pointer, cqeCount);
   }
 }
