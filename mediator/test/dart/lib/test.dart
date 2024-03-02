@@ -10,17 +10,8 @@ import 'threading.dart';
 
 void main() {
   using((Arena arena) => dlopen("${dirname(Platform.script.toFilePath())}/../native/libmediatortest.so".toNativeUtf8(allocator: arena).cast(), rtldGlobal | rtldLazy));
-
   group("[call native]", testCallNative);
-  //group("[call dart]", testCallDart);
-  group("[threading native]", () {
-    for (var i = 0; i < 2048; i++) {
-      testThreadingNative();
-    }
-  });
-  // group("[threading dart]", () {
-  //   for (var i = 0; i < 2048; i++) {
-  //     testThreadingDart();
-  //   }
-  // });
+  group("[call dart]", testCallDart);
+  group("[threading native]", testThreadingNative);
+  group("[threading dart]", testThreadingDart);
 }

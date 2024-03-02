@@ -21,7 +21,7 @@ void _awakeMediator(int id) => _mediators[id]._awake();
 class Mediator {
   final _fromMediators = ReceivePort();
   final wakingStopwatch = Stopwatch();
-  final _callback = RawReceivePort(_awakeMediator);
+  final _callback = RawReceivePort(Zone.current.bindUnaryCallbackGuarded(_awakeMediator));
 
   late final MediatorConsumerRegistry _consumers;
   late final MediatorProducerRegistry _producers;
