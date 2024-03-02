@@ -1,7 +1,4 @@
 {
-  "C_Cpp.autocomplete": "disabled",
-  "C_Cpp.errorSquiggles": "disabled",
-  "C_Cpp.intelliSenseEngine": "disabled",
   "cmake.buildDirectory": "${workspaceFolder}",
   "dart.sdkPath": "~/development/dart-sources/sdk/out/ReleaseX64/dart-sdk",
   "dotnet.defaultSolution": "disable",
@@ -23,4 +20,16 @@
       "scheme": "file"
     }
   ],
+  "C_Cpp.errorSquiggles": "disabled",
+  "files.associations": {
+    "*.tcc": "c",
+    "bitset": "c",
+    "chrono": "c",
+    "algorithm": "c",
+    "random": "c",
+    "fstream": "c",
+    "streambuf": "c",
+    "*.inc": "c",
+    "test.h": "c"
+  },
 }

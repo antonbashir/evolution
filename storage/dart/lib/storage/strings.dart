@@ -13,7 +13,7 @@ class StorageStrings {
   (Pointer<Char>, int) allocate(String source) {
     final Pointer<Uint8> result = tarantool_create_string(_factory, source.length + 1).cast();
     final units = result.asTypedList(source.length + 1);
-    final length = fastEncodeString(source, units, 0);
+    final length = source.encode(units, 0);
     units[length] = 0;
     return (result.cast(), length);
   }

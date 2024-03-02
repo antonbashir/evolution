@@ -29,7 +29,7 @@ set(DEPENDENCY_TARANTOOL_REPOSITORY "developer@git.local:dependencies/tarantool.
 set(DEPENDENCY_TARANTOOL_VERSION evolution-3.0.0)
 
 set(CORE_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/core/native/include)
-set(INTERACTOR_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/interactor/native/include)
+set(MEDIATOR_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/mediator/native/include)
 set(MEMORY_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/memory/native/include)
 
 include(FetchContent)
@@ -38,8 +38,9 @@ include(infrastructure/cmake/infrastructure.cmake)
 
 add_subdirectory(core)
 add_subdirectory(memory)
-add_subdirectory(interactor)
+add_subdirectory(mediator)
 add_subdirectory(transport)
 add_subdirectory(storage)
+add_subdirectory(laboratory)
 
-add_custom_target(bundle_native ALL DEPENDS core_native memory_native interactor_native transport_native storage_native)
+add_custom_target(bundle_native ALL DEPENDS core_native memory_native mediator_native transport_native storage_native)

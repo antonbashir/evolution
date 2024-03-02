@@ -128,13 +128,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.0.2"
-  interactor:
-    dependency: transitive
-    description:
-      path: "../interactor/dart"
-      relative: true
-    source: path
-    version: "0.0.0"
   io:
     dependency: transitive
     description:
@@ -167,6 +160,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.12.16+1"
+  mediator:
+    dependency: transitive
+    description:
+      path: "../mediator/dart"
+      relative: true
+    source: path
+    version: "0.0.0"
   memory:
     dependency: "direct main"
     description:

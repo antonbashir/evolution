@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:ffi';
 
 import 'package:core/core.dart';
-import 'package:interactor/interactor.dart';
+import 'package:mediator/mediator.dart';
 import 'package:memory/memory.dart';
 
 import 'bindings.dart';
@@ -33,7 +33,7 @@ class StorageSpace {
   }
 
   @inline
-  int _completeCountBy(Pointer<interactor_message> message) {
+  int _completeCountBy(Pointer<mediator_message> message) {
     final count = message.outputInt;
     _factory.releaseSpaceCount(message.getInputObject());
     return count;
@@ -54,7 +54,7 @@ class StorageSpace {
   Future<bool> isNotEmpty() => length().then((value) => value != 0);
 
   @inline
-  int _completeLength(Pointer<interactor_message> message) {
+  int _completeLength(Pointer<mediator_message> message) {
     final length = message.outputInt;
     _factory.releaseMessage(message);
     return length;
@@ -70,7 +70,7 @@ class StorageSpace {
   }
 
   @inline
-  StorageIterator _completeIteratorBy(Pointer<interactor_message> message) {
+  StorageIterator _completeIteratorBy(Pointer<mediator_message> message) {
     final iterator = StorageIterator(message.outputInt, _descriptor, _factory, _producer);
     _factory.releaseSpaceIterator(message.getInputObject());
     return iterator;
@@ -85,14 +85,14 @@ class StorageSpace {
       _producer.spaceIterator(_descriptor, _factory.createSpaceIterator(_id, iteratorType.index, key, keySize)).then(_completeIteratorBy);
 
   @inline
-  Pointer<tarantool_tuple> _completeInsertSingle(Pointer<interactor_message> message) {
+  Pointer<tarantool_tuple> _completeInsertSingle(Pointer<mediator_message> message) {
     final tuple = Pointer<tarantool_tuple>.fromAddress(message.outputInt);
     _factory.releaseSpace(message.getInputObject());
     return tuple;
   }
 
   @inline
-  Pointer<tarantool_tuple_port> _completeInsertMany(Pointer<interactor_message> message) {
+  Pointer<tarantool_tuple_port> _completeInsertMany(Pointer<mediator_message> message) {
     final tuple = Pointer<tarantool_tuple_port>.fromAddress(message.outputInt);
     _factory.releaseSpace(message.getInputObject());
     return tuple;
@@ -111,7 +111,7 @@ class StorageSpace {
   }
 
   @inline
-  Pointer<tarantool_tuple> _completePutSingle(Pointer<interactor_message> message) {
+  Pointer<tarantool_tuple> _completePutSingle(Pointer<mediator_message> message) {
     final tuple = Pointer<tarantool_tuple>.fromAddress(message.outputInt);
     _factory.releaseSpace(message.getInputObject());
     return tuple;
@@ -124,7 +124,7 @@ class StorageSpace {
   }
 
   @inline
-  Pointer<tarantool_tuple_port> _completePutMany(Pointer<interactor_message> message) {
+  Pointer<tarantool_tuple_port> _completePutMany(Pointer<mediator_message> message) {
     final tuple = Pointer<tarantool_tuple_port>.fromAddress(message.outputInt);
     _factory.releaseSpace(message.getInputObject());
     return tuple;
@@ -137,7 +137,7 @@ class StorageSpace {
   }
 
   @inline
-  Pointer<tarantool_tuple> _completeDeleteSingle(Pointer<interactor_message> message) {
+  Pointer<tarantool_tuple> _completeDeleteSingle(Pointer<mediator_message> message) {
     final tuple = Pointer<tarantool_tuple>.fromAddress(message.outputInt);
     _factory.releaseSpace(message.getInputObject());
     return tuple;
@@ -150,7 +150,7 @@ class StorageSpace {
   }
 
   @inline
-  Pointer<tarantool_tuple_port> _completeDeleteMany(Pointer<interactor_message> message) {
+  Pointer<tarantool_tuple_port> _completeDeleteMany(Pointer<mediator_message> message) {
     final tuple = Pointer<tarantool_tuple_port>.fromAddress(message.outputInt);
     _factory.releaseSpace(message.getInputObject());
     return tuple;
@@ -163,7 +163,7 @@ class StorageSpace {
   }
 
   @inline
-  Pointer<tarantool_tuple> _completeGet(Pointer<interactor_message> message) {
+  Pointer<tarantool_tuple> _completeGet(Pointer<mediator_message> message) {
     final tuple = Pointer<tarantool_tuple>.fromAddress(message.outputInt);
     _factory.releaseSpace(message.getInputObject());
     return tuple;
@@ -182,7 +182,7 @@ class StorageSpace {
   }
 
   @inline
-  Pointer<tarantool_tuple> _completeMin(Pointer<interactor_message> message) {
+  Pointer<tarantool_tuple> _completeMin(Pointer<mediator_message> message) {
     final tuple = Pointer<tarantool_tuple>.fromAddress(message.outputInt);
     _factory.releaseSpace(message.getInputObject());
     return tuple;
@@ -201,7 +201,7 @@ class StorageSpace {
   }
 
   @inline
-  Pointer<tarantool_tuple> _completeMax(Pointer<interactor_message> message) {
+  Pointer<tarantool_tuple> _completeMax(Pointer<mediator_message> message) {
     final tuple = Pointer<tarantool_tuple>.fromAddress(message.outputInt);
     _factory.releaseSpace(message.getInputObject());
     return tuple;
@@ -217,7 +217,7 @@ class StorageSpace {
   Future<void> truncate() => _producer.spaceTruncate(_descriptor, _factory.createMessage()..inputInt = _id).then(_factory.releaseMessage);
 
   @inline
-  Pointer<tarantool_tuple> _completeUpdateSingle(Pointer<interactor_message> message) {
+  Pointer<tarantool_tuple> _completeUpdateSingle(Pointer<mediator_message> message) {
     final tuple = Pointer<tarantool_tuple>.fromAddress(message.outputInt);
     _factory.releaseSpaceUpdate(message.getInputObject());
     return tuple;
@@ -230,7 +230,7 @@ class StorageSpace {
   }
 
   @inline
-  Pointer<tarantool_tuple_port> _completeUpdateMany(Pointer<interactor_message> message) {
+  Pointer<tarantool_tuple_port> _completeUpdateMany(Pointer<mediator_message> message) {
     final tuple = Pointer<tarantool_tuple_port>.fromAddress(message.outputInt);
     _factory.releaseSpaceUpdate(message.getInputObject());
     return tuple;
@@ -243,7 +243,7 @@ class StorageSpace {
   }
 
   @inline
-  Pointer<tarantool_tuple> _completeUpsert(Pointer<interactor_message> message) {
+  Pointer<tarantool_tuple> _completeUpsert(Pointer<mediator_message> message) {
     final tuple = Pointer<tarantool_tuple>.fromAddress(message.outputInt);
     _factory.releaseSpaceUpsert(message.getInputObject());
     return tuple;
@@ -256,7 +256,7 @@ class StorageSpace {
   }
 
   @inline
-  Pointer<tarantool_tuple_port> _completeSelect(Pointer<interactor_message> message) {
+  Pointer<tarantool_tuple_port> _completeSelect(Pointer<mediator_message> message) {
     final tuple = Pointer<tarantool_tuple_port>.fromAddress(message.outputInt);
     _factory.releaseSpaceSelect(message.getInputObject());
     return tuple;

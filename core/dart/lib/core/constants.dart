@@ -1,6 +1,7 @@
 import 'dart:ffi';
 
 const inline = pragma("vm:prefer-inline");
+const neverInline = pragma("vm:never-inline");
 
 final coreLibraryName = bool.fromEnvironment("DEBUG") ? "libcore_debug_${Abi.current()}.so" : "libcore_release_${Abi.current()}.so";
 const corePackageName = "core";

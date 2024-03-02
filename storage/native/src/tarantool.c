@@ -2,7 +2,7 @@
 #include <dlfcn.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <interactor_native.h>
+#include <mediator_native.h>
 #include <lauxlib.h>
 #include <lua.h>
 #include <luajit.h>
@@ -159,7 +159,7 @@ bool tarantool_initialize(struct tarantool_configuration* configuration, struct 
     
     executor.configuration = &storage.configuration;
     executor.executor_ring_size = configuration->executor_ring_size;
-    executor.interactor_id = 0;
+    executor.mediator_id = 0;
 
     struct tarantool_initialization_args* args = calloc(1, sizeof(struct tarantool_initialization_args));
     if (args == NULL)

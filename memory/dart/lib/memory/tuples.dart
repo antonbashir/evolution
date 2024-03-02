@@ -149,27 +149,27 @@ int tupleWriteString(Uint8List buffer, ByteData data, String value, int offset) 
   final length = value.length;
   if (length <= 0x1F) {
     data.setUint8(offset++, 0xA0 | length);
-    fastEncodeString(value, buffer, offset);
+    value.encode(buffer, offset);
     return offset + length;
   }
   if (length <= 0xFF) {
     data.setUint8(offset++, 0xd9);
     data.setUint8(offset++, length);
-    fastEncodeString(value, buffer, offset);
+    value.encode(buffer, offset);
     return offset + length;
   }
   if (length <= 0xFFFF) {
     data.setUint8(offset++, 0xda);
     data.setUint16(offset, length);
     offset += 2;
-    fastEncodeString(value, buffer, offset);
+    value.encode(buffer, offset);
     return offset + length;
   }
   if (length <= 0xFFFFFFFF) {
     data.setUint8(offset++, 0xdb);
     data.setUint32(offset, length);
     offset += 4;
-    fastEncodeString(value, buffer, offset);
+    value.encode(buffer, offset);
     return offset + length;
   }
   throw ArgumentError('Max string length is 0xFFFFFFFF');
@@ -501,7 +501,6 @@ extension MemoryTupleMapExtension<K, V> on Map<K, V> {
   @inline
   int get tupleSize => tupleSizeOfMap(length);
 
-  @inline
   int computeTupleSize() {
     var size = tupleSize;
     for (var entry in entries) {
@@ -570,7 +569,6 @@ extension MemoryTupleMapExtension<K, V> on Map<K, V> {
   @inline
   int writeToTuple(Uint8List buffer, ByteData data, int offset) => tupleWriteMap(data, length, offset);
 
-  @inline
   int serializeToTuple(Uint8List buffer, ByteData data, int offset) {
     offset = tupleWriteMap(data, length, offset);
     for (var entry in entries) {
@@ -644,7 +642,6 @@ extension MemoryTupleListExtension<T> on List<T> {
   @inline
   int writeToTuple(Uint8List buffer, ByteData data, int offset) => tupleWriteList(data, length, offset);
 
-  @inline
   int computeTupleSize() {
     var size = tupleSize;
     for (var entry in this) {
@@ -681,7 +678,6 @@ extension MemoryTupleListExtension<T> on List<T> {
     return size;
   }
 
-  @inline
   int serializeToTuple(Uint8List buffer, ByteData data, int offset) {
     offset = tupleWriteList(data, length, offset);
     for (var entry in this) {

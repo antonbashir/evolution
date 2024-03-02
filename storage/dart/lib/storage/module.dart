@@ -3,7 +3,7 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:ffi/ffi.dart';
-import 'package:interactor/interactor.dart';
+import 'package:mediator/mediator.dart';
 
 import 'bindings.dart';
 import 'configuration.dart';
@@ -26,7 +26,7 @@ class StorageModule {
   StreamSubscription<ProcessSignal>? _reloadListener = null;
 
   StorageModule({String? libraryPath}) : _library = libraryPath == null ? SystemLibrary.loadByName(storageLibraryName, storagePackageName) : SystemLibrary.loadByPath(libraryPath) {
-    InteractorModule.load();
+    MediatorModule.load();
   }
 
   StorageExecutor get executor => _executor;

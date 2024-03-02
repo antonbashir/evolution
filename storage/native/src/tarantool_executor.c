@@ -4,22 +4,22 @@
 #include <stdbool.h>
 #include <sys/eventfd.h>
 #include "fiber.h"
-#include "interactor_native.h"
+#include "mediator_native.h"
 
-static struct interactor_native* tarantool_interactor;
+static struct mediator_native* tarantool_mediator;
 static int tarantool_eventfd;
 static bool active;
 
 int tarantool_executor_initialize(struct tarantool_executor_configuration* configuration)
 {
     tarantool_eventfd = eventfd(0, EFD_CLOEXEC | EFD_NONBLOCK);
-    tarantool_interactor = calloc(1, sizeof(struct interactor_native));
+    tarantool_mediator = calloc(1, sizeof(struct mediator_native));
     int descriptor;
-    if ((descriptor = interactor_native_initialize_default(tarantool_interactor, configuration->interactor_id)) < 0)
+    if ((descriptor = mediator_native_initialize_default(tarantool_mediator, configuration->mediator_id)) < 0)
     {
         return -descriptor;
     }
-    io_uring_register_eventfd(tarantool_interactor->ring, tarantool_eventfd);
+    io_uring_register_eventfd(tarantool_mediator->ring, tarantool_eventfd);
     active = true;
     return 0;
 }
@@ -35,13 +35,13 @@ void tarantool_executor_start(struct tarantool_executor_configuration* configura
     ev_io_start(loop(), &io);
     while (likely(active))
     {
-        io_uring_submit(tarantool_interactor->ring);
-        if (likely(io_uring_cq_ready(tarantool_interactor->ring)))
+        io_uring_submit(tarantool_mediator->ring);
+        if (likely(io_uring_cq_ready(tarantool_mediator->ring)))
         {
             if (!active) break;
             eventfd_read(tarantool_eventfd, &count);
-            interactor_native_process(tarantool_interactor);
-            io_uring_submit(tarantool_interactor->ring);
+            mediator_native_process(tarantool_mediator);
+            io_uring_submit(tarantool_mediator->ring);
         }
         fiber_yield();
     }
@@ -52,25 +52,25 @@ void tarantool_executor_start(struct tarantool_executor_configuration* configura
 
 int tarantool_executor_descriptor()
 {
-    return tarantool_interactor->descriptor;
+    return tarantool_mediator->descriptor;
 }
 
 void tarantool_executor_stop()
 {
     active = false;
-    struct io_uring_sqe* sqe = io_uring_get_sqe(tarantool_interactor->ring);
+    struct io_uring_sqe* sqe = io_uring_get_sqe(tarantool_mediator->ring);
     while (unlikely(sqe == NULL))
     {
         struct io_uring_cqe* unused;
-        io_uring_wait_cqe_nr(tarantool_interactor->ring, &unused, 1);
-        sqe = io_uring_get_sqe(tarantool_interactor->ring);
+        io_uring_wait_cqe_nr(tarantool_mediator->ring, &unused, 1);
+        sqe = io_uring_get_sqe(tarantool_mediator->ring);
     }
     io_uring_prep_nop(sqe);
-    io_uring_submit(tarantool_interactor->ring);
+    io_uring_submit(tarantool_mediator->ring);
 }
 
 void tarantool_executor_destroy()
 {
     close(tarantool_eventfd);
-    interactor_native_destroy(tarantool_interactor);
+    mediator_native_destroy(tarantool_mediator);
 }

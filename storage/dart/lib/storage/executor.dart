@@ -5,7 +5,7 @@ import 'dart:typed_data';
 
 import 'package:core/core.dart';
 import 'package:ffi/ffi.dart';
-import 'package:interactor/interactor.dart';
+import 'package:mediator/mediator.dart';
 import 'package:memory/memory.dart';
 import 'package:memory/memory/defaults.dart';
 
@@ -16,47 +16,47 @@ import 'factory.dart';
 import 'schema.dart';
 import 'strings.dart';
 
-class StorageProducer implements InteractorProducer {
+class StorageProducer implements MediatorProducer {
   final Pointer<tarantool_box> _box;
 
   StorageProducer(this._box);
 
-  late final InteractorMethod evaluate;
-  late final InteractorMethod call;
-  late final InteractorMethod freeOutputBuffer;
-  late final InteractorMethod iteratorNextSingle;
-  late final InteractorMethod iteratorNextMany;
-  late final InteractorMethod iteratorDestroy;
-  late final InteractorMethod spaceIdByName;
-  late final InteractorMethod spaceCount;
-  late final InteractorMethod spaceLength;
-  late final InteractorMethod spaceIterator;
-  late final InteractorMethod spaceInsertSingle;
-  late final InteractorMethod spaceInsertMany;
-  late final InteractorMethod spacePutSingle;
-  late final InteractorMethod spacePutMany;
-  late final InteractorMethod spaceDeleteSingle;
-  late final InteractorMethod spaceDeleteMany;
-  late final InteractorMethod spaceUpdateSingle;
-  late final InteractorMethod spaceUpdateMany;
-  late final InteractorMethod spaceGet;
-  late final InteractorMethod spaceMin;
-  late final InteractorMethod spaceMax;
-  late final InteractorMethod spaceTruncate;
-  late final InteractorMethod spaceUpsert;
-  late final InteractorMethod indexCount;
-  late final InteractorMethod indexLength;
-  late final InteractorMethod indexIterator;
-  late final InteractorMethod indexGet;
-  late final InteractorMethod indexMax;
-  late final InteractorMethod indexMin;
-  late final InteractorMethod indexUpdateSingle;
-  late final InteractorMethod indexUpdateMany;
-  late final InteractorMethod indexSelect;
-  late final InteractorMethod indexIdByName;
+  late final MediatorMethod evaluate;
+  late final MediatorMethod call;
+  late final MediatorMethod freeOutputBuffer;
+  late final MediatorMethod iteratorNextSingle;
+  late final MediatorMethod iteratorNextMany;
+  late final MediatorMethod iteratorDestroy;
+  late final MediatorMethod spaceIdByName;
+  late final MediatorMethod spaceCount;
+  late final MediatorMethod spaceLength;
+  late final MediatorMethod spaceIterator;
+  late final MediatorMethod spaceInsertSingle;
+  late final MediatorMethod spaceInsertMany;
+  late final MediatorMethod spacePutSingle;
+  late final MediatorMethod spacePutMany;
+  late final MediatorMethod spaceDeleteSingle;
+  late final MediatorMethod spaceDeleteMany;
+  late final MediatorMethod spaceUpdateSingle;
+  late final MediatorMethod spaceUpdateMany;
+  late final MediatorMethod spaceGet;
+  late final MediatorMethod spaceMin;
+  late final MediatorMethod spaceMax;
+  late final MediatorMethod spaceTruncate;
+  late final MediatorMethod spaceUpsert;
+  late final MediatorMethod indexCount;
+  late final MediatorMethod indexLength;
+  late final MediatorMethod indexIterator;
+  late final MediatorMethod indexGet;
+  late final MediatorMethod indexMax;
+  late final MediatorMethod indexMin;
+  late final MediatorMethod indexUpdateSingle;
+  late final MediatorMethod indexUpdateMany;
+  late final MediatorMethod indexSelect;
+  late final MediatorMethod indexIdByName;
 
   @override
-  void initialize(InteractorProducerRegistrat registrat) {
+  void initialize(MediatorProducerRegistrat registrat) {
     evaluate = registrat.register(_box.ref.tarantool_evaluate_address);
     call = registrat.register(_box.ref.tarantool_call_address);
     iteratorNextSingle = registrat.register(_box.ref.tarantool_iterator_next_single_address);
@@ -93,20 +93,20 @@ class StorageProducer implements InteractorProducer {
   }
 }
 
-class StorageConsumer implements InteractorConsumer {
+class StorageConsumer implements MediatorConsumer {
   StorageConsumer();
 
   @override
-  List<InteractorCallback> callbacks() => [];
+  List<MediatorCallback> callbacks() => [];
 }
 
 class StorageExecutor {
-  final interactors = InteractorModule(memoryMode: LibraryPackageMode.shared);
+  final mediators = MediatorModule(memoryMode: LibraryPackageMode.shared);
 
   final Pointer<tarantool_box> _box;
 
   late final StorageSchema _schema;
-  late final Interactor _interactor;
+  late final Mediator _mediator;
   late final int _descriptor;
   late final MemoryTuples _tuples;
   late final StorageProducer _producer;
@@ -118,11 +118,11 @@ class StorageExecutor {
 
   StorageSchema get schema => _schema;
   MemoryTuples get tuples => _tuples;
-  MemoryModule get memory => _interactor.memory;
+  MemoryModule get memory => _mediator.memory;
 
   Future<void> initialize() async {
-    _interactor = Interactor(interactors.interactor());
-    await _interactor.initialize();
+    _mediator = Mediator(mediators.mediator());
+    await _mediator.initialize();
     _descriptor = tarantool_executor_descriptor();
     _nativeFactory = calloc<tarantool_factory>(sizeOf<tarantool_factory>());
     using((Arena arena) {
@@ -132,21 +132,21 @@ class StorageExecutor {
       configuration.ref.slab_size = MemoryDefaults.module.slabSize;
       tarantool_factory_initialize(_nativeFactory, configuration);
     });
-    _interactor.consumer(StorageConsumer());
-    _producer = _interactor.producer(StorageProducer(_box));
-    _tuples = MemoryTuples(_interactor.memory.pointer);
+    _mediator.consumer(StorageConsumer());
+    _producer = _mediator.producer(StorageProducer(_box));
+    _tuples = MemoryTuples(_mediator.memory.pointer);
     _strings = StorageStrings(_nativeFactory);
     _factory = StorageFactory(memory, _strings);
     _schema = StorageSchema(_descriptor, this, _tuples, _producer, _factory);
-    _interactor.activate();
+    _mediator.activate();
   }
 
-  Future<void> stop() => _interactor.deactivate();
+  Future<void> stop() => _mediator.deactivate();
 
   Future<void> destroy() async {
     tarantool_factory_destroy(_nativeFactory);
     calloc.free(_nativeFactory.cast());
-    await interactors.shutdown();
+    await mediators.shutdown();
   }
 
   @inline
@@ -191,7 +191,7 @@ class StorageExecutor {
   Future<void> require(String module) => evaluate(LuaExpressions.require(module));
 
   @inline
-  (Uint8List, void Function()) _parseLuaEvaluate(Pointer<interactor_message> message) {
+  (Uint8List, void Function()) _parseLuaEvaluate(Pointer<mediator_message> message) {
     final buffer = message.outputPointer;
     final bufferSize = message.outputSize;
     final result = buffer.cast<Uint8>().asTypedList(message.outputSize);
@@ -200,7 +200,7 @@ class StorageExecutor {
   }
 
   @inline
-  (Uint8List, void Function()) _parseLuaCall(Pointer<interactor_message> message) {
+  (Uint8List, void Function()) _parseLuaCall(Pointer<mediator_message> message) {
     final buffer = message.outputPointer;
     final bufferSize = message.outputSize;
     final result = message.outputPointer.cast<Uint8>().asTypedList(message.outputSize);

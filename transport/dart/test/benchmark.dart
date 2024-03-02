@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
 
-import 'package:interactor/interactor/constants.dart';
+import 'package:mediator/mediator/constants.dart';
 import 'package:transport/transport.dart';
 
 Future<void> main(List<String> args) async {

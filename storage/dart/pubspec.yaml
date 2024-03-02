@@ -16,8 +16,8 @@ dependencies:
     path: ../../memory/dart
   core:
     path: ../../core/dart
-  interactor:
-    path: ../../interactor/dart
+  mediator:
+    path: ../../mediator/dart
 
 ffigen:
   name: "TarantoolBindings"
@@ -51,13 +51,13 @@ ffigen:
       - "max_align_t"
   type-map:
     "structs":
-      "interactor_message":
-        "lib": "interactor"
-        "c-type": "interactor_message"
-        "dart-type": "interactor_message"
-      "interactor_completion_event":
-        "lib": "interactor"
-        "c-type": "interactor_completion_event"
-        "dart-type": "interactor_completion_event"
+      "mediator_message":
+        "lib": "mediator"
+        "c-type": "mediator_message"
+        "dart-type": "mediator_message"
+      "mediator_completion_event":
+        "lib": "mediator"
+        "c-type": "mediator_completion_event"
+        "dart-type": "mediator_completion_event"
   library-imports:
-    interactor: "package:interactor/interactor.dart"
+    mediator: "package:mediator/mediator.dart"

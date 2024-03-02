@@ -24,11 +24,11 @@
     },
     {
       "type": "cmake",
-      "label": "interactor-native-build",
+      "label": "mediator-native-build",
       "command": "cleanRebuild",
       "targets": [
-        "interactor_native",
-        "interactor_test"
+        "mediator_native",
+        "mediator_test"
       ],
       "group": "build",
       "problemMatcher": [],

@@ -4,7 +4,7 @@ import 'dart:isolate';
 
 import 'package:core/core.dart';
 import 'package:ffi/ffi.dart';
-import 'package:interactor/interactor.dart';
+import 'package:mediator/mediator.dart';
 import 'package:memory/memory.dart';
 import 'package:transport/transport/defaults.dart';
 
@@ -20,7 +20,7 @@ class TransportModule {
 
   TransportModule({String? libraryPath, LibraryPackageMode memoryMode = LibraryPackageMode.static}) {
     libraryPath == null ? SystemLibrary.loadByName(transportLibraryName, transportPackageName) : SystemLibrary.loadByPath(libraryPath);
-    InteractorModule.load();
+    MediatorModule.load();
     MemoryModule.load(mode: memoryMode);
   }
 

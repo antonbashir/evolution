@@ -15,8 +15,8 @@ dependencies:
     path: ../../core/dart
   memory:
     path: ../../memory/dart
-  interactor:
-    path: ../../interactor/dart
+  mediator:
+    path: ../../mediator/dart
 
 ffigen:
   name: "TransportBindings"
@@ -61,10 +61,10 @@ ffigen:
       - "file_(.*)"
   type-map:
     structs:
-      "interactor_completion_event":
-        lib: "interactor"
-        c-type: "interactor_completion_event"
-        dart-type: "interactor_completion_event"
+      "mediator_completion_event":
+        lib: "mediator"
+        c-type: "mediator_completion_event"
+        dart-type: "mediator_completion_event"
       "iovec":
         lib: "memory"
         c-type: "iovec"
@@ -74,5 +74,5 @@ ffigen:
         c-type: "memory_module_configuration"
         dart-type: "memory_module_configuration"
   library-imports:
-    interactor: package:interactor/interactor.dart
+    mediator: package:mediator/mediator.dart
     memory: package:memory/memory.dart

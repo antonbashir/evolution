@@ -3,7 +3,7 @@ import 'dart:ffi';
 import 'dart:isolate';
 import 'dart:math';
 
-import 'package:interactor/interactor.dart';
+import 'package:mediator/mediator.dart';
 import 'package:memory/memory.dart';
 import 'package:memory/memory/configuration.dart';
 import 'package:meta/meta.dart';
@@ -26,7 +26,7 @@ class Transport {
 
   late final Pointer<transport> _pointer;
   late final Pointer<io_uring> _ring;
-  late final Pointer<Pointer<interactor_completion_event>> _cqes;
+  late final Pointer<Pointer<mediator_completion_event>> _cqes;
   late final RawReceivePort _closer;
   late final SendPort _destroyer;
   late final TransportClientRegistry _clientRegistry;

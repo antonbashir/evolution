@@ -1,0 +1,213 @@
+#include <mediator_native.h>
+#include <liburing.h>
+#include <liburing/io_uring.h>
+#include <stdint.h>
+#include <sys/resource.h>
+#include <sys/socket.h>
+#include "mediator_collections.h"
+#include "mediator_common.h"
+#include "mediator_configuration.h"
+#include "mediator_constants.h"
+
+int mediator_native_initialize(struct mediator_native* mediator, struct mediator_module_native_configuration* configuration, uint8_t id)
+{
+    mediator->id = id;
+    mediator->ring_size = configuration->ring_size;
+    mediator->completions = malloc(sizeof(struct io_uring_cqe*) * mediator->ring_size);
+    mediator->cqe_wait_count = configuration->cqe_wait_count;
+    mediator->cqe_peek_count = configuration->cqe_peek_count;
+    mediator->cqe_wait_timeout_millis = configuration->cqe_wait_timeout_millis;
+    if (!mediator->completions)
+    {
+        return -ENOMEM;
+    }
+
+    mediator->callbacks = mh_native_callbacks_new();
+    if (!mediator->callbacks)
+    {
+        return -ENOMEM;
+    }
+
+    mediator->ring = calloc(1, sizeof(struct io_uring));
+    if (!mediator->ring)
+    {
+        return -ENOMEM;
+    }
+
+    int result = io_uring_queue_init(configuration->ring_size, mediator->ring, configuration->ring_flags);
+    if (result)
+    {
+        return result;
+    }
+
+    mediator->descriptor = mediator->ring->ring_fd;
+
+    return mediator->descriptor;
+}
+
+int mediator_native_initialize_default(struct mediator_native* mediator, uint8_t id)
+{
+    struct mediator_module_native_configuration configuration = {
+        .static_buffers_capacity = 4096,
+        .static_buffer_size = 4096,
+        .ring_size = 16384,
+        .ring_flags = 0,
+        .cqe_peek_count = 1024,
+        .cqe_wait_count = 1,
+        .cqe_wait_timeout_millis = 1,
+        .preallocation_size = 64 * 1024,
+        .slab_size = 64 * 1024,
+        .quota_size = 1 * 1024 * 1024,
+    };
+    return mediator_native_initialize(mediator, &configuration, id);
+}
+
+void mediator_native_register_callback(struct mediator_native* mediator, uint64_t owner, uint64_t method, void (*callback)(struct mediator_message*))
+{
+    struct mh_native_callbacks_node_t node = {
+        .callback = callback,
+        .key = {
+            .method = method,
+            .owner = owner,
+        },
+    };
+    mh_native_callbacks_put((struct mh_native_callbacks_t*)mediator->callbacks, &node, NULL, 0);
+}
+
+int mediator_native_count_ready(struct mediator_native* mediator)
+{
+    return io_uring_cq_ready(mediator->ring);
+}
+
+int mediator_native_count_ready_submit(struct mediator_native* mediator)
+{
+    io_uring_submit(mediator->ring);
+    return io_uring_cq_ready(mediator->ring);
+}
+
+static inline void mediator_native_process_implementation(struct mediator_native* mediator)
+{
+    struct io_uring_cqe* cqe;
+    unsigned head;
+    unsigned count = 0;
+    io_uring_for_each_cqe(mediator->ring, head, cqe)
+    {
+        count++;
+        if (cqe->res == MEDIATOR_NATIVE_CALL)
+        {
+            struct mediator_message* message = (struct mediator_message*)cqe->user_data;
+            void (*pointer)(struct mediator_message*) = (void (*)(struct mediator_message*))message->method;
+            pointer(message);
+            struct io_uring_sqe* sqe = mediator_provide_sqe(mediator->ring);
+            uint64_t target = message->source;
+            message->source = mediator->descriptor;
+            message->target = target;
+            io_uring_prep_msg_ring(sqe, target, MEDIATOR_DART_CALLBACK, (uint64_t)((intptr_t)message), 0);
+            sqe->flags |= IOSQE_CQE_SKIP_SUCCESS;
+            continue;
+        }
+
+        if (cqe->res == MEDIATOR_NATIVE_CALLBACK)
+        {
+            struct mediator_message* message = (struct mediator_message*)cqe->user_data;
+            struct mh_native_callbacks_key_t key = {
+                .owner = message->owner,
+                .method = message->method,
+            };
+            mh_int_t callback;
+            if ((callback = mh_native_callbacks_find(mediator->callbacks, key, 0)) != mh_end((struct mh_native_callbacks_t*)mediator->callbacks))
+            {
+                struct mh_native_callbacks_node_t* node = mh_native_callbacks_node((struct mh_native_callbacks_t*)mediator->callbacks, callback);
+                node->callback(message);
+            }
+            continue;
+        }
+    }
+    io_uring_cq_advance(mediator->ring, count);
+}
+
+void mediator_native_process(struct mediator_native* mediator)
+{
+    mediator_native_process_implementation(mediator);
+}
+
+void mediator_native_process_infinity(struct mediator_native* mediator)
+{
+    io_uring_submit_and_wait(mediator->ring, mediator->cqe_wait_count);
+    if (io_uring_cq_ready(mediator->ring) > 0)
+    {
+        mediator_native_process_implementation(mediator);
+    }
+}
+
+void mediator_native_process_timeout(struct mediator_native* mediator)
+{
+    struct __kernel_timespec timeout = {
+        .tv_nsec = mediator->cqe_wait_timeout_millis * 1e+6,
+        .tv_sec = 0,
+    };
+    io_uring_submit_and_wait_timeout(mediator->ring, &mediator->completions[0], mediator->cqe_wait_count, &timeout, 0);
+    if (io_uring_cq_ready(mediator->ring) > 0)
+    {
+        mediator_native_process_implementation(mediator);
+    }
+}
+
+void mediator_native_foreach(struct mediator_native* mediator, void (*call)(struct mediator_message*), void (*callback)(struct mediator_message*))
+{
+    struct io_uring_cqe* cqe;
+    unsigned head;
+    unsigned count = 0;
+    io_uring_for_each_cqe(mediator->ring, head, cqe)
+    {
+        count++;
+        if (cqe->res == MEDIATOR_NATIVE_CALL && call)
+        {
+            struct mediator_message* message = (struct mediator_message*)cqe->user_data;
+            call(message);
+            continue;
+        }
+
+        if (cqe->res == MEDIATOR_NATIVE_CALLBACK && callback)
+        {
+            struct mediator_message* message = (struct mediator_message*)cqe->user_data;
+            callback(message);
+            continue;
+        }
+    }
+    io_uring_cq_advance(mediator->ring, count);
+}
+
+int mediator_native_submit(struct mediator_native* mediator)
+{
+    return io_uring_submit(mediator->ring);
+}
+
+void mediator_native_call_dart(struct mediator_native* mediator, int target_ring_fd, struct mediator_message* message)
+{
+    message->source = mediator->descriptor;
+    message->target = target_ring_fd;
+    message->flags |= MEDIATOR_DART_CALL;
+    struct io_uring_sqe* sqe = mediator_provide_sqe(mediator->ring);
+    io_uring_prep_msg_ring(sqe, target_ring_fd, MEDIATOR_DART_CALL, (uint64_t)((intptr_t)message), 0);
+    sqe->flags |= IOSQE_CQE_SKIP_SUCCESS;
+}
+
+void mediator_native_callback_to_dart(struct mediator_native* mediator, struct mediator_message* message)
+{
+    struct io_uring_sqe* sqe = mediator_provide_sqe(mediator->ring);
+    uint64_t target = message->source;
+    message->source = mediator->descriptor;
+    message->target = target;
+    message->flags |= MEDIATOR_DART_CALLBACK;
+    io_uring_prep_msg_ring(sqe, target, MEDIATOR_DART_CALLBACK, (uint64_t)((intptr_t)message), 0);
+    sqe->flags |= IOSQE_CQE_SKIP_SUCCESS;
+}
+
+void mediator_native_destroy(struct mediator_native* mediator)
+{
+    io_uring_queue_exit(mediator->ring);
+    mh_native_callbacks_delete(mediator->callbacks);
+    free(mediator->ring);
+    free(mediator->completions);
+}

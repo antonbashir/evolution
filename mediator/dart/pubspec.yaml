@@ -1,0 +1,50 @@
+name: mediator
+version: 0.0.0
+publish_to: none
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+dev_dependencies:
+  ffigen: ^11.0.0
+
+dependencies:
+  ffi: ^2.1.0
+  core:
+    path:
+      ../../core/dart
+  memory:
+    path:
+      ../../memory/dart
+
+ffigen:
+  name: "MediatorBindings"
+  ffi-native:
+    assetId: "mediator-bindings"
+  description: "Bindings for Mediator"
+  output: "lib/mediator/bindings.dart"
+  compiler-opts:
+    - "-I../native/include"
+  headers:
+    entry-points:
+      - "../native/mediator_dart.h"
+  globals:
+    exclude:
+      - "(.*)"
+  macros:
+    exclude:
+      - "(.*)"
+  typedefs:
+    exclude:
+      - "_(.*)"
+  functions:
+    leaf:
+      include:
+        - "mediator_dart_.*"
+    exclude:
+      - "_(.*)"
+  structs:
+    exclude:
+      - "_(.*)"
+      - "max_align_t"
+      - "file_(.*)"
