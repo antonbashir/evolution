@@ -80,7 +80,7 @@ class Mediator {
         Pointer<mediator_completion_event> cqe = (_completions + cqeIndex).value.cast();
         final data = cqe.ref.user_data;
         final result = cqe.ref.res;
-        
+
         if (data > 0) {
           if (result & mediatorDartCall > 0) {
             Pointer<mediator_message> message = Pointer.fromAddress(data);
@@ -117,6 +117,7 @@ class Mediator {
             continue;
           }
         }
+        mediator_dart_completion_advance(_pointer, cqeCount);
       }
       mediator_dart_submit(_pointer);
       wakingStopwatch.stop();

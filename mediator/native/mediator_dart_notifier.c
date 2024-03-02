@@ -1,5 +1,4 @@
 #include "mediator_dart_notifier.h"
-#include <assert.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -73,13 +72,13 @@ static void* mediator_notifier_listen(void* input)
 
             if (unlikely(!notifier->active))
             {
-                io_uring_queue_exit(ring);
-                free(ring);
                 if (error = pthread_mutex_lock(&notifier->shutdown_mutex))
                 {
                     notifier->shutdown_error = strerror(error);
                     return NULL;
                 }
+                io_uring_queue_exit(ring);
+                free(ring);
                 notifier->initialized = false;
                 if (error = pthread_cond_broadcast(&notifier->shutdown_condition))
                 {
@@ -119,7 +118,7 @@ static void* mediator_notifier_listen(void* input)
                 {
                     struct io_uring_sqe* sqe = mediator_notifier_provide_sqe(ring);
                     io_uring_prep_poll_multishot(sqe, mediator->descriptor, POLLIN);
-                    io_uring_sqe_set_data(sqe, mediator->callback);
+                    io_uring_sqe_set_data(sqe, mediator);
                 }
             }
         }

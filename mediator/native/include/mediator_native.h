@@ -3,7 +3,6 @@
 
 #include <mediator_configuration.h>
 #include <mediator_message.h>
-#include <stddef.h>
 #include <stdint.h>
 
 struct mh_native_callbacks_t;
@@ -17,16 +16,11 @@ extern "C"
 
     struct mediator_native
     {
-        uint64_t cqe_wait_timeout_millis;
-        size_t ring_size;
+        struct mediator_module_native_configuration configuration;
         struct io_uring* ring;
         mediator_native_completion_event** completions;
         struct mh_native_callbacks_t* callbacks;
         int32_t descriptor;
-        int32_t ring_flags;
-        uint32_t cqe_wait_count;
-        uint32_t cqe_peek_count;
-        uint8_t id;
     };
 
     int32_t mediator_native_initialize(struct mediator_native* mediator, struct mediator_module_native_configuration* configuration, uint8_t id);

@@ -11,12 +11,8 @@
 
 int32_t mediator_native_initialize(struct mediator_native* mediator, struct mediator_module_native_configuration* configuration, uint8_t id)
 {
-    mediator->id = id;
-    mediator->ring_size = configuration->ring_size;
-    mediator->completions = malloc(sizeof(struct io_uring_cqe*) * mediator->ring_size);
-    mediator->cqe_wait_count = configuration->completion_wait_count;
-    mediator->cqe_peek_count = configuration->completion_peek_count;
-    mediator->cqe_wait_timeout_millis = configuration->completion_wait_timeout_millis;
+    mediator->configuration = *configuration;
+    mediator->completions = malloc(sizeof(struct io_uring_cqe*) * configuration->ring_size);
     if (!mediator->completions)
     {
         return -ENOMEM;
@@ -133,7 +129,7 @@ void mediator_native_process(struct mediator_native* mediator)
 
 void mediator_native_process_infinity(struct mediator_native* mediator)
 {
-    io_uring_submit_and_wait(mediator->ring, mediator->cqe_wait_count);
+    io_uring_submit_and_wait(mediator->ring, mediator->configuration.completion_wait_count);
     if (io_uring_cq_ready(mediator->ring) > 0)
     {
         mediator_native_process_implementation(mediator);
@@ -143,10 +139,10 @@ void mediator_native_process_infinity(struct mediator_native* mediator)
 void mediator_native_process_timeout(struct mediator_native* mediator)
 {
     struct __kernel_timespec timeout = {
-        .tv_nsec = mediator->cqe_wait_timeout_millis * 1e+6,
+        .tv_nsec = mediator->configuration.completion_wait_timeout_millis * 1e+6,
         .tv_sec = 0,
     };
-    io_uring_submit_and_wait_timeout(mediator->ring, &mediator->completions[0], mediator->cqe_wait_count, &timeout, 0);
+    io_uring_submit_and_wait_timeout(mediator->ring, &mediator->completions[0], mediator->configuration.completion_wait_count, &timeout, 0);
     if (io_uring_cq_ready(mediator->ring) > 0)
     {
         mediator_native_process_implementation(mediator);

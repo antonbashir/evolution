@@ -32,6 +32,7 @@
     "*.inc": "c",
     "test.h": "c",
     "mediator_configuration.h": "c",
-    "mediator_dart.h": "c"
+    "mediator_dart.h": "c",
+    "assert.h": "c"
   },
 }

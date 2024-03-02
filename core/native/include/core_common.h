@@ -1,5 +1,6 @@
 #ifndef COMMON_NATIVE_H
 #define COMMON_NATIVE_H
+#include <assert.h>
 
 #if defined(__cplusplus)
 extern "C"
