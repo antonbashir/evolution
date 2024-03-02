@@ -9,12 +9,12 @@
 extern "C"
 {
 #endif
-    static inline const char* system_dart_error_to_string(int error)
+    static inline const char* system_dart_error_to_string(int32_t error)
     {
         return strerror(-error);
     }
 
-    static inline void system_dart_shutdown_descriptor(int fd)
+    static inline void system_dart_shutdown_descriptor(int32_t fd)
     {
         shutdown(fd, SHUT_RDWR);
         close(fd);

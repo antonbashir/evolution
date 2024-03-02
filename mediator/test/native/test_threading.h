@@ -41,15 +41,15 @@ extern "C"
         test_mutex_t* global_working_mutex;
     };
 
-    bool test_threading_initialize(int thread_count, int isolates_count, int per_thread_messages_count);
+    bool test_threading_initialize(int32_t thread_count, int32_t isolates_count, int32_t per_thread_messages_count);
     int* test_threading_mediator_descriptors();
 
     void test_threading_call_native(struct mediator_message* message);
-    int test_threading_call_native_check();
+    int32_t test_threading_call_native_check();
 
     void test_threading_prepare_call_dart_bytes(int32_t* targets, int32_t count);
 
-    int test_threading_call_dart_check();
+    int32_t test_threading_call_dart_check();
     void test_threading_call_dart_callback(struct mediator_message* message);
 
     void test_threading_destroy();

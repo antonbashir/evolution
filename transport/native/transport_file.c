@@ -3,9 +3,9 @@
 #include <unistd.h>
 #include "transport_constants.h"
 
-int transport_file_open(const char* path, int mode, bool truncate, bool create)
+int32_t transport_file_open(const char* path, int32_t mode, bool truncate, bool create)
 {
-    int options = 0;
+    int32_t options = 0;
     if (mode == TRANSPORT_READ_ONLY)
     {
         options |= O_RDONLY;

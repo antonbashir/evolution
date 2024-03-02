@@ -15,7 +15,7 @@ extern "C"
         struct memory* memory;
     };
 
-    static inline int memory_io_buffers_create(struct memory_io_buffers* pool, struct memory* memory)
+    static inline int32_t memory_io_buffers_create(struct memory_io_buffers* pool, struct memory* memory)
     {
         pool->memory = memory;
         if (memory_pool_create(&pool->input_buffers, memory, sizeof(struct memory_input_buffer)))

@@ -13,7 +13,7 @@ extern "C"
         struct memory_small_allocator pool;
     };
 
-    static inline int memory_small_data_create(struct memory_small_data* pool, struct memory* memory)
+    static inline int32_t memory_small_data_create(struct memory_small_data* pool, struct memory* memory)
     {
         return memory_small_allocator_create(&pool->pool, memory);
     }

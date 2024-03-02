@@ -8,12 +8,13 @@ const mediatorPackageName = "mediator";
 class MediatorErrors {
   MediatorErrors._();
 
-  static const workerMemoryError = "[worker] out of memory";
   static const mediatorMemoryError = "[mediator] out of memory";
-  static const mediatorLimitError = "[mediator] more than $int64MaxValue are in execution";
-  static workerError(int result) => systemError(-result);
-  static workerTrace(int id, int result, int data, int fd) => "worker = $id, result = $result,  bid = ${((data >> 16) & 0xffff)}, fd = $fd";
+  static mediatorError(int result) => systemError(-result);
 }
+
+const mediatorStateStopped = 1 << 0;
+const mediatorStateIdle = 1 << 1;
+const mediatorStateWaking = 1 << 2;
 
 const mediatorDartCallback = 1 << 0;
 const mediatorNativeCallback = 1 << 1;

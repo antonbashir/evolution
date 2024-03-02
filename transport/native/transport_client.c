@@ -10,7 +10,7 @@
 #include "transport_constants.h"
 #include "transport_socket.h"
 
-int transport_client_initialize_tcp(struct transport_client* client,
+int32_t transport_client_initialize_tcp(struct transport_client* client,
                                     struct transport_client_configuration* configuration,
                                     const char* ip,
                                     int32_t port)
@@ -41,7 +41,7 @@ int transport_client_initialize_tcp(struct transport_client* client,
     return 0;
 }
 
-int transport_client_initialize_udp(struct transport_client* client,
+int32_t transport_client_initialize_udp(struct transport_client* client,
                                     struct transport_client_configuration* configuration,
                                     const char* destination_ip,
                                     int32_t destination_port,
@@ -83,7 +83,7 @@ int transport_client_initialize_udp(struct transport_client* client,
     return 0;
 }
 
-int transport_client_initialize_unix_stream(struct transport_client* client,
+int32_t transport_client_initialize_unix_stream(struct transport_client* client,
                                             struct transport_client_configuration* configuration,
                                             const char* path)
 {

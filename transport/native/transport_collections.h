@@ -15,7 +15,7 @@ extern "C"
     mh_key_t data;
     int64_t timeout;
     uint64_t timestamp;
-    int fd;
+    int32_t fd;
   };
 
 #define mh_node_t struct mh_events_node_t

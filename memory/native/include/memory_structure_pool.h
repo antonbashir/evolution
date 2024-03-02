@@ -14,7 +14,7 @@ extern "C"
         size_t size;
     };
 
-    static inline int memory_structure_pool_create(struct memory_structure_pool* pool, struct memory* memory, size_t structure_size)
+    static inline int32_t memory_structure_pool_create(struct memory_structure_pool* pool, struct memory* memory, size_t structure_size)
     {
         return memory_pool_create(&pool->pool, memory, structure_size);
     }

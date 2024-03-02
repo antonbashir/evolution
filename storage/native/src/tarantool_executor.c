@@ -7,14 +7,14 @@
 #include "mediator_native.h"
 
 static struct mediator_native* tarantool_mediator;
-static int tarantool_eventfd;
+static int32_t tarantool_eventfd;
 static bool active;
 
-int tarantool_executor_initialize(struct tarantool_executor_configuration* configuration)
+int32_t tarantool_executor_initialize(struct tarantool_executor_configuration* configuration)
 {
     tarantool_eventfd = eventfd(0, EFD_CLOEXEC | EFD_NONBLOCK);
     tarantool_mediator = calloc(1, sizeof(struct mediator_native));
-    int descriptor;
+    int32_t descriptor;
     if ((descriptor = mediator_native_initialize_default(tarantool_mediator, configuration->mediator_id)) < 0)
     {
         return -descriptor;
@@ -50,7 +50,7 @@ void tarantool_executor_start(struct tarantool_executor_configuration* configura
     close(tarantool_eventfd);
 }
 
-int tarantool_executor_descriptor()
+int32_t tarantool_executor_descriptor()
 {
     return tarantool_mediator->descriptor;
 }

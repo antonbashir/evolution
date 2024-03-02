@@ -30,6 +30,8 @@
     "fstream": "c",
     "streambuf": "c",
     "*.inc": "c",
-    "test.h": "c"
+    "test.h": "c",
+    "mediator_configuration.h": "c",
+    "mediator_dart.h": "c"
   },
 }

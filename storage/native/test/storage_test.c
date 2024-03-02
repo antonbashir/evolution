@@ -2,7 +2,7 @@
 #include "say.h"
 #include "tarantool.h"
 
-int main(int argc, char** argv)
+int32_t main(int32_targc, char** argv)
 {
     struct timeval st, et;
 
@@ -17,7 +17,7 @@ int main(int argc, char** argv)
     }
     gettimeofday(&et, NULL);
 
-    int elapsed = ((et.tv_sec - st.tv_sec) * 1000000) + (et.tv_usec - st.tv_usec);
+    int32_t elapsed = ((et.tv_sec - st.tv_sec) * 1000000) + (et.tv_usec - st.tv_usec);
     printf("Sorting time: %d micro seconds\n", elapsed);
     return 0;
 }

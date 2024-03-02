@@ -2,99 +2,129 @@ import 'dart:ffi';
 
 import 'bindings.dart';
 
-class MediatorModuleConfiguration {
+class MediatorConfiguration {
   final int staticBuffersCapacity;
   final int staticBufferSize;
   final int ringSize;
   final int ringFlags;
-  final double delayRandomizationFactor;
-  final int cqePeekCount;
-  final int cqeWaitCount;
-  final Duration cqeWaitTimeout;
-  final Duration baseDelay;
-  final Duration maxDelay;
+  final int completionPeekCount;
+  final int completionWaitCount;
+  final Duration completionWaitTimeout;
+  final Duration maximumWakingTime;
   final int memorySlabSize;
   final int memoryPreallocationSize;
   final int memoryQuotaSize;
 
-  Pointer<mediator_module_dart_configuration> toNative(Pointer<mediator_module_dart_configuration> native) {
+  Pointer<mediator_dart_configuration> toNative(Pointer<mediator_dart_configuration> native) {
     native.ref.ring_flags = ringFlags;
     native.ref.ring_size = ringSize;
     native.ref.static_buffer_size = staticBufferSize;
     native.ref.static_buffers_capacity = staticBuffersCapacity;
-    native.ref.base_delay_micros = baseDelay.inMicroseconds;
-    native.ref.max_delay_micros = maxDelay.inMicroseconds;
-    native.ref.delay_randomization_factor = delayRandomizationFactor;
-    native.ref.cqe_peek_count = cqePeekCount;
-    native.ref.cqe_wait_count = cqeWaitCount;
-    native.ref.cqe_wait_timeout_millis = cqeWaitTimeout.inMilliseconds;
+    native.ref.maximum_waking_time_millis = maximumWakingTime.inMilliseconds;
+    native.ref.completion_peek_count = completionPeekCount;
+    native.ref.completion_wait_count = completionWaitCount;
+    native.ref.completion_wait_timeout_millis = completionWaitTimeout.inMilliseconds;
     native.ref.slab_size = memorySlabSize;
     native.ref.preallocation_size = memoryPreallocationSize;
     native.ref.quota_size = memoryQuotaSize;
     return native;
   }
 
-  factory MediatorModuleConfiguration.fromNative(Pointer<mediator_module_dart_configuration> native) => MediatorModuleConfiguration(
+  factory MediatorConfiguration.fromNative(Pointer<mediator_dart_configuration> native) => MediatorConfiguration(
         ringFlags: native.ref.ring_flags,
         ringSize: native.ref.ring_size,
         staticBufferSize: native.ref.static_buffer_size,
         staticBuffersCapacity: native.ref.static_buffers_capacity,
-        baseDelay: Duration(microseconds: native.ref.base_delay_micros),
-        maxDelay: Duration(microseconds: native.ref.max_delay_micros),
-        delayRandomizationFactor: native.ref.delay_randomization_factor,
-        cqePeekCount: native.ref.cqe_peek_count,
-        cqeWaitCount: native.ref.cqe_wait_count,
-        cqeWaitTimeout: Duration(milliseconds: native.ref.cqe_wait_timeout_millis),
+        maximumWakingTime: Duration(milliseconds: native.ref.maximum_waking_time_millis),
+        completionPeekCount: native.ref.completion_peek_count,
+        completionWaitCount: native.ref.completion_wait_count,
+        completionWaitTimeout: Duration(milliseconds: native.ref.completion_wait_timeout_millis),
         memorySlabSize: native.ref.slab_size,
         memoryPreallocationSize: native.ref.preallocation_size,
         memoryQuotaSize: native.ref.quota_size,
       );
 
-  const MediatorModuleConfiguration({
+  const MediatorConfiguration({
     required this.staticBuffersCapacity,
     required this.staticBufferSize,
     required this.ringSize,
     required this.ringFlags,
-    required this.delayRandomizationFactor,
-    required this.baseDelay,
-    required this.maxDelay,
-    required this.cqePeekCount,
-    required this.cqeWaitCount,
-    required this.cqeWaitTimeout,
+    required this.maximumWakingTime,
+    required this.completionPeekCount,
+    required this.completionWaitCount,
+    required this.completionWaitTimeout,
     required this.memorySlabSize,
     required this.memoryPreallocationSize,
     required this.memoryQuotaSize,
   });
 
-  MediatorModuleConfiguration copyWith({
+  MediatorConfiguration copyWith({
     int? staticBuffersCapacity,
     int? staticBufferSize,
     int? ringSize,
     int? ringFlags,
     Duration? timeoutCheckerPeriod,
-    double? delayRandomizationFactor,
-    Duration? baseDelay,
-    Duration? maxDelay,
-    int? cqePeekCount,
-    int? cqeWaitCount,
-    Duration? cqeWaitTimeout,
+    Duration? maximumWakingTime,
+    int? completionPeekCount,
+    int? completionWaitCount,
+    Duration? completionWaitTimeout,
     int? memorySlabSize,
     int? memoryPreallocationSize,
     int? memoryQuotaSize,
   }) =>
-      MediatorModuleConfiguration(
+      MediatorConfiguration(
         staticBuffersCapacity: staticBuffersCapacity ?? this.staticBuffersCapacity,
         staticBufferSize: staticBufferSize ?? this.staticBufferSize,
         ringSize: ringSize ?? this.ringSize,
         ringFlags: ringFlags ?? this.ringFlags,
-        delayRandomizationFactor: delayRandomizationFactor ?? this.delayRandomizationFactor,
-        baseDelay: baseDelay ?? this.baseDelay,
-        maxDelay: maxDelay ?? this.maxDelay,
-        cqePeekCount: cqePeekCount ?? this.cqePeekCount,
-        cqeWaitCount: cqeWaitCount ?? this.cqeWaitCount,
-        cqeWaitTimeout: cqeWaitTimeout ?? this.cqeWaitTimeout,
+        maximumWakingTime: maximumWakingTime ?? this.maximumWakingTime,
+        completionPeekCount: completionPeekCount ?? this.completionPeekCount,
+        completionWaitCount: completionWaitCount ?? this.completionWaitCount,
+        completionWaitTimeout: completionWaitTimeout ?? this.completionWaitTimeout,
         memorySlabSize: memorySlabSize ?? this.memorySlabSize,
         memoryPreallocationSize: memoryPreallocationSize ?? this.memoryPreallocationSize,
         memoryQuotaSize: memoryQuotaSize ?? this.memoryQuotaSize,
+      );
+}
+
+class MediatorNotifierConfiguration {
+  final int ringSize;
+  final int ringFlags;
+  final Duration initializationTimeout;
+  final Duration shutdownTimeout;
+
+  Pointer<mediator_dart_notifier_configuration> toNative(Pointer<mediator_dart_notifier_configuration> native) {
+    native.ref.ring_flags = ringFlags;
+    native.ref.ring_size = ringSize;
+    native.ref.initialization_timeout_seconds = initializationTimeout.inSeconds;
+    native.ref.shutdown_timeout_seconds = shutdownTimeout.inSeconds;
+    return native;
+  }
+
+  factory MediatorNotifierConfiguration.fromNative(Pointer<mediator_dart_notifier_configuration> native) => MediatorNotifierConfiguration(
+        ringFlags: native.ref.ring_flags,
+        ringSize: native.ref.ring_size,
+        initializationTimeout: Duration(seconds: native.ref.initialization_timeout_seconds),
+        shutdownTimeout: Duration(seconds: native.ref.shutdown_timeout_seconds),
+      );
+
+  const MediatorNotifierConfiguration({
+    required this.ringSize,
+    required this.ringFlags,
+    required this.initializationTimeout,
+    required this.shutdownTimeout,
+  });
+
+  MediatorNotifierConfiguration copyWith({
+    int? ringSize,
+    int? ringFlags,
+    Duration? initializationTimeout,
+    Duration? shutdownTimeout,
+  }) =>
+      MediatorNotifierConfiguration(
+        ringSize: ringSize ?? this.ringSize,
+        ringFlags: ringFlags ?? this.ringFlags,
+        initializationTimeout: initializationTimeout ?? this.initializationTimeout,
+        shutdownTimeout: shutdownTimeout ?? this.shutdownTimeout,
       );
 }

@@ -44,7 +44,7 @@ struct tarantool_initialization_args
     const char* script;
 };
 
-static int tarantool_shutdown_trigger(void* ignore)
+static int32_t tarantool_shutdown_trigger(void* ignore)
 {
     (void)ignore;
     tarantool_executor_stop();
@@ -52,10 +52,10 @@ static int tarantool_shutdown_trigger(void* ignore)
     return 0;
 }
 
-static int tarantool_fiber(va_list args)
+static int32_t tarantool_fiber(va_list args)
 {
     (void)args;
-    int error;
+    int32_t error;
     if (error = tarantool_executor_initialize(&executor))
     {
         tarantool_executor_destroy();
@@ -97,7 +97,7 @@ static void* tarantool_process_initialization(void* input)
 
     tarantool_launcher_launch((char*)args->binary_path);
 
-    int events = ev_activecnt(loop());
+    int32_t events = ev_activecnt(loop());
 
     if (tarantool_lua_run_string((char*)args->script) != 0)
     {
@@ -122,7 +122,7 @@ static void* tarantool_process_initialization(void* input)
 
     if (storage.initialized)
     {
-        int error;
+        int32_t error;
         if (error = pthread_mutex_lock(&storage.shutdown_mutex))
         {
             storage.shutdown_error = strerror(error);
@@ -174,7 +174,7 @@ bool tarantool_initialize(struct tarantool_configuration* configuration, struct 
     struct timespec timeout;
     timespec_get(&timeout, TIME_UTC);
     timeout.tv_sec += configuration->initialization_timeout_seconds;
-    int error;
+    int32_t error;
     if (error = pthread_create(&storage.main_thread_id, NULL, tarantool_process_initialization, args))
     {
         storage.initialization_error = strerror(error);
@@ -218,7 +218,7 @@ bool tarantool_shutdown()
         return true;
     }
     tarantool_executor_stop();
-    int error;
+    int32_t error;
     if (error = pthread_mutex_lock(&storage.shutdown_mutex))
     {
         storage.shutdown_error = strerror(error);
@@ -263,7 +263,7 @@ const char* tarantool_status()
     return box_status();
 }
 
-int tarantool_is_read_only()
+int32_t tarantool_is_read_only()
 {
     return box_is_ro() ? 1 : 0;
 }

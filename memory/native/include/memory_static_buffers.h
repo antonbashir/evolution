@@ -23,7 +23,7 @@ extern "C"
         struct iovec* buffers;
     };
 
-    static inline int memory_static_buffers_create(struct memory_static_buffers* pool, size_t capacity, size_t size)
+    static inline int32_t memory_static_buffers_create(struct memory_static_buffers* pool, size_t capacity, size_t size)
     {
         pool->size = size;
         pool->capacity = capacity;
@@ -41,7 +41,7 @@ extern "C"
             return -1;
         }
 
-        int page_size = getpagesize();
+        int32_t page_size = getpagesize();
         for (size_t index = 0; index < capacity; index++)
         {
             struct iovec* buffer = &pool->buffers[index];

@@ -25,7 +25,7 @@ extern "C"
         memory_dart_memory* memory;
     };
 
-    int memory_dart_initialize(struct memory_dart* memory, struct memory_module_configuration* configuration);
+    int32_t memory_dart_initialize(struct memory_dart* memory, struct memory_module_configuration* configuration);
 
     int32_t memory_dart_static_buffers_get(struct memory_dart* memory);
     void memory_dart_static_buffers_release(struct memory_dart* memory, int32_t buffer_id);

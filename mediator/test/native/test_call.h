@@ -13,12 +13,12 @@ extern "C"
 
     struct test_object_child
     {
-        int field;
+        int32_t field;
     };
 
     struct test_object
     {
-        int field;
+        int32_t field;
         struct test_object_child child_field;
     };
 
@@ -29,7 +29,7 @@ extern "C"
 
     void test_call_dart_null(test_mediator_native* mediator, int32_t target, uintptr_t method);
     void test_call_dart_bool(test_mediator_native* mediator, int32_t target, uintptr_t method, bool value);
-    void test_call_dart_int(test_mediator_native* mediator, int32_t target, uintptr_t method, int value);
+    void test_call_dart_int(test_mediator_native* mediator, int32_t target, uintptr_t method, int32_t value);
     void test_call_dart_double(test_mediator_native* mediator, int32_t target, uintptr_t method, double value);
     struct mediator_message* test_call_dart_check(test_mediator_native* mediator);
     void test_call_dart_callback(struct mediator_message* message);

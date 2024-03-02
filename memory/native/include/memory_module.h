@@ -44,9 +44,9 @@ extern "C"
         struct obuf buffer;
     };
 
-    static inline int memory_create(struct memory* memory, size_t quota_size, size_t preallocation_size, size_t slab_size)
+    static inline int32_t memory_create(struct memory* memory, size_t quota_size, size_t preallocation_size, size_t slab_size)
     {
-        int result;
+        int32_t result;
         quota_init(&memory->quota, quota_size);
         if ((result = slab_arena_create(&memory->arena, &memory->quota, preallocation_size, slab_size, MAP_PRIVATE))) return result;
         slab_cache_create(&memory->cache, &memory->arena);
@@ -65,7 +65,7 @@ extern "C"
         memory->initialized = false;
     }
 
-    static inline int memory_pool_create(struct memory_pool* pool, struct memory* memory, size_t size)
+    static inline int32_t memory_pool_create(struct memory_pool* pool, struct memory* memory, size_t size)
     {
         mempool_create(&pool->pool, &memory->cache, size);
         return mempool_is_initialized(&pool->pool) ? 0 : -1;
@@ -86,7 +86,7 @@ extern "C"
         mempool_free(&pool->pool, ptr);
     }
 
-    static inline int memory_small_allocator_create(struct memory_small_allocator* pool, struct memory* memory)
+    static inline int32_t memory_small_allocator_create(struct memory_small_allocator* pool, struct memory* memory)
     {
         float actual_alloc_factor;
         small_alloc_create(&pool->allocator, &memory->cache, 3 * sizeof(int), sizeof(intptr_t), 1.05, &actual_alloc_factor);

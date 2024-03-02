@@ -15,11 +15,11 @@ extern "C"
         uint32_t mediator_id;
     };
 
-    int tarantool_executor_initialize(struct tarantool_executor_configuration* configuration);
+    int32_t tarantool_executor_initialize(struct tarantool_executor_configuration* configuration);
     void tarantool_executor_start(struct tarantool_executor_configuration* configuration);
     void tarantool_executor_stop();
     void tarantool_executor_destroy();
-    int tarantool_executor_descriptor();
+    int32_t tarantool_executor_descriptor();
 #if defined(__cplusplus)
 }
 #endif

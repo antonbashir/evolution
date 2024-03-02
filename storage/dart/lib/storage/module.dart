@@ -64,7 +64,7 @@ class StorageModule {
 
   Future<void> shutdown() async {
     _reloadListener?.cancel();
-    await _executor.stop();
+    _executor.stop();
     if (!tarantool_shutdown()) {
       throw StorageLauncherException(tarantool_shutdown_error().cast<Utf8>().toDartString());
     }

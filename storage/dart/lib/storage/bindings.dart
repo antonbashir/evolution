@@ -5,359 +5,624 @@
 import 'dart:ffi' as ffi;
 import 'package:mediator/mediator.dart' as mediator;
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<tarantool_box>)>(symbol: 'tarantool_initialize_box', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<tarantool_box>)>(
+    symbol: 'tarantool_initialize_box',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external void tarantool_initialize_box(
   ffi.Pointer<tarantool_box> box,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<tarantool_box>)>(symbol: 'tarantool_destroy_box', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<tarantool_box>)>(
+    symbol: 'tarantool_destroy_box',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external void tarantool_destroy_box(
   ffi.Pointer<tarantool_box> box,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(symbol: 'tarantool_evaluate', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(
+    symbol: 'tarantool_evaluate', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_evaluate(
   ffi.Pointer<mediator.mediator_message> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(symbol: 'tarantool_call', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(
+    symbol: 'tarantool_call', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_call(
   ffi.Pointer<mediator.mediator_message> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(symbol: 'tarantool_space_iterator', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(
+    symbol: 'tarantool_space_iterator',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external void tarantool_space_iterator(
   ffi.Pointer<mediator.mediator_message> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(symbol: 'tarantool_space_count', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(
+    symbol: 'tarantool_space_count',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external void tarantool_space_count(
   ffi.Pointer<mediator.mediator_message> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(symbol: 'tarantool_space_length', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(
+    symbol: 'tarantool_space_length',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external void tarantool_space_length(
   ffi.Pointer<mediator.mediator_message> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(symbol: 'tarantool_space_truncate', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(
+    symbol: 'tarantool_space_truncate',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external void tarantool_space_truncate(
   ffi.Pointer<mediator.mediator_message> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(symbol: 'tarantool_space_put_single', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(
+    symbol: 'tarantool_space_put_single',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external void tarantool_space_put_single(
   ffi.Pointer<mediator.mediator_message> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(symbol: 'tarantool_space_insert_single', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(
+    symbol: 'tarantool_space_insert_single',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external void tarantool_space_insert_single(
   ffi.Pointer<mediator.mediator_message> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(symbol: 'tarantool_space_update_single', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(
+    symbol: 'tarantool_space_update_single',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external void tarantool_space_update_single(
   ffi.Pointer<mediator.mediator_message> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(symbol: 'tarantool_space_delete_single', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(
+    symbol: 'tarantool_space_delete_single',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external void tarantool_space_delete_single(
   ffi.Pointer<mediator.mediator_message> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(symbol: 'tarantool_space_put_many', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(
+    symbol: 'tarantool_space_put_many',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external void tarantool_space_put_many(
   ffi.Pointer<mediator.mediator_message> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(symbol: 'tarantool_space_insert_many', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(
+    symbol: 'tarantool_space_insert_many',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external void tarantool_space_insert_many(
   ffi.Pointer<mediator.mediator_message> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(symbol: 'tarantool_space_update_many', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(
+    symbol: 'tarantool_space_update_many',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external void tarantool_space_update_many(
   ffi.Pointer<mediator.mediator_message> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(symbol: 'tarantool_space_delete_many', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(
+    symbol: 'tarantool_space_delete_many',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external void tarantool_space_delete_many(
   ffi.Pointer<mediator.mediator_message> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(symbol: 'tarantool_space_upsert', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(
+    symbol: 'tarantool_space_upsert',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external void tarantool_space_upsert(
   ffi.Pointer<mediator.mediator_message> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(symbol: 'tarantool_space_get', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(
+    symbol: 'tarantool_space_get', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_space_get(
   ffi.Pointer<mediator.mediator_message> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(symbol: 'tarantool_space_min', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(
+    symbol: 'tarantool_space_min', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_space_min(
   ffi.Pointer<mediator.mediator_message> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(symbol: 'tarantool_space_max', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(
+    symbol: 'tarantool_space_max', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_space_max(
   ffi.Pointer<mediator.mediator_message> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(symbol: 'tarantool_space_select', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(
+    symbol: 'tarantool_space_select',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external void tarantool_space_select(
   ffi.Pointer<mediator.mediator_message> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(symbol: 'tarantool_space_id_by_name', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(
+    symbol: 'tarantool_space_id_by_name',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external void tarantool_space_id_by_name(
   ffi.Pointer<mediator.mediator_message> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(symbol: 'tarantool_index_iterator', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(
+    symbol: 'tarantool_index_iterator',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external void tarantool_index_iterator(
   ffi.Pointer<mediator.mediator_message> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(symbol: 'tarantool_index_count', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(
+    symbol: 'tarantool_index_count',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external void tarantool_index_count(
   ffi.Pointer<mediator.mediator_message> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(symbol: 'tarantool_index_length', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(
+    symbol: 'tarantool_index_length',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external void tarantool_index_length(
   ffi.Pointer<mediator.mediator_message> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(symbol: 'tarantool_index_id_by_name', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(
+    symbol: 'tarantool_index_id_by_name',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external void tarantool_index_id_by_name(
   ffi.Pointer<mediator.mediator_message> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(symbol: 'tarantool_index_get', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(
+    symbol: 'tarantool_index_get', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_index_get(
   ffi.Pointer<mediator.mediator_message> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(symbol: 'tarantool_index_min', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(
+    symbol: 'tarantool_index_min', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_index_min(
   ffi.Pointer<mediator.mediator_message> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(symbol: 'tarantool_index_max', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(
+    symbol: 'tarantool_index_max', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_index_max(
   ffi.Pointer<mediator.mediator_message> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(symbol: 'tarantool_index_select', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(
+    symbol: 'tarantool_index_select',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external void tarantool_index_select(
   ffi.Pointer<mediator.mediator_message> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(symbol: 'tarantool_index_update_single', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(
+    symbol: 'tarantool_index_update_single',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external void tarantool_index_update_single(
   ffi.Pointer<mediator.mediator_message> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(symbol: 'tarantool_index_update_many', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(
+    symbol: 'tarantool_index_update_many',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external void tarantool_index_update_many(
   ffi.Pointer<mediator.mediator_message> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(symbol: 'tarantool_iterator_next_single', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(
+    symbol: 'tarantool_iterator_next_single',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external void tarantool_iterator_next_single(
   ffi.Pointer<mediator.mediator_message> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(symbol: 'tarantool_iterator_next_many', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(
+    symbol: 'tarantool_iterator_next_many',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external void tarantool_iterator_next_many(
   ffi.Pointer<mediator.mediator_message> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(symbol: 'tarantool_iterator_destroy', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(
+    symbol: 'tarantool_iterator_destroy',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external void tarantool_iterator_destroy(
   ffi.Pointer<mediator.mediator_message> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(symbol: 'tarantool_free_output_buffer', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(
+    symbol: 'tarantool_free_output_buffer',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external void tarantool_free_output_buffer(
   ffi.Pointer<mediator.mediator_message> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(symbol: 'tarantool_free_output_port', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(
+    symbol: 'tarantool_free_output_port',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external void tarantool_free_output_port(
   ffi.Pointer<mediator.mediator_message> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(symbol: 'tarantool_free_output_tuple', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>(
+    symbol: 'tarantool_free_output_tuple',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external void tarantool_free_output_tuple(
   ffi.Pointer<mediator.mediator_message> message,
 );
 
-@ffi.Native<ffi.Bool Function(ffi.Pointer<tarantool_configuration>, ffi.Pointer<tarantool_box>)>(symbol: 'tarantool_initialize', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<
+        ffi.Bool Function(
+            ffi.Pointer<tarantool_configuration>, ffi.Pointer<tarantool_box>)>(
+    symbol: 'tarantool_initialize', assetId: 'tarantool-bindings', isLeaf: true)
 external bool tarantool_initialize(
   ffi.Pointer<tarantool_configuration> configuration,
   ffi.Pointer<tarantool_box> box,
 );
 
-@ffi.Native<ffi.Bool Function()>(symbol: 'tarantool_initialized', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Bool Function()>(
+    symbol: 'tarantool_initialized',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external bool tarantool_initialized();
 
-@ffi.Native<ffi.Pointer<ffi.Char> Function()>(symbol: 'tarantool_status', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Pointer<ffi.Char> Function()>(
+    symbol: 'tarantool_status', assetId: 'tarantool-bindings', isLeaf: true)
 external ffi.Pointer<ffi.Char> tarantool_status();
 
-@ffi.Native<ffi.Int Function()>(symbol: 'tarantool_is_read_only', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Int32 Function()>(
+    symbol: 'tarantool_is_read_only',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external int tarantool_is_read_only();
 
-@ffi.Native<ffi.Pointer<ffi.Char> Function()>(symbol: 'tarantool_initialization_error', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Pointer<ffi.Char> Function()>(
+    symbol: 'tarantool_initialization_error',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external ffi.Pointer<ffi.Char> tarantool_initialization_error();
 
-@ffi.Native<ffi.Pointer<ffi.Char> Function()>(symbol: 'tarantool_shutdown_error', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Pointer<ffi.Char> Function()>(
+    symbol: 'tarantool_shutdown_error',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external ffi.Pointer<ffi.Char> tarantool_shutdown_error();
 
-@ffi.Native<ffi.Bool Function()>(symbol: 'tarantool_shutdown', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Bool Function()>(
+    symbol: 'tarantool_shutdown', assetId: 'tarantool-bindings', isLeaf: true)
 external bool tarantool_shutdown();
 
-@ffi.Native<ffi.Int Function(ffi.Pointer<tarantool_executor_configuration>)>(symbol: 'tarantool_executor_initialize', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Int32 Function(ffi.Pointer<tarantool_executor_configuration>)>(
+    symbol: 'tarantool_executor_initialize',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external int tarantool_executor_initialize(
   ffi.Pointer<tarantool_executor_configuration> configuration,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<tarantool_executor_configuration>)>(symbol: 'tarantool_executor_start', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<tarantool_executor_configuration>)>(
+    symbol: 'tarantool_executor_start',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external void tarantool_executor_start(
   ffi.Pointer<tarantool_executor_configuration> configuration,
 );
 
-@ffi.Native<ffi.Void Function()>(symbol: 'tarantool_executor_stop', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function()>(
+    symbol: 'tarantool_executor_stop',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external void tarantool_executor_stop();
 
-@ffi.Native<ffi.Void Function()>(symbol: 'tarantool_executor_destroy', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function()>(
+    symbol: 'tarantool_executor_destroy',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external void tarantool_executor_destroy();
 
-@ffi.Native<ffi.Int Function()>(symbol: 'tarantool_executor_descriptor', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Int32 Function()>(
+    symbol: 'tarantool_executor_descriptor',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external int tarantool_executor_descriptor();
 
-@ffi.Native<ffi.Int Function(ffi.Pointer<tarantool_factory>, ffi.Pointer<tarantool_factory_configuration>)>(symbol: 'tarantool_factory_initialize', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<
+        ffi.Int32 Function(ffi.Pointer<tarantool_factory>,
+            ffi.Pointer<tarantool_factory_configuration>)>(
+    symbol: 'tarantool_factory_initialize',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external int tarantool_factory_initialize(
   ffi.Pointer<tarantool_factory> factory1,
   ffi.Pointer<tarantool_factory_configuration> configuration,
 );
 
-@ffi.Native<ffi.Pointer<ffi.Char> Function(ffi.Pointer<tarantool_factory>, ffi.Size)>(symbol: 'tarantool_create_string', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<
+        ffi.Pointer<ffi.Char> Function(
+            ffi.Pointer<tarantool_factory>, ffi.Size)>(
+    symbol: 'tarantool_create_string',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external ffi.Pointer<ffi.Char> tarantool_create_string(
   ffi.Pointer<tarantool_factory> factory1,
   int size,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<tarantool_factory>, ffi.Pointer<ffi.Char>, ffi.Size)>(symbol: 'tarantool_free_string', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<
+        ffi.Void Function(
+            ffi.Pointer<tarantool_factory>, ffi.Pointer<ffi.Char>, ffi.Size)>(
+    symbol: 'tarantool_free_string',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external void tarantool_free_string(
   ffi.Pointer<tarantool_factory> factory1,
   ffi.Pointer<ffi.Char> string,
   int size,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<tarantool_factory>)>(symbol: 'tarantool_factory_destroy', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<tarantool_factory>)>(
+    symbol: 'tarantool_factory_destroy',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external void tarantool_factory_destroy(
   ffi.Pointer<tarantool_factory> factory1,
 );
 
-@ffi.Native<ffi.Pointer<tarantool_tuple_port_entry> Function(ffi.Pointer<tarantool_tuple_port>)>(symbol: 'tarantool_port_first', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<
+        ffi.Pointer<tarantool_tuple_port_entry> Function(
+            ffi.Pointer<tarantool_tuple_port>)>(
+    symbol: 'tarantool_port_first', assetId: 'tarantool-bindings', isLeaf: true)
 external ffi.Pointer<tarantool_tuple_port_entry> tarantool_port_first(
   ffi.Pointer<tarantool_tuple_port> port,
 );
 
-@ffi.Native<ffi.Pointer<tarantool_tuple_port_entry> Function(ffi.Pointer<tarantool_tuple_port_entry>)>(symbol: 'tarantool_port_entry_next', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<
+        ffi.Pointer<tarantool_tuple_port_entry> Function(
+            ffi.Pointer<tarantool_tuple_port_entry>)>(
+    symbol: 'tarantool_port_entry_next',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external ffi.Pointer<tarantool_tuple_port_entry> tarantool_port_entry_next(
   ffi.Pointer<tarantool_tuple_port_entry> current,
 );
 
-@ffi.Native<ffi.Pointer<tarantool_tuple> Function(ffi.Pointer<tarantool_tuple_port_entry>)>(symbol: 'tarantool_port_entry_tuple', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<
+        ffi.Pointer<tarantool_tuple> Function(
+            ffi.Pointer<tarantool_tuple_port_entry>)>(
+    symbol: 'tarantool_port_entry_tuple',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external ffi.Pointer<tarantool_tuple> tarantool_port_entry_tuple(
   ffi.Pointer<tarantool_tuple_port_entry> current,
 );
 
-@ffi.Native<ffi.Size Function(ffi.Pointer<tarantool_tuple>)>(symbol: 'tarantool_tuple_size', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Size Function(ffi.Pointer<tarantool_tuple>)>(
+    symbol: 'tarantool_tuple_size', assetId: 'tarantool-bindings', isLeaf: true)
 external int tarantool_tuple_size(
   ffi.Pointer<tarantool_tuple> tuple,
 );
 
-@ffi.Native<ffi.Pointer<ffi.Void> Function(ffi.Pointer<tarantool_tuple>)>(symbol: 'tarantool_tuple_data', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Pointer<ffi.Void> Function(ffi.Pointer<tarantool_tuple>)>(
+    symbol: 'tarantool_tuple_data', assetId: 'tarantool-bindings', isLeaf: true)
 external ffi.Pointer<ffi.Void> tarantool_tuple_data(
   ffi.Pointer<tarantool_tuple> tuple,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<tarantool_tuple>)>(symbol: 'tarantool_tuple_release', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<tarantool_tuple>)>(
+    symbol: 'tarantool_tuple_release',
+    assetId: 'tarantool-bindings',
+    isLeaf: true)
 external void tarantool_tuple_release(
   ffi.Pointer<tarantool_tuple> tuple,
 );
 
 final class tarantool_box extends ffi.Struct {
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>> tarantool_evaluate_address;
+  external ffi.Pointer<
+          ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>>
+      tarantool_evaluate_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>> tarantool_call_address;
+  external ffi.Pointer<
+          ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>>
+      tarantool_call_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>> tarantool_iterator_next_single_address;
+  external ffi.Pointer<
+          ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>>
+      tarantool_iterator_next_single_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>> tarantool_iterator_next_many_address;
+  external ffi.Pointer<
+          ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>>
+      tarantool_iterator_next_many_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>> tarantool_iterator_destroy_address;
+  external ffi.Pointer<
+          ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>>
+      tarantool_iterator_destroy_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>> tarantool_free_output_buffer_address;
+  external ffi.Pointer<
+          ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>>
+      tarantool_free_output_buffer_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>> tarantool_space_id_by_name_address;
+  external ffi.Pointer<
+          ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>>
+      tarantool_space_id_by_name_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>> tarantool_space_count_address;
+  external ffi.Pointer<
+          ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>>
+      tarantool_space_count_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>> tarantool_space_length_address;
+  external ffi.Pointer<
+          ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>>
+      tarantool_space_length_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>> tarantool_space_iterator_address;
+  external ffi.Pointer<
+          ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>>
+      tarantool_space_iterator_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>> tarantool_space_insert_single_address;
+  external ffi.Pointer<
+          ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>>
+      tarantool_space_insert_single_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>> tarantool_space_insert_many_address;
+  external ffi.Pointer<
+          ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>>
+      tarantool_space_insert_many_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>> tarantool_space_put_single_address;
+  external ffi.Pointer<
+          ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>>
+      tarantool_space_put_single_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>> tarantool_space_put_many_address;
+  external ffi.Pointer<
+          ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>>
+      tarantool_space_put_many_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>> tarantool_space_delete_single_address;
+  external ffi.Pointer<
+          ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>>
+      tarantool_space_delete_single_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>> tarantool_space_delete_many_address;
+  external ffi.Pointer<
+          ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>>
+      tarantool_space_delete_many_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>> tarantool_space_update_single_address;
+  external ffi.Pointer<
+          ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>>
+      tarantool_space_update_single_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>> tarantool_space_update_many_address;
+  external ffi.Pointer<
+          ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>>
+      tarantool_space_update_many_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>> tarantool_space_get_address;
+  external ffi.Pointer<
+          ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>>
+      tarantool_space_get_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>> tarantool_space_min_address;
+  external ffi.Pointer<
+          ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>>
+      tarantool_space_min_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>> tarantool_space_max_address;
+  external ffi.Pointer<
+          ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>>
+      tarantool_space_max_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>> tarantool_space_truncate_address;
+  external ffi.Pointer<
+          ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>>
+      tarantool_space_truncate_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>> tarantool_space_upsert_address;
+  external ffi.Pointer<
+          ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>>
+      tarantool_space_upsert_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>> tarantool_index_count_address;
+  external ffi.Pointer<
+          ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>>
+      tarantool_index_count_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>> tarantool_index_length_address;
+  external ffi.Pointer<
+          ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>>
+      tarantool_index_length_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>> tarantool_index_iterator_address;
+  external ffi.Pointer<
+          ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>>
+      tarantool_index_iterator_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>> tarantool_index_get_address;
+  external ffi.Pointer<
+          ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>>
+      tarantool_index_get_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>> tarantool_index_max_address;
+  external ffi.Pointer<
+          ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>>
+      tarantool_index_max_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>> tarantool_index_min_address;
+  external ffi.Pointer<
+          ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>>
+      tarantool_index_min_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>> tarantool_index_update_single_address;
+  external ffi.Pointer<
+          ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>>
+      tarantool_index_update_single_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>> tarantool_index_update_many_address;
+  external ffi.Pointer<
+          ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>>
+      tarantool_index_update_many_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>> tarantool_index_select_address;
+  external ffi.Pointer<
+          ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>>
+      tarantool_index_select_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>> tarantool_index_id_by_name_address;
+  external ffi.Pointer<
+          ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<mediator.mediator_message>)>>
+      tarantool_index_id_by_name_address;
 }
 
 final class tarantool_space_request extends ffi.Struct {
@@ -381,7 +646,7 @@ final class tarantool_space_count_request extends ffi.Struct {
   @ffi.Uint32()
   external int space_id;
 
-  @ffi.Int()
+  @ffi.Int32()
   external int iterator_type;
 
   external mediator.mediator_message message;
@@ -402,7 +667,7 @@ final class tarantool_space_select_request extends ffi.Struct {
   @ffi.Uint32()
   external int limit;
 
-  @ffi.Int()
+  @ffi.Int32()
   external int iterator_type;
 
   external mediator.mediator_message message;
@@ -451,7 +716,7 @@ final class tarantool_space_iterator_request extends ffi.Struct {
   @ffi.Uint32()
   external int space_id;
 
-  @ffi.Int()
+  @ffi.Int32()
   external int type;
 
   external mediator.mediator_message message;
@@ -484,7 +749,7 @@ final class tarantool_index_count_request extends ffi.Struct {
   @ffi.Uint32()
   external int index_id;
 
-  @ffi.Int()
+  @ffi.Int32()
   external int iterator_type;
 
   external mediator.mediator_message message;
@@ -562,7 +827,7 @@ final class tarantool_index_iterator_request extends ffi.Struct {
   @ffi.Uint32()
   external int index_id;
 
-  @ffi.Int()
+  @ffi.Int32()
   external int type;
 
   external mediator.mediator_message message;
@@ -586,7 +851,7 @@ final class tarantool_index_select_request extends ffi.Struct {
   @ffi.Uint32()
   external int limit;
 
-  @ffi.Int()
+  @ffi.Int32()
   external int iterator_type;
 
   external mediator.mediator_message message;

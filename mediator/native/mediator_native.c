@@ -1,6 +1,6 @@
-#include <mediator_native.h>
 #include <liburing.h>
 #include <liburing/io_uring.h>
+#include <mediator_native.h>
 #include <stdint.h>
 #include <sys/resource.h>
 #include <sys/socket.h>
@@ -9,14 +9,14 @@
 #include "mediator_configuration.h"
 #include "mediator_constants.h"
 
-int mediator_native_initialize(struct mediator_native* mediator, struct mediator_module_native_configuration* configuration, uint8_t id)
+int32_t mediator_native_initialize(struct mediator_native* mediator, struct mediator_module_native_configuration* configuration, uint8_t id)
 {
     mediator->id = id;
     mediator->ring_size = configuration->ring_size;
     mediator->completions = malloc(sizeof(struct io_uring_cqe*) * mediator->ring_size);
-    mediator->cqe_wait_count = configuration->cqe_wait_count;
-    mediator->cqe_peek_count = configuration->cqe_peek_count;
-    mediator->cqe_wait_timeout_millis = configuration->cqe_wait_timeout_millis;
+    mediator->cqe_wait_count = configuration->completion_wait_count;
+    mediator->cqe_peek_count = configuration->completion_peek_count;
+    mediator->cqe_wait_timeout_millis = configuration->completion_wait_timeout_millis;
     if (!mediator->completions)
     {
         return -ENOMEM;
@@ -34,7 +34,7 @@ int mediator_native_initialize(struct mediator_native* mediator, struct mediator
         return -ENOMEM;
     }
 
-    int result = io_uring_queue_init(configuration->ring_size, mediator->ring, configuration->ring_flags);
+    int32_t result = io_uring_queue_init(configuration->ring_size, mediator->ring, configuration->ring_flags);
     if (result)
     {
         return result;
@@ -45,16 +45,16 @@ int mediator_native_initialize(struct mediator_native* mediator, struct mediator
     return mediator->descriptor;
 }
 
-int mediator_native_initialize_default(struct mediator_native* mediator, uint8_t id)
+int32_t mediator_native_initialize_default(struct mediator_native* mediator, uint8_t id)
 {
     struct mediator_module_native_configuration configuration = {
         .static_buffers_capacity = 4096,
         .static_buffer_size = 4096,
         .ring_size = 16384,
         .ring_flags = 0,
-        .cqe_peek_count = 1024,
-        .cqe_wait_count = 1,
-        .cqe_wait_timeout_millis = 1,
+        .completion_peek_count = 1024,
+        .completion_wait_count = 1,
+        .completion_wait_timeout_millis = 1,
         .preallocation_size = 64 * 1024,
         .slab_size = 64 * 1024,
         .quota_size = 1 * 1024 * 1024,
@@ -74,12 +74,12 @@ void mediator_native_register_callback(struct mediator_native* mediator, uint64_
     mh_native_callbacks_put((struct mh_native_callbacks_t*)mediator->callbacks, &node, NULL, 0);
 }
 
-int mediator_native_count_ready(struct mediator_native* mediator)
+int32_t mediator_native_count_ready(struct mediator_native* mediator)
 {
     return io_uring_cq_ready(mediator->ring);
 }
 
-int mediator_native_count_ready_submit(struct mediator_native* mediator)
+int32_t mediator_native_count_ready_submit(struct mediator_native* mediator)
 {
     io_uring_submit(mediator->ring);
     return io_uring_cq_ready(mediator->ring);
@@ -160,7 +160,7 @@ void mediator_native_foreach(struct mediator_native* mediator, void (*call)(stru
     unsigned count = 0;
     io_uring_for_each_cqe(mediator->ring, head, cqe)
     {
-        count++;
+        ++count;
         if (cqe->res == MEDIATOR_NATIVE_CALL && call)
         {
             struct mediator_message* message = (struct mediator_message*)cqe->user_data;
@@ -178,12 +178,12 @@ void mediator_native_foreach(struct mediator_native* mediator, void (*call)(stru
     io_uring_cq_advance(mediator->ring, count);
 }
 
-int mediator_native_submit(struct mediator_native* mediator)
+int32_t mediator_native_submit(struct mediator_native* mediator)
 {
     return io_uring_submit(mediator->ring);
 }
 
-void mediator_native_call_dart(struct mediator_native* mediator, int target_ring_fd, struct mediator_message* message)
+void mediator_native_call_dart(struct mediator_native* mediator, int32_t target_ring_fd, struct mediator_message* message)
 {
     message->source = mediator->descriptor;
     message->target = target_ring_fd;

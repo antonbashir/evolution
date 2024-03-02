@@ -20,7 +20,7 @@ extern "C"
     {
         struct memory_module_configuration* memory_configuration;
         size_t ring_size;
-        unsigned int ring_flags;
+        uint32_t ring_flags;
         uint64_t timeout_checker_period_millis;
         uint32_t base_delay_micros;
         double delay_randomization_factor;
@@ -45,7 +45,7 @@ extern "C"
         struct msghdr* unix_used_messages;
         struct mh_events_t* events;
         size_t ring_size;
-        int ring_flags;
+        int32_t ring_flags;
         transport_completion_event** completions;
         uint64_t cqe_wait_timeout_millis;
         uint32_t cqe_wait_count;
@@ -54,11 +54,11 @@ extern "C"
         bool trace;
     };
 
-    int transport_initialize(struct transport* transport,
+    int32_t transport_initialize(struct transport* transport,
                              struct transport_configuration* configuration,
                              uint8_t id);
 
-    int transport_setup(struct transport* transport);
+    int32_t transport_setup(struct transport* transport);
 
     void transport_write(struct transport* transport,
                          uint32_t fd,
@@ -79,7 +79,7 @@ extern "C"
                                 uint16_t buffer_id,
                                 struct sockaddr* address,
                                 transport_socket_family_t socket_family,
-                                int message_flags,
+                                int32_t message_flags,
                                 int64_t timeout,
                                 uint16_t event,
                                 uint8_t sqe_flags);
@@ -87,22 +87,22 @@ extern "C"
                                    uint32_t fd,
                                    uint16_t buffer_id,
                                    transport_socket_family_t socket_family,
-                                   int message_flags,
+                                   int32_t message_flags,
                                    int64_t timeout,
                                    uint16_t event,
                                    uint8_t sqe_flags);
     void transport_connect(struct transport* transport, struct transport_client* client, int64_t timeout);
     void transport_accept(struct transport* transport, struct transport_server* server);
 
-    void transport_cancel_by_fd(struct transport* transport, int fd);
+    void transport_cancel_by_fd(struct transport* transport, int32_t fd);
 
     void transport_check_event_timeouts(struct transport* transport);
     void transport_remove_event(struct transport* transport, uint64_t data);
 
-    struct sockaddr* transport_get_datagram_address(struct transport* transport, transport_socket_family_t socket_family, int buffer_id);
+    struct sockaddr* transport_get_datagram_address(struct transport* transport, transport_socket_family_t socket_family, int32_t buffer_id);
 
-    int transport_peek(struct transport* transport);
-    void transport_cqe_advance(struct io_uring* ring, int count);
+    int32_t transport_peek(struct transport* transport);
+    void transport_cqe_advance(struct io_uring* ring, int32_t count);
 
     void transport_destroy(struct transport* transport);
 #if defined(__cplusplus)

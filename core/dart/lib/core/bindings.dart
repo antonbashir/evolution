@@ -4,7 +4,7 @@
 // ignore_for_file: type=lint, unused_field
 import 'dart:ffi' as ffi;
 
-@ffi.Native<ffi.Void Function(ffi.Int)>(
+@ffi.Native<ffi.Void Function(ffi.Int32)>(
     symbol: 'system_dart_shutdown_descriptor',
     assetId: 'core-bindings',
     isLeaf: true)

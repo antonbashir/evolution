@@ -4,7 +4,7 @@
 #include "memory_module.h"
 #include "small.h"
 
-int tarantool_factory_initialize(struct tarantool_factory* factory, struct tarantool_factory_configuration* configuration)
+int32_t tarantool_factory_initialize(struct tarantool_factory* factory, struct tarantool_factory_configuration* configuration)
 {
     float actual_alloc_factor;
 

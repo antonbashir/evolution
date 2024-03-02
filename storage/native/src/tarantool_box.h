@@ -59,7 +59,7 @@ extern "C"
         size_t key_size;
         const uint8_t* key;
         uint32_t space_id;
-        int iterator_type;
+        int32_t iterator_type;
         struct mediator_message message;
     };
 
@@ -70,7 +70,7 @@ extern "C"
         uint32_t space_id;
         uint32_t offset;
         uint32_t limit;
-        int iterator_type;
+        int32_t iterator_type;
         struct mediator_message message;
     };
 
@@ -99,7 +99,7 @@ extern "C"
         size_t key_size;
         const uint8_t* key;
         uint32_t space_id;
-        int type;
+        int32_t type;
         struct mediator_message message;
     };
 
@@ -118,7 +118,7 @@ extern "C"
         const uint8_t* key;
         uint32_t space_id;
         uint32_t index_id;
-        int iterator_type;
+        int32_t iterator_type;
         struct mediator_message message;
     };
 
@@ -165,7 +165,7 @@ extern "C"
         size_t key_size;
         uint32_t space_id;
         uint32_t index_id;
-        int type;
+        int32_t type;
         struct mediator_message message;
     };
 
@@ -177,7 +177,7 @@ extern "C"
         uint32_t index_id;
         uint32_t offset;
         uint32_t limit;
-        int iterator_type;
+        int32_t iterator_type;
         struct mediator_message message;
     };
 

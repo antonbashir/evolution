@@ -29,13 +29,13 @@ class MediatorConsumerRegistry {
 class MediatorProducerRegistry {
   final _producers = <MediatorProducerExecutor>[];
 
-  final Pointer<mediator_dart> _mediator;
+  final Pointer<mediator_dart> _pointer;
 
-  MediatorProducerRegistry(this._mediator);
+  MediatorProducerRegistry(this._pointer);
 
   T register<T extends MediatorProducer>(T provider) {
     final id = _producers.length;
-    final executor = MediatorProducerExecutor(id, _mediator);
+    final executor = MediatorProducerExecutor(id, _pointer);
     _producers.add(executor);
     return provider..initialize(executor);
   }

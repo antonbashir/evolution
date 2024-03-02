@@ -1,4 +1,4 @@
-export 'mediator/configuration.dart' show MediatorModuleConfiguration;
+export 'mediator/configuration.dart' show MediatorConfiguration;
 export 'mediator/declaration.dart' show MediatorCallback, MediatorConsumer, MediatorMethod, MediatorProducer, MediatorProducerRegistrat;
 export 'mediator/defaults.dart' show MediatorDefaults;
 export 'mediator/messages.dart' show MediatorMessages;

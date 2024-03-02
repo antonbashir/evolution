@@ -35,15 +35,15 @@ extern "C"
                                                 uint32_t socket_receive_low_at,
                                                 uint32_t socket_send_low_at);
 
-    void transport_socket_initialize_multicast_request(struct ip_mreqn* request, const char* group_address, const char* local_address, int interface_index);
+    void transport_socket_initialize_multicast_request(struct ip_mreqn* request, const char* group_address, const char* local_address, int32_t interface_index);
 
-    int transport_socket_multicast_add_membership(int fd, const char* group_address, const char* local_address, int interface_index);
-    int transport_socket_multicast_drop_membership(int fd, const char* group_address, const char* local_address, int interface_index);
+    int32_t transport_socket_multicast_add_membership(int32_t fd, const char* group_address, const char* local_address, int32_t interface_index);
+    int32_t transport_socket_multicast_drop_membership(int32_t fd, const char* group_address, const char* local_address, int32_t interface_index);
 
-    int transport_socket_multicast_add_source_membership(int fd, const char* group_address, const char* local_address, const char* source_address);
-    int transport_socket_multicast_drop_source_membership(int fd, const char* group_address, const char* local_address, const char* source_address);
+    int32_t transport_socket_multicast_add_source_membership(int32_t fd, const char* group_address, const char* local_address, const char* source_address);
+    int32_t transport_socket_multicast_drop_source_membership(int32_t fd, const char* group_address, const char* local_address, const char* source_address);
 
-    int transport_socket_get_interface_index(const char* interface);
+    int32_t transport_socket_get_interface_index(const char* interface);
 
 #if defined(__cplusplus)
 }

@@ -29,7 +29,7 @@ extern "C"
     bool tarantool_initialize(struct tarantool_configuration* configuration, struct tarantool_box* box);
     bool tarantool_initialized();
     const char* tarantool_status();
-    int tarantool_is_read_only();
+    int32_t tarantool_is_read_only();
     const char* tarantool_initialization_error();
     const char* tarantool_shutdown_error();
     bool tarantool_shutdown();

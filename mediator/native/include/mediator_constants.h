@@ -13,6 +13,10 @@ extern "C"
 #define MEDIATOR_DART_CALL 1 << 2
 #define MEDIATOR_NATIVE_CALL 1 << 3
 
+#define MEDIATOR_STATE_STOPPED 1 << 0
+#define MEDIATOR_STATE_IDLE 1 << 1
+#define MEDIATOR_STATE_WAKING 1 << 2
+
 #if defined(__cplusplus)
 }
 #endif

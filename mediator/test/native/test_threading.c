@@ -18,7 +18,7 @@ int* test_threading_mediator_descriptors()
 {
     int* descriptors = malloc(sizeof(int) * threads.count);
     pthread_mutex_lock((pthread_mutex_t*)threads.global_working_mutex);
-    for (int id = 0; id < threads.count; id++)
+    for (int32_t id = 0; id < threads.count; id++)
     {
         descriptors[id] = ((struct mediator_native*)threads.threads[id].test_mediator)->descriptor;
     }
@@ -26,10 +26,10 @@ int* test_threading_mediator_descriptors()
     return descriptors;
 }
 
-static inline struct test_thread* test_threading_thread_by_fd(int fd)
+static inline struct test_thread* test_threading_thread_by_fd(int32_t fd)
 {
     struct test_thread* thread = NULL;
-    for (int id = 0; id < threads.count; id++)
+    for (int32_t id = 0; id < threads.count; id++)
     {
         thread = &threads.threads[id];
         if (((struct mediator_native*)thread->test_mediator)->descriptor == fd)
@@ -68,13 +68,13 @@ static void* test_threading_run(void* thread)
     return NULL;
 }
 
-bool test_threading_initialize(int thread_count, int isolates_count, int per_thread_messages_count)
+bool test_threading_initialize(int32_t thread_count, int32_t isolates_count, int32_t per_thread_messages_count)
 {
     threads.count = thread_count;
     threads.threads = malloc(thread_count * sizeof(struct test_thread));
     threads.global_working_mutex = malloc(sizeof(pthread_mutex_t));
     pthread_mutex_init((pthread_mutex_t*)threads.global_working_mutex, NULL);
-    for (int thread_id = 0; thread_id < thread_count; thread_id++)
+    for (int32_t thread_id = 0; thread_id < thread_count; thread_id++)
     {
         struct test_thread* thread = &threads.threads[thread_id];
         memset(thread, 0, sizeof(struct test_thread));
@@ -106,11 +106,11 @@ bool test_threading_initialize(int thread_count, int isolates_count, int per_thr
     return true;
 }
 
-int test_threading_call_native_check()
+int32_t test_threading_call_native_check()
 {
-    int messages = 0;
+    int32_t messages = 0;
     pthread_mutex_lock((pthread_mutex_t*)threads.global_working_mutex);
-    for (int id = 0; id < threads.count; id++)
+    for (int32_t id = 0; id < threads.count; id++)
     {
         messages += threads.threads[id].received_messages_count;
     }
@@ -118,11 +118,11 @@ int test_threading_call_native_check()
     return messages;
 }
 
-int test_threading_call_dart_check()
+int32_t test_threading_call_dart_check()
 {
-    int messages = 0;
+    int32_t messages = 0;
     pthread_mutex_lock((pthread_mutex_t*)threads.global_working_mutex);
-    for (int id = 0; id < threads.count; id++)
+    for (int32_t id = 0; id < threads.count; id++)
     {
         messages += threads.threads[id].received_messages_count;
     }
@@ -147,12 +147,12 @@ void test_threading_call_native(struct mediator_message* message)
 void test_threading_prepare_call_dart_bytes(int32_t* targets, int32_t target_count)
 {
     pthread_mutex_lock((pthread_mutex_t*)threads.global_working_mutex);
-    for (int id = 0; id < threads.count; id++)
+    for (int32_t id = 0; id < threads.count; id++)
     {
         struct test_thread* thread = &threads.threads[id];
         for (int32_t target = 0; target < target_count; target++)
         {
-            for (int message_id = 0; message_id < thread->whole_messages_count / target_count; message_id++)
+            for (int32_t message_id = 0; message_id < thread->whole_messages_count / target_count; message_id++)
             {
                 struct mediator_message* message = memory_pool_allocate(thread->thread_memory_pool);
                 message->id = message_id;
@@ -188,7 +188,7 @@ void test_threading_call_dart_callback(struct mediator_message* message)
 void test_threading_destroy()
 {
     pthread_mutex_lock((pthread_mutex_t*)threads.global_working_mutex);
-    for (int thread_id = 0; thread_id < threads.count; thread_id++)
+    for (int32_t thread_id = 0; thread_id < threads.count; thread_id++)
     {
         struct test_thread* thread = &threads.threads[thread_id];
         thread->alive = false;

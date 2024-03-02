@@ -5,7 +5,7 @@
 import 'dart:ffi' as ffi;
 
 @ffi.Native<
-        ffi.Int Function(ffi.Pointer<memory_dart>,
+        ffi.Int32 Function(ffi.Pointer<memory_dart>,
             ffi.Pointer<memory_module_configuration>)>(
     symbol: 'memory_dart_initialize', assetId: 'memory-bindings', isLeaf: true)
 external int memory_dart_initialize(

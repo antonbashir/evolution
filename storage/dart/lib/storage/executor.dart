@@ -141,7 +141,7 @@ class StorageExecutor {
     _mediator.activate();
   }
 
-  Future<void> stop() => _mediator.deactivate();
+  void stop() => _mediator.deactivate();
 
   Future<void> destroy() async {
     tarantool_factory_destroy(_nativeFactory);

@@ -3,19 +3,24 @@ import 'configuration.dart';
 class MediatorDefaults {
   MediatorDefaults._();
 
-  static const MediatorModuleConfiguration mediator = MediatorModuleConfiguration(
+  static const MediatorConfiguration mediator = MediatorConfiguration(
     staticBuffersCapacity: 4096,
     staticBufferSize: 4096,
     ringSize: 16384,
     ringFlags: 0,
-    baseDelay: Duration(microseconds: 10),
-    maxDelay: Duration(seconds: 5),
-    delayRandomizationFactor: 0.25,
-    cqePeekCount: 1024,
-    cqeWaitCount: 1,
-    cqeWaitTimeout: Duration(milliseconds: 1),
+    maximumWakingTime: Duration(milliseconds: 5),
+    completionPeekCount: 1024,
+    completionWaitCount: 1,
+    completionWaitTimeout: Duration(milliseconds: 1),
     memorySlabSize: 64 * 1024,
     memoryPreallocationSize: 64 * 1024,
     memoryQuotaSize: 16 * 1024 * 1024,
+  );
+
+  static const MediatorNotifierConfiguration notifier = MediatorNotifierConfiguration(
+    ringSize: 16384,
+    ringFlags: 0,
+    initializationTimeout: Duration(seconds: 5),
+    shutdownTimeout: Duration(seconds: 5),
   );
 }

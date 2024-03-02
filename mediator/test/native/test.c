@@ -20,7 +20,7 @@ test_mediator_native* test_mediator_initialize(bool initialize_memory)
     {
         return NULL;
     }
-    int result = mediator_native_initialize_default(test_mediator, 0);
+    int32_t result = mediator_native_initialize_default(test_mediator, 0);
     if (result < 0)
     {
         return NULL;
@@ -34,7 +34,7 @@ test_mediator_native* test_mediator_initialize(bool initialize_memory)
     return test_mediator;
 }
 
-int test_mediator_descriptor(test_mediator_native* mediator)
+int32_t test_mediator_descriptor(test_mediator_native* mediator)
 {
     return ((struct mediator_native*)mediator)->descriptor;
 }

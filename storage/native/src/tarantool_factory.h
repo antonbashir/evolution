@@ -24,7 +24,7 @@ extern "C"
         size_t preallocation_size;
     };
 
-    int tarantool_factory_initialize(struct tarantool_factory* factory, struct tarantool_factory_configuration* configuration);
+    int32_t tarantool_factory_initialize(struct tarantool_factory* factory, struct tarantool_factory_configuration* configuration);
 
     const char* tarantool_create_string(struct tarantool_factory* factory, size_t size);
     void tarantool_free_string(struct tarantool_factory* factory, const char* string, size_t size);

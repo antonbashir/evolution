@@ -10,7 +10,7 @@
 #include "transport_constants.h"
 #include "transport_socket.h"
 
-int transport_server_initialize_tcp(struct transport_server* server, struct transport_server_configuration* configuration,
+int32_t transport_server_initialize_tcp(struct transport_server* server, struct transport_server_configuration* configuration,
                                     const char* ip,
                                     int32_t port)
 {
@@ -50,7 +50,7 @@ int transport_server_initialize_tcp(struct transport_server* server, struct tran
     return 0;
 }
 
-int transport_server_initialize_udp(struct transport_server* server, struct transport_server_configuration* configuration,
+int32_t transport_server_initialize_udp(struct transport_server* server, struct transport_server_configuration* configuration,
                                     const char* ip,
                                     int32_t port)
 {
@@ -82,7 +82,7 @@ int transport_server_initialize_udp(struct transport_server* server, struct tran
     return 0;
 }
 
-int transport_server_initialize_unix_stream(struct transport_server* server, struct transport_server_configuration* configuration,
+int32_t transport_server_initialize_unix_stream(struct transport_server* server, struct transport_server_configuration* configuration,
                                             const char* path)
 {
     server->family = UNIX;

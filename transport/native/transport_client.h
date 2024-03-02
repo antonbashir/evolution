@@ -32,7 +32,7 @@ extern "C"
 
     struct transport_client
     {
-        int fd;
+        int32_t fd;
         struct sockaddr_in* inet_destination_address;
         struct sockaddr_in* inet_source_address;
         struct sockaddr_un* unix_destination_address;
@@ -40,19 +40,19 @@ extern "C"
         transport_socket_family_t family;
     };
 
-    int transport_client_initialize_tcp(struct transport_client* client,
+    int32_t transport_client_initialize_tcp(struct transport_client* client,
                                         struct transport_client_configuration* configuration,
                                         const char* ip,
                                         int32_t port);
 
-    int transport_client_initialize_udp(struct transport_client* client,
+    int32_t transport_client_initialize_udp(struct transport_client* client,
                                         struct transport_client_configuration* configuration,
                                         const char* destination_ip,
                                         int32_t destination_port,
                                         const char* source_ip,
                                         int32_t source_port);
 
-    int transport_client_initialize_unix_stream(struct transport_client* client,
+    int32_t transport_client_initialize_unix_stream(struct transport_client* client,
                                                 struct transport_client_configuration* configuration,
                                                 const char* path);
 

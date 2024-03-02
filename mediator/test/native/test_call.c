@@ -51,7 +51,7 @@ void test_call_dart_bool(struct mediator_native* mediator, int32_t target, uintp
     mediator_native_submit(mediator);
 }
 
-void test_call_dart_int(struct mediator_native* mediator, int32_t target, uintptr_t method, int value)
+void test_call_dart_int(struct mediator_native* mediator, int32_t target, uintptr_t method, int32_t value)
 {
     struct mediator_message* message = test_allocate_message();
     message->id = 0;
