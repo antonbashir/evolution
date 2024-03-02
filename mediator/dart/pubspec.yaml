@@ -28,6 +28,7 @@ ffigen:
   headers:
     entry-points:
       - "../native/mediator_dart.h"
+      - "../native/mediator_dart_notifier.h"
   globals:
     exclude:
       - "(.*)"

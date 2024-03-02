@@ -12,6 +12,11 @@ import 'declaration.dart';
 import 'messages.dart';
 import 'registry.dart';
 
+final _mediators = List<Mediator>.empty(growable: true);
+
+@inline
+void _awakeMediator(int id) => _mediators[id]._awake();
+
 class Mediator {
   final _fromMediators = ReceivePort();
   final wakingStopwatch = Stopwatch();
@@ -23,9 +28,8 @@ class Mediator {
   late final Pointer<Pointer<mediator_dart_completion_event>> _completions;
   late final RawReceivePort _closer;
   late final SendPort _destroyer;
-  late final int _maximumWakingTime;
 
-  late final _callback = NativeCallable<mediator_notify_callbackFunction>.listener(_awake);
+  late final _callback = RawReceivePort(_awakeMediator);
 
   late final int descriptor;
   late final MediatorMessages messages;
@@ -36,7 +40,9 @@ class Mediator {
 
   Mediator(SendPort toMediator) {
     _closer = RawReceivePort((_) async {
+      _mediators.remove(_pointer.ref.id);
       deactivate();
+      mediator_dart_destroy(_pointer);
       _callback.close();
       memory.destroy();
       calloc.free(_pointer);
@@ -57,11 +63,12 @@ class Mediator {
     messages = MediatorMessages(memory);
     _consumers = MediatorConsumerRegistry(_pointer);
     _producers = MediatorProducerRegistry(_pointer);
-    _maximumWakingTime = _pointer.ref.configuration.maximum_waking_time_millis;
+    while (_pointer.ref.id >= _mediators.length) _mediators.add(this);
+    _mediators[_pointer.ref.id] = this;
   }
 
   void activate() {
-    mediator_dart_setup(_pointer, _callback.nativeFunction);
+    mediator_dart_setup(_pointer, _callback.sendPort.nativePort);
   }
 
   void deactivate() {
@@ -73,38 +80,9 @@ class Mediator {
   T producer<T extends MediatorProducer>(T provider) => _producers.register(provider);
 
   void _awake() {
-    _trace("awake start");
-    if (_pointer.ref.state & mediatorStateIdle != 0) {
-      final cqeCount = mediator_dart_peek(_pointer);
-      if (cqeCount == 0) {
-        return;
-      }
-      _pointer.ref.state = mediatorStateWaking;
-      _trace("state = waking");
-      _process(cqeCount);
-      if (_maximumWakingTime == 0) {
-        _trace("submit");
-        mediator_dart_submit(_pointer);
-        _pointer.ref.state = mediatorStateIdle;
-        _trace("state = idle");
-        return;
-      }
-      wakingStopwatch.start();
-      while (wakingStopwatch.elapsedMilliseconds < _maximumWakingTime && _pointer.ref.state & mediatorStateStopped == 0) {
-        final cqeCount = mediator_dart_peek_wait(_pointer);
-        if (cqeCount != 0) _process(cqeCount);
-      }
-      wakingStopwatch.stop();
-      _trace("submit");
-      mediator_dart_submit(_pointer);
-      _pointer.ref.state = mediatorStateIdle;
-      _trace("state = idle");
-    }
-    _trace("awake end");
-  }
-
-  void _process(int cqeCount) {
-    _trace("process cqes: $cqeCount");
+    mediator_dart_begin_awake(_pointer);
+    final cqeCount = mediator_dart_peek(_pointer);
+    if (cqeCount == 0) return;
     for (var cqeIndex = 0; cqeIndex < cqeCount; cqeIndex++) {
       Pointer<mediator_completion_event> cqe = (_completions + cqeIndex).value.cast();
       final data = cqe.ref.user_data;
@@ -123,14 +101,6 @@ class Mediator {
         continue;
       }
     }
-    mediator_dart_completion_advance(_pointer, cqeCount);
-    _trace("process cqes advance: $cqeCount");
-  }
-
-  @inline
-  void _trace(String message) {
-    if (_pointer.ref.configuration.trace) {
-      print("${DateTime.now()} [mediator] ${Isolate.current.debugName}: $message");
-    }
+    mediator_dart_complete_awake(_pointer, cqeCount);
   }
 }

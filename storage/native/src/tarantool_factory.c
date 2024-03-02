@@ -23,7 +23,7 @@ int32_t tarantool_factory_initialize(struct tarantool_factory* factory, struct t
     {
         return -ENOMEM;
     }
-    small_alloc_create(factory->tarantool_datas, &factory->memory->cache, 3 * sizeof(int), sizeof(intptr_t), 1.05, &actual_alloc_factor);
+    small_alloc_create(factory->tarantool_datas, &factory->memory->cache, 3 * sizeof(int), sizeof(uintptr_t), 1.05, &actual_alloc_factor);
 
     return 0;
 }

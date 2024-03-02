@@ -13,6 +13,10 @@ include_directories(include)
 file(GLOB sources
   *.c
   *.h
+  dart/*.c
+  dart/*.c
+  dart/internal/*.h
+  dart/internal/*.c
 )
 
 add_library(mediator_debug_linux_x64 SHARED ${sources})

@@ -4,6 +4,104 @@
 // ignore_for_file: type=lint, unused_field
 import 'dart:ffi' as ffi;
 
+@ffi.Native<
+        ffi.Int32 Function(
+            ffi.Pointer<mediator_dart>,
+            ffi.Pointer<mediator_dart_configuration>,
+            ffi.Pointer<mediator_dart_notifier>,
+            ffi.Uint32)>(
+    symbol: 'mediator_dart_initialize',
+    assetId: 'mediator-bindings',
+    isLeaf: true)
+external int mediator_dart_initialize(
+  ffi.Pointer<mediator_dart> mediator,
+  ffi.Pointer<mediator_dart_configuration> configuration,
+  ffi.Pointer<mediator_dart_notifier> notifier,
+  int id,
+);
+
+@ffi.Native<ffi.Void Function(ffi.Pointer<mediator_dart>, ffi.Int64)>(
+    symbol: 'mediator_dart_setup', assetId: 'mediator-bindings', isLeaf: true)
+external void mediator_dart_setup(
+  ffi.Pointer<mediator_dart> mediator,
+  int callback,
+);
+
+@ffi.Native<ffi.Int32 Function(ffi.Pointer<mediator_dart>)>(
+    symbol: 'mediator_dart_peek', assetId: 'mediator-bindings', isLeaf: true)
+external int mediator_dart_peek(
+  ffi.Pointer<mediator_dart> mediator,
+);
+
+@ffi.Native<ffi.Int32 Function(ffi.Pointer<mediator_dart>)>(
+    symbol: 'mediator_dart_peek_wait',
+    assetId: 'mediator-bindings',
+    isLeaf: true)
+external int mediator_dart_peek_wait(
+  ffi.Pointer<mediator_dart> mediator,
+);
+
+@ffi.Native<ffi.Void Function(ffi.Pointer<mediator_dart>)>(
+    symbol: 'mediator_dart_submit', assetId: 'mediator-bindings', isLeaf: true)
+external void mediator_dart_submit(
+  ffi.Pointer<mediator_dart> mediator,
+);
+
+@ffi.Native<ffi.Void Function(ffi.Pointer<mediator_dart>)>(
+    symbol: 'mediator_dart_begin_awake',
+    assetId: 'mediator-bindings',
+    isLeaf: true)
+external void mediator_dart_begin_awake(
+  ffi.Pointer<mediator_dart> mediator,
+);
+
+@ffi.Native<ffi.Void Function(ffi.Pointer<mediator_dart>, ffi.Uint32)>(
+    symbol: 'mediator_dart_complete_awake',
+    assetId: 'mediator-bindings',
+    isLeaf: true)
+external void mediator_dart_complete_awake(
+  ffi.Pointer<mediator_dart> mediator,
+  int completions,
+);
+
+@ffi.Native<
+        ffi.Void Function(ffi.Pointer<mediator_dart>, ffi.Int32,
+            ffi.Pointer<mediator_message>)>(
+    symbol: 'mediator_dart_call_native',
+    assetId: 'mediator-bindings',
+    isLeaf: true)
+external void mediator_dart_call_native(
+  ffi.Pointer<mediator_dart> mediator,
+  int target_ring_fd,
+  ffi.Pointer<mediator_message> message,
+);
+
+@ffi.Native<
+        ffi.Void Function(
+            ffi.Pointer<mediator_dart>, ffi.Pointer<mediator_message>)>(
+    symbol: 'mediator_dart_callback_to_native',
+    assetId: 'mediator-bindings',
+    isLeaf: true)
+external void mediator_dart_callback_to_native(
+  ffi.Pointer<mediator_dart> mediator,
+  ffi.Pointer<mediator_message> message,
+);
+
+@ffi.Native<ffi.Void Function(ffi.Pointer<mediator_dart>, ffi.Uint32)>(
+    symbol: 'mediator_dart_completions_advance',
+    assetId: 'mediator-bindings',
+    isLeaf: true)
+external void mediator_dart_completions_advance(
+  ffi.Pointer<mediator_dart> mediator,
+  int count,
+);
+
+@ffi.Native<ffi.Void Function(ffi.Pointer<mediator_dart>)>(
+    symbol: 'mediator_dart_destroy', assetId: 'mediator-bindings', isLeaf: true)
+external void mediator_dart_destroy(
+  ffi.Pointer<mediator_dart> mediator,
+);
+
 @ffi.Native<ffi.Int Function(ffi.Int, ffi.Pointer<sched_param>)>(
     symbol: 'sched_setparam', assetId: 'mediator-bindings')
 external int sched_setparam(
@@ -1005,89 +1103,6 @@ external bool mediator_dart_notifier_shutdown(
   ffi.Pointer<mediator_dart_notifier> notifier,
 );
 
-@ffi.Native<
-        ffi.Int32 Function(
-            ffi.Pointer<mediator_dart>,
-            ffi.Pointer<mediator_dart_configuration>,
-            ffi.Pointer<mediator_dart_notifier>,
-            ffi.Uint32)>(
-    symbol: 'mediator_dart_initialize',
-    assetId: 'mediator-bindings',
-    isLeaf: true)
-external int mediator_dart_initialize(
-  ffi.Pointer<mediator_dart> mediator,
-  ffi.Pointer<mediator_dart_configuration> configuration,
-  ffi.Pointer<mediator_dart_notifier> notifier,
-  int id,
-);
-
-@ffi.Native<
-        ffi.Void Function(
-            ffi.Pointer<mediator_dart>, mediator_notify_callback)>(
-    symbol: 'mediator_dart_setup', assetId: 'mediator-bindings', isLeaf: true)
-external void mediator_dart_setup(
-  ffi.Pointer<mediator_dart> mediator,
-  mediator_notify_callback callback,
-);
-
-@ffi.Native<ffi.Int32 Function(ffi.Pointer<mediator_dart>)>(
-    symbol: 'mediator_dart_peek', assetId: 'mediator-bindings', isLeaf: true)
-external int mediator_dart_peek(
-  ffi.Pointer<mediator_dart> mediator,
-);
-
-@ffi.Native<ffi.Int32 Function(ffi.Pointer<mediator_dart>)>(
-    symbol: 'mediator_dart_peek_wait',
-    assetId: 'mediator-bindings',
-    isLeaf: true)
-external int mediator_dart_peek_wait(
-  ffi.Pointer<mediator_dart> mediator,
-);
-
-@ffi.Native<ffi.Void Function(ffi.Pointer<mediator_dart>)>(
-    symbol: 'mediator_dart_submit', assetId: 'mediator-bindings', isLeaf: true)
-external void mediator_dart_submit(
-  ffi.Pointer<mediator_dart> mediator,
-);
-
-@ffi.Native<
-        ffi.Void Function(ffi.Pointer<mediator_dart>, ffi.Int32,
-            ffi.Pointer<mediator_message>)>(
-    symbol: 'mediator_dart_call_native',
-    assetId: 'mediator-bindings',
-    isLeaf: true)
-external void mediator_dart_call_native(
-  ffi.Pointer<mediator_dart> mediator,
-  int target_ring_fd,
-  ffi.Pointer<mediator_message> message,
-);
-
-@ffi.Native<
-        ffi.Void Function(
-            ffi.Pointer<mediator_dart>, ffi.Pointer<mediator_message>)>(
-    symbol: 'mediator_dart_callback_to_native',
-    assetId: 'mediator-bindings',
-    isLeaf: true)
-external void mediator_dart_callback_to_native(
-  ffi.Pointer<mediator_dart> mediator,
-  ffi.Pointer<mediator_message> message,
-);
-
-@ffi.Native<ffi.Void Function(ffi.Pointer<mediator_dart>, ffi.Int32)>(
-    symbol: 'mediator_dart_completion_advance',
-    assetId: 'mediator-bindings',
-    isLeaf: true)
-external void mediator_dart_completion_advance(
-  ffi.Pointer<mediator_dart> mediator,
-  int count,
-);
-
-@ffi.Native<ffi.Void Function(ffi.Pointer<mediator_dart>)>(
-    symbol: 'mediator_dart_destroy', assetId: 'mediator-bindings', isLeaf: true)
-external void mediator_dart_destroy(
-  ffi.Pointer<mediator_dart> mediator,
-);
-
 final class mediator_dart_configuration extends ffi.Struct {
   @ffi.Size()
   external int quota_size;
@@ -1155,6 +1170,23 @@ final class mediator_module_native_configuration extends ffi.Struct {
   external int completion_wait_count;
 }
 
+final class mediator_dart_notifier_configuration extends ffi.Struct {
+  @ffi.Size()
+  external int ring_size;
+
+  @ffi.Size()
+  external int ring_flags;
+
+  @ffi.Uint64()
+  external int initialization_timeout_seconds;
+
+  @ffi.Uint64()
+  external int shutdown_timeout_seconds;
+
+  @ffi.Bool()
+  external bool trace;
+}
+
 final class mediator_message extends ffi.Struct {
   @ffi.Uint64()
   external int id;
@@ -1198,6 +1230,154 @@ final class mediator_completion_event extends ffi.Struct {
   @ffi.Array.multi([2])
   external ffi.Array<ffi.UnsignedLongLong> big_cqe;
 }
+
+final class io_uring extends ffi.Opaque {}
+
+final class io_uring_cqe extends ffi.Opaque {}
+
+final class mediator_dart extends ffi.Struct {
+  @ffi.Int64()
+  external int callback;
+
+  external ffi.Pointer<mediator_dart_notifier> notifier;
+
+  external ffi.Pointer<io_uring> ring;
+
+  external ffi.Pointer<ffi.Pointer<mediator_dart_completion_event>> completions;
+
+  external mediator_dart_configuration configuration;
+
+  @ffi.Int32()
+  external int descriptor;
+
+  @ffi.Uint32()
+  external int id;
+
+  @ffi.Int8()
+  external int state;
+}
+
+final class mediator_dart_notifier extends ffi.Struct {
+  external mediator_dart_notifier_configuration configuration;
+
+  external ffi.Pointer<ffi.Char> initialization_error;
+
+  external ffi.Pointer<ffi.Char> shutdown_error;
+
+  @pthread_t()
+  external int main_thread_id;
+
+  external pthread_mutex_t initialization_mutex;
+
+  external pthread_cond_t initialization_condition;
+
+  external pthread_mutex_t shutdown_mutex;
+
+  external pthread_cond_t shutdown_condition;
+
+  external ffi.Pointer<io_uring> ring;
+
+  @ffi.Bool()
+  external bool active;
+
+  @ffi.Bool()
+  external bool initialized;
+
+  @ffi.Int32()
+  external int descriptor;
+}
+
+typedef pthread_t = ffi.UnsignedLong;
+typedef Dartpthread_t = int;
+
+final class pthread_mutex_t extends ffi.Union {
+  external __pthread_mutex_s __data;
+
+  @ffi.Array.multi([40])
+  external ffi.Array<ffi.Char> __size;
+
+  @ffi.Long()
+  external int __align;
+}
+
+final class __pthread_mutex_s extends ffi.Struct {
+  @ffi.Int()
+  external int __lock;
+
+  @ffi.UnsignedInt()
+  external int __count;
+
+  @ffi.Int()
+  external int __owner;
+
+  @ffi.UnsignedInt()
+  external int __nusers;
+
+  @ffi.Int()
+  external int __kind;
+
+  @ffi.Short()
+  external int __spins;
+
+  @ffi.Short()
+  external int __elision;
+
+  external __pthread_internal_list __list;
+}
+
+final class __pthread_internal_list extends ffi.Struct {
+  external ffi.Pointer<__pthread_internal_list> __prev;
+
+  external ffi.Pointer<__pthread_internal_list> __next;
+}
+
+final class pthread_cond_t extends ffi.Union {
+  external __pthread_cond_s __data;
+
+  @ffi.Array.multi([48])
+  external ffi.Array<ffi.Char> __size;
+
+  @ffi.LongLong()
+  external int __align;
+}
+
+final class __pthread_cond_s extends ffi.Struct {
+  external __atomic_wide_counter __wseq;
+
+  external __atomic_wide_counter __g1_start;
+
+  @ffi.Array.multi([2])
+  external ffi.Array<ffi.UnsignedInt> __g_refs;
+
+  @ffi.Array.multi([2])
+  external ffi.Array<ffi.UnsignedInt> __g_size;
+
+  @ffi.UnsignedInt()
+  external int __g1_orig_size;
+
+  @ffi.UnsignedInt()
+  external int __wrefs;
+
+  @ffi.Array.multi([2])
+  external ffi.Array<ffi.UnsignedInt> __g_signals;
+}
+
+final class __atomic_wide_counter extends ffi.Union {
+  @ffi.UnsignedLongLong()
+  external int __value64;
+
+  external UnnamedStruct1 __value32;
+}
+
+final class UnnamedStruct1 extends ffi.Struct {
+  @ffi.UnsignedInt()
+  external int __low;
+
+  @ffi.UnsignedInt()
+  external int __high;
+}
+
+typedef mediator_dart_completion_event = io_uring_cqe;
 
 final class timespec extends ffi.Struct {
   @ffi.Long()
@@ -1287,21 +1467,6 @@ typedef pid_t = ffi.Int;
 typedef Dartpid_t = int;
 typedef timer_t = ffi.Pointer<ffi.Void>;
 
-final class __atomic_wide_counter extends ffi.Union {
-  @ffi.UnsignedLongLong()
-  external int __value64;
-
-  external UnnamedStruct1 __value32;
-}
-
-final class UnnamedStruct1 extends ffi.Struct {
-  @ffi.UnsignedInt()
-  external int __low;
-
-  @ffi.UnsignedInt()
-  external int __high;
-}
-
 final class pthread_mutexattr_t extends ffi.Union {
   @ffi.Array.multi([4])
   external ffi.Array<ffi.Char> __size;
@@ -1324,78 +1489,6 @@ final class pthread_attr_t extends ffi.Union {
 
   @ffi.Long()
   external int __align;
-}
-
-final class pthread_mutex_t extends ffi.Union {
-  external __pthread_mutex_s __data;
-
-  @ffi.Array.multi([40])
-  external ffi.Array<ffi.Char> __size;
-
-  @ffi.Long()
-  external int __align;
-}
-
-final class __pthread_mutex_s extends ffi.Struct {
-  @ffi.Int()
-  external int __lock;
-
-  @ffi.UnsignedInt()
-  external int __count;
-
-  @ffi.Int()
-  external int __owner;
-
-  @ffi.UnsignedInt()
-  external int __nusers;
-
-  @ffi.Int()
-  external int __kind;
-
-  @ffi.Short()
-  external int __spins;
-
-  @ffi.Short()
-  external int __elision;
-
-  external __pthread_internal_list __list;
-}
-
-final class __pthread_internal_list extends ffi.Struct {
-  external ffi.Pointer<__pthread_internal_list> __prev;
-
-  external ffi.Pointer<__pthread_internal_list> __next;
-}
-
-final class pthread_cond_t extends ffi.Union {
-  external __pthread_cond_s __data;
-
-  @ffi.Array.multi([48])
-  external ffi.Array<ffi.Char> __size;
-
-  @ffi.LongLong()
-  external int __align;
-}
-
-final class __pthread_cond_s extends ffi.Struct {
-  external __atomic_wide_counter __wseq;
-
-  external __atomic_wide_counter __g1_start;
-
-  @ffi.Array.multi([2])
-  external ffi.Array<ffi.UnsignedInt> __g_refs;
-
-  @ffi.Array.multi([2])
-  external ffi.Array<ffi.UnsignedInt> __g_size;
-
-  @ffi.UnsignedInt()
-  external int __g1_orig_size;
-
-  @ffi.UnsignedInt()
-  external int __wrefs;
-
-  @ffi.Array.multi([2])
-  external ffi.Array<ffi.UnsignedInt> __g_signals;
 }
 
 final class pthread_rwlock_t extends ffi.Union {
@@ -1470,90 +1563,10 @@ final class pthread_barrierattr_t extends ffi.Union {
   external int __align;
 }
 
-typedef pthread_t = ffi.UnsignedLong;
-typedef Dartpthread_t = int;
 typedef pthread_once_t = ffi.Int;
 typedef Dartpthread_once_t = int;
 typedef pthread_key_t = ffi.UnsignedInt;
 typedef Dartpthread_key_t = int;
-
-final class io_uring extends ffi.Opaque {}
-
-final class mediator_dart_notifier_configuration extends ffi.Struct {
-  @ffi.Size()
-  external int ring_size;
-
-  @ffi.Size()
-  external int ring_flags;
-
-  @ffi.Uint64()
-  external int initialization_timeout_seconds;
-
-  @ffi.Uint64()
-  external int shutdown_timeout_seconds;
-
-  @ffi.Bool()
-  external bool trace;
-}
-
-final class mediator_dart_notifier extends ffi.Struct {
-  external mediator_dart_notifier_configuration configuration;
-
-  external ffi.Pointer<ffi.Char> initialization_error;
-
-  external ffi.Pointer<ffi.Char> shutdown_error;
-
-  @pthread_t()
-  external int main_thread_id;
-
-  external pthread_mutex_t initialization_mutex;
-
-  external pthread_cond_t initialization_condition;
-
-  external pthread_mutex_t shutdown_mutex;
-
-  external pthread_cond_t shutdown_condition;
-
-  external ffi.Pointer<io_uring> ring;
-
-  @ffi.Bool()
-  external bool active;
-
-  @ffi.Bool()
-  external bool initialized;
-
-  @ffi.Int32()
-  external int descriptor;
-}
-
-final class io_uring_cqe extends ffi.Opaque {}
-
-final class mediator_dart extends ffi.Struct {
-  external mediator_notify_callback callback;
-
-  external ffi.Pointer<mediator_dart_notifier> notifier;
-
-  external ffi.Pointer<io_uring> ring;
-
-  external ffi.Pointer<ffi.Pointer<mediator_dart_completion_event>> completions;
-
-  external mediator_dart_configuration configuration;
-
-  @ffi.Int32()
-  external int descriptor;
-
-  @ffi.Uint32()
-  external int id;
-
-  @ffi.Int8()
-  external int state;
-}
-
-typedef mediator_notify_callback
-    = ffi.Pointer<ffi.NativeFunction<mediator_notify_callbackFunction>>;
-typedef mediator_notify_callbackFunction = ffi.Void Function();
-typedef Dartmediator_notify_callbackFunction = void Function();
-typedef mediator_dart_completion_event = io_uring_cqe;
 
 const int PTHREAD_CREATE_JOINABLE = 0;
 

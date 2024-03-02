@@ -7,6 +7,7 @@
 #include "mediator_common.h"
 #include "mediator_configuration.h"
 #include "mediator_constants.h"
+#include "mediator_dart_notifier.h"
 
 int32_t mediator_dart_initialize(struct mediator_dart* mediator, struct mediator_dart_configuration* configuration, struct mediator_dart_notifier* notifier, uint32_t id)
 {
@@ -38,7 +39,7 @@ int32_t mediator_dart_initialize(struct mediator_dart* mediator, struct mediator
     return mediator->descriptor;
 }
 
-void mediator_dart_setup(struct mediator_dart* mediator, mediator_notify_callback callback)
+void mediator_dart_setup(struct mediator_dart* mediator, int64_t callback)
 {
     mediator->callback = callback;
     mediator->state = MEDIATOR_STATE_IDLE;
@@ -51,6 +52,7 @@ void mediator_dart_setup(struct mediator_dart* mediator, mediator_notify_callbac
 int32_t mediator_dart_peek(struct mediator_dart* mediator)
 {
     struct mediator_dart_configuration* configuration = &mediator->configuration;
+    io_uring_submit_and_get_events(mediator->ring);
     return io_uring_peek_batch_cqe(mediator->ring, &mediator->completions[0], configuration->completion_peek_count);
 }
 
@@ -72,7 +74,7 @@ void mediator_dart_call_native(struct mediator_dart* mediator, int32_t target_ri
     message->source = mediator->descriptor;
     message->target = target_ring_fd;
     message->flags |= MEDIATOR_NATIVE_CALL;
-    io_uring_prep_msg_ring(sqe, target_ring_fd, MEDIATOR_NATIVE_CALL, (intptr_t)message, 0);
+    io_uring_prep_msg_ring(sqe, target_ring_fd, MEDIATOR_NATIVE_CALL, (uintptr_t)message, 0);
     sqe->flags |= IOSQE_CQE_SKIP_SUCCESS;
     if (mediator->state & MEDIATOR_STATE_IDLE) io_uring_submit(ring);
 }
@@ -85,7 +87,7 @@ void mediator_dart_callback_to_native(struct mediator_dart* mediator, struct med
     message->source = mediator->descriptor;
     message->target = target;
     message->flags |= MEDIATOR_NATIVE_CALLBACK;
-    io_uring_prep_msg_ring(sqe, target, MEDIATOR_NATIVE_CALLBACK, (intptr_t)message, 0);
+    io_uring_prep_msg_ring(sqe, target, MEDIATOR_NATIVE_CALLBACK, (uintptr_t)message, 0);
     sqe->flags |= IOSQE_CQE_SKIP_SUCCESS;
     if (mediator->state & MEDIATOR_STATE_IDLE) io_uring_submit(ring);
 }
@@ -93,7 +95,7 @@ void mediator_dart_callback_to_native(struct mediator_dart* mediator, struct med
 void mediator_dart_destroy(struct mediator_dart* mediator)
 {
     struct io_uring_sqe* sqe = mediator_provide_sqe(mediator->ring);
-    io_uring_prep_msg_ring(sqe, mediator->notifier->descriptor, MEDIATOR_NOTIFIER_UNREGISTER, (uintptr_t)mediator, 0);
+    io_uring_prep_msg_ring(sqe, mediator->notifier->descriptor, MEDIATOR_NOTIFIER_UNREGISTER, mediator->id, 0);
     sqe->flags |= IOSQE_CQE_SKIP_SUCCESS;
     io_uring_submit(mediator->ring);
     io_uring_queue_exit(mediator->ring);
@@ -103,10 +105,25 @@ void mediator_dart_destroy(struct mediator_dart* mediator)
 
 void mediator_dart_submit(struct mediator_dart* mediator)
 {
-  io_uring_submit(mediator->ring);
+    io_uring_submit(mediator->ring);
 }
 
-void mediator_dart_completion_advance(struct mediator_dart* mediator, int32_t count)
+void mediator_dart_begin_awake(struct mediator_dart* mediator)
+{
+    mediator->state = MEDIATOR_STATE_WAKING;
+    struct io_uring_sqe* sqe = mediator_provide_sqe(mediator->ring);
+    io_uring_prep_msg_ring(sqe, mediator->notifier->descriptor, MEDIATOR_NOTIFIER_POLL, (uintptr_t)mediator, 0);
+    sqe->flags |= IOSQE_CQE_SKIP_SUCCESS;
+}
+
+void mediator_dart_complete_awake(struct mediator_dart* mediator, uint32_t completions)
+{
+    io_uring_cq_advance(mediator->ring, completions);
+    io_uring_submit(mediator->ring);
+    mediator->state = MEDIATOR_STATE_IDLE;
+}
+
+void mediator_dart_completions_advance(struct mediator_dart* mediator, uint32_t count)
 {
     io_uring_cq_advance(mediator->ring, count);
 }

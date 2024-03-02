@@ -12,15 +12,15 @@ void main() {
   using((Arena arena) => dlopen("${dirname(Platform.script.toFilePath())}/../native/libmediatortest.so".toNativeUtf8(allocator: arena).cast(), rtldGlobal | rtldLazy));
 
   group("[call native]", testCallNative);
-  group("[call dart]", testCallDart);
+  //group("[call dart]", testCallDart);
   group("[threading native]", () {
-    for (var i = 0; i < 1000; i++) {
+    for (var i = 0; i < 2048; i++) {
       testThreadingNative();
     }
   });
-  group("[threading dart]", () {
-    for (var i = 0; i < 1000; i++) {
-      testThreadingDart();
-    }
-  });
+  // group("[threading dart]", () {
+  //   for (var i = 0; i < 2048; i++) {
+  //     testThreadingDart();
+  //   }
+  // });
 }

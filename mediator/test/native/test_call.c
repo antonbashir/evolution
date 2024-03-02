@@ -94,5 +94,5 @@ struct mediator_message* test_call_dart_check(struct mediator_native* mediator)
 }
 
 intptr_t test_call_native_address_lookup() {
-  return (intptr_t)&test_call_native;
+  return (uintptr_t)&test_call_native;
 }

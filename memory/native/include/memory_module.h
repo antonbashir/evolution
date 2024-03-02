@@ -89,7 +89,7 @@ extern "C"
     static inline int32_t memory_small_allocator_create(struct memory_small_allocator* pool, struct memory* memory)
     {
         float actual_alloc_factor;
-        small_alloc_create(&pool->allocator, &memory->cache, 3 * sizeof(int), sizeof(intptr_t), 1.05, &actual_alloc_factor);
+        small_alloc_create(&pool->allocator, &memory->cache, 3 * sizeof(int), sizeof(uintptr_t), 1.05, &actual_alloc_factor);
         return pool->allocator.cache == NULL ? -1 : 0;
     }
 

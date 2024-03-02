@@ -156,7 +156,7 @@ void test_threading_prepare_call_dart_bytes(int32_t* targets, int32_t target_cou
             {
                 struct mediator_message* message = memory_pool_allocate(thread->thread_memory_pool);
                 message->id = message_id;
-                message->input = (void*)(intptr_t)memory_small_data_allocate(thread->thread_small_data, 3);
+                message->input = (void*)(uintptr_t)memory_small_data_allocate(thread->thread_small_data, 3);
                 ((char*)message->input)[0] = 0x1;
                 ((char*)message->input)[1] = 0x2;
                 ((char*)message->input)[2] = 0x3;
@@ -200,5 +200,5 @@ void test_threading_destroy()
 
 intptr_t test_threading_call_native_address_lookup()
 {
-    return (intptr_t)&test_threading_call_native;
+    return (uintptr_t)&test_threading_call_native;
 }

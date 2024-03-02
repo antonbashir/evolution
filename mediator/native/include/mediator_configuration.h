@@ -37,6 +37,15 @@ extern "C"
         int32_t ring_flags;
         uint32_t completion_wait_count;
     };
+
+    struct mediator_dart_notifier_configuration
+    {
+        size_t ring_size;
+        size_t ring_flags;
+        uint64_t initialization_timeout_seconds;
+        uint64_t shutdown_timeout_seconds;
+        bool trace;
+    };
 #if defined(__cplusplus)
 }
 #endif

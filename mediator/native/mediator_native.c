@@ -4,10 +4,39 @@
 #include <stdint.h>
 #include <sys/resource.h>
 #include <sys/socket.h>
-#include "mediator_collections.h"
 #include "mediator_common.h"
 #include "mediator_configuration.h"
 #include "mediator_constants.h"
+
+#define mh_name _native_callbacks
+    struct mh_native_callbacks_key_t
+    {
+        uint64_t owner;
+        uint64_t method;
+    };
+#define mh_key_t struct mh_native_callbacks_key_t
+    struct mh_native_callbacks_node_t
+    {
+        mh_key_t key;
+        void (*callback)(struct mediator_message*);
+    };
+
+#define mh_node_t struct mh_native_callbacks_node_t
+#define mh_arg_t uint64_t
+#define mh_hash(a, arg) (a->key.owner * 31 + a->key.method)
+#define mh_hash_key(a, arg) (a.owner * 31 + a.method)
+#define mh_cmp(a, b, arg) ((a->key.owner != b->key.owner) && (a->key.method != b->key.method))
+#define mh_cmp_key(a, b, arg) ((a.owner != b->key.owner) && (a.method != b->key.method))
+#define MH_SOURCE
+
+#include "collections/mhash.h"
+
+#undef mh_node_t
+#undef mh_arg_t
+#undef mh_hash
+#undef mh_hash_key
+#undef mh_cmp
+#undef mh_cmp_key
 
 int32_t mediator_native_initialize(struct mediator_native* mediator, struct mediator_module_native_configuration* configuration, uint8_t id)
 {
@@ -97,7 +126,7 @@ static inline void mediator_native_process_implementation(struct mediator_native
             uint64_t target = message->source;
             message->source = mediator->descriptor;
             message->target = target;
-            io_uring_prep_msg_ring(sqe, target, MEDIATOR_DART_CALLBACK, (uint64_t)((intptr_t)message), 0);
+            io_uring_prep_msg_ring(sqe, target, MEDIATOR_DART_CALLBACK, (uint64_t)((uintptr_t)message), 0);
             sqe->flags |= IOSQE_CQE_SKIP_SUCCESS;
             continue;
         }
@@ -184,7 +213,7 @@ void mediator_native_call_dart(struct mediator_native* mediator, int32_t target_
     message->source = mediator->descriptor;
     message->target = target_ring_fd;
     message->flags |= MEDIATOR_DART_CALL;
-    io_uring_prep_msg_ring(sqe, target_ring_fd, MEDIATOR_DART_CALL, (uint64_t)((intptr_t)message), 0);
+    io_uring_prep_msg_ring(sqe, target_ring_fd, MEDIATOR_DART_CALL, (uint64_t)((uintptr_t)message), 0);
     sqe->flags |= IOSQE_CQE_SKIP_SUCCESS;
 }
 
@@ -195,7 +224,7 @@ void mediator_native_callback_to_dart(struct mediator_native* mediator, struct m
     message->source = mediator->descriptor;
     message->target = target;
     message->flags |= MEDIATOR_DART_CALLBACK;
-    io_uring_prep_msg_ring(sqe, target, MEDIATOR_DART_CALLBACK, (uint64_t)((intptr_t)message), 0);
+    io_uring_prep_msg_ring(sqe, target, MEDIATOR_DART_CALLBACK, (uint64_t)((uintptr_t)message), 0);
     sqe->flags |= IOSQE_CQE_SKIP_SUCCESS;
 }
 

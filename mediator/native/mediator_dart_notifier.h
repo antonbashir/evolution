@@ -4,25 +4,18 @@
 #include <pthread.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include "mediator_configuration.h"
 
 #define MEDIATOR_NOTIFIER_REGISTER 1 << 10
 #define MEDIATOR_NOTIFIER_UNREGISTER 1 << 11
-#define MEDIATOR_NOTIFIER_SHUTDOWN 1 << 12
+#define MEDIATOR_NOTIFIER_POLL 1 << 12
+#define MEDIATOR_NOTIFIER_LIMIT 1 << 16
 
 #if defined(__cplusplus)
 extern "C"
 {
 #endif
     struct io_uring;
-
-    struct mediator_dart_notifier_configuration
-    {
-        size_t ring_size;
-        size_t ring_flags;
-        uint64_t initialization_timeout_seconds;
-        uint64_t shutdown_timeout_seconds;
-        bool trace;
-    };
 
     struct mediator_dart_notifier
     {

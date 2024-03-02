@@ -24,7 +24,7 @@ static struct mempool tarantool_tuple_ports;
 void tarantool_initialize_box(struct tarantool_box* box)
 {
     float actual_alloc_factor;
-    small_alloc_create(&tarantool_box_output_buffers, cord_slab_cache(), 3 * sizeof(int), sizeof(intptr_t), 1.05, &actual_alloc_factor);
+    small_alloc_create(&tarantool_box_output_buffers, cord_slab_cache(), 3 * sizeof(int), sizeof(uintptr_t), 1.05, &actual_alloc_factor);
     mempool_create(&tarantool_tuple_ports, cord_slab_cache(), sizeof(struct port));
     box->tarantool_evaluate_address = &tarantool_evaluate;
     box->tarantool_call_address = &tarantool_call;
@@ -133,7 +133,7 @@ void tarantool_space_count(struct mediator_message* message)
 
 void tarantool_space_length(struct mediator_message* message)
 {
-    message->output = (void*)box_index_len((uint32_t)(intptr_t)message->input, TARANTOOL_PRIMARY_INDEX_ID);
+    message->output = (void*)box_index_len((uint32_t)(uintptr_t)message->input, TARANTOOL_PRIMARY_INDEX_ID);
 }
 
 void tarantool_space_put_single(struct mediator_message* message)
@@ -481,12 +481,12 @@ void tarantool_space_select(struct mediator_message* message)
 
 void tarantool_space_truncate(struct mediator_message* message)
 {
-    box_truncate((uint32_t)(intptr_t)message->input);
+    box_truncate((uint32_t)(uintptr_t)message->input);
 }
 
 void tarantool_space_id_by_name(struct mediator_message* message)
 {
-    message->output = (void*)(intptr_t)box_space_id_by_name(message->input, message->input_size);
+    message->output = (void*)(uintptr_t)box_space_id_by_name(message->input, message->input_size);
 }
 
 void tarantool_index_iterator(struct mediator_message* message)
@@ -517,7 +517,7 @@ void tarantool_index_length(struct mediator_message* message)
 void tarantool_index_id_by_name(struct mediator_message* message)
 {
     struct tarantool_index_id_by_name_request* request = (struct tarantool_index_id_by_name_request*)message->input;
-    message->output = (void*)(intptr_t)box_index_id_by_name(request->space_id, request->name, request->name_length);
+    message->output = (void*)(uintptr_t)box_index_id_by_name(request->space_id, request->name, request->name_length);
 }
 
 void tarantool_index_get(struct mediator_message* message)

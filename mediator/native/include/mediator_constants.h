@@ -17,8 +17,6 @@ extern "C"
 #define MEDIATOR_STATE_IDLE 1 << 1
 #define MEDIATOR_STATE_WAKING 1 << 2
 
-#define MEDIATOR_NOTIFIER_LIMIT 1024
-
 #if defined(__cplusplus)
 }
 #endif

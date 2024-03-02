@@ -1,6 +1,7 @@
 #ifndef MEDIATOR_COMMON_H
 #define MEDIATOR_COMMON_H
 
+#include <stdio.h>
 #if defined(__cplusplus)
 extern "C"
 {
