@@ -16,7 +16,7 @@ Future<void> _benchMyTcp() async {
   final encoder = Utf8Encoder();
   final fromServer = encoder.convert("from server\n");
 
-  for (var i = 0; i < 2; i++) {
+  for (var i = 0; i < 8; i++) {
     Isolate.spawn((SendPort message) async {
       final worker = Transport(message);
       await worker.initialize();
@@ -31,7 +31,7 @@ Future<void> _benchMyTcp() async {
     }, transport.transport(configuration: TransportDefaults.transport.copyWith()));
   }
   await Future.delayed(Duration(seconds: 1));
-  for (var i = 0; i < 2; i++) {
+  for (var i = 0; i < 8; i++) {
     Isolate.spawn((SendPort message) async {
       final worker = Transport(message);
       await worker.initialize();

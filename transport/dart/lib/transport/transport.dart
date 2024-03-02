@@ -39,7 +39,6 @@ class Transport {
   late final TransportServerDatagramResponderPool _datagramResponderPool;
 
   var _active = true;
-  final _done = Completer();
 
   bool get active => _active;
   int get id => _pointer.ref.id;
@@ -55,7 +54,6 @@ class Transport {
       await _clientRegistry.close(gracefulTimeout: gracefulTimeout);
       await _serverRegistry.close(gracefulTimeout: gracefulTimeout);
       _active = false;
-      await _done.future;
       await _mediator.shutdown();
       transport_destroy(_pointer);
       _closer.close();
