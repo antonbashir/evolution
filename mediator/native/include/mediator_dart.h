@@ -30,6 +30,7 @@ extern "C"
     int32_t mediator_dart_peek(struct mediator_dart* mediator);
 
     void mediator_dart_submit(struct mediator_dart* mediator);
+
     int8_t mediator_dart_awake(struct mediator_dart* mediator);
     void mediator_dart_sleep(struct mediator_dart* mediator, uint32_t completions);
 

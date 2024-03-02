@@ -8,6 +8,7 @@
 #include <sys/time.h>
 #include <sys/un.h>
 #include <unistd.h>
+#include "mediator_constants.h"
 #include "mediator_dart.h"
 #include "memory_configuration.h"
 #include "transport.h"
@@ -99,6 +100,7 @@ void transport_write(struct transport* transport,
     io_uring_sqe_set_data64(sqe, data);
     sqe->flags |= sqe_flags;
     transport_add_event(transport, fd, data, timeout);
+    if (transport->transport_mediator->state & MEDIATOR_STATE_IDLE) io_uring_submit(ring);
 }
 
 void transport_read(struct transport* transport,
@@ -117,6 +119,7 @@ void transport_read(struct transport* transport,
     io_uring_sqe_set_data64(sqe, data);
     sqe->flags |= sqe_flags;
     transport_add_event(transport, fd, data, timeout);
+    if (transport->transport_mediator->state & MEDIATOR_STATE_IDLE) io_uring_submit(ring);
 }
 
 void transport_send_message(struct transport* transport,
@@ -153,6 +156,7 @@ void transport_send_message(struct transport* transport,
     io_uring_sqe_set_data64(sqe, data);
     sqe->flags |= sqe_flags;
     transport_add_event(transport, fd, data, timeout);
+    if (transport->transport_mediator->state & MEDIATOR_STATE_IDLE) io_uring_submit(ring);
 }
 
 void transport_receive_message(struct transport* transport,
@@ -188,6 +192,7 @@ void transport_receive_message(struct transport* transport,
     io_uring_sqe_set_data64(sqe, data);
     sqe->flags |= sqe_flags;
     transport_add_event(transport, fd, data, timeout);
+    if (transport->transport_mediator->state & MEDIATOR_STATE_IDLE) io_uring_submit(ring);
 }
 
 void transport_connect(struct transport* transport, struct transport_client* client, int64_t timeout)
@@ -201,6 +206,7 @@ void transport_connect(struct transport* transport, struct transport_client* cli
     io_uring_prep_connect(sqe, client->fd, address, client->client_address_length);
     io_uring_sqe_set_data64(sqe, data);
     transport_add_event(transport, client->fd, data, timeout);
+    if (transport->transport_mediator->state & MEDIATOR_STATE_IDLE) io_uring_submit(ring);
 }
 
 void transport_accept(struct transport* transport, struct transport_server* server)
@@ -214,6 +220,7 @@ void transport_accept(struct transport* transport, struct transport_server* serv
     io_uring_prep_accept(sqe, server->fd, address, &server->server_address_length, 0);
     io_uring_sqe_set_data64(sqe, data);
     transport_add_event(transport, server->fd, data, TRANSPORT_TIMEOUT_INFINITY);
+    if (transport->transport_mediator->state & MEDIATOR_STATE_IDLE) io_uring_submit(ring);
 }
 
 void transport_cancel_by_fd(struct transport* transport, int32_t fd)
