@@ -39,6 +39,7 @@ struct mh_native_callbacks_node_t
 
 int32_t mediator_native_initialize(struct mediator_native* mediator, struct mediator_native_configuration* configuration, uint8_t id)
 {
+    mediator->id = id;
     mediator->configuration = *configuration;
     mediator->completions = malloc(sizeof(struct io_uring_cqe*) * configuration->ring_size);
     if (!mediator->completions)

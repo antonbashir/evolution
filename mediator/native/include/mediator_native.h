@@ -16,6 +16,7 @@ extern "C"
 
     struct mediator_native
     {
+        uint8_t id;
         struct mediator_native_configuration configuration;
         struct io_uring* ring;
         mediator_native_completion_event** completions;

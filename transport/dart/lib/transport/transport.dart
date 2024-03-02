@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ffi';
 import 'dart:isolate';
 
+import 'package:core/core.dart';
 import 'package:mediator/mediator.dart';
 import 'package:memory/memory.dart';
 import 'package:meta/meta.dart';
@@ -110,6 +111,7 @@ class Transport {
     _mediator.activate();
   }
 
+  @inline
   void _process(Pointer<Pointer<mediator_dart_completion_event>> completions, int count) {
     for (var index = 0; index < count; index++) {
       Pointer<mediator_completion_event> completion = (completions + index).value.cast();

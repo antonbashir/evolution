@@ -17,6 +17,7 @@ class StorageModule {
   final Map<String, SystemLibrary> _loadedModulesByName = {};
   final Map<String, SystemLibrary> _loadedModulesByPath = {};
   final SystemLibrary _library;
+  final _mediator = MediatorModule();
 
   late final _box = calloc<tarantool_box>(sizeOf<tarantool_box>());
 
@@ -25,9 +26,7 @@ class StorageModule {
 
   StreamSubscription<ProcessSignal>? _reloadListener = null;
 
-  StorageModule({String? libraryPath}) : _library = libraryPath == null ? SystemLibrary.loadByName(storageLibraryName, storagePackageName) : SystemLibrary.loadByPath(libraryPath) {
-    MediatorModule.load();
-  }
+  StorageModule({String? libraryPath}) : _library = libraryPath == null ? SystemLibrary.loadByName(storageLibraryName, storagePackageName) : SystemLibrary.loadByPath(libraryPath);
 
   StorageExecutor get executor => _executor;
 
@@ -40,8 +39,9 @@ class StorageModule {
     if (!initialized()) {
       throw StorageLauncherException(tarantool_initialization_error().cast<Utf8>().toDartString());
     }
+    _mediator.initialize();
     _executor = StorageExecutor(_box);
-    await _executor.initialize();
+    await _executor.initialize(_mediator);
     if (_hasStorageLuaModule && bootConfiguration != null) {
       await executor.boot(bootConfiguration);
     }
@@ -68,6 +68,7 @@ class StorageModule {
     if (!tarantool_shutdown()) {
       throw StorageLauncherException(tarantool_shutdown_error().cast<Utf8>().toDartString());
     }
+    await _mediator.shutdown();
     await _executor.destroy();
     calloc.free(_box.cast());
   }

@@ -101,8 +101,6 @@ class StorageConsumer implements MediatorConsumer {
 }
 
 class StorageExecutor {
-  final mediatorModule = MediatorModule(memoryMode: LibraryPackageMode.shared);
-
   final Pointer<tarantool_box> _box;
 
   late final StorageSchema _schema;
@@ -120,8 +118,7 @@ class StorageExecutor {
   MemoryTuples get tuples => _tuples;
   MemoryModule get memory => _mediator.memory;
 
-  Future<void> initialize() async {
-    mediatorModule.initialize();
+  Future<void> initialize(MediatorModule mediatorModule) async {
     _mediator = Mediator(mediatorModule.mediator());
     await _mediator.initialize();
     _descriptor = tarantool_executor_descriptor();
@@ -147,7 +144,6 @@ class StorageExecutor {
   Future<void> destroy() async {
     tarantool_factory_destroy(_nativeFactory);
     calloc.free(_nativeFactory.cast());
-    await mediatorModule.shutdown();
   }
 
   @inline

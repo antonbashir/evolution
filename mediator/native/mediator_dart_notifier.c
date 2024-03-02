@@ -169,6 +169,7 @@ static void* mediator_notifier_listen(void* input)
 bool mediator_dart_notifier_initialize(struct mediator_dart_notifier* notifier, struct mediator_dart_notifier_configuration* configuration)
 {
     notifier->thread = malloc(sizeof(struct mediator_dart_notifier_thread));
+    memset(notifier->thread, 0, sizeof(struct mediator_dart_notifier_thread));
     notifier->configuration = *configuration;
     struct timespec timeout;
     timespec_get(&timeout, TIME_UTC);
