@@ -10,7 +10,6 @@ class MediatorConfiguration {
   final int memorySlabSize;
   final int memoryPreallocationSize;
   final int memoryQuotaSize;
-  final bool trace;
 
   Pointer<mediator_dart_configuration> toNative(Pointer<mediator_dart_configuration> native) {
     native.ref.ring_flags = ringFlags;
@@ -20,7 +19,6 @@ class MediatorConfiguration {
     native.ref.slab_size = memorySlabSize;
     native.ref.preallocation_size = memoryPreallocationSize;
     native.ref.quota_size = memoryQuotaSize;
-    native.ref.trace = trace;
     return native;
   }
 
@@ -32,7 +30,6 @@ class MediatorConfiguration {
         memorySlabSize: native.ref.slab_size,
         memoryPreallocationSize: native.ref.preallocation_size,
         memoryQuotaSize: native.ref.quota_size,
-        trace: native.ref.trace,
       );
 
   const MediatorConfiguration({
@@ -43,7 +40,6 @@ class MediatorConfiguration {
     required this.memorySlabSize,
     required this.memoryPreallocationSize,
     required this.memoryQuotaSize,
-    required this.trace,
   });
 
   MediatorConfiguration copyWith({
@@ -55,7 +51,6 @@ class MediatorConfiguration {
     int? memorySlabSize,
     int? memoryPreallocationSize,
     int? memoryQuotaSize,
-    bool? trace,
   }) =>
       MediatorConfiguration(
         staticBuffersCapacity: staticBuffersCapacity ?? this.staticBuffersCapacity,
@@ -65,7 +60,6 @@ class MediatorConfiguration {
         memorySlabSize: memorySlabSize ?? this.memorySlabSize,
         memoryPreallocationSize: memoryPreallocationSize ?? this.memoryPreallocationSize,
         memoryQuotaSize: memoryQuotaSize ?? this.memoryQuotaSize,
-        trace: trace ?? this.trace,
       );
 }
 
@@ -74,14 +68,12 @@ class MediatorNotifierConfiguration {
   final int ringFlags;
   final Duration initializationTimeout;
   final Duration shutdownTimeout;
-  final bool trace;
 
   Pointer<mediator_dart_notifier_configuration> toNative(Pointer<mediator_dart_notifier_configuration> native) {
     native.ref.ring_flags = ringFlags;
     native.ref.ring_size = ringSize;
     native.ref.initialization_timeout_seconds = initializationTimeout.inSeconds;
     native.ref.shutdown_timeout_seconds = shutdownTimeout.inSeconds;
-    native.ref.trace = trace;
     return native;
   }
 
@@ -90,7 +82,6 @@ class MediatorNotifierConfiguration {
         ringSize: native.ref.ring_size,
         initializationTimeout: Duration(seconds: native.ref.initialization_timeout_seconds),
         shutdownTimeout: Duration(seconds: native.ref.shutdown_timeout_seconds),
-        trace: native.ref.trace,
       );
 
   const MediatorNotifierConfiguration({
@@ -98,7 +89,6 @@ class MediatorNotifierConfiguration {
     required this.ringFlags,
     required this.initializationTimeout,
     required this.shutdownTimeout,
-    required this.trace,
   });
 
   MediatorNotifierConfiguration copyWith({
@@ -106,7 +96,6 @@ class MediatorNotifierConfiguration {
     int? ringFlags,
     Duration? initializationTimeout,
     Duration? shutdownTimeout,
-    bool? trace,
     int? completionPeekCount,
   }) =>
       MediatorNotifierConfiguration(
@@ -114,6 +103,5 @@ class MediatorNotifierConfiguration {
         ringFlags: ringFlags ?? this.ringFlags,
         initializationTimeout: initializationTimeout ?? this.initializationTimeout,
         shutdownTimeout: shutdownTimeout ?? this.shutdownTimeout,
-        trace: trace ?? this.trace,
       );
 }

@@ -9,8 +9,12 @@ class MediatorErrors {
   MediatorErrors._();
 
   static const mediatorMemoryError = "[mediator] out of memory";
+  static const mediatorRingFullError = "[mediator] ring is full";
   static mediatorError(int result) => systemError(-result);
 }
+
+const mediatorErrorNotifierPost = 0;
+const mediatorErrorRingFull = -1;
 
 const mediatorStateStopped = 1 << 0;
 const mediatorStateIdle = 1 << 1;

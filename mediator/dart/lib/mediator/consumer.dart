@@ -4,6 +4,8 @@ import 'dart:ffi';
 import 'package:core/core.dart';
 
 import 'bindings.dart';
+import 'constants.dart';
+import 'exception.dart';
 
 class MediatorConsumerExecutor {
   final List<MediatorCallbackExecutor> _callbacks;
@@ -21,5 +23,12 @@ class MediatorCallbackExecutor {
   MediatorCallbackExecutor(this._mediator, this._executor);
 
   @inline
-  void call(Pointer<mediator_message> message) => Future.value(_executor(message)).then((_) => mediator_dart_callback_to_native(_mediator, message));
+  void call(Pointer<mediator_message> message) => Future.value(_executor(message)).then((_) => _respond(message));
+
+  @inline
+  void _respond(Pointer<mediator_message> message) {
+    if (mediator_dart_callback_to_native(_mediator, message) == mediatorErrorRingFull) {
+      throw MediatorException(MediatorErrors.mediatorRingFullError);
+    }
+  }
 }

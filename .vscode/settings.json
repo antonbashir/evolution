@@ -36,6 +36,9 @@
     "assert.h": "c",
     "mhash.h": "c",
     "dart_native_api.h": "c",
-    "cstdint": "c"
+    "cstdint": "c",
+    "core.h": "c",
+    "modules.h": "c",
+    "mediator_dart_notifier.h": "c"
   },
 }

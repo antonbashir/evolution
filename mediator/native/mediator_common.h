@@ -2,25 +2,24 @@
 #define MEDIATOR_COMMON_H
 
 #include <stdio.h>
+#include <stdlib.h>
+#include "liburing/io_uring.h"
 #if defined(__cplusplus)
 extern "C"
 {
 #endif
 
-#include <liburing.h>
-#include <core_common.h>
+#define MEDIATOR_CQE_FORMAT_BUFFER 1024
 
-  static inline struct io_uring_sqe *mediator_provide_sqe(struct io_uring *ring)
-  {
-    struct io_uring_sqe *sqe = io_uring_get_sqe(ring);
-    while (unlikely(sqe == NULL))
+#include <commons.h>
+#include <liburing.h>
+
+    static inline char* mediator_cqe_to_string(struct io_uring_cqe* cqe)
     {
-      struct io_uring_cqe *unused;
-      io_uring_wait_cqe_nr(ring, &unused, 1);
-      sqe = io_uring_get_sqe(ring);
-    }
-    return sqe;
-  };
+        char* buffer = malloc(MEDIATOR_CQE_FORMAT_BUFFER);
+        snprintf(buffer, MEDIATOR_CQE_FORMAT_BUFFER, "cqe.res = [%d], cqe.user_data = [%lld], cqe.flags = [%d]", cqe->res, cqe->user_data, cqe->flags);
+        return buffer;
+    };
 
 #if defined(__cplusplus)
 }

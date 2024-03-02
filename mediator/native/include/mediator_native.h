@@ -32,16 +32,16 @@ extern "C"
     int32_t mediator_native_count_ready(struct mediator_native* mediator);
     int32_t mediator_native_count_ready_submit(struct mediator_native* mediator);
 
-    void mediator_native_process(struct mediator_native* mediator);
-    void mediator_native_process_infinity(struct mediator_native* mediator);
-    void mediator_native_process_timeout(struct mediator_native* mediator);
+    int8_t mediator_native_process(struct mediator_native* mediator);
+    int8_t mediator_native_process_infinity(struct mediator_native* mediator);
+    int8_t mediator_native_process_timeout(struct mediator_native* mediator);
 
     void mediator_native_foreach(struct mediator_native* mediator, void (*call)(struct mediator_message*), void (*callback)(struct mediator_message*));
 
     int32_t mediator_native_submit(struct mediator_native* mediator);
 
-    void mediator_native_call_dart(struct mediator_native* mediator, int32_t target_ring_fd, struct mediator_message* message);
-    void mediator_native_callback_to_dart(struct mediator_native* mediator, struct mediator_message* message);
+    int8_t mediator_native_call_dart(struct mediator_native* mediator, int32_t target_ring_fd, struct mediator_message* message);
+    int8_t mediator_native_callback_to_dart(struct mediator_native* mediator, struct mediator_message* message);
 
     void mediator_native_destroy(struct mediator_native* mediator);
 #if defined(__cplusplus)

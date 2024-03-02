@@ -9,6 +9,7 @@ import 'package:memory/memory.dart';
 import 'bindings.dart';
 import 'constants.dart';
 import 'declaration.dart';
+import 'exception.dart';
 import 'messages.dart';
 import 'registry.dart';
 
@@ -42,10 +43,9 @@ class Mediator {
 
   Mediator(SendPort toMediator) {
     _closer = RawReceivePort((_) async {
-      _mediators.remove(_pointer.ref.id);
       deactivate();
+      _mediators.remove(_pointer.ref.id);
       _callback.close();
-      mediator_dart_destroy(_pointer);
       memory.destroy();
       calloc.free(_pointer);
       _closer.close();
@@ -69,9 +69,17 @@ class Mediator {
     _mediators[_pointer.ref.id] = this;
   }
 
-  void activate() => mediator_dart_activate(_pointer, _callback.sendPort.nativePort);
+  void activate() {
+    if (mediator_dart_register(_pointer, _callback.sendPort.nativePort) == mediatorErrorRingFull) {
+      throw MediatorException(MediatorErrors.mediatorRingFullError);
+    }
+  }
 
-  void deactivate() => _pointer.ref.state = mediatorStateStopped;
+  void deactivate() {
+    if (mediator_dart_unregister(_pointer) == mediatorErrorRingFull) {
+      throw MediatorException(MediatorErrors.mediatorRingFullError);
+    }
+  }
 
   void consumer(MediatorConsumer declaration) => _consumers.register(declaration);
 
@@ -79,7 +87,10 @@ class Mediator {
 
   void _awake() {
     if (_pointer.ref.state & mediatorStateStopped == 0) {
-      mediator_dart_begin_awake(_pointer);
+      if (mediator_dart_awake(_pointer) == mediatorErrorRingFull) {
+        mediator_dart_sleep(_pointer, 0);
+        throw MediatorException(MediatorErrors.mediatorRingFullError);
+      }
       final cqeCount = mediator_dart_peek(_pointer);
       if (cqeCount == 0) return;
       for (var cqeIndex = 0; cqeIndex < cqeCount; cqeIndex++) {
@@ -100,7 +111,7 @@ class Mediator {
           continue;
         }
       }
-      mediator_dart_complete_awake(_pointer, cqeCount);
+      mediator_dart_sleep(_pointer, cqeCount);
     }
   }
 }

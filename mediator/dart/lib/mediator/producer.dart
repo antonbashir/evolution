@@ -4,7 +4,9 @@ import 'dart:ffi';
 import 'package:core/core.dart';
 
 import 'bindings.dart';
+import 'constants.dart';
 import 'declaration.dart';
+import 'exception.dart';
 
 class MediatorProducerExecutor implements MediatorProducerRegistrat {
   final Map<int, MediatorMethodExecutor> _methods = {};
@@ -43,7 +45,10 @@ class MediatorMethodExecutor implements MediatorMethod {
     message.ref.owner = _executorId;
     message.ref.method = _methodId;
     _calls[message.address] = completer;
-    mediator_dart_call_native(_pointer, target, message);
+    if (mediator_dart_call_native(_pointer, target, message) == mediatorErrorRingFull) {
+      _calls.remove(message.address);
+      throw MediatorException(MediatorErrors.mediatorRingFullError);
+    }
     return completer.future.then(_onComplete);
   }
 

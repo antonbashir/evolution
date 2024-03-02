@@ -6,8 +6,6 @@ extern "C"
 {
 #endif
 
-#define MEDIATOR_BUFFER_USED -1
-
 #define MEDIATOR_DART_CALLBACK 1 << 0
 #define MEDIATOR_NATIVE_CALLBACK 1 << 1
 #define MEDIATOR_DART_CALL 1 << 2
@@ -16,6 +14,11 @@ extern "C"
 #define MEDIATOR_STATE_STOPPED 1 << 0
 #define MEDIATOR_STATE_IDLE 1 << 1
 #define MEDIATOR_STATE_WAKING 1 << 2
+
+#define MEDIATOR_ERROR_NOTIFIER_POST 0
+#define MEDIATOR_ERROR_RING_FULL -1
+
+#define MEDIATOR_SCOPE_NOTIFIER "notifier"
 
 #if defined(__cplusplus)
 }

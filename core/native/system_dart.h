@@ -1,5 +1,5 @@
-#ifndef SYSTEM_DART__H
-#define SYSTEM_DART__H
+#ifndef SYSTEM_DART_H
+#define SYSTEM_DART_H
 
 #include <stdint.h>
 #if defined(__cplusplus)

@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "core_common.h"
+#include "core.h"
 #include "memory_module.h"
 
 #if defined(__cplusplus)

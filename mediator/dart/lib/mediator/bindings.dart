@@ -20,26 +20,26 @@ external int mediator_dart_initialize(
   int id,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<mediator_dart>, ffi.Int64)>(
-    symbol: 'mediator_dart_activate',
+@ffi.Native<ffi.Int8 Function(ffi.Pointer<mediator_dart>, ffi.Int64)>(
+    symbol: 'mediator_dart_register',
     assetId: 'mediator-bindings',
     isLeaf: true)
-external void mediator_dart_activate(
+external int mediator_dart_register(
   ffi.Pointer<mediator_dart> mediator,
   int callback,
+);
+
+@ffi.Native<ffi.Int8 Function(ffi.Pointer<mediator_dart>)>(
+    symbol: 'mediator_dart_unregister',
+    assetId: 'mediator-bindings',
+    isLeaf: true)
+external int mediator_dart_unregister(
+  ffi.Pointer<mediator_dart> mediator,
 );
 
 @ffi.Native<ffi.Int32 Function(ffi.Pointer<mediator_dart>)>(
     symbol: 'mediator_dart_peek', assetId: 'mediator-bindings', isLeaf: true)
 external int mediator_dart_peek(
-  ffi.Pointer<mediator_dart> mediator,
-);
-
-@ffi.Native<ffi.Int32 Function(ffi.Pointer<mediator_dart>)>(
-    symbol: 'mediator_dart_peek_wait',
-    assetId: 'mediator-bindings',
-    isLeaf: true)
-external int mediator_dart_peek_wait(
   ffi.Pointer<mediator_dart> mediator,
 );
 
@@ -49,42 +49,38 @@ external void mediator_dart_submit(
   ffi.Pointer<mediator_dart> mediator,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<mediator_dart>)>(
-    symbol: 'mediator_dart_begin_awake',
-    assetId: 'mediator-bindings',
-    isLeaf: true)
-external void mediator_dart_begin_awake(
+@ffi.Native<ffi.Int8 Function(ffi.Pointer<mediator_dart>)>(
+    symbol: 'mediator_dart_awake', assetId: 'mediator-bindings', isLeaf: true)
+external int mediator_dart_awake(
   ffi.Pointer<mediator_dart> mediator,
 );
 
 @ffi.Native<ffi.Void Function(ffi.Pointer<mediator_dart>, ffi.Uint32)>(
-    symbol: 'mediator_dart_complete_awake',
-    assetId: 'mediator-bindings',
-    isLeaf: true)
-external void mediator_dart_complete_awake(
+    symbol: 'mediator_dart_sleep', assetId: 'mediator-bindings', isLeaf: true)
+external void mediator_dart_sleep(
   ffi.Pointer<mediator_dart> mediator,
   int completions,
 );
 
 @ffi.Native<
-        ffi.Void Function(ffi.Pointer<mediator_dart>, ffi.Int32,
+        ffi.Int8 Function(ffi.Pointer<mediator_dart>, ffi.Int32,
             ffi.Pointer<mediator_message>)>(
     symbol: 'mediator_dart_call_native',
     assetId: 'mediator-bindings',
     isLeaf: true)
-external void mediator_dart_call_native(
+external int mediator_dart_call_native(
   ffi.Pointer<mediator_dart> mediator,
   int target_ring_fd,
   ffi.Pointer<mediator_message> message,
 );
 
 @ffi.Native<
-        ffi.Void Function(
+        ffi.Int8 Function(
             ffi.Pointer<mediator_dart>, ffi.Pointer<mediator_message>)>(
     symbol: 'mediator_dart_callback_to_native',
     assetId: 'mediator-bindings',
     isLeaf: true)
-external void mediator_dart_callback_to_native(
+external int mediator_dart_callback_to_native(
   ffi.Pointer<mediator_dart> mediator,
   ffi.Pointer<mediator_message> message,
 );

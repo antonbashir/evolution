@@ -4,9 +4,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/poll.h>
-#include "core_common.h"
 #include "dart/dart_native_api.h"
+#include "errors.h"
 #include "liburing.h"
+#include "mediator_common.h"
+#include "mediator_constants.h"
 #include "mediator_dart.h"
 
 static inline struct io_uring_sqe* mediator_notifier_provide_sqe(struct io_uring* ring)
@@ -14,27 +16,11 @@ static inline struct io_uring_sqe* mediator_notifier_provide_sqe(struct io_uring
     struct io_uring_sqe* sqe = io_uring_get_sqe(ring);
     while (unlikely(sqe == NULL))
     {
-        printf("no sqe\n");
-        struct io_uring_cqe* unused;
-        io_uring_wait_cqe_nr(ring, &unused, 1);
+        io_uring_submit_and_wait(ring, 1);
         sqe = io_uring_get_sqe(ring);
     }
     return sqe;
 };
-
-#define mediator_notifier_print(notifier, format) \
-    if (unlikely(notifier->configuration.trace))  \
-    {                                             \
-        printf(format);                           \
-        printf("\n");                             \
-    }
-
-#define mediator_notifier_trace(notifier, format, ...) \
-    if (unlikely(notifier->configuration.trace))       \
-    {                                                  \
-        printf(format, __VA_ARGS__);                   \
-        printf("\n");                                  \
-    }
 
 static void* mediator_notifier_listen(void* input)
 {
@@ -95,7 +81,6 @@ static void* mediator_notifier_listen(void* input)
 
             if (unlikely(!notifier->active))
             {
-                mediator_notifier_print(notifier, "[notifier]: shutdown start");
                 if (error = pthread_mutex_lock(&notifier->shutdown_mutex))
                 {
                     notifier->shutdown_error = strerror(error);
@@ -114,7 +99,6 @@ static void* mediator_notifier_listen(void* input)
                     notifier->shutdown_error = strerror(error);
                     return NULL;
                 }
-                mediator_notifier_print(notifier, "[notifier]: shutdown end");
                 return NULL;
             }
 
@@ -124,6 +108,10 @@ static void* mediator_notifier_listen(void* input)
                 if (likely(mediators[mediator->id]))
                 {
                     bool result = Dart_PostInteger(mediator->callback, mediator->id);
+                    if (!result)
+                    {
+                        native_error_exit(MEDIATOR_MODULE, MEDIATOR_ERROR_NOTIFIER_POST, MEDIATOR_SCOPE_NOTIFIER, mediator_cqe_to_string(cqe));
+                    }
                 }
                 continue;
             }
