@@ -22,7 +22,6 @@ typedef MediatorProcessor = void Function(Pointer<Pointer<mediator_dart_completi
 
 class Mediator {
   final _fromModule = ReceivePort();
-  final wakingStopwatch = Stopwatch();
   final _callback = RawReceivePort(Zone.current.bindUnaryCallbackGuarded(_awakeMediator));
 
   late final MediatorConsumerRegistry _consumers;
@@ -109,7 +108,7 @@ class Mediator {
   @inline
   void _process(Pointer<Pointer<mediator_dart_completion_event>> completions, int count) {
     for (var index = 0; index < count; index++) {
-      Pointer<mediator_completion_event> completion = (_completions + index).value.cast();
+      Pointer<mediator_completion_event> completion = (completions + index).value.cast();
       final data = completion.ref.user_data;
       final result = completion.ref.res;
       if (data > 0) {
