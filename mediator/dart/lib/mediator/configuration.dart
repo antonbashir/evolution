@@ -99,7 +99,6 @@ class MediatorNotifierConfiguration {
   final Duration initializationTimeout;
   final Duration shutdownTimeout;
   final bool trace;
-  final int completionPeekCount;
 
   Pointer<mediator_dart_notifier_configuration> toNative(Pointer<mediator_dart_notifier_configuration> native) {
     native.ref.ring_flags = ringFlags;
@@ -107,7 +106,6 @@ class MediatorNotifierConfiguration {
     native.ref.initialization_timeout_seconds = initializationTimeout.inSeconds;
     native.ref.shutdown_timeout_seconds = shutdownTimeout.inSeconds;
     native.ref.trace = trace;
-    native.ref.completion_peek_count = completionPeekCount;
     return native;
   }
 
@@ -117,12 +115,10 @@ class MediatorNotifierConfiguration {
         initializationTimeout: Duration(seconds: native.ref.initialization_timeout_seconds),
         shutdownTimeout: Duration(seconds: native.ref.shutdown_timeout_seconds),
         trace: native.ref.trace,
-        completionPeekCount: native.ref.completion_peek_count,
       );
 
   const MediatorNotifierConfiguration({
     required this.ringSize,
-    required this.completionPeekCount,
     required this.ringFlags,
     required this.initializationTimeout,
     required this.shutdownTimeout,
@@ -143,6 +139,5 @@ class MediatorNotifierConfiguration {
         initializationTimeout: initializationTimeout ?? this.initializationTimeout,
         shutdownTimeout: shutdownTimeout ?? this.shutdownTimeout,
         trace: trace ?? this.trace,
-        completionPeekCount: completionPeekCount ?? this.completionPeekCount,
       );
 }

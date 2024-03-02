@@ -1,5 +1,4 @@
 #include "mediator_dart_notifier.h"
-#include <liburing.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -74,15 +73,16 @@ static void* mediator_notifier_listen(void* input)
         notifier->initialization_error = strerror(error);
         return NULL;
     }
-    struct io_uring_cqe** completions = malloc(sizeof(struct io_uring_cqe*) * notifier->configuration.ring_size);
+    struct io_uring_cqe* cqe;
+    unsigned head;
     unsigned count = 0;
     while (true)
     {
         io_uring_submit_and_wait(ring, 1);
-        count = io_uring_peek_batch_cqe(ring, &completions[0], notifier->configuration.completion_peek_count);
-        for (size_t cqeIndex = 0; cqeIndex < count; cqeIndex++)
+        count = 0;
+        io_uring_for_each_cqe(ring, head, cqe)
         {
-            struct io_uring_cqe* cqe = completions[cqeIndex];
+            ++count;
 
             if (unlikely(!notifier->active))
             {

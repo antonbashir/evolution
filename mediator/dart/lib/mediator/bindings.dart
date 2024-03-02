@@ -1490,9 +1490,6 @@ final class mediator_dart_notifier_configuration extends ffi.Struct {
   @ffi.Uint64()
   external int shutdown_timeout_seconds;
 
-  @ffi.Size()
-  external int completion_peek_count;
-
   @ffi.Bool()
   external bool trace;
 }

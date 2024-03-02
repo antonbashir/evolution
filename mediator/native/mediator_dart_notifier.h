@@ -21,7 +21,6 @@ extern "C"
         size_t ring_flags;
         uint64_t initialization_timeout_seconds;
         uint64_t shutdown_timeout_seconds;
-        size_t completion_peek_count;
         bool trace;
     };
 
