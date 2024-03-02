@@ -121,6 +121,7 @@ class StorageExecutor {
   MemoryModule get memory => _mediator.memory;
 
   Future<void> initialize() async {
+    mediators.initialize();
     _mediator = Mediator(mediators.mediator());
     await _mediator.initialize();
     _descriptor = tarantool_executor_descriptor();

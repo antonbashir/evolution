@@ -45,6 +45,7 @@ Future<void> main() async {
   test("[lua]", testLua);
   group(["schema"], testSchema);
   group("[crud]", testCrud);
+  await Future.delayed(Duration(days: 1));
 
   // // group("[isolate crud]", () {
   // //   test("multi isolate batch", testMultiIsolateInsert);

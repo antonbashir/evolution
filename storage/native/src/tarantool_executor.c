@@ -7,47 +7,42 @@
 #include "mediator_native.h"
 
 static struct mediator_native* tarantool_mediator;
-static int32_t tarantool_eventfd;
 static bool active;
 
 int32_t tarantool_executor_initialize(struct tarantool_executor_configuration* configuration)
 {
-    tarantool_eventfd = eventfd(0, EFD_CLOEXEC | EFD_NONBLOCK);
     tarantool_mediator = calloc(1, sizeof(struct mediator_native));
     int32_t descriptor;
     if ((descriptor = mediator_native_initialize_default(tarantool_mediator, configuration->mediator_id)) < 0)
     {
         return -descriptor;
     }
-    io_uring_register_eventfd(tarantool_mediator->ring, tarantool_eventfd);
     active = true;
     return 0;
 }
   
 void tarantool_executor_start(struct tarantool_executor_configuration* configuration)
 {
-    eventfd_t count;
+    struct io_uring* ring = tarantool_mediator->ring;
     struct ev_io io;
     ev_init(&io, (ev_io_cb)fiber_schedule_cb);
     io.data = fiber();
-    ev_io_set(&io, tarantool_eventfd, EV_READ);
+    ev_io_set(&io, tarantool_mediator->descriptor, EV_READ);
     ev_set_priority(&io, EV_MAXPRI);
     ev_io_start(loop(), &io);
     while (likely(active))
     {
-        io_uring_submit(tarantool_mediator->ring);
-        if (likely(io_uring_cq_ready(tarantool_mediator->ring)))
+        io_uring_submit(ring);
+        if (likely(io_uring_cq_ready(ring)))
         {
             if (!active) break;
-            eventfd_read(tarantool_eventfd, &count);
             mediator_native_process(tarantool_mediator);
-            io_uring_submit(tarantool_mediator->ring);
+            io_uring_submit(ring);
         }
         fiber_yield();
     }
     ev_io_stop(loop(), &io);
     ev_io_set(&io, -1, EV_READ);
-    close(tarantool_eventfd);
 }
 
 int32_t tarantool_executor_descriptor()
@@ -71,6 +66,5 @@ void tarantool_executor_stop()
 
 void tarantool_executor_destroy()
 {
-    close(tarantool_eventfd);
     mediator_native_destroy(tarantool_mediator);
 }

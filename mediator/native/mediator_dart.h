@@ -22,15 +22,16 @@ extern "C"
         mediator_dart_completion_event** completions;
         struct mediator_dart_configuration configuration;
         int32_t descriptor;
+        uint32_t id;
         int8_t state;
     };
 
-    int32_t mediator_dart_initialize(struct mediator_dart* mediator, struct mediator_dart_configuration* configuration, struct mediator_dart_notifier* notifier);
+    int32_t mediator_dart_initialize(struct mediator_dart* mediator, struct mediator_dart_configuration* configuration, struct mediator_dart_notifier* notifier, uint32_t id);
     void mediator_dart_setup(struct mediator_dart* mediator, mediator_notify_callback callback);
 
     int32_t mediator_dart_peek(struct mediator_dart* mediator);
     int32_t mediator_dart_peek_wait(struct mediator_dart* mediator);
-    
+
     void mediator_dart_submit(struct mediator_dart* mediator);
 
     void mediator_dart_call_native(struct mediator_dart* mediator, int32_t target_ring_fd, struct mediator_message* message);

@@ -1009,7 +1009,8 @@ external bool mediator_dart_notifier_shutdown(
         ffi.Int32 Function(
             ffi.Pointer<mediator_dart>,
             ffi.Pointer<mediator_dart_configuration>,
-            ffi.Pointer<mediator_dart_notifier>)>(
+            ffi.Pointer<mediator_dart_notifier>,
+            ffi.Uint32)>(
     symbol: 'mediator_dart_initialize',
     assetId: 'mediator-bindings',
     isLeaf: true)
@@ -1017,6 +1018,7 @@ external int mediator_dart_initialize(
   ffi.Pointer<mediator_dart> mediator,
   ffi.Pointer<mediator_dart_configuration> configuration,
   ffi.Pointer<mediator_dart_notifier> notifier,
+  int id,
 );
 
 @ffi.Native<
@@ -1539,6 +1541,9 @@ final class mediator_dart extends ffi.Struct {
 
   @ffi.Int32()
   external int descriptor;
+
+  @ffi.Uint32()
+  external int id;
 
   @ffi.Int8()
   external int state;

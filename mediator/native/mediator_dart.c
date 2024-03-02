@@ -8,8 +8,9 @@
 #include "mediator_configuration.h"
 #include "mediator_constants.h"
 
-int32_t mediator_dart_initialize(struct mediator_dart* mediator, struct mediator_dart_configuration* configuration, struct mediator_dart_notifier* notifier)
+int32_t mediator_dart_initialize(struct mediator_dart* mediator, struct mediator_dart_configuration* configuration, struct mediator_dart_notifier* notifier, uint32_t id)
 {
+    mediator->id = id;
     mediator->configuration = *configuration;
     mediator->notifier = notifier;
     mediator->state = MEDIATOR_STATE_STOPPED;

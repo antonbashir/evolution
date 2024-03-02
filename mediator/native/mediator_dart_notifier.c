@@ -6,6 +6,7 @@
 #include <sys/poll.h>
 #include "core_common.h"
 #include "liburing.h"
+#include "mediator_constants.h"
 #include "mediator_dart.h"
 
 static inline struct io_uring_sqe* mediator_notifier_provide_sqe(struct io_uring* ring)
@@ -73,13 +74,16 @@ static void* mediator_notifier_listen(void* input)
         notifier->initialization_error = strerror(error);
         return NULL;
     }
+
     struct io_uring_cqe* cqe;
     unsigned head;
     unsigned count = 0;
     while (true)
     {
-        io_uring_submit_and_wait(ring, 1);
         count = 0;
+        int32_t notified[MEDIATOR_NOTIFIER_LIMIT];
+        memset(notified, 0, MEDIATOR_NOTIFIER_LIMIT * sizeof(int32_t));
+        io_uring_submit_and_wait(ring, 1);
         io_uring_for_each_cqe(ring, head, cqe)
         {
             ++count;
@@ -132,6 +136,11 @@ static void* mediator_notifier_listen(void* input)
             {
                 mediator_notifier_trace(notifier, "[notifier]: callback, cqe->res = [%d] cqe->data = [%lld]", cqe->res, cqe->user_data);
                 struct mediator_dart* mediator = (struct mediator_dart*)cqe->user_data;
+                if (likely(notified[mediator->id]))
+                {
+                    continue;
+                }
+                notified[mediator->id] = 1;
                 mediator->callback();
                 struct io_uring_sqe* sqe = mediator_notifier_provide_sqe(ring);
                 io_uring_prep_poll_add(sqe, mediator->descriptor, POLLIN);

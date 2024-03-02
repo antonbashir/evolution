@@ -61,7 +61,7 @@ class MediatorModule {
       _workerClosers.add(ports[1]);
       final mediatorPointer = calloc<mediator_dart>(sizeOf<mediator_dart>());
       if (mediatorPointer == nullptr) throw MediatorException(MediatorErrors.mediatorMemoryError);
-      final result = using((arena) => mediator_dart_initialize(mediatorPointer, configuration.toNative(arena<mediator_dart_configuration>()), _notifier));
+      final result = using((arena) => mediator_dart_initialize(mediatorPointer, configuration.toNative(arena<mediator_dart_configuration>()), _notifier, _workerClosers.length));
       if (result < 0) {
         mediator_dart_destroy(mediatorPointer);
         calloc.free(mediatorPointer);
