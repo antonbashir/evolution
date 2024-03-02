@@ -21,8 +21,10 @@ external int mediator_dart_initialize(
 );
 
 @ffi.Native<ffi.Void Function(ffi.Pointer<mediator_dart>, ffi.Int64)>(
-    symbol: 'mediator_dart_setup', assetId: 'mediator-bindings', isLeaf: true)
-external void mediator_dart_setup(
+    symbol: 'mediator_dart_activate',
+    assetId: 'mediator-bindings',
+    isLeaf: true)
+external void mediator_dart_activate(
   ffi.Pointer<mediator_dart> mediator,
   int callback,
 );
@@ -1122,20 +1124,8 @@ final class mediator_dart_configuration extends ffi.Struct {
   @ffi.Size()
   external int ring_size;
 
-  @ffi.Uint64()
-  external int maximum_waking_time_millis;
-
-  @ffi.Uint64()
-  external int completion_wait_timeout_millis;
-
   @ffi.Uint32()
   external int ring_flags;
-
-  @ffi.Uint32()
-  external int completion_wait_count;
-
-  @ffi.Uint32()
-  external int completion_peek_count;
 
   @ffi.Bool()
   external bool trace;

@@ -39,7 +39,7 @@ int32_t mediator_dart_initialize(struct mediator_dart* mediator, struct mediator
     return mediator->descriptor;
 }
 
-void mediator_dart_setup(struct mediator_dart* mediator, int64_t callback)
+void mediator_dart_activate(struct mediator_dart* mediator, int64_t callback)
 {
     mediator->callback = callback;
     mediator->state = MEDIATOR_STATE_IDLE;
@@ -53,18 +53,7 @@ int32_t mediator_dart_peek(struct mediator_dart* mediator)
 {
     struct mediator_dart_configuration* configuration = &mediator->configuration;
     io_uring_submit_and_get_events(mediator->ring);
-    return io_uring_peek_batch_cqe(mediator->ring, &mediator->completions[0], configuration->completion_peek_count);
-}
-
-int32_t mediator_dart_peek_wait(struct mediator_dart* mediator)
-{
-    struct mediator_dart_configuration* configuration = &mediator->configuration;
-    struct __kernel_timespec timeout = {
-        .tv_nsec = configuration->completion_wait_timeout_millis * 1e+6,
-        .tv_sec = 0,
-    };
-    io_uring_submit_and_wait_timeout(mediator->ring, &mediator->completions[0], configuration->completion_wait_count, &timeout, 0);
-    return io_uring_peek_batch_cqe(mediator->ring, &mediator->completions[0], configuration->completion_peek_count);
+    return io_uring_peek_batch_cqe(mediator->ring, &mediator->completions[0], configuration->ring_size);
 }
 
 void mediator_dart_call_native(struct mediator_dart* mediator, int32_t target_ring_fd, struct mediator_message* message)

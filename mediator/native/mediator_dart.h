@@ -26,10 +26,9 @@ extern "C"
     };
 
     int32_t mediator_dart_initialize(struct mediator_dart* mediator, struct mediator_dart_configuration* configuration, struct mediator_dart_notifier* notifier, uint32_t id);
-    void mediator_dart_setup(struct mediator_dart* mediator, int64_t callback);
+    void mediator_dart_activate(struct mediator_dart* mediator, int64_t callback);
 
     int32_t mediator_dart_peek(struct mediator_dart* mediator);
-    int32_t mediator_dart_peek_wait(struct mediator_dart* mediator);
 
     void mediator_dart_submit(struct mediator_dart* mediator);
     void mediator_dart_begin_awake(struct mediator_dart* mediator);

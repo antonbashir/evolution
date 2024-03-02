@@ -17,11 +17,7 @@ extern "C"
         size_t static_buffers_capacity;
         size_t static_buffer_size;
         size_t ring_size;
-        uint64_t maximum_waking_time_millis;
-        uint64_t completion_wait_timeout_millis;
         uint32_t ring_flags;
-        uint32_t completion_wait_count;
-        uint32_t completion_peek_count;
         bool trace;
     };
 

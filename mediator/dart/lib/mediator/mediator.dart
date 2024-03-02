@@ -20,6 +20,7 @@ void _awakeMediator(int id) => _mediators[id]._awake();
 class Mediator {
   final _fromMediators = ReceivePort();
   final wakingStopwatch = Stopwatch();
+  final _callback = RawReceivePort(_awakeMediator);
 
   late final MediatorConsumerRegistry _consumers;
   late final MediatorProducerRegistry _producers;
@@ -29,11 +30,12 @@ class Mediator {
   late final RawReceivePort _closer;
   late final SendPort _destroyer;
 
-  late final _callback = RawReceivePort(_awakeMediator);
-
   late final int descriptor;
   late final MediatorMessages messages;
   late final MemoryModule memory;
+
+  @inline
+  int get id => _pointer.ref.id;
 
   @inline
   bool get active => _pointer.ref.state & mediatorStateStopped == 0;
@@ -42,8 +44,8 @@ class Mediator {
     _closer = RawReceivePort((_) async {
       _mediators.remove(_pointer.ref.id);
       deactivate();
-      mediator_dart_destroy(_pointer);
       _callback.close();
+      mediator_dart_destroy(_pointer);
       memory.destroy();
       calloc.free(_pointer);
       _closer.close();
@@ -67,40 +69,38 @@ class Mediator {
     _mediators[_pointer.ref.id] = this;
   }
 
-  void activate() {
-    mediator_dart_setup(_pointer, _callback.sendPort.nativePort);
-  }
+  void activate() => mediator_dart_activate(_pointer, _callback.sendPort.nativePort);
 
-  void deactivate() {
-    _pointer.ref.state = mediatorStateStopped;
-  }
+  void deactivate() => _pointer.ref.state = mediatorStateStopped;
 
   void consumer(MediatorConsumer declaration) => _consumers.register(declaration);
 
   T producer<T extends MediatorProducer>(T provider) => _producers.register(provider);
 
   void _awake() {
-    mediator_dart_begin_awake(_pointer);
-    final cqeCount = mediator_dart_peek(_pointer);
-    if (cqeCount == 0) return;
-    for (var cqeIndex = 0; cqeIndex < cqeCount; cqeIndex++) {
-      Pointer<mediator_completion_event> cqe = (_completions + cqeIndex).value.cast();
-      final data = cqe.ref.user_data;
-      final result = cqe.ref.res;
-      if (data > 0) {
-        if (result & mediatorDartCall != 0) {
-          Pointer<mediator_message> message = Pointer.fromAddress(data);
-          _consumers.call(message);
+    if (_pointer.ref.state & mediatorStateStopped == 0) {
+      mediator_dart_begin_awake(_pointer);
+      final cqeCount = mediator_dart_peek(_pointer);
+      if (cqeCount == 0) return;
+      for (var cqeIndex = 0; cqeIndex < cqeCount; cqeIndex++) {
+        Pointer<mediator_completion_event> cqe = (_completions + cqeIndex).value.cast();
+        final data = cqe.ref.user_data;
+        final result = cqe.ref.res;
+        if (data > 0) {
+          if (result & mediatorDartCall != 0) {
+            Pointer<mediator_message> message = Pointer.fromAddress(data);
+            _consumers.call(message);
+            continue;
+          }
+          if (result & mediatorDartCallback != 0) {
+            Pointer<mediator_message> message = Pointer.fromAddress(data);
+            _producers.callback(message);
+            continue;
+          }
           continue;
         }
-        if (result & mediatorDartCallback != 0) {
-          Pointer<mediator_message> message = Pointer.fromAddress(data);
-          _producers.callback(message);
-          continue;
-        }
-        continue;
       }
+      mediator_dart_complete_awake(_pointer, cqeCount);
     }
-    mediator_dart_complete_awake(_pointer, cqeCount);
   }
 }

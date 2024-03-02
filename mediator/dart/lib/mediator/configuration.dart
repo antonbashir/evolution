@@ -7,10 +7,6 @@ class MediatorConfiguration {
   final int staticBufferSize;
   final int ringSize;
   final int ringFlags;
-  final int completionPeekCount;
-  final int completionWaitCount;
-  final Duration completionWaitTimeout;
-  final Duration maximumWakingTime;
   final int memorySlabSize;
   final int memoryPreallocationSize;
   final int memoryQuotaSize;
@@ -21,10 +17,6 @@ class MediatorConfiguration {
     native.ref.ring_size = ringSize;
     native.ref.static_buffer_size = staticBufferSize;
     native.ref.static_buffers_capacity = staticBuffersCapacity;
-    native.ref.maximum_waking_time_millis = maximumWakingTime.inMilliseconds;
-    native.ref.completion_peek_count = completionPeekCount;
-    native.ref.completion_wait_count = completionWaitCount;
-    native.ref.completion_wait_timeout_millis = completionWaitTimeout.inMilliseconds;
     native.ref.slab_size = memorySlabSize;
     native.ref.preallocation_size = memoryPreallocationSize;
     native.ref.quota_size = memoryQuotaSize;
@@ -37,10 +29,6 @@ class MediatorConfiguration {
         ringSize: native.ref.ring_size,
         staticBufferSize: native.ref.static_buffer_size,
         staticBuffersCapacity: native.ref.static_buffers_capacity,
-        maximumWakingTime: Duration(milliseconds: native.ref.maximum_waking_time_millis),
-        completionPeekCount: native.ref.completion_peek_count,
-        completionWaitCount: native.ref.completion_wait_count,
-        completionWaitTimeout: Duration(milliseconds: native.ref.completion_wait_timeout_millis),
         memorySlabSize: native.ref.slab_size,
         memoryPreallocationSize: native.ref.preallocation_size,
         memoryQuotaSize: native.ref.quota_size,
@@ -52,10 +40,6 @@ class MediatorConfiguration {
     required this.staticBufferSize,
     required this.ringSize,
     required this.ringFlags,
-    required this.maximumWakingTime,
-    required this.completionPeekCount,
-    required this.completionWaitCount,
-    required this.completionWaitTimeout,
     required this.memorySlabSize,
     required this.memoryPreallocationSize,
     required this.memoryQuotaSize,
@@ -68,10 +52,6 @@ class MediatorConfiguration {
     int? ringSize,
     int? ringFlags,
     Duration? timeoutCheckerPeriod,
-    Duration? maximumWakingTime,
-    int? completionPeekCount,
-    int? completionWaitCount,
-    Duration? completionWaitTimeout,
     int? memorySlabSize,
     int? memoryPreallocationSize,
     int? memoryQuotaSize,
@@ -82,10 +62,6 @@ class MediatorConfiguration {
         staticBufferSize: staticBufferSize ?? this.staticBufferSize,
         ringSize: ringSize ?? this.ringSize,
         ringFlags: ringFlags ?? this.ringFlags,
-        maximumWakingTime: maximumWakingTime ?? this.maximumWakingTime,
-        completionPeekCount: completionPeekCount ?? this.completionPeekCount,
-        completionWaitCount: completionWaitCount ?? this.completionWaitCount,
-        completionWaitTimeout: completionWaitTimeout ?? this.completionWaitTimeout,
         memorySlabSize: memorySlabSize ?? this.memorySlabSize,
         memoryPreallocationSize: memoryPreallocationSize ?? this.memoryPreallocationSize,
         memoryQuotaSize: memoryQuotaSize ?? this.memoryQuotaSize,
