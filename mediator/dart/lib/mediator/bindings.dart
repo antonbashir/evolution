@@ -1119,6 +1119,9 @@ final class mediator_dart_configuration extends ffi.Struct {
 
   @ffi.Uint32()
   external int completion_peek_count;
+
+  @ffi.Bool()
+  external bool trace;
 }
 
 final class mediator_module_native_configuration extends ffi.Struct {
@@ -1148,9 +1151,6 @@ final class mediator_module_native_configuration extends ffi.Struct {
 
   @ffi.Uint32()
   external int completion_wait_count;
-
-  @ffi.Uint32()
-  external int completion_peek_count;
 }
 
 final class mediator_message extends ffi.Struct {
@@ -1489,6 +1489,12 @@ final class mediator_dart_notifier_configuration extends ffi.Struct {
 
   @ffi.Uint64()
   external int shutdown_timeout_seconds;
+
+  @ffi.Size()
+  external int completion_peek_count;
+
+  @ffi.Bool()
+  external bool trace;
 }
 
 final class mediator_dart_notifier extends ffi.Struct {

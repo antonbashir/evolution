@@ -48,7 +48,6 @@ int32_t mediator_native_initialize_default(struct mediator_native* mediator, uin
         .static_buffer_size = 4096,
         .ring_size = 16384,
         .ring_flags = 0,
-        .completion_peek_count = 1024,
         .completion_wait_count = 1,
         .completion_wait_timeout_millis = 1,
         .preallocation_size = 64 * 1024,
@@ -89,7 +88,7 @@ static inline void mediator_native_process_implementation(struct mediator_native
     io_uring_for_each_cqe(mediator->ring, head, cqe)
     {
         count++;
-        if (cqe->res == MEDIATOR_NATIVE_CALL)
+        if (cqe->res & MEDIATOR_NATIVE_CALL)
         {
             struct mediator_message* message = (struct mediator_message*)cqe->user_data;
             void (*pointer)(struct mediator_message*) = (void (*)(struct mediator_message*))message->method;
@@ -103,7 +102,7 @@ static inline void mediator_native_process_implementation(struct mediator_native
             continue;
         }
 
-        if (cqe->res == MEDIATOR_NATIVE_CALLBACK)
+        if (cqe->res & MEDIATOR_NATIVE_CALLBACK)
         {
             struct mediator_message* message = (struct mediator_message*)cqe->user_data;
             struct mh_native_callbacks_key_t key = {
@@ -157,14 +156,14 @@ void mediator_native_foreach(struct mediator_native* mediator, void (*call)(stru
     io_uring_for_each_cqe(mediator->ring, head, cqe)
     {
         ++count;
-        if (cqe->res == MEDIATOR_NATIVE_CALL && call)
+        if (cqe->res & MEDIATOR_NATIVE_CALL && call)
         {
             struct mediator_message* message = (struct mediator_message*)cqe->user_data;
             call(message);
             continue;
         }
 
-        if (cqe->res == MEDIATOR_NATIVE_CALLBACK && callback)
+        if (cqe->res & MEDIATOR_NATIVE_CALLBACK && callback)
         {
             struct mediator_message* message = (struct mediator_message*)cqe->user_data;
             callback(message);
@@ -181,10 +180,10 @@ int32_t mediator_native_submit(struct mediator_native* mediator)
 
 void mediator_native_call_dart(struct mediator_native* mediator, int32_t target_ring_fd, struct mediator_message* message)
 {
+    struct io_uring_sqe* sqe = mediator_provide_sqe(mediator->ring);
     message->source = mediator->descriptor;
     message->target = target_ring_fd;
     message->flags |= MEDIATOR_DART_CALL;
-    struct io_uring_sqe* sqe = mediator_provide_sqe(mediator->ring);
     io_uring_prep_msg_ring(sqe, target_ring_fd, MEDIATOR_DART_CALL, (uint64_t)((intptr_t)message), 0);
     sqe->flags |= IOSQE_CQE_SKIP_SUCCESS;
 }

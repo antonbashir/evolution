@@ -15,6 +15,7 @@ class MediatorDefaults {
     memorySlabSize: 64 * 1024,
     memoryPreallocationSize: 64 * 1024,
     memoryQuotaSize: 16 * 1024 * 1024,
+    trace: true,
   );
 
   static const MediatorNotifierConfiguration notifier = MediatorNotifierConfiguration(
@@ -22,5 +23,7 @@ class MediatorDefaults {
     ringFlags: 0,
     initializationTimeout: Duration(seconds: 5),
     shutdownTimeout: Duration(seconds: 5),
+    completionPeekCount: 1024,
+    trace: true,
   );
 }

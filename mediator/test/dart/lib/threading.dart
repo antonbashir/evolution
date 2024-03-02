@@ -13,7 +13,7 @@ import 'bindings.dart';
 
 void testThreadingNative() {
   test("[isolates]dart(bytes) <-> [threads]native(bytes)", () async {
-    final mediator = MediatorModule()..initialize();
+    final module = MediatorModule()..initialize();
     final messages = 16;
     final isolates = 4;
     final threads = 8;
@@ -26,7 +26,7 @@ void testThreadingNative() {
     final exitPorts = <ReceivePort>[];
     final errorPorts = <ReceivePort>[];
 
-    for (var isolate = 0; isolate < isolates; isolate++) {
+    for (var isolateNumber = 0; isolateNumber < isolates; isolateNumber++) {
       final exitPort = ReceivePort();
       exitPorts.add(exitPort);
 
@@ -35,8 +35,9 @@ void testThreadingNative() {
 
       final isolate = Isolate.spawn<List<dynamic>>(
         _callNativeIsolate,
+        debugName: "_callNativeIsolate-${isolateNumber}",
         onError: errorPort.sendPort,
-        [messages, threads, mediator.mediator(), exitPort.sendPort],
+        [messages, threads, module.mediator(), exitPort.sendPort],
       );
 
       spawnedIsolates.add(isolate);
@@ -58,7 +59,7 @@ void testThreadingNative() {
     errorPorts.forEach((port) => port.close());
 
     test_threading_destroy();
-    await mediator.shutdown();
+    await module.shutdown();
   });
 }
 
@@ -78,7 +79,7 @@ void testThreadingDart() {
     final exitPorts = <ReceivePort>[];
     final errorPorts = <ReceivePort>[];
 
-    for (var isolate = 0; isolate < isolates; isolate++) {
+    for (var isolateNumber = 0; isolateNumber < isolates; isolateNumber++) {
       final descriptorPort = ReceivePort();
       descriptorPorts.add(descriptorPort);
 
@@ -90,6 +91,7 @@ void testThreadingDart() {
 
       final isolate = Isolate.spawn<List<dynamic>>(
         _callDartIsolate,
+        debugName: "_callDartIsolate-${isolateNumber}",
         onError: errorPort.sendPort,
         [messages * threads, mediator.mediator(), descriptorPort.sendPort, exitPort.sendPort],
       );
@@ -126,10 +128,10 @@ Future<void> _callNativeIsolate(List<dynamic> input) async {
   final messages = input[0];
   final threads = input[1];
   final calls = <Future<Pointer<mediator_message>>>[];
-  final worker = Mediator(input[2]);
-  await worker.initialize();
-  final producer = worker.producer(TestNativeProducer());
-  worker.activate();
+  final mediator = Mediator(input[2]);
+  await mediator.initialize();
+  final producer = mediator.producer(TestNativeProducer());
+  mediator.activate();
   final descriptors = test_threading_mediator_descriptors();
   for (var threadId = 0; threadId < threads; threadId++) {
     final descriptor = descriptors + threadId;
@@ -137,7 +139,7 @@ Future<void> _callNativeIsolate(List<dynamic> input) async {
       fail("descriptor is null");
     }
     for (var messageId = 0; messageId < messages; messageId++) {
-      final message = worker.messages.allocate();
+      final message = mediator.messages.allocate();
       message.inputInt = 41;
       calls.add(producer.testThreadingCallNative(descriptor.value, message));
     }
@@ -146,18 +148,18 @@ Future<void> _callNativeIsolate(List<dynamic> input) async {
     if (result.outputInt != 41) {
       throw TestFailure("outputInt != 41");
     }
-    worker.messages.free(result);
+    mediator.messages.free(result);
   });
   input[3].send(null);
 }
 
 Future<void> _callDartIsolate(List<dynamic> input) async {
   final messages = input[0];
-  final worker = Mediator(input[1]);
-  await worker.initialize();
+  final mediator = Mediator(input[1]);
+  await mediator.initialize();
   var count = 0;
   final completer = Completer();
-  worker.consumer(TestNativeConsumer(
+  mediator.consumer(TestNativeConsumer(
     (notification) {
       if (!ListEquality().equals(notification.inputBytes, [1, 2, 3])) {
         completer.completeError(TestFailure("inputBytes != ${[1, 2, 3]}. ${notification.inputSize}: ${notification.inputBytes}"));
@@ -169,9 +171,9 @@ Future<void> _callDartIsolate(List<dynamic> input) async {
       }
     },
   ));
-  worker.activate();
+  mediator.activate();
 
-  input[2].send(worker.descriptor);
+  input[2].send(mediator.descriptor);
 
   await completer.future;
 

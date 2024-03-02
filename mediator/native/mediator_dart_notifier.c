@@ -1,4 +1,5 @@
 #include "mediator_dart_notifier.h"
+#include <liburing.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,6 +20,19 @@ static inline struct io_uring_sqe* mediator_notifier_provide_sqe(struct io_uring
     }
     return sqe;
 };
+
+#define mediator_notifier_print(notifier, format) \
+    if (unlikely(notifier->configuration.trace))  \
+    {                                             \
+        printf(format);                           \
+        printf("\n");                             \
+    }
+#define mediator_notifier_trace(notifier, format, ...) \
+    if (unlikely(notifier->configuration.trace))       \
+    {                                                  \
+        printf(format, __VA_ARGS__);                   \
+        printf("\n");                                  \
+    }
 
 static void* mediator_notifier_listen(void* input)
 {
@@ -60,18 +74,19 @@ static void* mediator_notifier_listen(void* input)
         notifier->initialization_error = strerror(error);
         return NULL;
     }
+    struct io_uring_cqe** completions = malloc(sizeof(struct io_uring_cqe*) * notifier->configuration.ring_size);
+    unsigned count = 0;
     while (true)
     {
         io_uring_submit_and_wait(ring, 1);
-        struct io_uring_cqe* cqe;
-        unsigned head;
-        unsigned count = 0;
-        io_uring_for_each_cqe(ring, head, cqe)
+        count = io_uring_peek_batch_cqe(ring, &completions[0], notifier->configuration.completion_peek_count);
+        for (size_t cqeIndex = 0; cqeIndex < count; cqeIndex++)
         {
-            ++count;
+            struct io_uring_cqe* cqe = completions[cqeIndex];
 
             if (unlikely(!notifier->active))
             {
+                mediator_notifier_print(notifier, "[notifier]: shutdown start");
                 if (error = pthread_mutex_lock(&notifier->shutdown_mutex))
                 {
                     notifier->shutdown_error = strerror(error);
@@ -90,20 +105,23 @@ static void* mediator_notifier_listen(void* input)
                     notifier->shutdown_error = strerror(error);
                     return NULL;
                 }
+                mediator_notifier_print(notifier, "[notifier]: shutdown end");
                 return NULL;
             }
 
             if (likely(cqe->res & MEDIATOR_NOTIFIER_REGISTER))
             {
+                mediator_notifier_trace(notifier, "[notifier]: event = MEDIATOR_NOTIFIER_REGISTER, cqe->res = [%d] cqe->data = [%lld]", cqe->res, cqe->user_data);
                 struct mediator_dart* mediator = (struct mediator_dart*)cqe->user_data;
                 struct io_uring_sqe* sqe = mediator_notifier_provide_sqe(ring);
-                io_uring_prep_poll_multishot(sqe, mediator->descriptor, POLLIN);
+                io_uring_prep_poll_add(sqe, mediator->descriptor, POLLIN);
                 io_uring_sqe_set_data(sqe, mediator);
                 continue;
             }
 
             if (likely(cqe->res & MEDIATOR_NOTIFIER_UNREGISTER))
             {
+                mediator_notifier_trace(notifier, "[notifier]: event = MEDIATOR_NOTIFIER_UNREGISTER, cqe->res = [%d] cqe->data = [%lld]", cqe->res, cqe->user_data);
                 struct io_uring_sqe* sqe = mediator_notifier_provide_sqe(ring);
                 io_uring_prep_poll_remove(sqe, cqe->user_data);
                 sqe->flags |= IOSQE_CQE_SKIP_SUCCESS;
@@ -112,14 +130,12 @@ static void* mediator_notifier_listen(void* input)
 
             if (likely(cqe->res & POLLIN))
             {
+                mediator_notifier_trace(notifier, "[notifier]: callback, cqe->res = [%d] cqe->data = [%lld]", cqe->res, cqe->user_data);
                 struct mediator_dart* mediator = (struct mediator_dart*)cqe->user_data;
                 mediator->callback();
-                if (!(cqe->flags & IORING_CQE_F_MORE))
-                {
-                    struct io_uring_sqe* sqe = mediator_notifier_provide_sqe(ring);
-                    io_uring_prep_poll_multishot(sqe, mediator->descriptor, POLLIN);
-                    io_uring_sqe_set_data(sqe, mediator);
-                }
+                struct io_uring_sqe* sqe = mediator_notifier_provide_sqe(ring);
+                io_uring_prep_poll_add(sqe, mediator->descriptor, POLLIN);
+                io_uring_sqe_set_data(sqe, mediator);
             }
         }
         io_uring_cq_advance(ring, count);

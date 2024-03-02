@@ -73,16 +73,20 @@ class Mediator {
   T producer<T extends MediatorProducer>(T provider) => _producers.register(provider);
 
   void _awake() {
+    _trace("awake start");
     if (_pointer.ref.state & mediatorStateIdle != 0) {
       final cqeCount = mediator_dart_peek(_pointer);
       if (cqeCount == 0) {
         return;
       }
       _pointer.ref.state = mediatorStateWaking;
+      _trace("state = waking");
       _process(cqeCount);
       if (_maximumWakingTime == 0) {
+        _trace("submit");
         mediator_dart_submit(_pointer);
         _pointer.ref.state = mediatorStateIdle;
+        _trace("state = idle");
         return;
       }
       wakingStopwatch.start();
@@ -91,17 +95,20 @@ class Mediator {
         if (cqeCount != 0) _process(cqeCount);
       }
       wakingStopwatch.stop();
+      _trace("submit");
       mediator_dart_submit(_pointer);
       _pointer.ref.state = mediatorStateIdle;
+      _trace("state = idle");
     }
+    _trace("awake end");
   }
 
   void _process(int cqeCount) {
+    _trace("process cqes: $cqeCount");
     for (var cqeIndex = 0; cqeIndex < cqeCount; cqeIndex++) {
       Pointer<mediator_completion_event> cqe = (_completions + cqeIndex).value.cast();
       final data = cqe.ref.user_data;
       final result = cqe.ref.res;
-
       if (data > 0) {
         if (result & mediatorDartCall != 0) {
           Pointer<mediator_message> message = Pointer.fromAddress(data);
@@ -117,5 +124,13 @@ class Mediator {
       }
     }
     mediator_dart_completion_advance(_pointer, cqeCount);
+    _trace("process cqes advance: $cqeCount");
+  }
+
+  @inline
+  void _trace(String message) {
+    if (_pointer.ref.configuration.trace) {
+      print("${DateTime.now()} [mediator] ${Isolate.current.debugName}: $message");
+    }
   }
 }

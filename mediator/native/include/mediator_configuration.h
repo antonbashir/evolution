@@ -1,6 +1,7 @@
 #ifndef MEDIATOR_CONFIGURATION_H
 #define MEDIATOR_CONFIGURATION_H
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -21,6 +22,7 @@ extern "C"
         uint32_t ring_flags;
         uint32_t completion_wait_count;
         uint32_t completion_peek_count;
+        bool trace;
     };
 
     struct mediator_module_native_configuration
@@ -34,7 +36,6 @@ extern "C"
         size_t ring_size;
         int32_t ring_flags;
         uint32_t completion_wait_count;
-        uint32_t completion_peek_count;
     };
 #if defined(__cplusplus)
 }
