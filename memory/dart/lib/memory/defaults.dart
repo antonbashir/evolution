@@ -13,7 +13,8 @@ class MemoryDefaults {
 
   static const objects = MemoryObjectsConfiguration(
     initialCapacity: 16,
-    minimalAvailableCapacity: 8,
+    minimumAvailableCapacity: 8,
+    maximumAvailableCapacity: 65536,
     preallocation: 16,
     extensionFactor: 2,
     shrinkFactor: 0.5,

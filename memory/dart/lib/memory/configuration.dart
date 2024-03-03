@@ -69,14 +69,16 @@ class MemoryModuleConfiguration {
 
 class MemoryObjectsConfiguration {
   final int initialCapacity;
-  final int minimalAvailableCapacity;
+  final int minimumAvailableCapacity;
+  final int maximumAvailableCapacity;
   final int preallocation;
   final double extensionFactor;
   final double shrinkFactor;
 
   const MemoryObjectsConfiguration({
     required this.initialCapacity,
-    required this.minimalAvailableCapacity,
+    required this.minimumAvailableCapacity,
+    required this.maximumAvailableCapacity,
     required this.preallocation,
     required this.extensionFactor,
     required this.shrinkFactor,

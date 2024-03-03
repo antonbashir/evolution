@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:collection';
 
 import 'package:core/core.dart';
@@ -26,12 +27,12 @@ class MemoryObjects<T> {
     if (_queue.isEmpty) {
       final message = _allocator();
       _queue.add(message);
-      Future.microtask(() => _extend((_queue.length * _extensionFactor).ceil()));
+      unawaited(Future.microtask(() => _extend((_queue.length * _extensionFactor).ceil())));
       return message;
     }
     final allocated = _queue.removeLast();
-    if (_queue.length < configuration.minimalAvailableCapacity) {
-      Future.microtask(() => _extend((_queue.length * _extensionFactor).ceil()));
+    if (_queue.length < configuration.minimumAvailableCapacity) {
+      unawaited(Future.microtask(() => _extend((_queue.length * _extensionFactor).ceil())));
     }
     return allocated;
   }
@@ -39,12 +40,12 @@ class MemoryObjects<T> {
   @inline
   void release(T message) {
     _queue.add(message);
-    if (_queue.length > _extensionFactor) Future.microtask(_shrink);
+    if (_queue.length > configuration.maximumAvailableCapacity) Future.microtask(_shrink);
   }
 
   void _shrink() {
     var shrink = _queue.length * _shrinkFactor;
-    while (--shrink > 0 && _queue.isNotEmpty && _queue.length > configuration.minimalAvailableCapacity) {
+    while (--shrink > 0 && _queue.isNotEmpty && _queue.length > configuration.minimumAvailableCapacity) {
       _releaser(_queue.removeLast());
     }
   }
