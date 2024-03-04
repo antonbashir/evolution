@@ -1,13 +1,13 @@
 #ifndef TRANSPORT_COMMON_H
 #define TRANSPORT_COMMON_H
 
+#include <common/common.h>
+#include <liburing.h>
+
 #if defined(__cplusplus)
 extern "C"
 {
 #endif
-
-#include <core.h>
-#include <liburing.h>
 
     static inline struct io_uring_sqe* transport_provide_sqe(struct io_uring* ring)
     {

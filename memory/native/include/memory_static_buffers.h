@@ -2,13 +2,13 @@
 #define MEMORY_STATIC_BUFFERS_H
 
 #include <bits/types/struct_iovec.h>
-#include <core.h>
 #include <memory_module.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <common/common.h>
 
 #if defined(__cplusplus)
 extern "C"
