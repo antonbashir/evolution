@@ -2,13 +2,13 @@
 #define MEMORY_STATIC_BUFFERS_H
 
 #include <bits/types/struct_iovec.h>
+#include <core.h>
+#include <memory_module.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "core.h"
-#include "memory_module.h"
 
 #if defined(__cplusplus)
 extern "C"
@@ -23,7 +23,7 @@ extern "C"
         struct iovec* buffers;
     };
 
-    static inline int32_t memory_static_buffers_create(struct memory_static_buffers* pool, size_t capacity, size_t size)
+    static FORCEINLINE int32_t memory_static_buffers_create(struct memory_static_buffers* pool, size_t capacity, size_t size)
     {
         pool->size = size;
         pool->capacity = capacity;
@@ -57,7 +57,7 @@ extern "C"
         return 0;
     }
 
-    static inline void memory_static_buffers_destroy(struct memory_static_buffers* pool)
+    static FORCEINLINE void memory_static_buffers_destroy(struct memory_static_buffers* pool)
     {
         for (size_t index = 0; index < pool->capacity; index++)
         {
@@ -68,7 +68,7 @@ extern "C"
         free(pool->buffers);
     }
 
-    static inline void memory_static_buffers_push(struct memory_static_buffers* pool, int32_t id)
+    static FORCEINLINE void memory_static_buffers_push(struct memory_static_buffers* pool, int32_t id)
     {
         struct iovec* buffer = &pool->buffers[id];
         memset(buffer->iov_base, 0, pool->size);
@@ -76,7 +76,7 @@ extern "C"
         pool->ids[pool->available++] = id;
     }
 
-    static inline int32_t memory_static_buffers_pop(struct memory_static_buffers* pool)
+    static FORCEINLINE int32_t memory_static_buffers_pop(struct memory_static_buffers* pool)
     {
         if (unlikely(pool->available == 0))
             return MEMORY_BUFFER_USED;
