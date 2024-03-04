@@ -23,12 +23,12 @@ int32_t transport_initialize(struct transport* transport,
     transport->id = id;
     transport->configuration = *configuration;
 
-    transport->events = mh_events_new();
+    transport->events = simple_map_events_new();
     if (!transport->events)
     {
         return -ENOMEM;
     }
-    mh_events_reserve(transport->events, configuration->memory_configuration.static_buffers_capacity, 0);
+    simple_map_events_reserve(transport->events, configuration->memory_configuration.static_buffers_capacity, 0);
 
     transport->inet_used_messages = malloc(sizeof(struct msghdr) * configuration->memory_configuration.static_buffers_capacity);
     transport->unix_used_messages = malloc(sizeof(struct msghdr) * configuration->memory_configuration.static_buffers_capacity);
@@ -75,13 +75,13 @@ int32_t transport_setup(struct transport* transport, struct mediator_dart* trans
 
 static inline void transport_add_event(struct transport* transport, int32_t fd, uint64_t data, int64_t timeout)
 {
-    struct mh_events_node_t node = {
+    struct simple_map_events_node_t node = {
         .data = data,
         .timeout = timeout,
         .timestamp = time(NULL),
         .fd = fd,
     };
-    mh_events_put(transport->events, &node, NULL, 0);
+    simple_map_events_put(transport->events, &node, NULL, 0);
 }
 
 void transport_write(struct transport* transport,
@@ -225,12 +225,12 @@ void transport_accept(struct transport* transport, struct transport_server* serv
 
 void transport_cancel_by_fd(struct transport* transport, int32_t fd)
 {
-    mh_int_t index;
-    mh_int_t to_delete[transport->events->size];
+    simple_map_int_t index;
+    simple_map_int_t to_delete[transport->events->size];
     int32_t to_delete_count = 0;
-    mh_foreach(transport->events, index)
+    simple_map_foreach(transport->events, index)
     {
-        struct mh_events_node_t* node = mh_events_node(transport->events, index);
+        struct simple_map_events_node_t* node = simple_map_events_node(transport->events, index);
         if (node->fd == fd)
         {
             struct io_uring* ring = transport->transport_mediator->ring;
@@ -242,19 +242,19 @@ void transport_cancel_by_fd(struct transport* transport, int32_t fd)
     }
     for (int32_t index = 0; index < to_delete_count; index++)
     {
-        mh_events_del(transport->events, to_delete[index], 0);
+        simple_map_events_del(transport->events, to_delete[index], 0);
     }
     io_uring_submit(transport->transport_mediator->ring);
 }
 
 void transport_check_event_timeouts(struct transport* transport)
 {
-    mh_int_t index;
-    mh_int_t to_delete[transport->events->size];
+    simple_map_int_t index;
+    simple_map_int_t to_delete[transport->events->size];
     int32_t to_delete_count = 0;
-    mh_foreach(transport->events, index)
+    simple_map_foreach(transport->events, index)
     {
-        struct mh_events_node_t* node = mh_events_node(transport->events, index);
+        struct simple_map_events_node_t* node = simple_map_events_node(transport->events, index);
         int64_t timeout = node->timeout;
         if (timeout == TRANSPORT_TIMEOUT_INFINITY)
         {
@@ -274,17 +274,17 @@ void transport_check_event_timeouts(struct transport* transport)
     }
     for (int32_t index = 0; index < to_delete_count; index++)
     {
-        mh_events_del(transport->events, to_delete[index], 0);
+        simple_map_events_del(transport->events, to_delete[index], 0);
     }
     io_uring_submit(transport->transport_mediator->ring);
 }
 
 void transport_remove_event(struct transport* transport, uint64_t data)
 {
-    mh_int_t event;
-    if ((event = mh_events_find(transport->events, data, 0)) != mh_end(transport->events))
+    simple_map_int_t event;
+    if ((event = simple_map_events_find(transport->events, data, 0)) != simple_map_end(transport->events))
     {
-        mh_events_del(transport->events, event, 0);
+        simple_map_events_del(transport->events, event, 0);
     }
 }
 
@@ -301,7 +301,7 @@ void transport_destroy(struct transport* transport)
         free(transport->inet_used_messages[index].msg_name);
         free(transport->unix_used_messages[index].msg_name);
     }
-    mh_events_delete(transport->events);
+    simple_map_events_delete(transport->events);
     free(transport->inet_used_messages);
     free(transport->unix_used_messages);
     free(transport);

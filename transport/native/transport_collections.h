@@ -8,32 +8,24 @@ extern "C"
 {
 #endif
 
-#define mh_name _events
-#define mh_key_t uint64_t
-  struct mh_events_node_t
-  {
-    mh_key_t data;
-    int64_t timeout;
-    uint64_t timestamp;
-    int32_t fd;
-  };
+    struct simple_map_events_node_t
+    {
+        uint64_t data;
+        int64_t timeout;
+        uint64_t timestamp;
+        int32_t fd;
+    };
 
-#define mh_node_t struct mh_events_node_t
-#define mh_arg_t uint64_t
-#define mh_hash(a, arg) (a->data)
-#define mh_hash_key(a, arg) (a)
-#define mh_cmp(a, b, arg) ((a->data) != (b->data))
-#define mh_cmp_key(a, b, arg) ((a) != (b->data))
-#define MH_SOURCE 1
-
-#include "collections/mhash.h"
-
-#undef mh_node_t
-#undef mh_arg_t
-#undef mh_hash
-#undef mh_hash_key
-#undef mh_cmp
-#undef mh_cmp_key
+#define simple_map_name _events
+#define simple_map_key_t uint64_t
+#define simple_map_node_t struct simple_map_events_node_t
+#define simple_map_arg_t uint64_t
+#define simple_map_hash(a, arg) (a->data)
+#define simple_map_hash_key(a, arg) (a)
+#define simple_map_cmp(a, b, arg) ((a->data) != (b->data))
+#define simple_map_cmp_key(a, b, arg) ((a) != (b->data))
+#define SIMPLE_MAP_SOURCE
+#include <maps/simple.h>
 
 #if defined(__cplusplus)
 }

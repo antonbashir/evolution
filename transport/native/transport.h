@@ -31,7 +31,7 @@ extern "C"
         struct transport_configuration configuration;
         struct msghdr* inet_used_messages;
         struct msghdr* unix_used_messages;
-        struct mh_events_t* events;
+        struct simple_map_events_t* events;
     };
 
     int32_t transport_initialize(struct transport* transport,

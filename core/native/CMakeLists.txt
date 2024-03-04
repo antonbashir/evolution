@@ -4,6 +4,7 @@ project(core_native C ASM)
 
 include_directories(${PROJECT_BINARY_DIR})
 include_directories(${PROJECT_SOURCE_DIR})
+include_directories(${LIBRARIES_INCLUDE_DIRECTORY}/collections)
 include_directories(include)
 
 file(GLOB sources

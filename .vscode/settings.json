@@ -43,6 +43,11 @@
     "transport_server.h": "c",
     "transport_client.h": "c",
     "memory_configuration.h": "c",
-    "mediator_message.h": "c"
+    "mediator_message.h": "c",
+    "transport_collections.h": "c",
+    "errors.h": "c",
+    "common.h": "c",
+    "simple.h": "c",
+    "small.h": "c"
   },
 }

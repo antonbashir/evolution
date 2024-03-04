@@ -5,7 +5,7 @@
 #include <mediator_message.h>
 #include <stdint.h>
 
-struct mh_native_callbacks_t;
+struct simple_map_native_callbacks_t;
 struct io_uring;
 typedef struct io_uring_cqe mediator_native_completion_event;
 
@@ -20,7 +20,7 @@ extern "C"
         struct mediator_native_configuration configuration;
         struct io_uring* ring;
         mediator_native_completion_event** completions;
-        struct mh_native_callbacks_t* callbacks;
+        struct simple_map_native_callbacks_t* callbacks;
         int32_t descriptor;
     };
 

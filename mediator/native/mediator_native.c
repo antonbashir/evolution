@@ -7,35 +7,27 @@
 #include "mediator_configuration.h"
 #include "mediator_constants.h"
 
-#define mh_name _native_callbacks
-struct mh_native_callbacks_key_t
+#define simple_map_name _native_callbacks
+struct simple_map_native_callbacks_key_t
 {
     uint64_t owner;
     uint64_t method;
 };
-#define mh_key_t struct mh_native_callbacks_key_t
-struct mh_native_callbacks_node_t
+#define simple_map_key_t struct simple_map_native_callbacks_key_t
+struct simple_map_native_callbacks_node_t
 {
-    mh_key_t key;
+    simple_map_key_t key;
     void (*callback)(struct mediator_message*);
 };
 
-#define mh_node_t struct mh_native_callbacks_node_t
-#define mh_arg_t uint64_t
-#define mh_hash(a, arg) (a->key.owner * 31 + a->key.method)
-#define mh_hash_key(a, arg) (a.owner * 31 + a.method)
-#define mh_cmp(a, b, arg) ((a->key.owner != b->key.owner) && (a->key.method != b->key.method))
-#define mh_cmp_key(a, b, arg) ((a.owner != b->key.owner) && (a.method != b->key.method))
-#define MH_SOURCE
-
-#include "collections/mhash.h"
-
-#undef mh_node_t
-#undef mh_arg_t
-#undef mh_hash
-#undef mh_hash_key
-#undef mh_cmp
-#undef mh_cmp_key
+#define simple_map_node_t struct simple_map_native_callbacks_node_t
+#define simple_map_arg_t uint64_t
+#define simple_map_hash(a, arg) (a->key.owner * 31 + a->key.method)
+#define simple_map_hash_key(a, arg) (a.owner * 31 + a.method)
+#define simple_map_cmp(a, b, arg) ((a->key.owner != b->key.owner) && (a->key.method != b->key.method))
+#define simple_map_cmp_key(a, b, arg) ((a.owner != b->key.owner) && (a.method != b->key.method))
+#define SIMPLE_MAP_SOURCE
+#include <maps/simple.h>
 
 int32_t mediator_native_initialize(struct mediator_native* mediator, struct mediator_native_configuration* configuration, uint8_t id)
 {
@@ -47,7 +39,7 @@ int32_t mediator_native_initialize(struct mediator_native* mediator, struct medi
         return -ENOMEM;
     }
 
-    mediator->callbacks = mh_native_callbacks_new();
+    mediator->callbacks = simple_map_native_callbacks_new();
     if (!mediator->callbacks)
     {
         return -ENOMEM;
@@ -88,14 +80,14 @@ int32_t mediator_native_initialize_default(struct mediator_native* mediator, uin
 
 void mediator_native_register_callback(struct mediator_native* mediator, uint64_t owner, uint64_t method, void (*callback)(struct mediator_message*))
 {
-    struct mh_native_callbacks_node_t node = {
+    struct simple_map_native_callbacks_node_t node = {
         .callback = callback,
         .key = {
             .method = method,
             .owner = owner,
         },
     };
-    mh_native_callbacks_put((struct mh_native_callbacks_t*)mediator->callbacks, &node, NULL, 0);
+    simple_map_native_callbacks_put((struct simple_map_native_callbacks_t*)mediator->callbacks, &node, NULL, 0);
 }
 
 int32_t mediator_native_count_ready(struct mediator_native* mediator)
@@ -139,14 +131,14 @@ static inline int8_t mediator_native_process_implementation(struct mediator_nati
         if (cqe->res & MEDIATOR_NATIVE_CALLBACK)
         {
             struct mediator_message* message = (struct mediator_message*)cqe->user_data;
-            struct mh_native_callbacks_key_t key = {
+            struct simple_map_native_callbacks_key_t key = {
                 .owner = message->owner,
                 .method = message->method,
             };
-            mh_int_t callback;
-            if ((callback = mh_native_callbacks_find(mediator->callbacks, key, 0)) != mh_end((struct mh_native_callbacks_t*)mediator->callbacks))
+            simple_map_int_t callback;
+            if ((callback = simple_map_native_callbacks_find(mediator->callbacks, key, 0)) != simple_map_end((struct simple_map_native_callbacks_t*)mediator->callbacks))
             {
-                struct mh_native_callbacks_node_t* node = mh_native_callbacks_node((struct mh_native_callbacks_t*)mediator->callbacks, callback);
+                struct simple_map_native_callbacks_node_t* node = simple_map_native_callbacks_node((struct simple_map_native_callbacks_t*)mediator->callbacks, callback);
                 node->callback(message);
             }
             continue;
@@ -249,7 +241,7 @@ int8_t mediator_native_callback_to_dart(struct mediator_native* mediator, struct
 void mediator_native_destroy(struct mediator_native* mediator)
 {
     io_uring_queue_exit(mediator->ring);
-    mh_native_callbacks_delete(mediator->callbacks);
+    simple_map_native_callbacks_delete(mediator->callbacks);
     free(mediator->ring);
     free(mediator->completions);
 }

@@ -104,6 +104,18 @@ extern "C"
 #define NOINLINE
 #endif
 
+#if defined(__GNUC__)
+#define FORCEINLINE inline __attribute__((__always_inline__))
+#else
+#define FORCEINLINE inline
+#endif
+
+#if defined(__GNUC__)
+#define CONST __attribute__((__const__))
+#else
+#define CONST
+#endif
+
 #if defined(__cplusplus) && __has_cpp_attribute(noreturn)
 #define NORETURN [[noreturn]]
 #elif __has_attribute(noreturn) || defined(__GNUC__)
