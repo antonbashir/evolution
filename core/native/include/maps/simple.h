@@ -593,7 +593,6 @@ void _simple_map(dump)(struct _simple_map(t) * h)
             printf("   [%i] ", i);
             if (simple_map_exist(h, i))
             {
-                /* TODO(roman): fix this printf */
                 printf("   -> %p", h->p[i]);
                 k++;
             }

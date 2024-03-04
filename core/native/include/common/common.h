@@ -104,8 +104,8 @@ extern "C"
 #define NOINLINE
 #endif
 
-#if defined(__GNUC__)
-#define FORCEINLINE inline __attribute__((__always_inline__))
+#if __has_attribute(always_inline) || defined(__GNUC__)
+#define FORCEINLINE inline __attribute__((always_inline))
 #else
 #define FORCEINLINE inline
 #endif
