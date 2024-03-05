@@ -23,23 +23,9 @@ ffigen:
   headers:
     entry-points:
       - "../native/include/system/system.h"
-  globals:
-    exclude:
-      - "(.*)"
-  macros:
-    exclude:
-      - "(.*)"
-  typedefs:
-    exclude:
-      - "_(.*)"
   functions:
     leaf:
       include:
         - "system_.*"
     include:
-        - "system_.*"
-    exclude:
-      - "_(.*)"
-  structs:
-    exclude:
-      - "_(.*)"
+      - "system_.*"
