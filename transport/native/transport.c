@@ -1,8 +1,6 @@
 #include "transport.h"
-#include <arpa/inet.h>
 #include <liburing.h>
 #include <liburing/io_uring.h>
-#include <netinet/in.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <sys/time.h>

@@ -1,4 +1,7 @@
-#include "mediator_dart_notifier.h"
+#include <mediator_common.h>
+#include <mediator_constants.h>
+#include <mediator_dart.h>
+#include <mediator_dart_notifier.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,9 +11,6 @@
 #include "common/errors.h"
 #include "dart/dart_native_api.h"
 #include "liburing.h"
-#include "mediator_common.h"
-#include "mediator_constants.h"
-#include "mediator_dart.h"
 
 struct mediator_dart_notifier_thread
 {

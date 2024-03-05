@@ -61,11 +61,9 @@
 #define SIMPLE_MAP_INCREMENTAL_RESIZE 1
 #endif
 
-#include <assert.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
-#include "../common/common.h"
+#include <common/common.h>
+#include <system/library.h>
+#include <system/types.h>
 
 #define simple_map_cat(a, b) simple_map##a##_##b
 #define simple_map_ecat(a, b) simple_map_cat(a, b)

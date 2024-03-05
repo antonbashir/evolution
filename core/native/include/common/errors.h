@@ -1,11 +1,11 @@
-#ifndef ERRORS_H
-#define ERRORS_H
+#ifndef CORE_COMMON_ERRORS_H
+#define CORE_COMMON_ERRORS_H
 
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <system/library.h>
+#include <system/types.h>
 #include "common.h"
 #include "modules.h"
+
 #if defined(__cplusplus)
 extern "C"
 {

@@ -8,16 +8,18 @@ include_directories(${LIBRARIES_INCLUDE_DIRECTORY}/collections)
 include_directories(include)
 
 file(GLOB sources
-  *.c
+  **/*.c
+  **/*.h
   *.h
+  *.c
 )
 
 add_library(core_debug_linux_x64 SHARED ${sources})
-set_target_properties(core_debug_linux_x64 PROPERTIES COMPILE_FLAGS ${CMAKE_C_FLAGS_DEBUG})
+set_target_properties(core_debug_linux_x64 PROPERTIES COMPILE_FLAGS "${CMAKE_C_FLAGS_DEBUG}" LINKER_LANGUAGE C)
 copy_to_assets(core_debug_linux_x64)
 
 add_library(core_release_linux_x64 SHARED ${sources})
-set_target_properties(core_release_linux_x64 PROPERTIES COMPILE_FLAGS ${CMAKE_C_FLAGS})
+set_target_properties(core_release_linux_x64 PROPERTIES COMPILE_FLAGS ${CMAKE_C_FLAGS} LINKER_LANGUAGE C)
 copy_to_assets(core_release_linux_x64)
 
 add_custom_target(core_native DEPENDS "core_release_linux_x64;core_debug_linux_x64")

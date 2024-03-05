@@ -1,5 +1,6 @@
 import 'dart:ffi';
 
+import '../core.dart';
 import 'bindings.dart';
 import 'constants.dart';
 
@@ -16,4 +17,9 @@ external Pointer<Void> dlopen(Pointer<Char> file, int mode);
 String systemError(code) => "code = $code, message = ${SystemErrors.of(-code)}";
 
 @inline
-void systemShutdownDescriptor(int descriptor) => system_dart_shutdown_descriptor(descriptor);
+void systemShutdownDescriptor(int descriptor) => system_shutdown_descriptor(descriptor);
+
+void main(List<String> args) {
+  CoreModule.load();
+  systemShutdownDescriptor(123);
+}

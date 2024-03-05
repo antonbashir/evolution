@@ -1,5 +1,5 @@
-#ifndef MODULES_H
-#define MODULES_H
+#ifndef CORE_COMMON_MODULES_H
+#define CORE_COMMON_MODULES_H
 
 #define CORE_MODULE 0
 #define MEMORY_MODULE 1
@@ -13,7 +13,7 @@
 #define TRANSPORT_MODULE_NAME "transport"
 #define STORAGE_MODULE_NAME "storage"
 
-#include <stdint.h>
+#include <system/types.h>
 #if defined(__cplusplus)
 extern "C"
 {

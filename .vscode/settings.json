@@ -9,10 +9,10 @@
   "clangd.onConfigChanged": "restart",
   "clangd.arguments": [
     "-background-index",
-    "-header-insertion=iwyu",
-    "-header-insertion-decorators",
+    "-header-insertion=never",
     "--inlay-hints",
     "--function-arg-placeholders",
+
   ],
   "grammarly.selectors": [
     {
@@ -48,6 +48,18 @@
     "errors.h": "c",
     "common.h": "c",
     "simple.h": "c",
-    "small.h": "c"
+    "small.h": "c",
+    "system.h": "c",
+    "compare": "c",
+    "unistd.h": "c",
+    "types.h": "c",
+    "pthreadtypes.h": "c",
+    "io_uring.h": "c",
+    "mediator_constants.h": "c",
+    "time.h": "c",
+    "library.h": "c",
+    "stdlib.h": "c",
+    "stddef.h": "c",
+    "liburing.h": "c"
   },
 }

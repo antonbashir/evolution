@@ -1,5 +1,5 @@
-#ifndef HASHING_H
-#define HASHING_H
+#ifndef CORE_COMMON_HASHING_H
+#define CORE_COMMON_HASHING_H
 
 #include <stdint.h>
 #include "common/common.h"

@@ -19,9 +19,10 @@ ffigen:
   output: "lib/core/bindings.dart"
   compiler-opts:
     - "-I../native/include"
+  exclude-all-by-default: true
   headers:
     entry-points:
-      - "../native/system_dart.h"
+      - "../native/include/system/system.h"
   globals:
     exclude:
       - "(.*)"
@@ -34,7 +35,9 @@ ffigen:
   functions:
     leaf:
       include:
-        - "system_dart_.*"
+        - "system_.*"
+    include:
+        - "system_.*"
     exclude:
       - "_(.*)"
   structs:

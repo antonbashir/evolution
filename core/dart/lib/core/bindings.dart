@@ -4,10 +4,16 @@
 // ignore_for_file: type=lint, unused_field
 import 'dart:ffi' as ffi;
 
+@ffi.Native<ffi.Pointer<ffi.Char> Function(ffi.Int32)>(
+    symbol: 'system_error_to_string', assetId: 'core-bindings', isLeaf: true)
+external ffi.Pointer<ffi.Char> system_error_to_string(
+  int error,
+);
+
 @ffi.Native<ffi.Void Function(ffi.Int32)>(
-    symbol: 'system_dart_shutdown_descriptor',
+    symbol: 'system_shutdown_descriptor',
     assetId: 'core-bindings',
     isLeaf: true)
-external void system_dart_shutdown_descriptor(
+external void system_shutdown_descriptor(
   int fd,
 );
