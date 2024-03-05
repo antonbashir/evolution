@@ -5,7 +5,7 @@
 
 typedef struct mempool tarantool_factory_mempool;
 typedef struct small_alloc tarantool_factory_small_alloc;
-typedef struct memory tarantool_factory_memory;
+typedef struct memory_module tarantool_factory_memory;
 
 #if defined(__cplusplus)
 extern "C"

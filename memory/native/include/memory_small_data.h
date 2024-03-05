@@ -1,7 +1,7 @@
 #ifndef MEMORY_DATA_POOL
 #define MEMORY_DATA_POOL
 
-#include <memory_module.h>
+#include "memory_module.h"
 
 #if defined(__cplusplus)
 extern "C"
@@ -13,7 +13,7 @@ extern "C"
         struct memory_small_allocator pool;
     };
 
-    static inline int32_t memory_small_data_create(struct memory_small_data* pool, struct memory* memory)
+    static inline int32_t memory_small_data_create(struct memory_small_data* pool, struct memory_module* memory)
     {
         return memory_small_allocator_create(&pool->pool, memory);
     }

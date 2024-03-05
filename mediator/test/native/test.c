@@ -9,7 +9,7 @@
 #include "memory_small_data.h"
 
 static pthread_mutex_t mutex;
-struct memory memory;
+struct memory_module memory_module;
 struct memory_pool pool;
 struct memory_small_data small_data;
 
@@ -27,9 +27,9 @@ test_mediator_native* test_mediator_initialize(bool initialize_memory)
     }
     if (initialize_memory)
     {
-        memory_create(&memory, 1 * 1024 * 1024, 64 * 1024, 64 * 1024);
-        memory_pool_create(&pool, &memory, sizeof(struct mediator_message));
-        memory_small_data_create(&small_data, &memory);
+        memory_create(&memory_module, 1 * 1024 * 1024, 64 * 1024, 64 * 1024);
+        memory_pool_create(&pool, &memory_module, sizeof(struct mediator_message));
+        memory_small_data_create(&small_data, &memory_module);
     }
     return test_mediator;
 }
@@ -45,7 +45,7 @@ void test_mediator_destroy(test_mediator_native* mediator, bool initialize_memor
     {
         memory_small_data_destroy(&small_data);
         memory_pool_destroy(&pool);
-        memory_destroy(&memory);
+        memory_destroy(&memory_module);
     }
     mediator_native_destroy(mediator);
     free(mediator);

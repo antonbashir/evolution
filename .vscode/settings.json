@@ -60,6 +60,12 @@
     "library.h": "c",
     "stdlib.h": "c",
     "stddef.h": "c",
-    "liburing.h": "c"
+    "liburing.h": "c",
+    "memory_module.h": "c",
+    "ibuf.h": "c",
+    "socket.h": "c",
+    "threading.h": "c",
+    "slab_cache.h": "c",
+    "memory.h": "c"
   },
 }

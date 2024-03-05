@@ -1,7 +1,7 @@
 #ifndef CORE_SYSTEM_TYPES_H
 #define CORE_SYSTEM_TYPES_H
 
-#include <bits/pthreadtypes.h>        // IWYU pragma: export
+#include <asm-generic/errno-base.h>   // IWYU pragma: export
 #include <bits/types.h>               // IWYU pragma: export
 #include <bits/types/struct_iovec.h>  // IWYU pragma: export
 #include <stdbool.h>                  // IWYU pragma: export

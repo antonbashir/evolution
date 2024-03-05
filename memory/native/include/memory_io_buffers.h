@@ -1,7 +1,7 @@
 #ifndef MEMORY_IO_BUFFERS_H
 #define MEMORY_IO_BUFFERS_H
 
-#include <stddef.h>
+#include <system/types.h>
 #include "memory_module.h"
 
 #if defined(__cplusplus)
@@ -12,10 +12,10 @@ extern "C"
     {
         struct memory_pool input_buffers;
         struct memory_pool output_buffers;
-        struct memory* memory;
+        struct memory_module* memory;
     };
 
-    static inline int32_t memory_io_buffers_create(struct memory_io_buffers* pool, struct memory* memory)
+    static inline int32_t memory_io_buffers_create(struct memory_io_buffers* pool, struct memory_module* memory)
     {
         pool->memory = memory;
         if (memory_pool_create(&pool->input_buffers, memory, sizeof(struct memory_input_buffer)))

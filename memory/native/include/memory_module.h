@@ -1,7 +1,7 @@
 #ifndef memory_H
 #define memory_H
 
-#include <stddef.h>
+#include <system/types.h>
 #include "small/ibuf.h"
 #include "small/mempool.h"
 #include "small/obuf.h"
@@ -16,7 +16,7 @@ extern "C"
 #endif
 
 #define MEMORY_BUFFER_USED -1
-    struct memory
+    struct memory_module
     {
         struct quota quota;
         struct slab_arena arena;
@@ -44,7 +44,7 @@ extern "C"
         struct obuf buffer;
     };
 
-    static inline int32_t memory_create(struct memory* memory, size_t quota_size, size_t preallocation_size, size_t slab_size)
+    static inline int32_t memory_create(struct memory_module* memory, size_t quota_size, size_t preallocation_size, size_t slab_size)
     {
         int32_t result;
         quota_init(&memory->quota, quota_size);
@@ -54,7 +54,7 @@ extern "C"
         return 0;
     }
 
-    static inline void memory_destroy(struct memory* memory)
+    static inline void memory_destroy(struct memory_module* memory)
     {
         slab_cache_destroy(&memory->cache);
         slab_arena_destroy(&memory->arena);
@@ -65,7 +65,7 @@ extern "C"
         memory->initialized = false;
     }
 
-    static inline int32_t memory_pool_create(struct memory_pool* pool, struct memory* memory, size_t size)
+    static inline int32_t memory_pool_create(struct memory_pool* pool, struct memory_module* memory, size_t size)
     {
         mempool_create(&pool->pool, &memory->cache, size);
         return mempool_is_initialized(&pool->pool) ? 0 : -1;
@@ -86,7 +86,7 @@ extern "C"
         mempool_free(&pool->pool, ptr);
     }
 
-    static inline int32_t memory_small_allocator_create(struct memory_small_allocator* pool, struct memory* memory)
+    static inline int32_t memory_small_allocator_create(struct memory_small_allocator* pool, struct memory_module* memory)
     {
         float actual_alloc_factor;
         small_alloc_create(&pool->allocator, &memory->cache, 3 * sizeof(int), sizeof(uintptr_t), 1.05, &actual_alloc_factor);
