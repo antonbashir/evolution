@@ -1,6 +1,6 @@
 import 'dart:ffi';
 
-import 'bindings.dart';
+import '../bindings/include/memory_configuration.dart';
 
 class MemoryModuleConfiguration {
   final int staticBuffersCapacity;

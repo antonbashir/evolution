@@ -4,7 +4,9 @@ import 'dart:typed_data';
 
 import 'package:core/core.dart';
 
-import 'bindings.dart';
+import '../bindings/include/memory_small_data.dart';
+import '../bindings/state/memory_state.dart';
+import '../bindings/tuple/memory_tuple.dart';
 
 const _decoder = const Utf8Decoder();
 

@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'package:core/core.dart';
 import 'package:ffi/ffi.dart';
 
+import '../bindings/state/memory_state.dart';
 import '../memory.dart';
 import 'constants.dart';
 import 'defaults.dart';

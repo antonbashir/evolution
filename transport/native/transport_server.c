@@ -10,9 +10,7 @@
 #include "transport_constants.h"
 #include "transport_socket.h"
 
-int32_t transport_server_initialize_tcp(struct transport_server* server, struct transport_server_configuration* configuration,
-                                    const char* ip,
-                                    int32_t port)
+int32_t transport_server_initialize_tcp(struct transport_server* server, struct transport_server_configuration* configuration, const char* ip, int32_t port)
 {
     server->family = INET;
     server->inet_server_address = calloc(1, sizeof(struct sockaddr_in));
@@ -50,9 +48,7 @@ int32_t transport_server_initialize_tcp(struct transport_server* server, struct 
     return 0;
 }
 
-int32_t transport_server_initialize_udp(struct transport_server* server, struct transport_server_configuration* configuration,
-                                    const char* ip,
-                                    int32_t port)
+int32_t transport_server_initialize_udp(struct transport_server* server, struct transport_server_configuration* configuration, const char* ip, int32_t port)
 {
     server->family = INET;
     server->inet_server_address = calloc(1, sizeof(struct sockaddr_in));
@@ -82,8 +78,7 @@ int32_t transport_server_initialize_udp(struct transport_server* server, struct 
     return 0;
 }
 
-int32_t transport_server_initialize_unix_stream(struct transport_server* server, struct transport_server_configuration* configuration,
-                                            const char* path)
+int32_t transport_server_initialize_unix_stream(struct transport_server* server, struct transport_server_configuration* configuration, const char* path)
 {
     server->family = UNIX;
     server->unix_server_address = calloc(1, sizeof(struct sockaddr_un));

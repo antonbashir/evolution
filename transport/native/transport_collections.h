@@ -8,13 +8,13 @@ extern "C"
 {
 #endif
 
-    struct simple_map_events_node_t
-    {
-        uint64_t data;
-        int64_t timeout;
-        uint64_t timestamp;
-        int32_t fd;
-    };
+struct simple_map_events_node_t
+{
+    uint64_t data;
+    int64_t timeout;
+    uint64_t timestamp;
+    int32_t fd;
+};
 
 #define simple_map_name _events
 #define simple_map_key_t uint64_t

@@ -28,7 +28,7 @@ AlwaysBreakAfterDefinitionReturnType: None
 AlwaysBreakAfterReturnType: None
 AllowAllParametersOfDeclarationOnNextLine: false
 AllowAllArgumentsOnNextLine: false
-AlignAfterOpenBracket: DontAlign
+AlignAfterOpenBracket: Align
 BinPackParameters: false
 BinPackArguments: false
 AllowShortFunctionsOnASingleLine: None

@@ -8,7 +8,9 @@
 extern "C"
 {
 #endif
-    int32_t transport_file_open(const char* path, int32_t mode, bool truncate, bool create);
+
+int32_t transport_file_open(const char* path, int32_t mode, bool truncate, bool create);
+
 #if defined(__cplusplus)
 }
 #endif
