@@ -1,4 +1,3 @@
-import '../bindings/bindings.dart';
 import '../core.dart';
 
 @inline
