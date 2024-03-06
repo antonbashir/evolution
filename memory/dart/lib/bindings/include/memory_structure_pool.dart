@@ -2,6 +2,11 @@ import 'dart:ffi';
 
 import 'memory.dart';
 
+final class memory_structure_pool extends Struct {
+  @Size()
+  external int size;
+}
+
 @Native<Int32 Function(Pointer<memory_structure_pool>, Pointer<memory>, Size)>(symbol: 'memory_structure_pool_create', assetId: 'memory-bindings', isLeaf: true)
 external int memory_structure_pool_create(Pointer<memory_structure_pool> pool, Pointer<memory> memory, int structure_size);
 
@@ -16,8 +21,3 @@ external void memory_structure_pool_free(Pointer<memory_structure_pool> pool, Po
 
 @Native<Pointer<memory_structure_pool> Function()>(symbol: 'memory_structure_pool_new', assetId: 'memory-bindings', isLeaf: true)
 external Pointer<memory_structure_pool> memory_structure_pool_new();
-
-final class memory_structure_pool extends Struct {
-  @Size()
-  external int size;
-}
