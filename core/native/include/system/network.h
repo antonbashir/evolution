@@ -1,9 +1,9 @@
 #ifndef CORE_SYSTEM_NETWORK_H
 #define CORE_SYSTEM_NETWORK_H
 
-#include <arpa/inet.h>   // IWYU pragma: export
-#include <netinet/in.h>  // IWYU pragma: export
-#include <sys/un.h>      // IWYU pragma: export
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <sys/un.h>   
 
 #if defined(__cplusplus)
 extern "C"

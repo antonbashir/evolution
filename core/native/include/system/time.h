@@ -1,9 +1,9 @@
 #ifndef CORE_SYSTEM_TIME_H
 #define CORE_SYSTEM_TIME_H
 
-#include <stdio.h>     // IWYU pragma: export
-#include <sys/time.h>  // IWYU pragma: export
-#include <time.h>      // IWYU pragma: export
+#include <stdio.h>
+#include <sys/time.h>
+#include <time.h>
 
 #if defined(__cplusplus)
 extern "C"

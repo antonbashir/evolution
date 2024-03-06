@@ -1,13 +1,13 @@
 #ifndef CORE_SYSTEM_SYSTEM_H
 #define CORE_SYSTEM_SYSTEM_H
 
-#include "common/common.h"  // IWYU pragma: export
-#include "library.h"        // IWYU pragma: export
-#include "network.h"        // IWYU pragma: export
-#include "socket.h"         // IWYU pragma: export
-#include "threading.h"      // IWYU pragma: export
-#include "time.h"           // IWYU pragma: export
-#include "types.h"          // IWYU pragma: export
+#include "common/common.h"
+#include "library.h"
+#include "network.h"
+#include "socket.h"
+#include "threading.h"
+#include "time.h"
+#include "types.h"
 
 #if defined(__cplusplus)
 extern "C"
