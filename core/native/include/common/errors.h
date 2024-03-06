@@ -13,14 +13,14 @@ extern "C"
 
     static inline void native_error_exit(uint32_t module, uint32_t code, const char* scope, const char* message)
     {
-        fprintf(stderr, "[error]: [native] module = [%s], scope = [%s], code = [%d], line = [%d], file = [%s], message = [%s]\n", module_to_string(module), scope, code, __LINE__, __FILE__, message);
+        fprintf(stderr, "[error]: line = [%d], file = [%s]\n[native] module = [%s], scope = [%s], code = [%d], message = [%s]\n", __LINE__, __FILE__, module_to_string(module), scope, code, message);
         exit(-1);
         unreachable();
     }
 
     static inline void dart_error_exit(uint32_t module, uint32_t code, const char* scope, const char* message)
     {
-        fprintf(stderr, "[error]: [dart] module = [%s], scope = [%s], code = [%d], line = [%d], file = [%s], message = [%s]\n", module_to_string(module), scope, code, __LINE__, __FILE__, message);
+        fprintf(stderr, "[error]: line = [%d], file = [%s]\n[dart] module = [%s], scope = [%s], code = [%d], message = [%s]\n", __LINE__, __FILE__, module_to_string(module), scope, code, message);
         exit(-1);
         unreachable();
     }
