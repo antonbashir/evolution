@@ -11,6 +11,7 @@
 #include "common/errors.h"
 #include "dart/dart_native_api.h"
 #include "liburing.h"
+#include "system/time.h"
 
 struct mediator_dart_notifier_thread
 {
@@ -233,8 +234,7 @@ bool mediator_dart_notifier_shutdown(struct mediator_dart_notifier* notifier)
         notifier->shutdown_error = strerror(error);
         return false;
     }
-    struct timespec timeout;
-    timespec_get(&timeout, TIME_UTC);
+    struct timespec timeout = now();
     timeout.tv_sec += notifier->configuration.shutdown_timeout_seconds;
     while (notifier->initialized)
     {

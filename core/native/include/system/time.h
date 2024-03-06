@@ -3,26 +3,32 @@
 
 #include <stdio.h>     // IWYU pragma: export
 #include <sys/time.h>  // IWYU pragma: export
+#include <time.h>      // IWYU pragma: export
 
 #if defined(__cplusplus)
 extern "C"
 {
 #endif
 
-    __thread struct timeval measure_start_time, measure_estimated_time;
-    __thread char* measure_name;
-    __thread int measure_runs;
+#define measure(name, runs, call)                                                                                                                                                                               \
+    do                                                                                                                                                                                                          \
+    {                                                                                                                                                                                                           \
+        struct timeval measure_start_time##__LINE__, measure_estimated_time##__LINE__;                                                                                                                          \
+        gettimeofday(&measure_start_time##__LINE__, NULL);                                                                                                                                                      \
+        for (int i = 0; i < runs; i++)                                                                                                                                                                          \
+        {                                                                                                                                                                                                       \
+            call;                                                                                                                                                                                               \
+        }                                                                                                                                                                                                       \
+        gettimeofday(&measure_estimated_time##__LINE__, NULL);                                                                                                                                                  \
+        int elapsed = (((measure_estimated_time##__LINE__.tv_sec - measure_start_time##__LINE__.tv_sec) * 1000000) + (measure_estimated_time##__LINE__.tv_usec - measure_start_time##__LINE__.tv_usec)) / runs; \
+        printf("%s time: %d micro seconds\n", name, elapsed);                                                                                                                                                   \
+    } while (0);
 
-#define start_measure(name, runs)            \
-    measure_name = name;                     \
-    measure_runs = runs;                     \
-    gettimeofday(&measure_start_time, NULL); \
-    for (int i = 0; i < measure_runs; i++)
-
-#define end_measure()                                                                                                                                                       \
-    gettimeofday(&measure_estimated_time, NULL);                                                                                                                            \
-    int elapsed = (((measure_estimated_time.tv_sec - measure_start_time.tv_sec) * 1000000) + (measure_estimated_time.tv_usec - measure_start_time.tv_usec)) / measure_runs; \
-    printf("%s time: %d micro seconds\n", measure_name, elapsed);
+#define now(var) ({                              \
+    struct timespec _timeout##__LINE__;          \
+    timespec_get(&_timeout##__LINE__, TIME_UTC); \
+    _timeout##__LINE__;                          \
+})
 
 #if defined(__cplusplus)
 }
