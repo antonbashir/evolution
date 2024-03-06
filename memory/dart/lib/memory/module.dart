@@ -9,7 +9,7 @@ import 'defaults.dart';
 import 'exceptions.dart';
 
 class MemoryModule {
-  late final Pointer<memory_dart> pointer;
+  late final Pointer<memory_state> pointer;
   late final MemoryStaticBuffers staticBuffers;
   late final MemoryInputOutputBuffers inputOutputBuffers;
   late final MemoryStructurePools structures;
@@ -30,11 +30,11 @@ class MemoryModule {
   }
 
   void initialize({MemoryModuleConfiguration configuration = MemoryDefaults.module}) {
-    pointer = calloc<memory_dart>(sizeOf<memory_dart>());
+    pointer = calloc<memory_state>(sizeOf<memory_state>());
     if (pointer == nullptr) throw MemoryException(MemoryErrors.outOfMemory);
-    final result = using((arena) => memory_dart_initialize(pointer, configuration.toNativePointer(arena<memory_module_configuration>())));
+    final result = using((arena) => memory_state_create(pointer, configuration.toNativePointer(arena<memory_configuration>())));
     if (result < 0) {
-      memory_dart_destroy(pointer);
+      memory_state_destroy(pointer);
       calloc.free(pointer);
       throw MemoryException(systemError(result));
     }
@@ -46,6 +46,6 @@ class MemoryModule {
   }
 
   void destroy() {
-    memory_dart_destroy(pointer);
+    memory_state_destroy(pointer);
   }
 }

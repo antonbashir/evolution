@@ -8,7 +8,7 @@ int32_t tarantool_factory_initialize(struct tarantool_factory* factory, struct t
 {
     float actual_alloc_factor;
 
-    factory->memory = calloc(1, sizeof(struct memory_module));
+    factory->memory = calloc(1, sizeof(struct memory));
     if (!factory->memory)
     {
         return -ENOMEM;

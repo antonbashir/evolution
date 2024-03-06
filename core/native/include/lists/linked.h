@@ -46,223 +46,223 @@ extern "C"
 #define offsetof(type, member) ((size_t) & ((type*)0)->member)
 #endif
 
-    /**
-     * List entry and head structure.
-     *
-     * All functions has always_inline attribute. This way if caller
-     * has no_sanitize_address attribute then linked_list functions are not
-     * ASAN instrumented too.
-     */
-    struct linked_list
-    {
-        struct linked_list* prev;
-        struct linked_list* next;
-    };
+/**
+ * List entry and head structure.
+ *
+ * All functions has always_inline attribute. This way if caller
+ * has no_sanitize_address attribute then linked_list functions are not
+ * ASAN instrumented too.
+ */
+struct linked_list
+{
+    struct linked_list* prev;
+    struct linked_list* next;
+};
 
-    /**
-     * init list head (or list entry as ins't included in list)
-     */
-    static FORCEINLINE void
-    linked_list_create(struct linked_list* list)
-    {
-        list->next = list;
-        list->prev = list;
-    }
+/**
+ * init list head (or list entry as ins't included in list)
+ */
+static FORCEINLINE void
+linked_list_create(struct linked_list* list)
+{
+    list->next = list;
+    list->prev = list;
+}
 
-    /**
-     * add item to list
-     */
-    static FORCEINLINE void
-    linked_list_add(struct linked_list* head, struct linked_list* item)
-    {
-        item->prev = head;
-        item->next = head->next;
-        item->prev->next = item;
-        item->next->prev = item;
-    }
+/**
+ * add item to list
+ */
+static FORCEINLINE void
+linked_list_add(struct linked_list* head, struct linked_list* item)
+{
+    item->prev = head;
+    item->next = head->next;
+    item->prev->next = item;
+    item->next->prev = item;
+}
 
-    /**
-     * add item to list tail
-     */
-    static FORCEINLINE void
-    linked_list_add_tail(struct linked_list* head, struct linked_list* item)
-    {
-        item->next = head;
-        item->prev = head->prev;
-        item->prev->next = item;
-        item->next->prev = item;
-    }
+/**
+ * add item to list tail
+ */
+static FORCEINLINE void
+linked_list_add_tail(struct linked_list* head, struct linked_list* item)
+{
+    item->next = head;
+    item->prev = head->prev;
+    item->prev->next = item;
+    item->next->prev = item;
+}
 
-    /**
-     * delete element
-     */
-    static FORCEINLINE void
-    linked_list_del(struct linked_list* item)
-    {
-        item->prev->next = item->next;
-        item->next->prev = item->prev;
-        linked_list_create(item);
-    }
+/**
+ * delete element
+ */
+static FORCEINLINE void
+linked_list_del(struct linked_list* item)
+{
+    item->prev->next = item->next;
+    item->next->prev = item->prev;
+    linked_list_create(item);
+}
 
-    static FORCEINLINE struct linked_list*
-    linked_list_shift(struct linked_list* head)
-    {
-        struct linked_list* shift = head->next;
-        head->next = shift->next;
-        shift->next->prev = head;
-        shift->next = shift->prev = shift;
-        return shift;
-    }
+static FORCEINLINE struct linked_list*
+linked_list_shift(struct linked_list* head)
+{
+    struct linked_list* shift = head->next;
+    head->next = shift->next;
+    shift->next->prev = head;
+    shift->next = shift->prev = shift;
+    return shift;
+}
 
-    static FORCEINLINE struct linked_list*
-    linked_list_shift_tail(struct linked_list* head)
-    {
-        struct linked_list* shift = head->prev;
-        linked_list_del(shift);
-        return shift;
-    }
+static FORCEINLINE struct linked_list*
+linked_list_shift_tail(struct linked_list* head)
+{
+    struct linked_list* shift = head->prev;
+    linked_list_del(shift);
+    return shift;
+}
 
-    /**
-     * return first element
-     */
-    static FORCEINLINE struct linked_list*
-    linked_list_first(struct linked_list* head)
-    {
-        return head->next;
-    }
+/**
+ * return first element
+ */
+static FORCEINLINE struct linked_list*
+linked_list_first(struct linked_list* head)
+{
+    return head->next;
+}
 
-    /**
-     * return last element
-     */
-    static FORCEINLINE struct linked_list*
-    linked_list_last(struct linked_list* head)
-    {
-        return head->prev;
-    }
+/**
+ * return last element
+ */
+static FORCEINLINE struct linked_list*
+linked_list_last(struct linked_list* head)
+{
+    return head->prev;
+}
 
-    /**
-     * return next element by element
-     */
-    static FORCEINLINE struct linked_list*
-    linked_list_next(struct linked_list* item)
-    {
-        return item->next;
-    }
+/**
+ * return next element by element
+ */
+static FORCEINLINE struct linked_list*
+linked_list_next(struct linked_list* item)
+{
+    return item->next;
+}
 
-    /**
-     * return previous element
-     */
-    static FORCEINLINE struct linked_list*
-    linked_list_prev(struct linked_list* item)
-    {
-        return item->prev;
-    }
+/**
+ * return previous element
+ */
+static FORCEINLINE struct linked_list*
+linked_list_prev(struct linked_list* item)
+{
+    return item->prev;
+}
 
-    /**
-     * return TRUE if list is empty
-     */
-    static FORCEINLINE int
-    linked_list_empty(struct linked_list* item)
-    {
-        return item->next == item->prev && item->next == item;
-    }
+/**
+ * return TRUE if list is empty
+ */
+static FORCEINLINE int
+linked_list_empty(struct linked_list* item)
+{
+    return item->next == item->prev && item->next == item;
+}
 
-    /**
-    @brief delete from one list and add as another's head
-    @param to the head that will precede our entry
-    @param item the entry to move
-    */
-    static FORCEINLINE void
-    linked_list_move(struct linked_list* to, struct linked_list* item)
-    {
-        linked_list_del(item);
-        linked_list_add(to, item);
-    }
+/**
+@brief delete from one list and add as another's head
+@param to the head that will precede our entry
+@param item the entry to move
+*/
+static FORCEINLINE void
+linked_list_move(struct linked_list* to, struct linked_list* item)
+{
+    linked_list_del(item);
+    linked_list_add(to, item);
+}
 
-    /**
-    @brief delete from one list and add_tail as another's head
-    @param to the head that will precede our entry
-    @param item the entry to move
-    */
-    static FORCEINLINE void
-    linked_list_move_tail(struct linked_list* to, struct linked_list* item)
-    {
-        item->prev->next = item->next;
-        item->next->prev = item->prev;
-        item->next = to;
-        item->prev = to->prev;
-        item->prev->next = item;
-        item->next->prev = item;
-    }
+/**
+@brief delete from one list and add_tail as another's head
+@param to the head that will precede our entry
+@param item the entry to move
+*/
+static FORCEINLINE void
+linked_list_move_tail(struct linked_list* to, struct linked_list* item)
+{
+    item->prev->next = item->next;
+    item->next->prev = item->prev;
+    item->next = to;
+    item->prev = to->prev;
+    item->prev->next = item;
+    item->next->prev = item;
+}
 
-    static FORCEINLINE void
-    linked_list_swap(struct linked_list* rhs, struct linked_list* lhs)
-    {
-        struct linked_list tmp = *rhs;
-        *rhs = *lhs;
-        *lhs = tmp;
-        /* Relink the nodes. */
-        if (lhs->next == rhs) /* Take care of empty list case */
-            lhs->next = lhs;
-        lhs->next->prev = lhs;
-        lhs->prev->next = lhs;
-        if (rhs->next == lhs) /* Take care of empty list case */
-            rhs->next = rhs;
-        rhs->next->prev = rhs;
-        rhs->prev->next = rhs;
-    }
+static FORCEINLINE void
+linked_list_swap(struct linked_list* rhs, struct linked_list* lhs)
+{
+    struct linked_list tmp = *rhs;
+    *rhs = *lhs;
+    *lhs = tmp;
+    /* Relink the nodes. */
+    if (lhs->next == rhs) /* Take care of empty list case */
+        lhs->next = lhs;
+    lhs->next->prev = lhs;
+    lhs->prev->next = lhs;
+    if (rhs->next == lhs) /* Take care of empty list case */
+        rhs->next = rhs;
+    rhs->next->prev = rhs;
+    rhs->prev->next = rhs;
+}
 
-    /**
-     * move all items of list head2 to the head of list head1
-     */
-    static FORCEINLINE void
-    linked_list_splice(struct linked_list* head1, struct linked_list* head2)
+/**
+ * move all items of list head2 to the head of list head1
+ */
+static FORCEINLINE void
+linked_list_splice(struct linked_list* head1, struct linked_list* head2)
+{
+    if (!linked_list_empty(head2))
     {
-        if (!linked_list_empty(head2))
-        {
-            head1->next->prev = head2->prev;
-            head2->prev->next = head1->next;
-            head1->next = head2->next;
-            head2->next->prev = head1;
-            linked_list_create(head2);
-        }
-    }
-
-    /**
-     * move all items of list head2 to the tail of list head1
-     */
-    static FORCEINLINE void
-    linked_list_splice_tail(struct linked_list* head1, struct linked_list* head2)
-    {
-        if (!linked_list_empty(head2))
-        {
-            head1->prev->next = head2->next;
-            head2->next->prev = head1->prev;
-            head1->prev = head2->prev;
-            head2->prev->next = head1;
-            linked_list_create(head2);
-        }
-    }
-
-    /**
-     * move the initial part of list head2, up to but excluding item,
-     * to list head1; the old content of head1 is discarded
-     */
-    static FORCEINLINE void
-    linked_list_cut_before(struct linked_list* head1, struct linked_list* head2, struct linked_list* item)
-    {
-        if (head1->next == item)
-        {
-            linked_list_create(head1);
-            return;
-        }
+        head1->next->prev = head2->prev;
+        head2->prev->next = head1->next;
         head1->next = head2->next;
-        head1->next->prev = head1;
-        head1->prev = item->prev;
-        head1->prev->next = head1;
-        head2->next = item;
-        item->prev = head2;
+        head2->next->prev = head1;
+        linked_list_create(head2);
     }
+}
+
+/**
+ * move all items of list head2 to the tail of list head1
+ */
+static FORCEINLINE void
+linked_list_splice_tail(struct linked_list* head1, struct linked_list* head2)
+{
+    if (!linked_list_empty(head2))
+    {
+        head1->prev->next = head2->next;
+        head2->next->prev = head1->prev;
+        head1->prev = head2->prev;
+        head2->prev->next = head1;
+        linked_list_create(head2);
+    }
+}
+
+/**
+ * move the initial part of list head2, up to but excluding item,
+ * to list head1; the old content of head1 is discarded
+ */
+static FORCEINLINE void
+linked_list_cut_before(struct linked_list* head1, struct linked_list* head2, struct linked_list* item)
+{
+    if (head1->next == item)
+    {
+        linked_list_create(head1);
+        return;
+    }
+    head1->next = head2->next;
+    head1->next->prev = head1;
+    head1->prev = item->prev;
+    head1->prev->next = head1;
+    head2->next = item;
+    item->prev = head2;
+}
 
 /**
  * list head initializer

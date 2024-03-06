@@ -407,7 +407,7 @@ int tupleWriteMap(ByteData data, int length, int offset) {
 }
 
 class MemoryTuples {
-  final Pointer<memory_dart> _memory;
+  final Pointer<memory_state> _memory;
 
   late final (Pointer<Uint8>, int) emptyList;
   late final (Pointer<Uint8>, int) emptyMap;
@@ -418,21 +418,21 @@ class MemoryTuples {
   }
 
   @inline
-  int next(Pointer<Uint8> pointer, int offset) => memory_dart_tuple_next(pointer.cast(), offset);
+  int next(Pointer<Uint8> pointer, int offset) => memory_tuple_next(pointer.cast(), offset);
 
   @inline
-  Pointer<Uint8> allocateSmall(int capacity) => memory_dart_small_data_allocate(_memory, capacity).cast();
+  Pointer<Uint8> allocateSmall(int capacity) => memory_small_data_allocate(_memory.ref.small_data, capacity).cast();
 
   @inline
   (Pointer<Uint8>, Uint8List, ByteData) prepareSmall(int size) {
-    final pointer = memory_dart_small_data_allocate(_memory, size).cast<Uint8>();
+    final pointer = memory_small_data_allocate(_memory.ref.small_data, size).cast<Uint8>();
     final buffer = pointer.asTypedList(size);
     final data = ByteData.view(buffer.buffer, buffer.offsetInBytes);
     return (pointer, buffer, data);
   }
 
   @inline
-  void freeSmall(Pointer<Uint8> tuple, int size) => memory_dart_small_data_free(_memory, tuple.cast(), size);
+  void freeSmall(Pointer<Uint8> tuple, int size) => memory_small_data_free(_memory.ref.small_data, tuple.cast(), size);
 
   (Pointer<Uint8>, int) _createEmptyList() {
     final size = tupleSizeOfList(0);

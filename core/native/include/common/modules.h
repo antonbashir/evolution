@@ -18,23 +18,25 @@
 extern "C"
 {
 #endif
-    static inline const char* module_to_string(uint32_t id)
+
+static inline const char* module_to_string(uint32_t id)
+{
+    switch (id)
     {
-        switch (id)
-        {
-            case CORE_MODULE:
-                return CORE_MODULE_NAME;
-            case MEMORY_MODULE:
-                return MEMORY_MODULE_NAME;
-            case MEDIATOR_MODULE:
-                return MEDIATOR_MODULE_NAME;
-            case TRANSPORT_MODULE:
-                return TRANSPORT_MODULE_NAME;
-            case STORAGE_MODULE:
-                return STORAGE_MODULE_NAME;
-        }
-        return "unknown";
+        case CORE_MODULE:
+            return CORE_MODULE_NAME;
+        case MEMORY_MODULE:
+            return MEMORY_MODULE_NAME;
+        case MEDIATOR_MODULE:
+            return MEDIATOR_MODULE_NAME;
+        case TRANSPORT_MODULE:
+            return TRANSPORT_MODULE_NAME;
+        case STORAGE_MODULE:
+            return STORAGE_MODULE_NAME;
     }
+    return "unknown";
+}
+
 #if defined(__cplusplus)
 }
 #endif

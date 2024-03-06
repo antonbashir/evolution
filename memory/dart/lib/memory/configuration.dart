@@ -9,7 +9,7 @@ class MemoryModuleConfiguration {
   final int preallocationSize;
   final int quotaSize;
 
-  factory MemoryModuleConfiguration.fromNativePointer(Pointer<memory_module_configuration> native) => MemoryModuleConfiguration(
+  factory MemoryModuleConfiguration.fromNativePointer(Pointer<memory_configuration> native) => MemoryModuleConfiguration(
         staticBuffersCapacity: native.ref.static_buffers_capacity,
         staticBufferSize: native.ref.static_buffer_size,
         slabSize: native.ref.slab_size,
@@ -17,7 +17,7 @@ class MemoryModuleConfiguration {
         quotaSize: native.ref.quota_size,
       );
 
-  factory MemoryModuleConfiguration.fromNativeValue(memory_module_configuration native) => MemoryModuleConfiguration(
+  factory MemoryModuleConfiguration.fromNativeValue(memory_configuration native) => MemoryModuleConfiguration(
         staticBuffersCapacity: native.static_buffers_capacity,
         staticBufferSize: native.static_buffer_size,
         slabSize: native.slab_size,
@@ -25,7 +25,7 @@ class MemoryModuleConfiguration {
         quotaSize: native.quota_size,
       );
 
-  Pointer<memory_module_configuration> toNativePointer(Pointer<memory_module_configuration> native) {
+  Pointer<memory_configuration> toNativePointer(Pointer<memory_configuration> native) {
     native.ref.static_buffer_size = staticBufferSize;
     native.ref.static_buffers_capacity = staticBuffersCapacity;
     native.ref.slab_size = slabSize;
@@ -34,7 +34,7 @@ class MemoryModuleConfiguration {
     return native;
   }
 
-  memory_module_configuration toNativeValue(memory_module_configuration native) {
+  memory_configuration toNativeValue(memory_configuration native) {
     native.static_buffer_size = staticBufferSize;
     native.static_buffers_capacity = staticBuffersCapacity;
     native.slab_size = slabSize;

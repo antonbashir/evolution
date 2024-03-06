@@ -82,7 +82,7 @@ bool test_threading_initialize(int32_t thread_count, int32_t isolates_count, int
         thread->received_messages_count = 0;
         thread->messages = malloc(per_thread_messages_count * sizeof(struct mediator_message*));
         thread->initialize_mutex = malloc(sizeof(pthread_mutex_t));
-        thread->thread_memory = calloc(1, sizeof(struct memory));
+        thread->thread_memory = calloc(1, sizeof(struct memory_state));
         thread->thread_memory_pool = calloc(1, sizeof(struct memory_pool));
         thread->thread_small_data = calloc(1, sizeof(struct memory_small_data));
         memory_create(thread->thread_memory, 1 * 1024 * 1024, 64 * 1024, 64 * 1024);

@@ -17,7 +17,7 @@ extern "C"
 
     struct transport_configuration
     {
-        struct memory_module_configuration memory_configuration;
+        struct memory_configuration memory_configuration;
         struct mediator_dart_configuration mediator_configuration;
         uint64_t timeout_checker_period_millis;
         bool trace;

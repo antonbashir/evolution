@@ -29,7 +29,7 @@ extern "C"
         test_cond_t* initialize_condition;
         test_mutex_t* initialize_mutex;
         
-        struct memory_module* thread_memory;
+        struct memory* thread_memory;
         struct memory_pool* thread_memory_pool;
         struct memory_small_data* thread_small_data;
     };

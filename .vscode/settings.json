@@ -12,7 +12,6 @@
     "-header-insertion=never",
     "--inlay-hints",
     "--function-arg-placeholders",
-
   ],
   "grammarly.selectors": [
     {
@@ -66,6 +65,13 @@
     "socket.h": "c",
     "threading.h": "c",
     "slab_cache.h": "c",
-    "memory.h": "c"
+    "memory.h": "c",
+    "obuf.h": "c",
+    "errno-base.h": "c",
+    "struct_iovec.h": "c",
+    "memory_state.h": "c",
+    "network.h": "c",
+    "stdint.h": "c",
+    "mempool.h": "c"
   },
 }

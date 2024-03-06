@@ -202,7 +202,7 @@ _simple_map(find)(struct _simple_map(t) * h, simple_map_key_t key, simple_map_ar
     for (;;)
     {
         if ((simple_map_mayeq(h, i, hk) &&
-             !simple_map_cmp_key(key, simple_map_node(h, i), arg)))
+                !simple_map_cmp_key(key, simple_map_node(h, i), arg)))
             return i;
 
         if (!simple_map_dirty(h, i))
@@ -214,8 +214,7 @@ _simple_map(find)(struct _simple_map(t) * h, simple_map_key_t key, simple_map_ar
 #endif
 
 static inline simple_map_int_t
-_simple_map(get)(struct _simple_map(t) * h, const simple_map_node_t* node,
-                 simple_map_arg_t arg)
+_simple_map(get)(struct _simple_map(t) * h, const simple_map_node_t* node, simple_map_arg_t arg)
 {
     (void)arg;
 
@@ -246,8 +245,7 @@ _simple_map(random)(struct _simple_map(t) * h, simple_map_int_t rnd)
 }
 
 static inline simple_map_int_t
-_simple_map(put_slot)(struct _simple_map(t) * h, const simple_map_node_t* node, int* exist,
-                      simple_map_arg_t arg)
+_simple_map(put_slot)(struct _simple_map(t) * h, const simple_map_node_t* node, int* exist, simple_map_arg_t arg)
 {
     (void)arg;
 
@@ -306,8 +304,7 @@ _simple_map(put_slot)(struct _simple_map(t) * h, const simple_map_node_t* node, 
  *                       or copy of the old node
  */
 static inline simple_map_int_t
-_simple_map(put)(struct _simple_map(t) * h, const simple_map_node_t* node, simple_map_node_t** ret,
-                 simple_map_arg_t arg)
+_simple_map(put)(struct _simple_map(t) * h, const simple_map_node_t* node, simple_map_node_t** ret, simple_map_arg_t arg)
 {
     simple_map_int_t x = simple_map_end(h);
     int exist;
@@ -344,8 +341,7 @@ _simple_map(put)(struct _simple_map(t) * h, const simple_map_node_t* node, simpl
 }
 
 static inline void
-_simple_map(del)(struct _simple_map(t) * h, simple_map_int_t x,
-                 simple_map_arg_t arg)
+_simple_map(del)(struct _simple_map(t) * h, simple_map_int_t x, simple_map_arg_t arg)
 {
     if (x != h->n_buckets && simple_map_exist(h, x))
     {
@@ -362,8 +358,7 @@ _simple_map(del)(struct _simple_map(t) * h, simple_map_int_t x,
 #endif
 
 static inline void
-_simple_map(remove)(struct _simple_map(t) * h, const simple_map_node_t* node,
-                    simple_map_arg_t arg)
+_simple_map(remove)(struct _simple_map(t) * h, const simple_map_node_t* node, simple_map_arg_t arg)
 {
     simple_map_int_t k = _simple_map(get)(h, node, arg);
     if (k != simple_map_end(h))
@@ -375,23 +370,44 @@ _simple_map(remove)(struct _simple_map(t) * h, const simple_map_node_t* node,
 #ifndef __ac_HASH_PRIME_SIZE
 #define __ac_HASH_PRIME_SIZE 31
 static const simple_map_int_t __ac_prime_list[__ac_HASH_PRIME_SIZE] = {
-    3ul, 11ul, 23ul, 53ul,
-    97ul, 193ul, 389ul, 769ul,
-    1543ul, 3079ul, 6151ul, 12289ul,
-    24593ul, 49157ul, 98317ul, 196613ul,
-    393241ul, 786433ul, 1572869ul, 3145739ul,
-    6291469ul, 12582917ul, 25165843ul, 50331653ul,
-    100663319ul, 201326611ul, 402653189ul, 805306457ul,
-    1610612741ul, 3221225473ul, 4294967291ul};
+    3ul,
+    11ul,
+    23ul,
+    53ul,
+    97ul,
+    193ul,
+    389ul,
+    769ul,
+    1543ul,
+    3079ul,
+    6151ul,
+    12289ul,
+    24593ul,
+    49157ul,
+    98317ul,
+    196613ul,
+    393241ul,
+    786433ul,
+    1572869ul,
+    3145739ul,
+    6291469ul,
+    12582917ul,
+    25165843ul,
+    50331653ul,
+    100663319ul,
+    201326611ul,
+    402653189ul,
+    805306457ul,
+    1610612741ul,
+    3221225473ul,
+    4294967291ul};
 #endif /* __ac_HASH_PRIME_SIZE */
 
 NOINLINE void
-_simple_map(del_resize)(struct _simple_map(t) * h, simple_map_int_t x,
-                        simple_map_arg_t arg)
+_simple_map(del_resize)(struct _simple_map(t) * h, simple_map_int_t x, simple_map_arg_t arg)
 {
     struct _simple_map(t)* s = h->shadow;
-    simple_map_int_t y = _simple_map(get)(s, (const simple_map_node_t*)&(h->p[x]),
-                                          arg);
+    simple_map_int_t y = _simple_map(get)(s, (const simple_map_node_t*)&(h->p[x]), arg);
     _simple_map(del)(s, y, arg);
     _simple_map(resize)(h, arg);
 }
@@ -508,8 +524,7 @@ void _simple_map(resize)(struct _simple_map(t) * h, simple_map_arg_t arg)
     memset(s, 0, sizeof(*s));
 }
 
-void _simple_map(start_resize)(struct _simple_map(t) * h, simple_map_int_t buckets, simple_map_int_t batch,
-                               simple_map_arg_t arg)
+void _simple_map(start_resize)(struct _simple_map(t) * h, simple_map_int_t buckets, simple_map_int_t batch, simple_map_arg_t arg)
 {
     if (h->resize_position)
     {
@@ -560,20 +575,14 @@ void _simple_map(start_resize)(struct _simple_map(t) * h, simple_map_int_t bucke
     _simple_map(resize)(h, arg);
 }
 
-void _simple_map(reserve)(struct _simple_map(t) * h, simple_map_int_t size,
-                          simple_map_arg_t arg)
+void _simple_map(reserve)(struct _simple_map(t) * h, simple_map_int_t size, simple_map_arg_t arg)
 {
     _simple_map(start_resize)(h, size / SIMPLE_MAP_DENSITY, h->size, arg);
 }
 
 #ifndef simple_map_stat
-#define simple_map_stat(buf, h) ({                                                                                                                                     \
-    tbuf_printf(buf, "  n_buckets: %" PRIu32 CRLF "  n_dirty: %" PRIu32 CRLF "  size: %" PRIu32 CRLF "  resize_cnt: %" PRIu32 CRLF "  resize_position: %" PRIu32 CRLF, \
-                h->n_buckets,                                                                                                                                          \
-                h->n_dirty,                                                                                                                                            \
-                h->size,                                                                                                                                               \
-                h->resize_cnt,                                                                                                                                         \
-                h->resize_position);                                                                                                                                   \
+#define simple_map_stat(buf, h) ({                                                                                                                                                                                                            \
+    tbuf_printf(buf, "  n_buckets: %" PRIu32 CRLF "  n_dirty: %" PRIu32 CRLF "  size: %" PRIu32 CRLF "  resize_cnt: %" PRIu32 CRLF "  resize_position: %" PRIu32 CRLF, h->n_buckets, h->n_dirty, h->size, h->resize_cnt, h->resize_position); \
 })
 #endif
 

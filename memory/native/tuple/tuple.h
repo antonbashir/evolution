@@ -7,7 +7,9 @@
 extern "C"
 {
 #endif
-    uint64_t memory_tuple_next(const char* buffer, uint64_t offset);
+
+uint64_t memory_tuple_next(const char* buffer, uint64_t offset);
+
 #if defined(__cplusplus)
 }
 #endif

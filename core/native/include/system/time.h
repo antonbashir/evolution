@@ -22,13 +22,27 @@ extern "C"
         gettimeofday(&measure_estimated_time##__LINE__, NULL);                                                                                                                                                  \
         int elapsed = (((measure_estimated_time##__LINE__.tv_sec - measure_start_time##__LINE__.tv_sec) * 1000000) + (measure_estimated_time##__LINE__.tv_usec - measure_start_time##__LINE__.tv_usec)) / runs; \
         printf("%s time: %d micro seconds\n", name, elapsed);                                                                                                                                                   \
-    } while (0);
+    }                                                                                                                                                                                                           \
+    while (0);
 
-#define now(var) ({                              \
-    struct timespec _timeout##__LINE__;          \
-    timespec_get(&_timeout##__LINE__, TIME_UTC); \
-    _timeout##__LINE__;                          \
-})
+#define now()                                        \
+    do                                               \
+    {                                                \
+        struct timespec _timeout##__LINE__;          \
+        timespec_get(&_timeout##__LINE__, TIME_UTC); \
+        _timeout##__LINE__;                          \
+    }                                                \
+    while (0)
+
+#define timeout_seconds(seconds)                     \
+    do                                               \
+    {                                                \
+        struct timespec _timeout##__LINE__;          \
+        timespec_get(&_timeout##__LINE__, TIME_UTC); \
+        timeout.tv_sec += (seconds);                 \
+        _timeout##__LINE__;                          \
+    }                                                \
+    while (0)
 
 #if defined(__cplusplus)
 }

@@ -77,7 +77,8 @@ extern "C"
 #define __alignof_is_defined 1
 #else
 #define alignof(_T) offsetof( \
-    struct { char c; _T member; }, member)
+    struct { char c; _T member; },               \
+    member)
 #define __alignof_is_defined 1
 #endif
 #endif

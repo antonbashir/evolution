@@ -5,31 +5,7 @@ publish_to: none
 environment:
   sdk: ">=3.3.0 <4.0.0"
 
-dev_dependencies:
-  ffigen: ^11.0.0
-
 dependencies:
   ffi: ^2.1.0
   core:
     path: ../../core/dart
-
-ffigen:
-  name: "MemoryBindings"
-  ffi-native:
-    assetId: "memory-bindings"
-  description: "Bindings for memory"
-  output: "lib/memory/bindings.dart"
-  compiler-opts:
-    - "-I../native/include"
-  exclude-all-by-default: true
-  headers:
-    entry-points:
-      - "../native/bindings/memory.h"
-      - "../native/bindings/tuple.h"
-  functions:
-    leaf:
-      include:
-        - "*"
-    include:
-      - "memory_.*"
-      - "tuple_.*"

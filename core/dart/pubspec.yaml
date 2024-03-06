@@ -5,27 +5,5 @@ publish_to: none
 environment:
   sdk: ">=3.3.0 <4.0.0"
 
-dev_dependencies:
-  ffigen: ^11.0.0
-
 dependencies:
   ffi: ^2.1.0
-
-ffigen:
-  name: "CoreBindings"
-  ffi-native:
-    assetId: "core-bindings"
-  description: "Bindings for core"
-  output: "lib/core/bindings.dart"
-  compiler-opts:
-    - "-I../native/include"
-  exclude-all-by-default: true
-  headers:
-    entry-points:
-      - "../native/include/system/system.h"
-  functions:
-    leaf:
-      include:
-        - "system_.*"
-    include:
-      - "system_.*"

@@ -13,16 +13,13 @@
 extern "C"
 {
 #endif
-    extern FORCEINLINE const char* system_error_to_string(int32_t error)
-    {
-        return strerror(-error);
-    }
 
-    extern FORCEINLINE void system_shutdown_descriptor(int32_t fd)
-    {
-        shutdown(fd, SHUT_RDWR);
-        close(fd);
-    }
+extern FORCEINLINE void system_shutdown_descriptor(int32_t fd)
+{
+    shutdown(fd, SHUT_RDWR);
+    close(fd);
+}
+
 #if defined(__cplusplus)
 }
 #endif

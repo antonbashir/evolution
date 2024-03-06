@@ -173,9 +173,7 @@ bool mediator_dart_notifier_initialize(struct mediator_dart_notifier* notifier, 
     notifier->thread = malloc(sizeof(struct mediator_dart_notifier_thread));
     memset(notifier->thread, 0, sizeof(struct mediator_dart_notifier_thread));
     notifier->configuration = *configuration;
-    struct timespec timeout;
-    timespec_get(&timeout, TIME_UTC);
-    timeout.tv_sec += configuration->initialization_timeout_seconds;
+    struct timespec timeout = timeout_seconds(configuration->initialization_timeout_seconds);
     int32_t error;
     if (error = pthread_create(&notifier->thread->main_thread_id, NULL, mediator_notifier_listen, notifier))
     {
@@ -234,8 +232,7 @@ bool mediator_dart_notifier_shutdown(struct mediator_dart_notifier* notifier)
         notifier->shutdown_error = strerror(error);
         return false;
     }
-    struct timespec timeout = now();
-    timeout.tv_sec += notifier->configuration.shutdown_timeout_seconds;
+    struct timespec timeout = timeout_seconds(notifier->configuration.shutdown_timeout_seconds);
     while (notifier->initialized)
     {
         if (error = pthread_cond_timedwait(&notifier->thread->shutdown_condition, &notifier->thread->shutdown_mutex, &timeout))
