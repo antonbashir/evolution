@@ -1,4 +1,4 @@
-import 'package:mediator/mediator.dart';
+import 'package:executor/executor.dart';
 import 'package:memory/memory/defaults.dart';
 
 import 'client/configuration.dart';
@@ -10,7 +10,7 @@ class TransportDefaults {
 
   static const transport = TransportConfiguration(
     memoryConfiguration: MemoryDefaults.module,
-    mediatorConfiguration: MediatorDefaults.mediator,
+    executorConfiguration: ExecutorDefaults.executor,
     trace: false,
     timeoutCheckerPeriod: Duration(milliseconds: 500),
   );

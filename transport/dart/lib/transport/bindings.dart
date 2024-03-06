@@ -1,6 +1,6 @@
 import 'dart:ffi';
 import 'package:core/core.dart';
-import 'package:mediator/mediator.dart';
+import 'package:executor/executor.dart';
 import 'package:memory/memory.dart' as memory;
 
 @Native<Int32 Function(Pointer<transport_client>, Pointer<transport_client_configuration>, Pointer<Char>, Int32)>(
@@ -80,12 +80,12 @@ external void transport_server_destroy(Pointer<transport_server> server);
 )
 external int transport_initialize(Pointer<transport> transport, Pointer<transport_configuration> configuration, int id);
 
-@Native<Int32 Function(Pointer<transport>, Pointer<mediator_dart>)>(
+@Native<Int32 Function(Pointer<transport>, Pointer<executor_dart>)>(
   symbol: 'transport_setup',
   assetId: 'transport-bindings',
   isLeaf: true,
 )
-external int transport_setup(Pointer<transport> transport, Pointer<mediator_dart> mediator);
+external int transport_setup(Pointer<transport> transport, Pointer<executor_dart> executor);
 
 @Native<Void Function(Pointer<transport>, Uint32, Uint16, Uint32, Int64, Uint16, Uint8)>(
   symbol: 'transport_write',
@@ -286,7 +286,7 @@ external int transport_socket_multicast_drop_source_membership(
 )
 external int transport_socket_get_interface_index(Pointer<Char> interface1);
 
-final class mediator_native_configuration extends Struct {
+final class executor_native_configuration extends Struct {
   @Uint64()
   external int completion_wait_timeout_millis;
 
@@ -315,7 +315,7 @@ final class mediator_native_configuration extends Struct {
   external int completion_wait_count;
 }
 
-final class mediator_dart_notifier_configuration extends Struct {
+final class executor_dart_notifier_configuration extends Struct {
   @Size()
   external int ring_size;
 
@@ -465,7 +465,7 @@ final class mh_events_t extends Opaque {}
 final class transport_configuration extends Struct {
   external memory.memory_configuration memory_configuration;
 
-  external mediator_dart_configuration mediator_configuration;
+  external executor_dart_configuration executor_configuration;
 
   @Uint64()
   external int timeout_checker_period_millis;
@@ -480,7 +480,7 @@ final class transport extends Struct {
 
   external Pointer<iovec> buffers;
 
-  external Pointer<mediator_dart> transport_mediator;
+  external Pointer<executor_dart> transport_executor;
 
   external transport_configuration configuration;
 

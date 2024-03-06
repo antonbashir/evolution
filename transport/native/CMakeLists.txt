@@ -5,7 +5,7 @@ project(transport_native C ASM)
 include_directories(${PROJECT_BINARY_DIR})
 include_directories(${PROJECT_SOURCE_DIR})
 include_directories(include)
-include_directories(${MEDIATOR_INCLUDE_DIRECTORY})
+include_directories(${EXECUTOR_INCLUDE_DIRECTORY})
 include_directories(${CORE_INCLUDE_DIRECTORY})
 include_directories(${MEMORY_INCLUDE_DIRECTORY})
 
@@ -15,12 +15,12 @@ file(GLOB sources
 )
 
 add_library(transport_debug_linux_x64 SHARED ${sources})
-target_link_libraries(transport_debug_linux_x64 PRIVATE ${MEDIATOR_LIBRARY})
+target_link_libraries(transport_debug_linux_x64 PRIVATE ${EXECUTOR_LIBRARY})
 set_target_properties(transport_debug_linux_x64 PROPERTIES COMPILE_FLAGS ${CMAKE_C_FLAGS_DEBUG})
 copy_to_assets(transport_debug_linux_x64)
 
 add_library(transport_release_linux_x64 SHARED ${sources})
-target_link_libraries(transport_release_linux_x64 PRIVATE ${MEDIATOR_LIBRARY})
+target_link_libraries(transport_release_linux_x64 PRIVATE ${EXECUTOR_LIBRARY})
 set_target_properties(transport_release_linux_x64 PROPERTIES COMPILE_FLAGS ${CMAKE_C_FLAGS})
 copy_to_assets(transport_release_linux_x64)
 

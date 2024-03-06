@@ -4,7 +4,7 @@ import 'dart:isolate';
 
 import 'package:core/core.dart';
 import 'package:ffi/ffi.dart';
-import 'package:mediator/mediator.dart';
+import 'package:executor/executor.dart';
 import 'package:memory/memory.dart';
 import 'package:transport/transport/defaults.dart';
 
@@ -17,7 +17,7 @@ class TransportModule {
   final _transportClosers = <SendPort>[];
   final _transportPorts = <RawReceivePort>[];
   final _transportDestroyer = ReceivePort();
-  final _mediator = MediatorModule();
+  final _executor = ExecutorModule();
 
   TransportModule({String? libraryPath, LibraryPackageMode memoryMode = LibraryPackageMode.static}) {
     libraryPath == null ? SystemLibrary.loadByName(transportLibraryName, transportPackageName) : SystemLibrary.loadByPath(libraryPath);
@@ -25,7 +25,7 @@ class TransportModule {
   }
 
   void initialize() {
-    _mediator.initialize();
+    _executor.initialize();
   }
 
   Future<void> shutdown({Duration? gracefulTimeout}) async {
@@ -33,7 +33,7 @@ class TransportModule {
     await _transportDestroyer.take(_transportClosers.length).toList();
     _transportDestroyer.close();
     _transportPorts.forEach((port) => port.close());
-    await _mediator.shutdown();
+    await _executor.shutdown();
   }
 
   SendPort transport({TransportConfiguration configuration = TransportDefaults.transport}) {
@@ -53,7 +53,7 @@ class TransportModule {
         bindings.transport_destroy(transportPointer);
         throw TransportInitializationException(TransportMessages.workerError(result));
       }
-      final workerInput = [transportPointer.address, _transportDestroyer.sendPort, _mediator.mediator()];
+      final workerInput = [transportPointer.address, _transportDestroyer.sendPort, _executor.executor()];
       toTransport.send(workerInput);
     });
     _transportPorts.add(port);

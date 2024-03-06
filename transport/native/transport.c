@@ -6,8 +6,8 @@
 #include <sys/time.h>
 #include <sys/un.h>
 #include <unistd.h>
-#include "mediator_constants.h"
-#include "mediator_dart.h"
+#include "executor_constants.h"
+#include "executor_dart.h"
 #include "memory_configuration.h"
 #include "transport.h"
 #include "transport_collections.h"
@@ -58,11 +58,11 @@ int32_t transport_initialize(struct transport* transport,
     return 0;
 }
 
-int32_t transport_setup(struct transport* transport, struct mediator_dart* transport_mediator)
+int32_t transport_setup(struct transport* transport, struct executor_dart* transport_executor)
 {
-    transport->transport_mediator = transport_mediator;
-    struct io_uring* ring = transport_mediator->ring;
-    int32_t result = io_uring_register_buffers(transport->transport_mediator->ring, transport->buffers, transport->configuration.memory_configuration.static_buffers_capacity);
+    transport->transport_executor = transport_executor;
+    struct io_uring* ring = transport_executor->ring;
+    int32_t result = io_uring_register_buffers(transport->transport_executor->ring, transport->buffers, transport->configuration.memory_configuration.static_buffers_capacity);
     if (result)
     {
         return result;
@@ -90,7 +90,7 @@ void transport_write(struct transport* transport,
                      uint16_t event,
                      uint8_t sqe_flags)
 {
-    struct io_uring* ring = transport->transport_mediator->ring;
+    struct io_uring* ring = transport->transport_executor->ring;
     struct io_uring_sqe* sqe = transport_provide_sqe(ring);
     uint64_t data = (((uint64_t)(fd) << 32) | (uint64_t)(buffer_id) << 16) | ((uint64_t)event);
     struct iovec* buffer = &transport->buffers[buffer_id];
@@ -98,7 +98,7 @@ void transport_write(struct transport* transport,
     io_uring_sqe_set_data64(sqe, data);
     sqe->flags |= sqe_flags;
     transport_add_event(transport, fd, data, timeout);
-    if (transport->transport_mediator->state & MEDIATOR_STATE_IDLE) io_uring_submit(ring);
+    if (transport->transport_executor->state & EXECUTOR_STATE_IDLE) io_uring_submit(ring);
 }
 
 void transport_read(struct transport* transport,
@@ -109,7 +109,7 @@ void transport_read(struct transport* transport,
                     uint16_t event,
                     uint8_t sqe_flags)
 {
-    struct io_uring* ring = transport->transport_mediator->ring;
+    struct io_uring* ring = transport->transport_executor->ring;
     struct io_uring_sqe* sqe = transport_provide_sqe(ring);
     uint64_t data = (((uint64_t)(fd) << 32) | (uint64_t)(buffer_id) << 16) | ((uint64_t)event);
     struct iovec* buffer = &transport->buffers[buffer_id];
@@ -117,7 +117,7 @@ void transport_read(struct transport* transport,
     io_uring_sqe_set_data64(sqe, data);
     sqe->flags |= sqe_flags;
     transport_add_event(transport, fd, data, timeout);
-    if (transport->transport_mediator->state & MEDIATOR_STATE_IDLE) io_uring_submit(ring);
+    if (transport->transport_executor->state & EXECUTOR_STATE_IDLE) io_uring_submit(ring);
 }
 
 void transport_send_message(struct transport* transport,
@@ -130,7 +130,7 @@ void transport_send_message(struct transport* transport,
                             uint16_t event,
                             uint8_t sqe_flags)
 {
-    struct io_uring* ring = transport->transport_mediator->ring;
+    struct io_uring* ring = transport->transport_executor->ring;
     struct io_uring_sqe* sqe = transport_provide_sqe(ring);
     uint64_t data = (((uint64_t)(fd) << 32) | (uint64_t)(buffer_id) << 16) | ((uint64_t)event);
     struct msghdr* message;
@@ -154,7 +154,7 @@ void transport_send_message(struct transport* transport,
     io_uring_sqe_set_data64(sqe, data);
     sqe->flags |= sqe_flags;
     transport_add_event(transport, fd, data, timeout);
-    if (transport->transport_mediator->state & MEDIATOR_STATE_IDLE) io_uring_submit(ring);
+    if (transport->transport_executor->state & EXECUTOR_STATE_IDLE) io_uring_submit(ring);
 }
 
 void transport_receive_message(struct transport* transport,
@@ -166,7 +166,7 @@ void transport_receive_message(struct transport* transport,
                                uint16_t event,
                                uint8_t sqe_flags)
 {
-    struct io_uring* ring = transport->transport_mediator->ring;
+    struct io_uring* ring = transport->transport_executor->ring;
     struct io_uring_sqe* sqe = transport_provide_sqe(ring);
     uint64_t data = (((uint64_t)(fd) << 32) | (uint64_t)(buffer_id) << 16) | ((uint64_t)event);
     struct msghdr* message;
@@ -190,12 +190,12 @@ void transport_receive_message(struct transport* transport,
     io_uring_sqe_set_data64(sqe, data);
     sqe->flags |= sqe_flags;
     transport_add_event(transport, fd, data, timeout);
-    if (transport->transport_mediator->state & MEDIATOR_STATE_IDLE) io_uring_submit(ring);
+    if (transport->transport_executor->state & EXECUTOR_STATE_IDLE) io_uring_submit(ring);
 }
 
 void transport_connect(struct transport* transport, struct transport_client* client, int64_t timeout)
 {
-    struct io_uring* ring = transport->transport_mediator->ring;
+    struct io_uring* ring = transport->transport_executor->ring;
     struct io_uring_sqe* sqe = transport_provide_sqe(ring);
     uint64_t data = ((uint64_t)(client->fd) << 32) | ((uint64_t)TRANSPORT_EVENT_CONNECT | (uint64_t)TRANSPORT_EVENT_CLIENT);
     struct sockaddr* address = client->family == INET
@@ -204,12 +204,12 @@ void transport_connect(struct transport* transport, struct transport_client* cli
     io_uring_prep_connect(sqe, client->fd, address, client->client_address_length);
     io_uring_sqe_set_data64(sqe, data);
     transport_add_event(transport, client->fd, data, timeout);
-    if (transport->transport_mediator->state & MEDIATOR_STATE_IDLE) io_uring_submit(ring);
+    if (transport->transport_executor->state & EXECUTOR_STATE_IDLE) io_uring_submit(ring);
 }
 
 void transport_accept(struct transport* transport, struct transport_server* server)
 {
-    struct io_uring* ring = transport->transport_mediator->ring;
+    struct io_uring* ring = transport->transport_executor->ring;
     struct io_uring_sqe* sqe = transport_provide_sqe(ring);
     uint64_t data = ((uint64_t)(server->fd) << 32) | ((uint64_t)TRANSPORT_EVENT_ACCEPT | (uint64_t)TRANSPORT_EVENT_SERVER);
     struct sockaddr* address = server->family == INET
@@ -218,7 +218,7 @@ void transport_accept(struct transport* transport, struct transport_server* serv
     io_uring_prep_accept(sqe, server->fd, address, &server->server_address_length, 0);
     io_uring_sqe_set_data64(sqe, data);
     transport_add_event(transport, server->fd, data, TRANSPORT_TIMEOUT_INFINITY);
-    if (transport->transport_mediator->state & MEDIATOR_STATE_IDLE) io_uring_submit(ring);
+    if (transport->transport_executor->state & EXECUTOR_STATE_IDLE) io_uring_submit(ring);
 }
 
 void transport_cancel_by_fd(struct transport* transport, int32_t fd)
@@ -231,7 +231,7 @@ void transport_cancel_by_fd(struct transport* transport, int32_t fd)
         struct simple_map_events_node_t* node = simple_map_events_node(transport->events, index);
         if (node->fd == fd)
         {
-            struct io_uring* ring = transport->transport_mediator->ring;
+            struct io_uring* ring = transport->transport_executor->ring;
             struct io_uring_sqe* sqe = transport_provide_sqe(ring);
             io_uring_prep_cancel(sqe, (void*)node->data, IORING_ASYNC_CANCEL_ALL);
             sqe->flags |= IOSQE_CQE_SKIP_SUCCESS;
@@ -242,7 +242,7 @@ void transport_cancel_by_fd(struct transport* transport, int32_t fd)
     {
         simple_map_events_del(transport->events, to_delete[index], 0);
     }
-    io_uring_submit(transport->transport_mediator->ring);
+    io_uring_submit(transport->transport_executor->ring);
 }
 
 void transport_check_event_timeouts(struct transport* transport)
@@ -263,7 +263,7 @@ void transport_check_event_timeouts(struct transport* transport)
         time_t current_time = time(NULL);
         if (current_time - timestamp > timeout)
         {
-            struct io_uring* ring = transport->transport_mediator->ring;
+            struct io_uring* ring = transport->transport_executor->ring;
             struct io_uring_sqe* sqe = transport_provide_sqe(ring);
             io_uring_prep_cancel(sqe, (void*)data, IORING_ASYNC_CANCEL_ALL);
             sqe->flags |= IOSQE_CQE_SKIP_SUCCESS;
@@ -274,7 +274,7 @@ void transport_check_event_timeouts(struct transport* transport)
     {
         simple_map_events_del(transport->events, to_delete[index], 0);
     }
-    io_uring_submit(transport->transport_mediator->ring);
+    io_uring_submit(transport->transport_executor->ring);
 }
 
 void transport_remove_event(struct transport* transport, uint64_t data)

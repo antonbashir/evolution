@@ -15,8 +15,8 @@ dependencies:
     path: ../../core/dart
   memory:
     path: ../../memory/dart
-  mediator:
-    path: ../../mediator/dart
+  executor:
+    path: ../../executor/dart
 
 ffigen:
   name: "TransportBindings"
@@ -34,7 +34,7 @@ ffigen:
       - "../native/transport_socket.h"
   compiler-opts:
     - "-I../native/include"
-    - "-I../../mediator/native/include"
+    - "-I../../executor/native/include"
     - "-I../../memory/native/include"
   globals:
     exclude:
@@ -71,14 +71,14 @@ ffigen:
         lib: "memory"
         c-type: "memory_module_configuration"
         dart-type: "memory_module_configuration"
-      "mediator_dart_configuration":
-        lib: "mediator"
-        c-type: "mediator_dart_configuration"
-        dart-type: "mediator_dart_configuration"
-      "mediator_dart":
-        lib: "mediator"
-        c-type: "mediator_dart"
-        dart-type: "mediator_dart"
+      "executor_dart_configuration":
+        lib: "executor"
+        c-type: "executor_dart_configuration"
+        dart-type: "executor_dart_configuration"
+      "executor_dart":
+        lib: "executor"
+        c-type: "executor_dart"
+        dart-type: "executor_dart"
   library-imports:
-    mediator: package:mediator/mediator.dart
+    executor: package:executor/executor.dart
     memory: package:memory/memory.dart

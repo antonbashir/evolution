@@ -3,13 +3,13 @@
 
 #define CORE_MODULE 0
 #define MEMORY_MODULE 1
-#define MEDIATOR_MODULE 2
+#define EXECUTOR_MODULE 2
 #define TRANSPORT_MODULE 3
 #define STORAGE_MODULE 4
 
 #define CORE_MODULE_NAME "core"
 #define MEMORY_MODULE_NAME "memory"
-#define MEDIATOR_MODULE_NAME "mediator"
+#define EXECUTOR_MODULE_NAME "executor"
 #define TRANSPORT_MODULE_NAME "transport"
 #define STORAGE_MODULE_NAME "storage"
 
@@ -27,8 +27,8 @@ static inline const char* module_to_string(uint32_t id)
             return CORE_MODULE_NAME;
         case MEMORY_MODULE:
             return MEMORY_MODULE_NAME;
-        case MEDIATOR_MODULE:
-            return MEDIATOR_MODULE_NAME;
+        case EXECUTOR_MODULE:
+            return EXECUTOR_MODULE_NAME;
         case TRANSPORT_MODULE:
             return TRANSPORT_MODULE_NAME;
         case STORAGE_MODULE:

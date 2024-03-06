@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#include "mediator_configuration.h"
+#include "executor_configuration.h"
 #include "memory_configuration.h"
 #include "transport_client.h"
 #include "transport_server.h"
@@ -14,12 +14,12 @@ extern "C"
 #endif
 
 struct small_map_events_t;
-struct mediator_dart;
+struct executor_dart;
 
 struct transport_configuration
 {
     struct memory_configuration memory_configuration;
-    struct mediator_dart_configuration mediator_configuration;
+    struct executor_dart_configuration executor_configuration;
     uint64_t timeout_checker_period_millis;
     bool trace;
 };
@@ -28,7 +28,7 @@ struct transport
 {
     uint8_t id;
     struct iovec* buffers;
-    struct mediator_dart* transport_mediator;
+    struct executor_dart* transport_executor;
     struct transport_configuration configuration;
     struct msghdr* inet_used_messages;
     struct msghdr* unix_used_messages;
@@ -39,7 +39,7 @@ int32_t transport_initialize(struct transport* transport,
                              struct transport_configuration* configuration,
                              uint8_t id);
 
-int32_t transport_setup(struct transport* transport, struct mediator_dart* mediator);
+int32_t transport_setup(struct transport* transport, struct executor_dart* executor);
 
 void transport_write(struct transport* transport,
                      uint32_t fd,

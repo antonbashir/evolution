@@ -24,11 +24,11 @@
     },
     {
       "type": "cmake",
-      "label": "mediator-native-build",
+      "label": "executor-native-build",
       "command": "cleanRebuild",
       "targets": [
-        "mediator_native",
-        "mediator_test"
+        "executor_native",
+        "executor_test"
       ],
       "group": "build",
       "problemMatcher": [],

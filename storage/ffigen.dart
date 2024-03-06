@@ -7,7 +7,7 @@ void main() {
       "run",
       "ffigen",
       "--compiler-opts",
-      "-I${Directory.current.absolute.parent.path}/mediator/native/include",
+      "-I${Directory.current.absolute.parent.path}/executor/native/include",
     ],
   );
   final result = Process.runSync(command.executable, command.args, workingDirectory: "dart");

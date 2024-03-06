@@ -16,8 +16,8 @@ dependencies:
     path: ../../memory/dart
   core:
     path: ../../core/dart
-  mediator:
-    path: ../../mediator/dart
+  executor:
+    path: ../../executor/dart
 
 ffigen:
   name: "TarantoolBindings"
@@ -51,13 +51,13 @@ ffigen:
       - "max_align_t"
   type-map:
     "structs":
-      "mediator_message":
-        "lib": "mediator"
-        "c-type": "mediator_message"
-        "dart-type": "mediator_message"
-      "mediator_completion_event":
-        "lib": "mediator"
-        "c-type": "mediator_completion_event"
-        "dart-type": "mediator_completion_event"
+      "executor_message":
+        "lib": "executor"
+        "c-type": "executor_message"
+        "dart-type": "executor_message"
+      "executor_completion_event":
+        "lib": "executor"
+        "c-type": "executor_completion_event"
+        "dart-type": "executor_completion_event"
   library-imports:
-    mediator: "package:mediator/mediator.dart"
+    executor: "package:executor/executor.dart"

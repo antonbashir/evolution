@@ -1,6 +1,6 @@
 #include "tarantool_factory.h"
 #include <asm-generic/errno-base.h>
-#include "mediator_message.h"
+#include "executor_message.h"
 #include "memory_module.h"
 #include "small.h"
 

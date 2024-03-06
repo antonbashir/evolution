@@ -3,7 +3,7 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:ffi/ffi.dart';
-import 'package:mediator/mediator.dart';
+import 'package:executor/executor.dart';
 
 import 'bindings.dart';
 import 'configuration.dart';
@@ -17,7 +17,7 @@ class StorageModule {
   final Map<String, SystemLibrary> _loadedModulesByName = {};
   final Map<String, SystemLibrary> _loadedModulesByPath = {};
   final SystemLibrary _library;
-  final _mediator = MediatorModule();
+  final _executor = ExecutorModule();
 
   late final _box = calloc<tarantool_box>(sizeOf<tarantool_box>());
 
@@ -39,9 +39,9 @@ class StorageModule {
     if (!initialized()) {
       throw StorageLauncherException(tarantool_initialization_error().cast<Utf8>().toDartString());
     }
-    _mediator.initialize();
+    _executor.initialize();
     _executor = StorageExecutor(_box);
-    await _executor.initialize(_mediator);
+    await _executor.initialize(_executor);
     if (_hasStorageLuaModule && bootConfiguration != null) {
       await executor.boot(bootConfiguration);
     }
@@ -68,7 +68,7 @@ class StorageModule {
     if (!tarantool_shutdown()) {
       throw StorageLauncherException(tarantool_shutdown_error().cast<Utf8>().toDartString());
     }
-    await _mediator.shutdown();
+    await _executor.shutdown();
     await _executor.destroy();
     calloc.free(_box.cast());
   }

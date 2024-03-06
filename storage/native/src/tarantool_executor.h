@@ -12,7 +12,7 @@ extern "C"
     {
         size_t executor_ring_size;
         struct tarantool_configuration* configuration;
-        uint32_t mediator_id;
+        uint32_t executor_id;
     };
 
     int32_t tarantool_executor_initialize(struct tarantool_executor_configuration* configuration);

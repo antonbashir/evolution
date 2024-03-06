@@ -66,27 +66,27 @@
       "preLaunchTask": "transport-native-build"
     },
     {
-      "name": "mediator-test",
+      "name": "executor-test",
       "type": "dart",
       "request": "launch",
       "toolArgs": [
         "--define=DEBUG=true"
       ],
-      "cwd": "${workspaceFolder}/mediator",
-      "program": "${workspaceFolder}/mediator/test/dart/lib/test.dart",
+      "cwd": "${workspaceFolder}/executor",
+      "program": "${workspaceFolder}/executor/test/dart/lib/test.dart",
       "preLaunchTask": "storage-native-build"
     },
     {
-      "name": "mediator-test-gdb",
+      "name": "executor-test-gdb",
       "type": "cppdbg",
       "request": "launch",
       "program": "/usr/bin/dart",
       "args": [
         "-DDEBUG=true",
-        "${workspaceFolder}/mediator/test/dart/lib/test.dart"
+        "${workspaceFolder}/executor/test/dart/lib/test.dart"
       ],
       "stopAtEntry": false,
-      "cwd": "${workspaceFolder}/mediator",
+      "cwd": "${workspaceFolder}/executor",
       "MIMode": "gdb",
       "setupCommands": [
         {
@@ -95,7 +95,7 @@
           "ignoreFailures": true
         }
       ],
-      "preLaunchTask": "mediator-native-build"
+      "preLaunchTask": "executor-native-build"
     },
     {
       "name": "reactive-test",

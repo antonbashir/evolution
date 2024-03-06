@@ -26,23 +26,19 @@ extern "C"
     while (0);
 
 #define now()                                        \
-    do                                               \
-    {                                                \
+    ({                                               \
         struct timespec _timeout##__LINE__;          \
         timespec_get(&_timeout##__LINE__, TIME_UTC); \
         _timeout##__LINE__;                          \
-    }                                                \
-    while (0)
+    })
 
 #define timeout_seconds(seconds)                     \
-    do                                               \
-    {                                                \
+    ({                                               \
         struct timespec _timeout##__LINE__;          \
         timespec_get(&_timeout##__LINE__, TIME_UTC); \
         timeout.tv_sec += (seconds);                 \
         _timeout##__LINE__;                          \
-    }                                                \
-    while (0)
+    })
 
 #if defined(__cplusplus)
 }

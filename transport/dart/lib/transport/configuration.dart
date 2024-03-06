@@ -1,26 +1,26 @@
 import 'dart:ffi';
 
-import 'package:mediator/mediator.dart';
+import 'package:executor/executor.dart';
 import 'package:memory/memory.dart';
 
 import 'bindings.dart';
 
 class TransportConfiguration {
   final MemoryModuleConfiguration memoryConfiguration;
-  final MediatorConfiguration mediatorConfiguration;
+  final ExecutorConfiguration executorConfiguration;
   final Duration timeoutCheckerPeriod;
   final bool trace;
 
   Pointer<transport_configuration> toNative(Pointer<transport_configuration> native) {
     native.ref.memory_configuration = memoryConfiguration.toNativeValue(native.ref.memory_configuration);
-    native.ref.mediator_configuration = mediatorConfiguration.fillNative(native.ref.mediator_configuration);
+    native.ref.executor_configuration = executorConfiguration.fillNative(native.ref.executor_configuration);
     native.ref.timeout_checker_period_millis = timeoutCheckerPeriod.inMilliseconds;
     native.ref.trace = trace;
     return native;
   }
 
   const TransportConfiguration({
-    required this.mediatorConfiguration,
+    required this.executorConfiguration,
     required this.memoryConfiguration,
     required this.timeoutCheckerPeriod,
     required this.trace,
@@ -28,13 +28,13 @@ class TransportConfiguration {
 
   TransportConfiguration copyWith({
     MemoryModuleConfiguration? memoryConfiguration,
-    MediatorConfiguration? mediatorConfiguration,
+    ExecutorConfiguration? executorConfiguration,
     Duration? timeoutCheckerPeriod,
     bool? trace,
   }) =>
       TransportConfiguration(
         memoryConfiguration: memoryConfiguration ?? this.memoryConfiguration,
-        mediatorConfiguration: mediatorConfiguration ?? this.mediatorConfiguration,
+        executorConfiguration: executorConfiguration ?? this.executorConfiguration,
         timeoutCheckerPeriod: timeoutCheckerPeriod ?? this.timeoutCheckerPeriod,
         trace: trace ?? this.trace,
       );

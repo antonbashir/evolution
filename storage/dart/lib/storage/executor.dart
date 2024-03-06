@@ -5,7 +5,7 @@ import 'dart:typed_data';
 
 import 'package:core/core.dart';
 import 'package:ffi/ffi.dart';
-import 'package:mediator/mediator.dart';
+import 'package:executor/executor.dart';
 import 'package:memory/memory.dart';
 import 'package:memory/memory/defaults.dart';
 
@@ -16,47 +16,47 @@ import 'factory.dart';
 import 'schema.dart';
 import 'strings.dart';
 
-class StorageProducer implements MediatorProducer {
+class StorageProducer implements ExecutorProducer {
   final Pointer<tarantool_box> _box;
 
   StorageProducer(this._box);
 
-  late final MediatorMethod evaluate;
-  late final MediatorMethod call;
-  late final MediatorMethod freeOutputBuffer;
-  late final MediatorMethod iteratorNextSingle;
-  late final MediatorMethod iteratorNextMany;
-  late final MediatorMethod iteratorDestroy;
-  late final MediatorMethod spaceIdByName;
-  late final MediatorMethod spaceCount;
-  late final MediatorMethod spaceLength;
-  late final MediatorMethod spaceIterator;
-  late final MediatorMethod spaceInsertSingle;
-  late final MediatorMethod spaceInsertMany;
-  late final MediatorMethod spacePutSingle;
-  late final MediatorMethod spacePutMany;
-  late final MediatorMethod spaceDeleteSingle;
-  late final MediatorMethod spaceDeleteMany;
-  late final MediatorMethod spaceUpdateSingle;
-  late final MediatorMethod spaceUpdateMany;
-  late final MediatorMethod spaceGet;
-  late final MediatorMethod spaceMin;
-  late final MediatorMethod spaceMax;
-  late final MediatorMethod spaceTruncate;
-  late final MediatorMethod spaceUpsert;
-  late final MediatorMethod indexCount;
-  late final MediatorMethod indexLength;
-  late final MediatorMethod indexIterator;
-  late final MediatorMethod indexGet;
-  late final MediatorMethod indexMax;
-  late final MediatorMethod indexMin;
-  late final MediatorMethod indexUpdateSingle;
-  late final MediatorMethod indexUpdateMany;
-  late final MediatorMethod indexSelect;
-  late final MediatorMethod indexIdByName;
+  late final ExecutorMethod evaluate;
+  late final ExecutorMethod call;
+  late final ExecutorMethod freeOutputBuffer;
+  late final ExecutorMethod iteratorNextSingle;
+  late final ExecutorMethod iteratorNextMany;
+  late final ExecutorMethod iteratorDestroy;
+  late final ExecutorMethod spaceIdByName;
+  late final ExecutorMethod spaceCount;
+  late final ExecutorMethod spaceLength;
+  late final ExecutorMethod spaceIterator;
+  late final ExecutorMethod spaceInsertSingle;
+  late final ExecutorMethod spaceInsertMany;
+  late final ExecutorMethod spacePutSingle;
+  late final ExecutorMethod spacePutMany;
+  late final ExecutorMethod spaceDeleteSingle;
+  late final ExecutorMethod spaceDeleteMany;
+  late final ExecutorMethod spaceUpdateSingle;
+  late final ExecutorMethod spaceUpdateMany;
+  late final ExecutorMethod spaceGet;
+  late final ExecutorMethod spaceMin;
+  late final ExecutorMethod spaceMax;
+  late final ExecutorMethod spaceTruncate;
+  late final ExecutorMethod spaceUpsert;
+  late final ExecutorMethod indexCount;
+  late final ExecutorMethod indexLength;
+  late final ExecutorMethod indexIterator;
+  late final ExecutorMethod indexGet;
+  late final ExecutorMethod indexMax;
+  late final ExecutorMethod indexMin;
+  late final ExecutorMethod indexUpdateSingle;
+  late final ExecutorMethod indexUpdateMany;
+  late final ExecutorMethod indexSelect;
+  late final ExecutorMethod indexIdByName;
 
   @override
-  void initialize(MediatorProducerRegistrat registrat) {
+  void initialize(ExecutorProducerRegistrat registrat) {
     evaluate = registrat.register(_box.ref.tarantool_evaluate_address);
     call = registrat.register(_box.ref.tarantool_call_address);
     iteratorNextSingle = registrat.register(_box.ref.tarantool_iterator_next_single_address);
@@ -93,18 +93,18 @@ class StorageProducer implements MediatorProducer {
   }
 }
 
-class StorageConsumer implements MediatorConsumer {
+class StorageConsumer implements ExecutorConsumer {
   StorageConsumer();
 
   @override
-  List<MediatorCallback> callbacks() => [];
+  List<ExecutorCallback> callbacks() => [];
 }
 
 class StorageExecutor {
   final Pointer<tarantool_box> _box;
 
   late final StorageSchema _schema;
-  late final Mediator _mediator;
+  late final Executor _executor;
   late final int _descriptor;
   late final MemoryTuples _tuples;
   late final StorageProducer _producer;
@@ -116,11 +116,11 @@ class StorageExecutor {
 
   StorageSchema get schema => _schema;
   MemoryTuples get tuples => _tuples;
-  MemoryModule get memory => _mediator.memory;
+  MemoryModule get memory => _executor.memory;
 
-  Future<void> initialize(MediatorModule mediatorModule) async {
-    _mediator = Mediator(mediatorModule.mediator());
-    await _mediator.initialize();
+  Future<void> initialize(ExecutorModule executorModule) async {
+    _executor = Executor(executorModule.executor());
+    await _executor.initialize();
     _descriptor = tarantool_executor_descriptor();
     _nativeFactory = calloc<tarantool_factory>(sizeOf<tarantool_factory>());
     using((Arena arena) {
@@ -130,16 +130,16 @@ class StorageExecutor {
       configuration.ref.slab_size = MemoryDefaults.module.slabSize;
       tarantool_factory_initialize(_nativeFactory, configuration);
     });
-    _mediator.consumer(StorageConsumer());
-    _producer = _mediator.producer(StorageProducer(_box));
-    _tuples = MemoryTuples(_mediator.memory.pointer);
+    _executor.consumer(StorageConsumer());
+    _producer = _executor.producer(StorageProducer(_box));
+    _tuples = MemoryTuples(_executor.memory.pointer);
     _strings = StorageStrings(_nativeFactory);
     _factory = StorageFactory(memory, _strings);
     _schema = StorageSchema(_descriptor, this, _tuples, _producer, _factory);
-    _mediator.activate();
+    _executor.activate();
   }
 
-  void stop() => _mediator.deactivate();
+  void stop() => _executor.deactivate();
 
   Future<void> destroy() async {
     tarantool_factory_destroy(_nativeFactory);
@@ -188,7 +188,7 @@ class StorageExecutor {
   Future<void> require(String module) => evaluate(LuaExpressions.require(module));
 
   @inline
-  (Uint8List, void Function()) _parseLuaEvaluate(Pointer<mediator_message> message) {
+  (Uint8List, void Function()) _parseLuaEvaluate(Pointer<executor_message> message) {
     final buffer = message.outputPointer;
     final bufferSize = message.outputSize;
     final result = buffer.cast<Uint8>().asTypedList(message.outputSize);
@@ -197,7 +197,7 @@ class StorageExecutor {
   }
 
   @inline
-  (Uint8List, void Function()) _parseLuaCall(Pointer<mediator_message> message) {
+  (Uint8List, void Function()) _parseLuaCall(Pointer<executor_message> message) {
     final buffer = message.outputPointer;
     final bufferSize = message.outputSize;
     final result = message.outputPointer.cast<Uint8>().asTypedList(message.outputSize);
