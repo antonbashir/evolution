@@ -3,10 +3,10 @@ import 'dart:io';
 
 import 'package:ffi/ffi.dart';
 
+import '../bindings/bindings.dart';
 import 'constants.dart';
 import 'exceptions.dart';
 import 'lookup.dart';
-import 'system.dart';
 
 final Map<String, SystemLibrary> _loadedByName = {};
 final Map<String, SystemLibrary> _loadedByPath = {};
