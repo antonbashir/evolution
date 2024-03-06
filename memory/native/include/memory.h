@@ -20,6 +20,7 @@ extern "C"
 
 struct memory
 {
+    // FFI PRIVATE
     struct quota quota;
     struct slab_arena arena;
     struct slab_cache cache;
@@ -28,30 +29,33 @@ struct memory
 
 struct memory_pool
 {
+    // FFI PRIVATE
     struct mempool pool;
 };
 
 struct memory_small_allocator
 {
+    // FFI PRIVATE
     struct small_alloc allocator;
 };
 
 struct memory_input_buffer
 {
-    // FFI
+    // FFI PUBLIC
     uint8_t* read_position;
     uint8_t* write_position;
-    // FFI
+    // FFI PUBLIC
 
+    // FFI PRIVATE
     struct ibuf buffer;
 };
 
 struct memory_output_buffer
 {
-    // FFI
+    // FFI PUBLIC
     struct iovec* content;
-    // FFI
 
+    // FFI PRIVATE
     struct obuf buffer;
 };
 

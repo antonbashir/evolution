@@ -10,6 +10,7 @@ extern "C"
 
 struct memory_configuration
 {
+    // FFI PUBLIC
     size_t quota_size;
     size_t preallocation_size;
     size_t slab_size;

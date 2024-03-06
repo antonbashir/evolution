@@ -11,6 +11,7 @@ extern "C"
 
 struct memory_small_data
 {
+    // FFI PRIVATE
     struct memory_small_allocator pool;
 };
 

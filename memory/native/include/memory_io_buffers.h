@@ -12,6 +12,7 @@ extern "C"
 
 struct memory_io_buffers
 {
+    // FFI PRIVATE
     struct memory_pool input_buffers;
     struct memory_pool output_buffers;
     struct memory* memory;

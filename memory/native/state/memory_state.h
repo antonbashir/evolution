@@ -17,6 +17,7 @@ extern "C"
 
 struct memory_state
 {
+    // FFI PUBLIC
     struct memory_static_buffers* static_buffers;
     struct memory_io_buffers* io_buffers;
     struct memory_small_data* small_data;

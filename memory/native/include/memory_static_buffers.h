@@ -12,6 +12,7 @@ extern "C"
 
 struct memory_static_buffers
 {
+    // FFI PUBLIC
     size_t available;
     size_t size;
     size_t capacity;

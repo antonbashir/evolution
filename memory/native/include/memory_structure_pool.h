@@ -11,10 +11,10 @@ extern "C"
 
 struct memory_structure_pool
 {
-    // FFI
+    // FFI PUBLIC
     size_t size;
-    // FFI
 
+    // FFI PRIVATE
     struct memory_pool pool;
 };
 
