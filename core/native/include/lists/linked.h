@@ -1,5 +1,5 @@
-#ifndef CORE_COMMON_LINKED_H_INCLUDED
-#define CORE_COMMON_LINKED_H_INCLUDED
+#ifndef CORE_LINKED_H
+#define CORE_LINKED_H
 /*
  * Copyright 2010-2016, Tarantool TARANTOOL_AUTHORS, please see TARANTOOL_AUTHORS file.
  *

@@ -11,7 +11,7 @@ class ExecutorConfiguration {
   final int memoryPreallocationSize;
   final int memoryQuotaSize;
 
-  Pointer<executor_dart_configuration> toNative(Pointer<executor_dart_configuration> native) {
+  Pointer<executor_configuration> toNative(Pointer<executor_configuration> native) {
     native.ref.ring_flags = ringFlags;
     native.ref.ring_size = ringSize;
     native.ref.static_buffer_size = staticBufferSize;
@@ -22,7 +22,7 @@ class ExecutorConfiguration {
     return native;
   }
 
-  executor_dart_configuration fillNative(executor_dart_configuration native) {
+  executor_configuration fillNative(executor_configuration native) {
     native.ring_flags = ringFlags;
     native.ring_size = ringSize;
     native.static_buffer_size = staticBufferSize;
@@ -33,7 +33,7 @@ class ExecutorConfiguration {
     return native;
   }
 
-  factory ExecutorConfiguration.fromNative(Pointer<executor_dart_configuration> native) => ExecutorConfiguration(
+  factory ExecutorConfiguration.fromNative(Pointer<executor_configuration> native) => ExecutorConfiguration(
         ringFlags: native.ref.ring_flags,
         ringSize: native.ref.ring_size,
         staticBufferSize: native.ref.static_buffer_size,

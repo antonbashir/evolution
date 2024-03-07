@@ -18,7 +18,7 @@ final _executors = List<Executor>.empty(growable: true);
 @inline
 void _awakeExecutor(int id) => _executors[id]._awake();
 
-typedef ExecutorProcessor = void Function(Pointer<Pointer<executor_dart_completion_event>> completions, int count);
+typedef ExecutorProcessor = void Function(Pointer<Pointer<executor_completion_event>> completions, int count);
 
 class Executor {
   final _fromModule = ReceivePort();
@@ -27,14 +27,14 @@ class Executor {
   late final ExecutorConsumerRegistry _consumers;
   late final ExecutorProducerRegistry _producers;
 
-  late final Pointer<Pointer<executor_dart_completion_event>> _completions;
+  late final Pointer<Pointer<executor_completion_event>> _completions;
   late final RawReceivePort _closer;
   late final SendPort _destroyer;
 
   late final int descriptor;
   late final ExecutorMessages messages;
   late final MemoryModule memory;
-  late final Pointer<executor_dart> pointer;
+  late final Pointer<executor> pointer;
 
   late ExecutorProcessor _processor = _process;
 
@@ -52,7 +52,7 @@ class Executor {
   Future<void> initialize({ExecutorProcessor? processor}) async {
     _processor = processor ?? _processor;
     final configuration = await _fromModule.first as List;
-    pointer = Pointer.fromAddress(configuration[0] as int).cast<executor_dart>();
+    pointer = Pointer.fromAddress(configuration[0] as int).cast<executor>();
     _destroyer = configuration[1] as SendPort;
     descriptor = configuration[2] as int;
     _fromModule.close();
@@ -76,13 +76,13 @@ class Executor {
   }
 
   void activate() {
-    if (executor_dart_register(pointer, _callback.sendPort.nativePort) == executorErrorRingFull) {
+    if (executor_register(pointer, _callback.sendPort.nativePort) == executorErrorRingFull) {
       throw ExecutorException(ExecutorErrors.executorRingFullError);
     }
   }
 
   void deactivate() {
-    if (executor_dart_unregister(pointer) == executorErrorRingFull) {
+    if (executor_unregister(pointer) == executorErrorRingFull) {
       throw ExecutorException(ExecutorErrors.executorRingFullError);
     }
   }
@@ -94,19 +94,19 @@ class Executor {
   @inline
   void _awake() {
     if (pointer.ref.state & executorStateStopped == 0) {
-      if (executor_dart_awake(pointer) == executorErrorRingFull) {
-        executor_dart_sleep(pointer, 0);
+      if (executor_awake(pointer) == executorErrorRingFull) {
+        executor_sleep(pointer, 0);
         throw ExecutorException(ExecutorErrors.executorRingFullError);
       }
-      final count = executor_dart_peek(pointer);
+      final count = executor_peek(pointer);
       if (count == 0) return;
       _processor(_completions, count);
-      executor_dart_sleep(pointer, count);
+      executor_sleep(pointer, count);
     }
   }
 
   @inline
-  void _process(Pointer<Pointer<executor_dart_completion_event>> completions, int count) {
+  void _process(Pointer<Pointer<executor_completion_event>> completions, int count) {
     for (var index = 0; index < count; index++) {
       Pointer<executor_completion_event> completion = (completions + index).value.cast();
       final data = completion.ref.user_data;

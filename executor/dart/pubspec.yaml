@@ -27,7 +27,7 @@ ffigen:
     - "-I../native/include"
   headers:
     entry-points:
-      - "../native/include/executor_dart.h"
+      - "../native/include/executor.h"
       - "../native/executor_scheduler.h"
   globals:
     exclude:
@@ -41,7 +41,7 @@ ffigen:
   functions:
     leaf:
       include:
-        - "executor_dart_.*"
+        - "executor_.*"
     exclude:
       - "_(.*)"
   structs:

@@ -20,7 +20,7 @@ struct transport_configuration
 {
     struct memory_configuration memory_configuration;
     struct executor_configuration executor_configuration;
-    uint64_t timeout_checker_period_millis;
+    uint64_t timeout_checker_period_milliseconds;
     bool trace;
 };
 

@@ -112,7 +112,7 @@ class Transport {
   }
 
   @inline
-  void _process(Pointer<Pointer<executor_dart_completion_event>> completions, int count) {
+  void _process(Pointer<Pointer<executor_completion_event>> completions, int count) {
     for (var index = 0; index < count; index++) {
       Pointer<executor_completion_event> completion = (completions + index).value.cast();
       final data = completion.ref.user_data;

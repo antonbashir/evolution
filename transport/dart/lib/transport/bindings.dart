@@ -80,12 +80,12 @@ external void transport_server_destroy(Pointer<transport_server> server);
 )
 external int transport_initialize(Pointer<transport> transport, Pointer<transport_configuration> configuration, int id);
 
-@Native<Int32 Function(Pointer<transport>, Pointer<executor_dart>)>(
+@Native<Int32 Function(Pointer<transport>, Pointer<executor>)>(
   symbol: 'transport_setup',
   assetId: 'transport-bindings',
   isLeaf: true,
 )
-external int transport_setup(Pointer<transport> transport, Pointer<executor_dart> executor);
+external int transport_setup(Pointer<transport> transport, Pointer<executor> executor);
 
 @Native<Void Function(Pointer<transport>, Uint32, Uint16, Uint32, Int64, Uint16, Uint8)>(
   symbol: 'transport_write',
@@ -288,7 +288,7 @@ external int transport_socket_get_interface_index(Pointer<Char> interface1);
 
 final class executor_native_configuration extends Struct {
   @Uint64()
-  external int completion_wait_timeout_millis;
+  external int completion_wait_timeout_milliseconds;
 
   @Size()
   external int quota_size;
@@ -465,10 +465,10 @@ final class mh_events_t extends Opaque {}
 final class transport_configuration extends Struct {
   external memory.memory_configuration memory_configuration;
 
-  external executor_dart_configuration executor_configuration;
+  external executor_configuration executor_configuration;
 
   @Uint64()
-  external int timeout_checker_period_millis;
+  external int timeout_checker_period_milliseconds;
 
   @Bool()
   external bool trace;
@@ -480,7 +480,7 @@ final class transport extends Struct {
 
   external Pointer<iovec> buffers;
 
-  external Pointer<executor_dart> transport_executor;
+  external Pointer<executor> transport_executor;
 
   external transport_configuration configuration;
 

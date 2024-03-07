@@ -14,7 +14,7 @@ extern "C"
         const char* initial_script;
         const char* library_path;
         const char* binary_path;
-        uint64_t cqe_wait_timeout_millis;
+        uint64_t cqe_wait_timeout_milliseconds;
         size_t slab_size;
         size_t ring_size;
         uint64_t initialization_timeout_seconds;

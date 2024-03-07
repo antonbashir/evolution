@@ -71,14 +71,14 @@ ffigen:
         lib: "memory"
         c-type: "memory_module_configuration"
         dart-type: "memory_module_configuration"
-      "executor_dart_configuration":
+      "executor_configuration":
         lib: "executor"
-        c-type: "executor_dart_configuration"
-        dart-type: "executor_dart_configuration"
-      "executor_dart":
+        c-type: "executor_configuration"
+        dart-type: "executor_configuration"
+      "executor":
         lib: "executor"
-        c-type: "executor_dart"
-        dart-type: "executor_dart"
+        c-type: "executor"
+        dart-type: "executor"
   library-imports:
     executor: package:executor/executor.dart
     memory: package:memory/memory.dart

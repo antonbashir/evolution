@@ -1,8 +1,8 @@
-#ifndef CORE_COMMON_HASHING_H
-#define CORE_COMMON_HASHING_H
+#ifndef CORE_HASHING_H
+#define CORE_HASHING_H
 
+#include <common/common.h>
 #include <stdint.h>
-#include "common/common.h"
 
 #define _ASSIGN(dst, src, ...) asm("" : "=r"(dst) : "0"(src), ##__VA_ARGS__)
 

@@ -59,11 +59,11 @@ class ExecutorModule {
     final port = RawReceivePort((ports) async {
       SendPort toWorker = ports[0];
       _workerClosers.add(ports[1]);
-      final executorPointer = calloc<executor_dart>(sizeOf<executor_dart>());
+      final executorPointer = calloc<executor>(sizeOf<executor>());
       if (executorPointer == nullptr) throw ExecutorException(ExecutorErrors.executorMemoryError);
-      final result = using((arena) => executor_dart_initialize(executorPointer, configuration.toNative(arena<executor_dart_configuration>()), _notifier, _workerClosers.length));
+      final result = using((arena) => executor_initialize(executorPointer, configuration.toNative(arena<executor_configuration>()), _notifier, _workerClosers.length));
       if (result < 0) {
-        executor_dart_destroy(executorPointer);
+        executor_destroy(executorPointer);
         calloc.free(executorPointer);
         throw ExecutorException(ExecutorErrors.executorError(result));
       }

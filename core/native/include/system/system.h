@@ -1,10 +1,11 @@
 #ifndef CORE_SYSTEM_SYSTEM_H
 #define CORE_SYSTEM_SYSTEM_H
 
-#include "common/common.h"
+#include <common/common.h>
 #include "library.h"
 #include "network.h"
 #include "socket.h"
+#include "string.h"
 #include "threading.h"
 #include "time.h"
 #include "types.h"

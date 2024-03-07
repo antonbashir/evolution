@@ -17,7 +17,7 @@ class ExecutorConsumerExecutor {
 }
 
 class ExecutorCallbackExecutor {
-  final Pointer<executor_dart> _executor;
+  final Pointer<executor> _executor;
   final FutureOr<void> Function(Pointer<executor_task> notification) _executor;
 
   ExecutorCallbackExecutor(this._executor, this._executor);
@@ -27,7 +27,7 @@ class ExecutorCallbackExecutor {
 
   @inline
   void _respond(Pointer<executor_task> message) {
-    if (executor_dart_callback_to_native(_executor, message) == executorErrorRingFull) {
+    if (executor_callback_to_native(_executor, message) == executorErrorRingFull) {
       throw ExecutorException(ExecutorErrors.executorRingFullError);
     }
   }

@@ -1,5 +1,6 @@
-#ifndef CORE_COMMON_NATIVE_H
-#define CORE_COMMON_NATIVE_H
+#ifndef CORE_COMMON_H
+#define CORE_COMMON_H
+
 #include <assert.h>
 
 #if defined(__cplusplus)

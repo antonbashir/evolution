@@ -31,7 +31,7 @@
     "*.inc": "c",
     "test.h": "c",
     "executor_configuration.h": "c",
-    "executor_dart.h": "c",
+    "executor.h": "c",
     "assert.h": "c",
     "mhash.h": "c",
     "dart_native_api.h": "c",
@@ -75,6 +75,11 @@
     "mempool.h": "c",
     "poll.h": "c",
     "executor_common.h": "c",
-    "scheduling.h": "c"
+    "scheduling.h": "c",
+    "span": "c",
+    "type_traits": "c",
+    "functional": "c",
+    "format.h": "c",
+    "string_view": "c"
   },
 }

@@ -12,7 +12,7 @@ class ExecutorProducerExecutor implements ExecutorProducerRegistrat {
   final Map<int, ExecutorMethodExecutor> _methods = {};
 
   final int _id;
-  final Pointer<executor_dart> _pointer;
+  final Pointer<executor> _pointer;
 
   ExecutorProducerExecutor(this._id, this._pointer);
 
@@ -30,7 +30,7 @@ class ExecutorMethodExecutor implements ExecutorMethod {
   final Map<int, Completer<Pointer<executor_task>>> _calls = {};
   final int _methodId;
   final int _executorId;
-  final Pointer<executor_dart> _pointer;
+  final Pointer<executor> _pointer;
 
   ExecutorMethodExecutor(
     this._methodId,
@@ -45,7 +45,7 @@ class ExecutorMethodExecutor implements ExecutorMethod {
     message.ref.owner = _executorId;
     message.ref.method = _methodId;
     _calls[message.address] = completer;
-    if (executor_dart_call_native(_pointer, target, message) == executorErrorRingFull) {
+    if (executor_call_native(_pointer, target, message) == executorErrorRingFull) {
       _calls.remove(message.address);
       throw ExecutorException(ExecutorErrors.executorRingFullError);
     }

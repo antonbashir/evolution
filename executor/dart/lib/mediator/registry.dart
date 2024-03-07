@@ -10,7 +10,7 @@ import 'producer.dart';
 class ExecutorConsumerRegistry {
   final _consumers = <ExecutorConsumerExecutor>[];
 
-  final Pointer<executor_dart> _executor;
+  final Pointer<executor> _executor;
 
   ExecutorConsumerRegistry(this._executor);
 
@@ -29,7 +29,7 @@ class ExecutorConsumerRegistry {
 class ExecutorProducerRegistry {
   final _producers = <ExecutorProducerExecutor>[];
 
-  final Pointer<executor_dart> _pointer;
+  final Pointer<executor> _pointer;
 
   ExecutorProducerRegistry(this._pointer);
 

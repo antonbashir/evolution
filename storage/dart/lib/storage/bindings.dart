@@ -608,7 +608,7 @@ final class tarantool_configuration extends ffi.Struct {
   external ffi.Pointer<ffi.Char> binary_path;
 
   @ffi.Uint64()
-  external int cqe_wait_timeout_millis;
+  external int cqe_wait_timeout_milliseconds;
 
   @ffi.Size()
   external int slab_size;
