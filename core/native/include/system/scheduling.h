@@ -1,5 +1,5 @@
-#ifndef CORE_SCHEDULING_SYSTEM_H
-#define CORE_SCHEDULING_SYSTEM_H
+#ifndef CORE_SYSTEM_SCHEDULING_H
+#define CORE_SYSTEM_SCHEDULING_H
 
 #include <sys/poll.h>
 
