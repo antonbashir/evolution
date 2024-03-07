@@ -1,15 +1,14 @@
 #include "test_threading.h"
 #include <bits/pthreadtypes.h>
+#include <executor_task.h>
+#include <memory.h>
+#include <memory_small_data.h>
 #include <pthread.h>
 #include <sched.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "executor_task.h"
-#include "executor_native.h"
-#include "memory_module.h"
-#include "memory_small_data.h"
 #include "test.h"
 
 struct test_threads threads;
@@ -48,7 +47,8 @@ static void* test_threading_run(void* thread)
     do
     {
         casted->test_executor = test_executor_initialize(false);
-    } while (!casted->test_executor || ((struct executor_native*)casted->test_executor)->descriptor <= 0);
+    }
+    while (!casted->test_executor || ((struct executor_native*)casted->test_executor)->descriptor <= 0);
     executor_native_register_callback((struct executor_native*)casted->test_executor, 0, 0, test_threading_call_dart_callback);
     casted->alive = true;
     pthread_cond_broadcast((pthread_cond_t*)casted->initialize_condition);

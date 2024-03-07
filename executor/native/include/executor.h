@@ -7,9 +7,6 @@
 #include "executor_constants.h"
 #include "executor_task.h"
 
-struct io_uring;
-typedef struct io_uring_cqe executor_completion_event;
-
 #if defined(__cplusplus)
 extern "C"
 {
@@ -20,7 +17,7 @@ struct executor
     int64_t callback;
     struct executor_scheduler* scheduler;
     struct io_uring* ring;
-    executor_completion_event** completions;
+    struct io_uring_cqe** completions;
     struct executor_configuration configuration;
     int32_t descriptor;
     uint32_t id;

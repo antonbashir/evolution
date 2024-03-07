@@ -44,7 +44,6 @@ struct memory_input_buffer
     // FFI PUBLIC
     uint8_t* read_position;
     uint8_t* write_position;
-    // FFI PUBLIC
 
     // FFI PRIVATE
     struct ibuf buffer;
