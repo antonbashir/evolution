@@ -14,26 +14,18 @@ extern "C"
 
 #define NANOSECONDS_PER_SECOND 1000000000
 
-#define measure(name, runs, call)                                                                                                                                                                               \
-    do                                                                                                                                                                                                          \
-    {                                                                                                                                                                                                           \
-        struct timeval measure_start_time##__LINE__, measure_estimated_time##__LINE__;                                                                                                                          \
-        gettimeofday(&measure_start_time##__LINE__, NULL);                                                                                                                                                      \
-        for (int i = 0; i < runs; i++)                                                                                                                                                                          \
-        {                                                                                                                                                                                                       \
-            call;                                                                                                                                                                                               \
-        }                                                                                                                                                                                                       \
-        gettimeofday(&measure_estimated_time##__LINE__, NULL);                                                                                                                                                  \
-        int elapsed = (((measure_estimated_time##__LINE__.tv_sec - measure_start_time##__LINE__.tv_sec) * 1000000) + (measure_estimated_time##__LINE__.tv_usec - measure_start_time##__LINE__.tv_usec)) / runs; \
-        printf("%s time: %d micro seconds\n", name, elapsed);                                                                                                                                                   \
-    }                                                                                                                                                                                                           \
-    while (0);
-
 #define time_now()                                          \
     ({                                                      \
         struct timespec _timeout##__LINE__;                 \
         clock_gettime(CLOCK_REALTIME, &_timeout##__LINE__); \
         _timeout##__LINE__;                                 \
+    })
+
+#define time_now_monotonic()                                 \
+    ({                                                       \
+        struct timespec _timeout##__LINE__;                  \
+        clock_gettime(CLOCK_MONOTONIC, &_timeout##__LINE__); \
+        _timeout##__LINE__;                                  \
     })
 
 #define time_normalize(time)                                        \
@@ -88,6 +80,17 @@ extern "C"
         time_normalize(result);           \
     })
 
+#define time_sub(result, subtracting)              \
+    ({                                             \
+        result = time_normalize(result);           \
+        subtracting = time_normalize(subtracting); \
+                                                   \
+        result.tv_sec -= subtracting.tv_sec;       \
+        result.tv_nsec -= subtracting.tv_nsec;     \
+                                                   \
+        time_normalize(result);                    \
+    })
+
 #define timeout_seconds(seconds)                                                         \
     ({                                                                                   \
         struct timespec _timeout##__LINE__ = time_now();                                 \
@@ -108,6 +111,24 @@ extern "C"
         struct timespec _timeout_add##__LINE__ = time_from_milliseconds(milliseconds); \
         time_add(_timeout##__LINE__, _timeout_add##__LINE__);                          \
     })
+
+#define time_measure(name, runs, call)                                                                                     \
+    do                                                                                                                     \
+    {                                                                                                                      \
+        struct timespec measure_start_time##__LINE__, measure_estimated_time##__LINE__;                                    \
+        measure_start_time##__LINE__ = time_now_monotonic();                                                               \
+        for (int i = 0; i < runs; i++)                                                                                     \
+        {                                                                                                                  \
+            call;                                                                                                          \
+        }                                                                                                                  \
+        measure_estimated_time##__LINE__ = time_now_monotonic();                                                           \
+        time_normalize(measure_start_time##__LINE__);                                                                      \
+        time_normalize(measure_estimated_time##__LINE__);                                                                  \
+        struct timespec elapsed_time##__LINE__ = time_sub(measure_start_time##__LINE__, measure_estimated_time##__LINE__); \
+        long elapsed##__LINE__ = time_to_microseconds(elapsed_time##__LINE__);                                             \
+        printf("%s time: %d micro seconds\n", name, elapsed##__LINE__ / runs);                                             \
+    }                                                                                                                      \
+    while (0);
 
 #if defined(__cplusplus)
 }
