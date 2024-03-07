@@ -19,7 +19,7 @@ struct executor_dart;
 struct transport_configuration
 {
     struct memory_configuration memory_configuration;
-    struct executor_dart_configuration executor_configuration;
+    struct executor_configuration executor_configuration;
     uint64_t timeout_checker_period_millis;
     bool trace;
 };

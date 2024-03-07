@@ -17,7 +17,7 @@ class ExecutorModule {
   final _workerPorts = <RawReceivePort>[];
   final _workerDestroyer = ReceivePort();
 
-  late final Pointer<executor_dart_notifier> _notifier;
+  late final Pointer<executor_background_scheduler> _notifier;
 
   static void load({String? libraryPath}) {
     CoreModule.load();
@@ -34,8 +34,8 @@ class ExecutorModule {
   }
 
   void initialize({ExecutorNotifierConfiguration configuration = ExecutorDefaults.notifier}) {
-    _notifier = calloc<executor_dart_notifier>(sizeOf<executor_dart_notifier>());
-    final result = using((Arena arena) => executor_dart_notifier_initialize(_notifier, configuration.toNative(arena<executor_dart_notifier_configuration>())));
+    _notifier = calloc<executor_background_scheduler>(sizeOf<executor_background_scheduler>());
+    final result = using((Arena arena) => executor_background_scheduler_initialize(_notifier, configuration.toNative(arena<executor_background_scheduler_configuration>())));
     if (!result) {
       final error = _notifier.ref.initialization_error.cast<Utf8>().toDartString();
       calloc.free(_notifier);
@@ -48,7 +48,7 @@ class ExecutorModule {
     await _workerDestroyer.take(_workerClosers.length).toList();
     _workerDestroyer.close();
     _workerPorts.forEach((port) => port.close());
-    if (!executor_dart_notifier_shutdown(_notifier)) {
+    if (!executor_background_scheduler_shutdown(_notifier)) {
       final error = _notifier.ref.shutdown_error.cast<Utf8>().toDartString();
       calloc.free(_notifier);
       throw ExecutorException(error);

@@ -80,7 +80,7 @@ class ExecutorNotifierConfiguration {
   final Duration initializationTimeout;
   final Duration shutdownTimeout;
 
-  Pointer<executor_dart_notifier_configuration> toNative(Pointer<executor_dart_notifier_configuration> native) {
+  Pointer<executor_background_scheduler_configuration> toNative(Pointer<executor_background_scheduler_configuration> native) {
     native.ref.ring_flags = ringFlags;
     native.ref.ring_size = ringSize;
     native.ref.initialization_timeout_seconds = initializationTimeout.inSeconds;
@@ -88,7 +88,7 @@ class ExecutorNotifierConfiguration {
     return native;
   }
 
-  factory ExecutorNotifierConfiguration.fromNative(Pointer<executor_dart_notifier_configuration> native) => ExecutorNotifierConfiguration(
+  factory ExecutorNotifierConfiguration.fromNative(Pointer<executor_background_scheduler_configuration> native) => ExecutorNotifierConfiguration(
         ringFlags: native.ref.ring_flags,
         ringSize: native.ref.ring_size,
         initializationTimeout: Duration(seconds: native.ref.initialization_timeout_seconds),

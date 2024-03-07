@@ -28,7 +28,7 @@ ffigen:
   headers:
     entry-points:
       - "../native/include/executor_dart.h"
-      - "../native/executor_dart_notifier.h"
+      - "../native/executor_background_scheduler.h"
   globals:
     exclude:
       - "(.*)"

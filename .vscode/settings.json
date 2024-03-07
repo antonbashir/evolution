@@ -38,7 +38,7 @@
     "cstdint": "c",
     "core.h": "c",
     "modules.h": "c",
-    "executor_dart_notifier.h": "c",
+    "executor_background_scheduler.h": "c",
     "transport_server.h": "c",
     "transport_client.h": "c",
     "memory_configuration.h": "c",
@@ -72,6 +72,9 @@
     "memory_state.h": "c",
     "network.h": "c",
     "stdint.h": "c",
-    "mempool.h": "c"
+    "mempool.h": "c",
+    "poll.h": "c",
+    "executor_common.h": "c",
+    "scheduling.h": "c"
   },
 }

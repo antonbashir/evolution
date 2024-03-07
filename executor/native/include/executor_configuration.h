@@ -9,7 +9,7 @@
 extern "C"
 {
 #endif
-    struct executor_dart_configuration
+    struct executor_configuration
     {
         size_t quota_size;
         size_t preallocation_size;
@@ -21,20 +21,7 @@ extern "C"
         bool trace;
     };
 
-    struct executor_native_configuration
-    {
-        uint64_t completion_wait_timeout_millis;
-        size_t quota_size;
-        size_t preallocation_size;
-        size_t slab_size;
-        size_t static_buffers_capacity;
-        size_t static_buffer_size;
-        size_t ring_size;
-        int32_t ring_flags;
-        uint32_t completion_wait_count;
-    };
-
-    struct executor_dart_notifier_configuration
+    struct executor_background_scheduler_configuration
     {
         size_t ring_size;
         size_t ring_flags;

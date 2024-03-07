@@ -315,7 +315,7 @@ final class executor_native_configuration extends Struct {
   external int completion_wait_count;
 }
 
-final class executor_dart_notifier_configuration extends Struct {
+final class executor_background_scheduler_configuration extends Struct {
   @Size()
   external int ring_size;
 
