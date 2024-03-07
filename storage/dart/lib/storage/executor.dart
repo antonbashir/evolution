@@ -188,7 +188,7 @@ class StorageExecutor {
   Future<void> require(String module) => evaluate(LuaExpressions.require(module));
 
   @inline
-  (Uint8List, void Function()) _parseLuaEvaluate(Pointer<executor_message> message) {
+  (Uint8List, void Function()) _parseLuaEvaluate(Pointer<executor_task> message) {
     final buffer = message.outputPointer;
     final bufferSize = message.outputSize;
     final result = buffer.cast<Uint8>().asTypedList(message.outputSize);
@@ -197,7 +197,7 @@ class StorageExecutor {
   }
 
   @inline
-  (Uint8List, void Function()) _parseLuaCall(Pointer<executor_message> message) {
+  (Uint8List, void Function()) _parseLuaCall(Pointer<executor_task> message) {
     final buffer = message.outputPointer;
     final bufferSize = message.outputSize;
     final result = message.outputPointer.cast<Uint8>().asTypedList(message.outputSize);

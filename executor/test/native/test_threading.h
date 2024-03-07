@@ -2,7 +2,7 @@
 #define TEST_THREADING_H
 
 #include <stdbool.h>
-#include "executor_message.h"
+#include "executor_task.h"
 #include "test.h"
 
 typedef unsigned long int pthread_t;
@@ -24,7 +24,7 @@ extern "C"
         size_t received_messages_count;
 
         test_executor_native* test_executor;
-        struct executor_message** messages;
+        struct executor_task** messages;
 
         test_cond_t* initialize_condition;
         test_mutex_t* initialize_mutex;
@@ -44,13 +44,13 @@ extern "C"
     bool test_threading_initialize(int32_t thread_count, int32_t isolates_count, int32_t per_thread_messages_count);
     int* test_threading_executor_descriptors();
 
-    void test_threading_call_native(struct executor_message* message);
+    void test_threading_call_native(struct executor_task* message);
     int32_t test_threading_call_native_check();
 
     void test_threading_prepare_call_dart_bytes(int32_t* targets, int32_t count);
 
     int32_t test_threading_call_dart_check();
-    void test_threading_call_dart_callback(struct executor_message* message);
+    void test_threading_call_dart_callback(struct executor_task* message);
 
     void test_threading_destroy();
 

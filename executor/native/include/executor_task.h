@@ -1,5 +1,5 @@
-#ifndef EXECUTOR_MESSAGE_H
-#define EXECUTOR_MESSAGE_H
+#ifndef EXECUTOR_TASK_H
+#define EXECUTOR_TASK_H
 
 #include <asm-generic/int-ll64.h>
 #include <stddef.h>
@@ -10,7 +10,7 @@ extern "C"
 {
 #endif
 
-    struct executor_message
+    struct executor_task
     {
         uint64_t id;
         uint64_t source;

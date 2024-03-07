@@ -2,10 +2,10 @@
 #define EXECUTOR_H
 
 #include <common/common.h>
-#include <executor_configuration.h>
-#include <executor_message.h>
 #include <liburing.h>
+#include "executor_configuration.h"
 #include "executor_constants.h"
+#include "executor_task.h"
 
 struct io_uring;
 typedef struct io_uring_cqe executor_completion_event;
@@ -14,10 +14,11 @@ typedef struct io_uring_cqe executor_completion_event;
 extern "C"
 {
 #endif
-struct executor_dart
+
+struct executor
 {
     int64_t callback;
-    struct executor_background_scheduler* background_scheduler;
+    struct executor_scheduler* scheduler;
     struct io_uring* ring;
     executor_completion_event** completions;
     struct executor_configuration configuration;
@@ -26,21 +27,21 @@ struct executor_dart
     int8_t state;
 };
 
-int32_t executor_initialize(struct executor_dart* executor, struct executor_configuration* configuration, struct executor_background_scheduler* scheduler, uint32_t id);
+int32_t executor_initialize(struct executor* executor, struct executor_configuration* configuration, struct executor_scheduler* scheduler, uint32_t id);
 
-int8_t executor_register_background(struct executor_dart* executor, int64_t callback);
-int8_t executor_unregister_background(struct executor_dart* executor);
+int8_t executor_register_background(struct executor* executor, int64_t callback);
+int8_t executor_unregister_background(struct executor* executor);
 
-int32_t executor_peek(struct executor_dart* executor);
-void executor_submit(struct executor_dart* executor);
+int32_t executor_peek(struct executor* executor);
+void executor_submit(struct executor* executor);
 
-int8_t executor_awake_begin(struct executor_dart* executor);
-void executor_awake_complete(struct executor_dart* executor, uint32_t completions);
+int8_t executor_awake_begin(struct executor* executor);
+void executor_awake_complete(struct executor* executor, uint32_t completions);
 
-int8_t executor_call_native(struct executor_dart* executor, int32_t target_ring_fd, struct executor_message* message);
-int8_t executor_callback_to_native(struct executor_dart* executor, struct executor_message* message);
+int8_t executor_call_native(struct executor* executor, int32_t target_ring_fd, struct executor_task* message);
+int8_t executor_callback_to_native(struct executor* executor, struct executor_task* message);
 
-extern FORCEINLINE int8_t executor_call_dart(struct io_uring* ring, int32_t source_ring_fd, int32_t target_ring_fd, struct executor_message* message)
+extern FORCEINLINE int8_t executor_call_dart(struct io_uring* ring, int32_t source_ring_fd, int32_t target_ring_fd, struct executor_task* message)
 {
     struct io_uring_sqe* sqe = io_uring_get_sqe(ring);
     if (unlikely(sqe == NULL))
@@ -55,7 +56,7 @@ extern FORCEINLINE int8_t executor_call_dart(struct io_uring* ring, int32_t sour
     return 0;
 }
 
-extern FORCEINLINE int8_t executor_callback_to_dart(struct io_uring* ring, int32_t source_ring_fd, struct executor_message* message)
+extern FORCEINLINE int8_t executor_callback_to_dart(struct io_uring* ring, int32_t source_ring_fd, struct executor_task* message)
 {
     struct io_uring_sqe* sqe = io_uring_get_sqe(ring);
     if (unlikely(sqe == NULL))
@@ -71,7 +72,7 @@ extern FORCEINLINE int8_t executor_callback_to_dart(struct io_uring* ring, int32
     return 0;
 }
 
-void executor_destroy(struct executor_dart* executor);
+void executor_destroy(struct executor* executor);
 
 #if defined(__cplusplus)
 }

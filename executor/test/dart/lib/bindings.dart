@@ -21,8 +21,8 @@ external void test_executor_destroy(
   bool initialize_memory,
 );
 
-@ffi.Native<ffi.Pointer<executor.executor_message> Function()>(symbol: 'test_allocate_message', assetId: 'executor-bindings-test', isLeaf: true)
-external ffi.Pointer<executor.executor_message> test_allocate_message();
+@ffi.Native<ffi.Pointer<executor.executor_task> Function()>(symbol: 'test_allocate_message', assetId: 'executor-bindings-test', isLeaf: true)
+external ffi.Pointer<executor.executor_task> test_allocate_message();
 
 @ffi.Native<ffi.Pointer<ffi.Double> Function()>(symbol: 'test_allocate_double', assetId: 'executor-bindings-test', isLeaf: true)
 external ffi.Pointer<ffi.Double> test_allocate_double();
@@ -35,9 +35,9 @@ external bool test_call_native_check(
   ffi.Pointer<test_executor_native> executor,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_message>)>(symbol: 'test_call_native', assetId: 'executor-bindings-test', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_task>)>(symbol: 'test_call_native', assetId: 'executor-bindings-test', isLeaf: true)
 external void test_call_native(
-  ffi.Pointer<executor.executor_message> message,
+  ffi.Pointer<executor.executor_task> message,
 );
 
 @ffi.Native<ffi.Void Function(ffi.Pointer<test_executor_native>, ffi.Int32, ffi.UintPtr)>(symbol: 'test_call_dart_null', assetId: 'executor-bindings-test', isLeaf: true)
@@ -71,14 +71,14 @@ external void test_call_dart_double(
   double value,
 );
 
-@ffi.Native<ffi.Pointer<executor.executor_message> Function(ffi.Pointer<test_executor_native>)>(symbol: 'test_call_dart_check', assetId: 'executor-bindings-test', isLeaf: true)
-external ffi.Pointer<executor.executor_message> test_call_dart_check(
+@ffi.Native<ffi.Pointer<executor.executor_task> Function(ffi.Pointer<test_executor_native>)>(symbol: 'test_call_dart_check', assetId: 'executor-bindings-test', isLeaf: true)
+external ffi.Pointer<executor.executor_task> test_call_dart_check(
   ffi.Pointer<test_executor_native> executor,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_message>)>(symbol: 'test_call_dart_callback', assetId: 'executor-bindings-test', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_task>)>(symbol: 'test_call_dart_callback', assetId: 'executor-bindings-test', isLeaf: true)
 external void test_call_dart_callback(
-  ffi.Pointer<executor.executor_message> message,
+  ffi.Pointer<executor.executor_task> message,
 );
 
 @ffi.Native<ffi.IntPtr Function()>(symbol: 'test_call_native_address_lookup', assetId: 'executor-bindings-test', isLeaf: true)
@@ -94,9 +94,9 @@ external bool test_threading_initialize(
 @ffi.Native<ffi.Pointer<ffi.Int> Function()>(symbol: 'test_threading_executor_descriptors', assetId: 'executor-bindings-test', isLeaf: true)
 external ffi.Pointer<ffi.Int> test_threading_executor_descriptors();
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_message>)>(symbol: 'test_threading_call_native', assetId: 'executor-bindings-test', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_task>)>(symbol: 'test_threading_call_native', assetId: 'executor-bindings-test', isLeaf: true)
 external void test_threading_call_native(
-  ffi.Pointer<executor.executor_message> message,
+  ffi.Pointer<executor.executor_task> message,
 );
 
 @ffi.Native<ffi.Int Function()>(symbol: 'test_threading_call_native_check', assetId: 'executor-bindings-test', isLeaf: true)
@@ -111,9 +111,9 @@ external void test_threading_prepare_call_dart_bytes(
 @ffi.Native<ffi.Int Function()>(symbol: 'test_threading_call_dart_check', assetId: 'executor-bindings-test', isLeaf: true)
 external int test_threading_call_dart_check();
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_message>)>(symbol: 'test_threading_call_dart_callback', assetId: 'executor-bindings-test', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_task>)>(symbol: 'test_threading_call_dart_callback', assetId: 'executor-bindings-test', isLeaf: true)
 external void test_threading_call_dart_callback(
-  ffi.Pointer<executor.executor_message> message,
+  ffi.Pointer<executor.executor_task> message,
 );
 
 @ffi.Native<ffi.Void Function()>(symbol: 'test_threading_destroy', assetId: 'executor-bindings-test', isLeaf: true)
@@ -178,7 +178,7 @@ final class test_thread extends ffi.Struct {
 
   external ffi.Pointer<test_executor_native> test_executor;
 
-  external ffi.Pointer<ffi.Pointer<executor.executor_message>> messages;
+  external ffi.Pointer<ffi.Pointer<executor.executor_task>> messages;
 
   external ffi.Pointer<test_cond_t> initialize_condition;
 

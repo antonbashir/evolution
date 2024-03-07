@@ -1,5 +1,5 @@
-#ifndef MEMORY_BINDINGS_MEMORY_H
-#define MEMORY_BINDINGS_MEMORY_H
+#ifndef MEMORY_STATE_MEMORY_STATE_H
+#define MEMORY_STATE_MEMORY_STATE_H
 
 #include <memory_configuration.h>
 #include <system/types.h>

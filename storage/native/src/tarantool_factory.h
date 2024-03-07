@@ -1,7 +1,7 @@
 #ifndef TARANTOOL_FACTORY_H
 #define TARANTOOL_FACTORY_H
 
-#include "executor_message.h"
+#include "executor_task.h"
 
 typedef struct mempool tarantool_factory_mempool;
 typedef struct small_alloc tarantool_factory_small_alloc;

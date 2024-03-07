@@ -39,10 +39,10 @@ ffigen:
       - "_(.*)"
   type-map:
     structs:
-      "executor_message":
+      "executor_task":
         lib: "executor"
-        c-type: "executor_message"
-        dart-type: "executor_message"
+        c-type: "executor_task"
+        dart-type: "executor_task"
   library-imports:
     executor: package:executor/executor.dart
   headers:

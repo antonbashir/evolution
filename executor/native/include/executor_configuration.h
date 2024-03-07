@@ -21,7 +21,7 @@ extern "C"
         bool trace;
     };
 
-    struct executor_background_scheduler_configuration
+    struct executor_scheduler_configuration
     {
         size_t ring_size;
         size_t ring_flags;

@@ -23,7 +23,7 @@ class ExecutorConsumerRegistry {
   }
 
   @inline
-  void call(Pointer<executor_message> message) => _consumers[message.ref.owner].call(message);
+  void call(Pointer<executor_task> message) => _consumers[message.ref.owner].call(message);
 }
 
 class ExecutorProducerRegistry {
@@ -41,5 +41,5 @@ class ExecutorProducerRegistry {
   }
 
   @inline
-  void callback(Pointer<executor_message> message) => _producers[message.ref.owner].callback(message);
+  void callback(Pointer<executor_task> message) => _producers[message.ref.owner].callback(message);
 }

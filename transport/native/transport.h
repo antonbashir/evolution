@@ -14,7 +14,7 @@ extern "C"
 #endif
 
 struct small_map_events_t;
-struct executor_dart;
+struct executor;
 
 struct transport_configuration
 {
@@ -28,7 +28,7 @@ struct transport
 {
     uint8_t id;
     struct iovec* buffers;
-    struct executor_dart* transport_executor;
+    struct executor* transport_executor;
     struct transport_configuration configuration;
     struct msghdr* inet_used_messages;
     struct msghdr* unix_used_messages;
@@ -39,7 +39,7 @@ int32_t transport_initialize(struct transport* transport,
                              struct transport_configuration* configuration,
                              uint8_t id);
 
-int32_t transport_setup(struct transport* transport, struct executor_dart* executor);
+int32_t transport_setup(struct transport* transport, struct executor* executor);
 
 void transport_write(struct transport* transport,
                      uint32_t fd,

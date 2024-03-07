@@ -6,7 +6,7 @@ import 'package:ffi/ffi.dart';
 
 import 'bindings.dart';
 
-extension ExecutorMessageExtensions on Pointer<executor_message> {
+extension ExecutorMessageExtensions on Pointer<executor_task> {
   @inline
   int get id => ref.id;
 
@@ -104,4 +104,4 @@ extension ExecutorMessageExtensions on Pointer<executor_message> {
   T parseOutputObject<T, O extends Struct>(T Function(Pointer<O> object) mapper) => mapper(getOutputObject<O>());
 }
 
-final executorMessageSize = sizeOf<executor_message>();
+final executorMessageSize = sizeOf<executor_task>();

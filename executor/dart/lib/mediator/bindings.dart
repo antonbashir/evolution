@@ -4,12 +4,12 @@
 // ignore_for_file: type=lint, unused_field
 import 'dart:ffi' as ffi;
 
-@ffi.Native<ffi.Int32 Function(ffi.Pointer<executor_dart>, ffi.Pointer<executor_dart_configuration>, ffi.Pointer<executor_background_scheduler>, ffi.Uint32)>(
+@ffi.Native<ffi.Int32 Function(ffi.Pointer<executor_dart>, ffi.Pointer<executor_dart_configuration>, ffi.Pointer<executor_scheduler>, ffi.Uint32)>(
     symbol: 'executor_dart_initialize', assetId: 'executor-bindings', isLeaf: true)
 external int executor_dart_initialize(
   ffi.Pointer<executor_dart> executor,
   ffi.Pointer<executor_dart_configuration> configuration,
-  ffi.Pointer<executor_background_scheduler> notifier,
+  ffi.Pointer<executor_scheduler> notifier,
   int id,
 );
 
@@ -45,17 +45,17 @@ external void executor_dart_sleep(
   int completions,
 );
 
-@ffi.Native<ffi.Int8 Function(ffi.Pointer<executor_dart>, ffi.Int32, ffi.Pointer<executor_message>)>(symbol: 'executor_dart_call_native', assetId: 'executor-bindings', isLeaf: true)
+@ffi.Native<ffi.Int8 Function(ffi.Pointer<executor_dart>, ffi.Int32, ffi.Pointer<executor_task>)>(symbol: 'executor_dart_call_native', assetId: 'executor-bindings', isLeaf: true)
 external int executor_dart_call_native(
   ffi.Pointer<executor_dart> executor,
   int target_ring_fd,
-  ffi.Pointer<executor_message> message,
+  ffi.Pointer<executor_task> message,
 );
 
-@ffi.Native<ffi.Int8 Function(ffi.Pointer<executor_dart>, ffi.Pointer<executor_message>)>(symbol: 'executor_dart_callback_to_native', assetId: 'executor-bindings', isLeaf: true)
+@ffi.Native<ffi.Int8 Function(ffi.Pointer<executor_dart>, ffi.Pointer<executor_task>)>(symbol: 'executor_dart_callback_to_native', assetId: 'executor-bindings', isLeaf: true)
 external int executor_dart_callback_to_native(
   ffi.Pointer<executor_dart> executor,
-  ffi.Pointer<executor_message> message,
+  ffi.Pointer<executor_task> message,
 );
 
 @ffi.Native<ffi.Void Function(ffi.Pointer<executor_dart>)>(symbol: 'executor_dart_destroy', assetId: 'executor-bindings', isLeaf: true)
@@ -63,16 +63,15 @@ external void executor_dart_destroy(
   ffi.Pointer<executor_dart> executor,
 );
 
-@ffi.Native<ffi.Bool Function(ffi.Pointer<executor_background_scheduler>, ffi.Pointer<executor_background_scheduler_configuration>)>(
-    symbol: 'executor_background_scheduler_initialize', assetId: 'executor-bindings', isLeaf: true)
-external bool executor_background_scheduler_initialize(
-  ffi.Pointer<executor_background_scheduler> notifier,
-  ffi.Pointer<executor_background_scheduler_configuration> configuration,
+@ffi.Native<ffi.Bool Function(ffi.Pointer<executor_scheduler>, ffi.Pointer<executor_scheduler_configuration>)>(symbol: 'executor_scheduler_initialize', assetId: 'executor-bindings', isLeaf: true)
+external bool executor_scheduler_initialize(
+  ffi.Pointer<executor_scheduler> notifier,
+  ffi.Pointer<executor_scheduler_configuration> configuration,
 );
 
-@ffi.Native<ffi.Bool Function(ffi.Pointer<executor_background_scheduler>)>(symbol: 'executor_background_scheduler_shutdown', assetId: 'executor-bindings', isLeaf: true)
-external bool executor_background_scheduler_shutdown(
-  ffi.Pointer<executor_background_scheduler> notifier,
+@ffi.Native<ffi.Bool Function(ffi.Pointer<executor_scheduler>)>(symbol: 'executor_scheduler_shutdown', assetId: 'executor-bindings', isLeaf: true)
+external bool executor_scheduler_shutdown(
+  ffi.Pointer<executor_scheduler> notifier,
 );
 
 final class executor_dart_configuration extends ffi.Struct {
@@ -130,7 +129,7 @@ final class executor_native_configuration extends ffi.Struct {
   external int completion_wait_count;
 }
 
-final class executor_background_scheduler_configuration extends ffi.Struct {
+final class executor_scheduler_configuration extends ffi.Struct {
   @ffi.Size()
   external int ring_size;
 
@@ -147,7 +146,7 @@ final class executor_background_scheduler_configuration extends ffi.Struct {
   external bool trace;
 }
 
-final class executor_message extends ffi.Struct {
+final class executor_task extends ffi.Struct {
   @ffi.Uint64()
   external int id;
 
@@ -199,7 +198,7 @@ final class executor_dart extends ffi.Struct {
   @ffi.Int64()
   external int callback;
 
-  external ffi.Pointer<executor_background_scheduler> notifier;
+  external ffi.Pointer<executor_scheduler> notifier;
 
   external ffi.Pointer<io_uring> ring;
 
@@ -217,14 +216,14 @@ final class executor_dart extends ffi.Struct {
   external int state;
 }
 
-final class executor_background_scheduler extends ffi.Struct {
-  external executor_background_scheduler_configuration configuration;
+final class executor_scheduler extends ffi.Struct {
+  external executor_scheduler_configuration configuration;
 
   external ffi.Pointer<ffi.Char> initialization_error;
 
   external ffi.Pointer<ffi.Char> shutdown_error;
 
-  external ffi.Pointer<executor_background_scheduler_thread> thread;
+  external ffi.Pointer<executor_scheduler_thread> thread;
 
   external ffi.Pointer<io_uring> ring;
 
@@ -238,6 +237,6 @@ final class executor_background_scheduler extends ffi.Struct {
   external int descriptor;
 }
 
-final class executor_background_scheduler_thread extends ffi.Opaque {}
+final class executor_scheduler_thread extends ffi.Opaque {}
 
 typedef executor_dart_completion_event = io_uring_cqe;

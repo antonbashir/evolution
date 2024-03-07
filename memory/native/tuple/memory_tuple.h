@@ -1,5 +1,5 @@
-#ifndef MEMORY_BINDINGS_TUPLE_DART_H
-#define MEMORY_BINDINGS_TUPLE_DART_H
+#ifndef MEMORY_TUPLE_MEMORY_TUPLE_H
+#define MEMORY_TUPLE_MEMORY_TUPLE_H
 
 #include <system/types.h>
 

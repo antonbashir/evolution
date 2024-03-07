@@ -17,7 +17,7 @@ class StorageIterator {
   const StorageIterator(this._iterator, this._descriptor, this._factory, this._producer);
 
   @inline
-  Pointer<tarantool_tuple> _completeNextSingle(Pointer<executor_message> message) {
+  Pointer<tarantool_tuple> _completeNextSingle(Pointer<executor_task> message) {
     final tuple = Pointer<tarantool_tuple>.fromAddress(message.outputInt);
     _factory.releaseMessage(message);
     return tuple;
@@ -32,7 +32,7 @@ class StorageIterator {
   }
 
   @inline
-  Pointer<tarantool_tuple_port> _completeNextMany(Pointer<executor_message> message) {
+  Pointer<tarantool_tuple_port> _completeNextMany(Pointer<executor_task> message) {
     final tuple = Pointer<tarantool_tuple_port>.fromAddress(message.outputInt);
     _factory.releaseMessage(message);
     return tuple;
@@ -47,7 +47,7 @@ class StorageIterator {
   }
 
   @inline
-  void _completeDestroy(Pointer<executor_message> message) => _factory.releaseMessage(message);
+  void _completeDestroy(Pointer<executor_task> message) => _factory.releaseMessage(message);
 
   @inline
   Future<void> destroy() {

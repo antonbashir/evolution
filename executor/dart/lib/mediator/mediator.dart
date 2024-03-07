@@ -113,12 +113,12 @@ class Executor {
       final result = completion.ref.res;
       if (data > 0) {
         if (result & executorDartCall != 0) {
-          Pointer<executor_message> message = Pointer.fromAddress(data);
+          Pointer<executor_task> message = Pointer.fromAddress(data);
           _consumers.call(message);
           continue;
         }
         if (result & executorDartCallback != 0) {
-          Pointer<executor_message> message = Pointer.fromAddress(data);
+          Pointer<executor_task> message = Pointer.fromAddress(data);
           _producers.callback(message);
           continue;
         }

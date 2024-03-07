@@ -16,18 +16,18 @@ class ExecutorProducerExecutor implements ExecutorProducerRegistrat {
 
   ExecutorProducerExecutor(this._id, this._pointer);
 
-  ExecutorMethod register(Pointer<NativeFunction<Void Function(Pointer<executor_message>)>> pointer) {
+  ExecutorMethod register(Pointer<NativeFunction<Void Function(Pointer<executor_task>)>> pointer) {
     final executor = ExecutorMethodExecutor(pointer.address, _id, _pointer);
     _methods[pointer.address] = executor;
     return executor;
   }
 
   @inline
-  void callback(Pointer<executor_message> message) => _methods[message.ref.method]?.callback(message);
+  void callback(Pointer<executor_task> message) => _methods[message.ref.method]?.callback(message);
 }
 
 class ExecutorMethodExecutor implements ExecutorMethod {
-  final Map<int, Completer<Pointer<executor_message>>> _calls = {};
+  final Map<int, Completer<Pointer<executor_task>>> _calls = {};
   final int _methodId;
   final int _executorId;
   final Pointer<executor_dart> _pointer;
@@ -39,8 +39,8 @@ class ExecutorMethodExecutor implements ExecutorMethod {
   );
 
   @override
-  Future<Pointer<executor_message>> call(int target, Pointer<executor_message> message) {
-    final completer = Completer<Pointer<executor_message>>();
+  Future<Pointer<executor_task>> call(int target, Pointer<executor_task> message) {
+    final completer = Completer<Pointer<executor_task>>();
     message.ref.id = message.address;
     message.ref.owner = _executorId;
     message.ref.method = _methodId;
@@ -53,10 +53,10 @@ class ExecutorMethodExecutor implements ExecutorMethod {
   }
 
   @inline
-  void callback(Pointer<executor_message> message) => _calls[message.ref.id]?.complete(message);
+  void callback(Pointer<executor_task> message) => _calls[message.ref.id]?.complete(message);
 
   @inline
-  Pointer<executor_message> _onComplete(Pointer<executor_message> message) {
+  Pointer<executor_task> _onComplete(Pointer<executor_task> message) {
     _calls.remove(message.address);
     return message;
   }

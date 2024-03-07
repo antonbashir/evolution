@@ -1,4 +1,4 @@
-#include "executor_background_scheduler.h"
+#include "executor_scheduler.h"
 #include <common/common.h>
 #include <common/errors.h>
 #include <common/modules.h>
@@ -12,7 +12,7 @@
 #include <system/threading.h>
 #include <system/time.h>
 
-static FORCEINLINE struct io_uring_sqe* executor_background_scheduler_provide_sqe(struct io_uring* ring)
+static FORCEINLINE struct io_uring_sqe* executor_scheduler_provide_sqe(struct io_uring* ring)
 {
     struct io_uring_sqe* sqe = io_uring_get_sqe(ring);
     while (unlikely(sqe == NULL))
@@ -23,9 +23,9 @@ static FORCEINLINE struct io_uring_sqe* executor_background_scheduler_provide_sq
     return sqe;
 };
 
-static void* executor_background_scheduler_listen(void* input)
+static void* executor_scheduler_listen(void* input)
 {
-    struct executor_background_scheduler* scheduler = (struct executor_background_scheduler*)input;
+    struct executor_scheduler* scheduler = (struct executor_scheduler*)input;
     int32_t error;
     if (error = pthread_mutex_lock(&scheduler->thread.initialization_mutex))
     {
@@ -57,7 +57,7 @@ static void* executor_background_scheduler_listen(void* input)
         scheduler->initialization_error = strerror(error);
         return NULL;
     }
-    uintptr_t executors[EXECUTOR_BACKGROUND_SCHEDULER_LIMIT];
+    uintptr_t executors[executor_scheduler_LIMIT];
     struct io_uring_cqe* cqe;
     unsigned head;
     unsigned count = 0;
@@ -99,7 +99,7 @@ static void* executor_background_scheduler_listen(void* input)
 
             if (cqe->res & POLLIN)
             {
-                struct executor_dart* executor = (struct executor_dart*)cqe->user_data;
+                struct executor* executor = (struct executor*)cqe->user_data;
                 if (likely(executors[executor->id]))
                 {
                     bool result = Dart_PostInteger(executor->callback, executor->id);
@@ -111,34 +111,34 @@ static void* executor_background_scheduler_listen(void* input)
                 continue;
             }
 
-            if (cqe->res & EXECUTOR_BACKGROUND_SCHEDULER_POLL)
+            if (cqe->res & executor_scheduler_POLL)
             {
-                struct executor_dart* executor = (struct executor_dart*)cqe->user_data;
+                struct executor* executor = (struct executor*)cqe->user_data;
                 if (likely(executors[executor->id]))
                 {
-                    struct io_uring_sqe* sqe = executor_background_scheduler_provide_sqe(ring);
+                    struct io_uring_sqe* sqe = executor_scheduler_provide_sqe(ring);
                     io_uring_prep_poll_add(sqe, executor->descriptor, POLLIN);
                     io_uring_sqe_set_data(sqe, executor);
                 }
                 continue;
             }
 
-            if (cqe->res & EXECUTOR_BACKGROUND_SCHEDULER_REGISTER)
+            if (cqe->res & executor_scheduler_REGISTER)
             {
-                struct executor_dart* executor = (struct executor_dart*)cqe->user_data;
-                struct io_uring_sqe* sqe = executor_background_scheduler_provide_sqe(ring);
+                struct executor* executor = (struct executor*)cqe->user_data;
+                struct io_uring_sqe* sqe = executor_scheduler_provide_sqe(ring);
                 io_uring_prep_poll_add(sqe, executor->descriptor, POLLIN);
                 io_uring_sqe_set_data(sqe, executor);
                 executors[executor->id] = (uintptr_t)executor;
                 continue;
             }
 
-            if (cqe->res & EXECUTOR_BACKGROUND_SCHEDULER_UNREGISTER)
+            if (cqe->res & executor_scheduler_UNREGISTER)
             {
-                struct executor_dart* executor = (struct executor_dart*)executors[cqe->user_data];
+                struct executor* executor = (struct executor*)executors[cqe->user_data];
                 if (likely(executor))
                 {
-                    struct io_uring_sqe* sqe = executor_background_scheduler_provide_sqe(ring);
+                    struct io_uring_sqe* sqe = executor_scheduler_provide_sqe(ring);
                     io_uring_prep_poll_remove(sqe, (uintptr_t)executor);
                     sqe->flags |= IOSQE_CQE_SKIP_SUCCESS;
                     executors[cqe->user_data] = 0;
@@ -151,12 +151,12 @@ static void* executor_background_scheduler_listen(void* input)
     unreachable();
 }
 
-bool executor_background_scheduler_initialize(struct executor_background_scheduler* scheduler, struct executor_background_scheduler_configuration* configuration)
+bool executor_scheduler_initialize(struct executor_scheduler* scheduler, struct executor_scheduler_configuration* configuration)
 {
     scheduler->configuration = *configuration;
     struct timespec timeout = timeout_seconds(configuration->initialization_timeout_seconds);
     int32_t error;
-    if (error = pthread_create(&scheduler->thread.main_thread_id, NULL, executor_background_scheduler_listen, scheduler))
+    if (error = pthread_create(&scheduler->thread.main_thread_id, NULL, executor_scheduler_listen, scheduler))
     {
         scheduler->initialization_error = strerror(error);
         return false;
@@ -193,7 +193,7 @@ bool executor_background_scheduler_initialize(struct executor_background_schedul
     return true;
 }
 
-bool executor_background_scheduler_shutdown(struct executor_background_scheduler* scheduler)
+bool executor_scheduler_shutdown(struct executor_scheduler* scheduler)
 {
     if (!scheduler->initialized)
     {
@@ -202,7 +202,7 @@ bool executor_background_scheduler_shutdown(struct executor_background_scheduler
     if (scheduler->active)
     {
         struct io_uring* ring = &scheduler->ring;
-        struct io_uring_sqe* sqe = executor_background_scheduler_provide_sqe(ring);
+        struct io_uring_sqe* sqe = executor_scheduler_provide_sqe(ring);
         scheduler->active = false;
         io_uring_prep_nop(sqe);
         io_uring_submit(ring);

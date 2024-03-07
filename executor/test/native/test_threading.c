@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "executor_message.h"
+#include "executor_task.h"
 #include "executor_native.h"
 #include "memory_module.h"
 #include "memory_small_data.h"
@@ -80,13 +80,13 @@ bool test_threading_initialize(int32_t thread_count, int32_t isolates_count, int
         memset(thread, 0, sizeof(struct test_thread));
         thread->whole_messages_count = per_thread_messages_count;
         thread->received_messages_count = 0;
-        thread->messages = malloc(per_thread_messages_count * sizeof(struct executor_message*));
+        thread->messages = malloc(per_thread_messages_count * sizeof(struct executor_task*));
         thread->initialize_mutex = malloc(sizeof(pthread_mutex_t));
         thread->thread_memory = calloc(1, sizeof(struct memory_state));
         thread->thread_memory_pool = calloc(1, sizeof(struct memory_pool));
         thread->thread_small_data = calloc(1, sizeof(struct memory_small_data));
         memory_create(thread->thread_memory, 1 * 1024 * 1024, 64 * 1024, 64 * 1024);
-        memory_pool_create(thread->thread_memory_pool, thread->thread_memory, sizeof(struct executor_message));
+        memory_pool_create(thread->thread_memory_pool, thread->thread_memory, sizeof(struct executor_task));
         memory_small_data_create(thread->thread_small_data, thread->thread_memory);
         pthread_mutex_init((pthread_mutex_t*)thread->initialize_mutex, NULL);
         thread->initialize_condition = malloc(sizeof(pthread_cond_t));
@@ -130,7 +130,7 @@ int32_t test_threading_call_dart_check()
     return messages;
 }
 
-void test_threading_call_native(struct executor_message* message)
+void test_threading_call_native(struct executor_task* message)
 {
     pthread_mutex_lock((pthread_mutex_t*)threads.global_working_mutex);
     struct test_thread* thread = test_threading_thread_by_fd(message->target);
@@ -154,7 +154,7 @@ void test_threading_prepare_call_dart_bytes(int32_t* targets, int32_t target_cou
         {
             for (int32_t message_id = 0; message_id < thread->whole_messages_count / target_count; message_id++)
             {
-                struct executor_message* message = memory_pool_allocate(thread->thread_memory_pool);
+                struct executor_task* message = memory_pool_allocate(thread->thread_memory_pool);
                 message->id = message_id;
                 message->input = (void*)(uintptr_t)memory_small_data_allocate(thread->thread_small_data, 3);
                 ((char*)message->input)[0] = 0x1;
@@ -171,7 +171,7 @@ void test_threading_prepare_call_dart_bytes(int32_t* targets, int32_t target_cou
     pthread_mutex_unlock((pthread_mutex_t*)threads.global_working_mutex);
 }
 
-void test_threading_call_dart_callback(struct executor_message* message)
+void test_threading_call_dart_callback(struct executor_task* message)
 {
     pthread_mutex_lock((pthread_mutex_t*)threads.global_working_mutex);
     struct test_thread* thread = test_threading_thread_by_fd(message->target);

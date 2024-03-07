@@ -15,184 +15,184 @@ external void tarantool_destroy_box(
   ffi.Pointer<tarantool_box> box,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_message>)>(symbol: 'tarantool_evaluate', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_task>)>(symbol: 'tarantool_evaluate', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_evaluate(
-  ffi.Pointer<executor.executor_message> message,
+  ffi.Pointer<executor.executor_task> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_message>)>(symbol: 'tarantool_call', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_task>)>(symbol: 'tarantool_call', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_call(
-  ffi.Pointer<executor.executor_message> message,
+  ffi.Pointer<executor.executor_task> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_message>)>(symbol: 'tarantool_space_iterator', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_task>)>(symbol: 'tarantool_space_iterator', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_space_iterator(
-  ffi.Pointer<executor.executor_message> message,
+  ffi.Pointer<executor.executor_task> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_message>)>(symbol: 'tarantool_space_count', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_task>)>(symbol: 'tarantool_space_count', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_space_count(
-  ffi.Pointer<executor.executor_message> message,
+  ffi.Pointer<executor.executor_task> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_message>)>(symbol: 'tarantool_space_length', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_task>)>(symbol: 'tarantool_space_length', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_space_length(
-  ffi.Pointer<executor.executor_message> message,
+  ffi.Pointer<executor.executor_task> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_message>)>(symbol: 'tarantool_space_truncate', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_task>)>(symbol: 'tarantool_space_truncate', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_space_truncate(
-  ffi.Pointer<executor.executor_message> message,
+  ffi.Pointer<executor.executor_task> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_message>)>(symbol: 'tarantool_space_put_single', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_task>)>(symbol: 'tarantool_space_put_single', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_space_put_single(
-  ffi.Pointer<executor.executor_message> message,
+  ffi.Pointer<executor.executor_task> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_message>)>(symbol: 'tarantool_space_insert_single', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_task>)>(symbol: 'tarantool_space_insert_single', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_space_insert_single(
-  ffi.Pointer<executor.executor_message> message,
+  ffi.Pointer<executor.executor_task> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_message>)>(symbol: 'tarantool_space_update_single', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_task>)>(symbol: 'tarantool_space_update_single', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_space_update_single(
-  ffi.Pointer<executor.executor_message> message,
+  ffi.Pointer<executor.executor_task> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_message>)>(symbol: 'tarantool_space_delete_single', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_task>)>(symbol: 'tarantool_space_delete_single', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_space_delete_single(
-  ffi.Pointer<executor.executor_message> message,
+  ffi.Pointer<executor.executor_task> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_message>)>(symbol: 'tarantool_space_put_many', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_task>)>(symbol: 'tarantool_space_put_many', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_space_put_many(
-  ffi.Pointer<executor.executor_message> message,
+  ffi.Pointer<executor.executor_task> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_message>)>(symbol: 'tarantool_space_insert_many', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_task>)>(symbol: 'tarantool_space_insert_many', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_space_insert_many(
-  ffi.Pointer<executor.executor_message> message,
+  ffi.Pointer<executor.executor_task> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_message>)>(symbol: 'tarantool_space_update_many', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_task>)>(symbol: 'tarantool_space_update_many', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_space_update_many(
-  ffi.Pointer<executor.executor_message> message,
+  ffi.Pointer<executor.executor_task> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_message>)>(symbol: 'tarantool_space_delete_many', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_task>)>(symbol: 'tarantool_space_delete_many', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_space_delete_many(
-  ffi.Pointer<executor.executor_message> message,
+  ffi.Pointer<executor.executor_task> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_message>)>(symbol: 'tarantool_space_upsert', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_task>)>(symbol: 'tarantool_space_upsert', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_space_upsert(
-  ffi.Pointer<executor.executor_message> message,
+  ffi.Pointer<executor.executor_task> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_message>)>(symbol: 'tarantool_space_get', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_task>)>(symbol: 'tarantool_space_get', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_space_get(
-  ffi.Pointer<executor.executor_message> message,
+  ffi.Pointer<executor.executor_task> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_message>)>(symbol: 'tarantool_space_min', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_task>)>(symbol: 'tarantool_space_min', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_space_min(
-  ffi.Pointer<executor.executor_message> message,
+  ffi.Pointer<executor.executor_task> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_message>)>(symbol: 'tarantool_space_max', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_task>)>(symbol: 'tarantool_space_max', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_space_max(
-  ffi.Pointer<executor.executor_message> message,
+  ffi.Pointer<executor.executor_task> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_message>)>(symbol: 'tarantool_space_select', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_task>)>(symbol: 'tarantool_space_select', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_space_select(
-  ffi.Pointer<executor.executor_message> message,
+  ffi.Pointer<executor.executor_task> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_message>)>(symbol: 'tarantool_space_id_by_name', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_task>)>(symbol: 'tarantool_space_id_by_name', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_space_id_by_name(
-  ffi.Pointer<executor.executor_message> message,
+  ffi.Pointer<executor.executor_task> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_message>)>(symbol: 'tarantool_index_iterator', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_task>)>(symbol: 'tarantool_index_iterator', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_index_iterator(
-  ffi.Pointer<executor.executor_message> message,
+  ffi.Pointer<executor.executor_task> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_message>)>(symbol: 'tarantool_index_count', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_task>)>(symbol: 'tarantool_index_count', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_index_count(
-  ffi.Pointer<executor.executor_message> message,
+  ffi.Pointer<executor.executor_task> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_message>)>(symbol: 'tarantool_index_length', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_task>)>(symbol: 'tarantool_index_length', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_index_length(
-  ffi.Pointer<executor.executor_message> message,
+  ffi.Pointer<executor.executor_task> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_message>)>(symbol: 'tarantool_index_id_by_name', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_task>)>(symbol: 'tarantool_index_id_by_name', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_index_id_by_name(
-  ffi.Pointer<executor.executor_message> message,
+  ffi.Pointer<executor.executor_task> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_message>)>(symbol: 'tarantool_index_get', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_task>)>(symbol: 'tarantool_index_get', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_index_get(
-  ffi.Pointer<executor.executor_message> message,
+  ffi.Pointer<executor.executor_task> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_message>)>(symbol: 'tarantool_index_min', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_task>)>(symbol: 'tarantool_index_min', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_index_min(
-  ffi.Pointer<executor.executor_message> message,
+  ffi.Pointer<executor.executor_task> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_message>)>(symbol: 'tarantool_index_max', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_task>)>(symbol: 'tarantool_index_max', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_index_max(
-  ffi.Pointer<executor.executor_message> message,
+  ffi.Pointer<executor.executor_task> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_message>)>(symbol: 'tarantool_index_select', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_task>)>(symbol: 'tarantool_index_select', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_index_select(
-  ffi.Pointer<executor.executor_message> message,
+  ffi.Pointer<executor.executor_task> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_message>)>(symbol: 'tarantool_index_update_single', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_task>)>(symbol: 'tarantool_index_update_single', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_index_update_single(
-  ffi.Pointer<executor.executor_message> message,
+  ffi.Pointer<executor.executor_task> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_message>)>(symbol: 'tarantool_index_update_many', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_task>)>(symbol: 'tarantool_index_update_many', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_index_update_many(
-  ffi.Pointer<executor.executor_message> message,
+  ffi.Pointer<executor.executor_task> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_message>)>(symbol: 'tarantool_iterator_next_single', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_task>)>(symbol: 'tarantool_iterator_next_single', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_iterator_next_single(
-  ffi.Pointer<executor.executor_message> message,
+  ffi.Pointer<executor.executor_task> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_message>)>(symbol: 'tarantool_iterator_next_many', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_task>)>(symbol: 'tarantool_iterator_next_many', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_iterator_next_many(
-  ffi.Pointer<executor.executor_message> message,
+  ffi.Pointer<executor.executor_task> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_message>)>(symbol: 'tarantool_iterator_destroy', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_task>)>(symbol: 'tarantool_iterator_destroy', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_iterator_destroy(
-  ffi.Pointer<executor.executor_message> message,
+  ffi.Pointer<executor.executor_task> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_message>)>(symbol: 'tarantool_free_output_buffer', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_task>)>(symbol: 'tarantool_free_output_buffer', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_free_output_buffer(
-  ffi.Pointer<executor.executor_message> message,
+  ffi.Pointer<executor.executor_task> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_message>)>(symbol: 'tarantool_free_output_port', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_task>)>(symbol: 'tarantool_free_output_port', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_free_output_port(
-  ffi.Pointer<executor.executor_message> message,
+  ffi.Pointer<executor.executor_task> message,
 );
 
-@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_message>)>(symbol: 'tarantool_free_output_tuple', assetId: 'tarantool-bindings', isLeaf: true)
+@ffi.Native<ffi.Void Function(ffi.Pointer<executor.executor_task>)>(symbol: 'tarantool_free_output_tuple', assetId: 'tarantool-bindings', isLeaf: true)
 external void tarantool_free_output_tuple(
-  ffi.Pointer<executor.executor_message> message,
+  ffi.Pointer<executor.executor_task> message,
 );
 
 @ffi.Native<ffi.Bool Function(ffi.Pointer<tarantool_configuration>, ffi.Pointer<tarantool_box>)>(symbol: 'tarantool_initialize', assetId: 'tarantool-bindings', isLeaf: true)
@@ -293,71 +293,71 @@ external void tarantool_tuple_release(
 );
 
 final class tarantool_box extends ffi.Struct {
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_message>)>> tarantool_evaluate_address;
+  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_task>)>> tarantool_evaluate_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_message>)>> tarantool_call_address;
+  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_task>)>> tarantool_call_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_message>)>> tarantool_iterator_next_single_address;
+  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_task>)>> tarantool_iterator_next_single_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_message>)>> tarantool_iterator_next_many_address;
+  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_task>)>> tarantool_iterator_next_many_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_message>)>> tarantool_iterator_destroy_address;
+  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_task>)>> tarantool_iterator_destroy_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_message>)>> tarantool_free_output_buffer_address;
+  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_task>)>> tarantool_free_output_buffer_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_message>)>> tarantool_space_id_by_name_address;
+  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_task>)>> tarantool_space_id_by_name_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_message>)>> tarantool_space_count_address;
+  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_task>)>> tarantool_space_count_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_message>)>> tarantool_space_length_address;
+  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_task>)>> tarantool_space_length_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_message>)>> tarantool_space_iterator_address;
+  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_task>)>> tarantool_space_iterator_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_message>)>> tarantool_space_insert_single_address;
+  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_task>)>> tarantool_space_insert_single_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_message>)>> tarantool_space_insert_many_address;
+  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_task>)>> tarantool_space_insert_many_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_message>)>> tarantool_space_put_single_address;
+  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_task>)>> tarantool_space_put_single_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_message>)>> tarantool_space_put_many_address;
+  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_task>)>> tarantool_space_put_many_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_message>)>> tarantool_space_delete_single_address;
+  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_task>)>> tarantool_space_delete_single_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_message>)>> tarantool_space_delete_many_address;
+  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_task>)>> tarantool_space_delete_many_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_message>)>> tarantool_space_update_single_address;
+  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_task>)>> tarantool_space_update_single_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_message>)>> tarantool_space_update_many_address;
+  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_task>)>> tarantool_space_update_many_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_message>)>> tarantool_space_get_address;
+  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_task>)>> tarantool_space_get_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_message>)>> tarantool_space_min_address;
+  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_task>)>> tarantool_space_min_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_message>)>> tarantool_space_max_address;
+  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_task>)>> tarantool_space_max_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_message>)>> tarantool_space_truncate_address;
+  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_task>)>> tarantool_space_truncate_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_message>)>> tarantool_space_upsert_address;
+  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_task>)>> tarantool_space_upsert_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_message>)>> tarantool_index_count_address;
+  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_task>)>> tarantool_index_count_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_message>)>> tarantool_index_length_address;
+  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_task>)>> tarantool_index_length_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_message>)>> tarantool_index_iterator_address;
+  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_task>)>> tarantool_index_iterator_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_message>)>> tarantool_index_get_address;
+  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_task>)>> tarantool_index_get_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_message>)>> tarantool_index_max_address;
+  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_task>)>> tarantool_index_max_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_message>)>> tarantool_index_min_address;
+  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_task>)>> tarantool_index_min_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_message>)>> tarantool_index_update_single_address;
+  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_task>)>> tarantool_index_update_single_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_message>)>> tarantool_index_update_many_address;
+  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_task>)>> tarantool_index_update_many_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_message>)>> tarantool_index_select_address;
+  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_task>)>> tarantool_index_select_address;
 
-  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_message>)>> tarantool_index_id_by_name_address;
+  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<executor.executor_task>)>> tarantool_index_id_by_name_address;
 }
 
 final class tarantool_space_request extends ffi.Struct {
@@ -369,7 +369,7 @@ final class tarantool_space_request extends ffi.Struct {
   @ffi.Uint32()
   external int space_id;
 
-  external executor.executor_message message;
+  external executor.executor_task message;
 }
 
 final class tarantool_space_count_request extends ffi.Struct {
@@ -384,7 +384,7 @@ final class tarantool_space_count_request extends ffi.Struct {
   @ffi.Int32()
   external int iterator_type;
 
-  external executor.executor_message message;
+  external executor.executor_task message;
 }
 
 final class tarantool_space_select_request extends ffi.Struct {
@@ -405,7 +405,7 @@ final class tarantool_space_select_request extends ffi.Struct {
   @ffi.Int32()
   external int iterator_type;
 
-  external executor.executor_message message;
+  external executor.executor_task message;
 }
 
 final class tarantool_space_update_request extends ffi.Struct {
@@ -422,7 +422,7 @@ final class tarantool_space_update_request extends ffi.Struct {
   @ffi.Uint32()
   external int space_id;
 
-  external executor.executor_message message;
+  external executor.executor_task message;
 }
 
 final class tarantool_space_upsert_request extends ffi.Struct {
@@ -439,7 +439,7 @@ final class tarantool_space_upsert_request extends ffi.Struct {
   @ffi.Uint32()
   external int space_id;
 
-  external executor.executor_message message;
+  external executor.executor_task message;
 }
 
 final class tarantool_space_iterator_request extends ffi.Struct {
@@ -454,7 +454,7 @@ final class tarantool_space_iterator_request extends ffi.Struct {
   @ffi.Int32()
   external int type;
 
-  external executor.executor_message message;
+  external executor.executor_task message;
 }
 
 final class tarantool_index_request extends ffi.Struct {
@@ -469,7 +469,7 @@ final class tarantool_index_request extends ffi.Struct {
   @ffi.Uint32()
   external int index_id;
 
-  external executor.executor_message message;
+  external executor.executor_task message;
 }
 
 final class tarantool_index_count_request extends ffi.Struct {
@@ -487,7 +487,7 @@ final class tarantool_index_count_request extends ffi.Struct {
   @ffi.Int32()
   external int iterator_type;
 
-  external executor.executor_message message;
+  external executor.executor_task message;
 }
 
 final class tarantool_index_id_by_name_request extends ffi.Struct {
@@ -499,7 +499,7 @@ final class tarantool_index_id_by_name_request extends ffi.Struct {
   @ffi.Uint32()
   external int space_id;
 
-  external executor.executor_message message;
+  external executor.executor_task message;
 }
 
 final class tarantool_index_update_request extends ffi.Struct {
@@ -519,7 +519,7 @@ final class tarantool_index_update_request extends ffi.Struct {
   @ffi.Uint32()
   external int index_id;
 
-  external executor.executor_message message;
+  external executor.executor_task message;
 }
 
 final class tarantool_call_request extends ffi.Struct {
@@ -533,7 +533,7 @@ final class tarantool_call_request extends ffi.Struct {
   @ffi.Uint32()
   external int function_length;
 
-  external executor.executor_message message;
+  external executor.executor_task message;
 }
 
 final class tarantool_evaluate_request extends ffi.Struct {
@@ -547,7 +547,7 @@ final class tarantool_evaluate_request extends ffi.Struct {
   @ffi.Uint32()
   external int expression_length;
 
-  external executor.executor_message message;
+  external executor.executor_task message;
 }
 
 final class tarantool_index_iterator_request extends ffi.Struct {
@@ -565,7 +565,7 @@ final class tarantool_index_iterator_request extends ffi.Struct {
   @ffi.Int32()
   external int type;
 
-  external executor.executor_message message;
+  external executor.executor_task message;
 }
 
 final class tarantool_index_select_request extends ffi.Struct {
@@ -589,7 +589,7 @@ final class tarantool_index_select_request extends ffi.Struct {
   @ffi.Int32()
   external int iterator_type;
 
-  external executor.executor_message message;
+  external executor.executor_task message;
 }
 
 final class tarantool_index_id_request extends ffi.Struct {

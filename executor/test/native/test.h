@@ -2,7 +2,7 @@
 #define TEST_H
 
 #include <stdbool.h>
-#include "executor_message.h"
+#include "executor_task.h"
 typedef struct executor_native test_executor_native;
 
 #if defined(__cplusplus)
@@ -13,7 +13,7 @@ extern "C"
     test_executor_native* test_executor_initialize(bool initialize_memory);
     int32_t test_executor_descriptor(test_executor_native* executor);
     void test_executor_destroy(test_executor_native* executor, bool initialize_memory);
-    struct executor_message* test_allocate_message();
+    struct executor_task* test_allocate_message();
     double* test_allocate_double();
 
 #if defined(__cplusplus)

@@ -97,7 +97,7 @@ class StorageSchema {
 
   Future<int> spaceId(String space) => _producer.spaceIdByName(_descriptor, _factory.createString(space)).then(_completeSpaceId);
 
-  int _completeSpaceId(Pointer<executor_message> message) {
+  int _completeSpaceId(Pointer<executor_task> message) {
     final id = message.outputInt;
     _factory.releaseString(message);
     return id;
@@ -120,7 +120,7 @@ class StorageSchema {
 
   Future<int> indexId(int spaceId, String index) => _producer.indexIdByName(_descriptor, _factory.createIndexIdByName(spaceId, index)).then(_completeIndexId);
 
-  int _completeIndexId(Pointer<executor_message> message) {
+  int _completeIndexId(Pointer<executor_task> message) {
     final id = message.outputInt;
     _factory.releaseIndexIdByName(message.getInputObject());
     return id;
