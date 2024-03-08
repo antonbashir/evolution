@@ -20,17 +20,6 @@ extern "C"
         unreachable();                                                                                                                                \
     }                                                                                                                                                 \
     while (0);
-
-#define error_system_exit(module, code)                                                                                                                      \
-    do                                                                                                                                                       \
-    {                                                                                                                                                        \
-        fprintf(stderr, "(error) %s() [%s:%d]\nmodule = [%s] code = [%d] message = [%s]\n", __FUNCTION__, __FILE__, __LINE__, module, code, strerror(code)); \
-        stacktrace_print(0);                                                                                                                                 \
-        exit(-1);                                                                                                                                            \
-        unreachable();                                                                                                                                       \
-    }                                                                                                                                                        \
-    while (0);
-
 #if defined(__cplusplus)
 }
 #endif

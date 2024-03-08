@@ -29,16 +29,6 @@
 static const uint32_t _declare_module_id = module_id;
 static const char* _declare_module_name = _declare_module_label;
 
-void _module(allocate_single)(size_t size)
-{
-    allocate(_declare_module_label, 1, size);
-}
-
-void _module(allocate_many)(size_t count, size_t size)
-{
-    allocate(_declare_module_label, count, size);
-}
-
 #endif
 
 #if defined(MODULE_SOURCE) || defined(MODULE_UNDEF)
