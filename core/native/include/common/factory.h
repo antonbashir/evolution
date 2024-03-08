@@ -30,8 +30,7 @@ extern "C"
         object;                                           \
     })
 
-#define delete(module, object) \
-    free(object);
+#define delete(module, object) free(object);
 
 #if defined(__cplusplus)
 }
