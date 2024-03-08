@@ -74,7 +74,7 @@ int stacktrace_format(struct stacktrace* trace, char* buffer, size_t buffer_size
         uintptr_t offset = 0;
         const char* procedure = stacktrace_frame_read(frame, &offset);
         bool free = procedure != NULL;
-        procedure = procedure != NULL ? procedure : "(unknown)";
+        procedure = procedure != NULL ? procedure : STACKTRACE_UNKNOWN;
         string_format(total, snprintf, buffer, buffer_size, STACKTRACE_FRAME_FORMAT "\n", frame_number, frame->instruction, procedure, offset);
         if (free) delete procedure;
     }
