@@ -9,7 +9,12 @@ FetchContent_Declare(
   BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/liburing-binary
 )
 FetchContent_MakeAvailable(executor_liburing)
-add_custom_target(executor_liburing COMMAND ./configure --prefix=${executor_liburing_SOURCE_DIR}/build && make && make install WORKING_DIRECTORY ${executor_liburing_SOURCE_DIR})
+add_custom_target(executor_liburing
+  COMMAND ./configure --prefix=${executor_liburing_SOURCE_DIR}/build &> /dev/null
+  && make -j &> /dev/null
+  && make install &> /dev/null
+  WORKING_DIRECTORY ${executor_liburing_SOURCE_DIR}
+)
 
 add_subdirectory(native)
 add_subdirectory(test/native)

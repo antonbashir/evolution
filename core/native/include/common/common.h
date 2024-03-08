@@ -177,6 +177,38 @@ extern "C"
 #define static_assert _Static_assert
 #endif
 
+#define string_format(_total, _formatter, _buffer, _size, ...)   \
+    do                                                           \
+    {                                                            \
+        int written = _formatter(_buffer, _size, ##__VA_ARGS__); \
+        if (written < 0)                                         \
+            return -1;                                           \
+        _total += written;                                       \
+        if (written < _size)                                     \
+        {                                                        \
+            _buffer += written, _size -= written;                \
+        }                                                        \
+        else                                                     \
+        {                                                        \
+            _buffer = NULL, _size = 0;                           \
+        }                                                        \
+    }                                                            \
+    while (0)
+
+#ifndef MAX
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+#endif
+
+#define SWAP(a, b)               \
+    do                           \
+    {                            \
+        __typeof__(a) tmp = (a); \
+        (a) = (b);               \
+        (b) = tmp;               \
+    }                            \
+    while (0)
+
 #if defined(__cplusplus)
 }
 #endif

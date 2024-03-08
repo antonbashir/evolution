@@ -97,6 +97,9 @@
     "thread": "c",
     "memory_resource": "c",
     "module.h": "c",
-    "string": "c"
+    "string": "c",
+    "libunwind.h": "c",
+    "stacktrace.h": "c",
+    "future": "c"
   },
 }

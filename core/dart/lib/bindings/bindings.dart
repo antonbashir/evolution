@@ -4,7 +4,7 @@ const rtldLazy = 0x00001;
 const rtldGlobal = 0x00100;
 
 final class iovec extends Struct {
-  external Pointer<void> iov_base;
+  external Pointer<Void> iov_base;
 
   @Size()
   external int iov_len;

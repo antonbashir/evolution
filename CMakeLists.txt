@@ -16,6 +16,9 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fPIC -O0 -g -Wno-parenthese
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC -O2 -Wno-parentheses -fno-stack-protector")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -O2 -Wno-parentheses -fno-stack-protector")
 
+set(DEPENDENCY_LIBUNWIND_REPOSITORY "developer@git.local:dependencies/tarantool-libunwind.git")
+set(DEPENDENCY_LIBUNWIND_VERSION evolution)
+
 set(DEPENDENCY_LIBURING_REPOSITORY "developer@git.local:dependencies/liburing.git")
 set(DEPENDENCY_LIBURING_VERSION evolution)
 
