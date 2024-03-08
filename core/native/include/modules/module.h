@@ -48,3 +48,4 @@ static const char* _declare_module_name = _declare_module_label;
 #undef _module
 #undef _declare_module_id
 #undef _declare_module_name
+#undef _declare_module_label
