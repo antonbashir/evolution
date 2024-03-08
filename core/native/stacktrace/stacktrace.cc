@@ -1,8 +1,8 @@
-#include "stacktrace.h"
 #include <common/common.h>
 #include <common/library.h>
 #include <cxxabi.h>
 #include <libunwind.h>
+#include <stacktrace/stacktrace.h>
 
 #ifdef __x86_64__
 __attribute__((__force_align_arg_pointer__))
