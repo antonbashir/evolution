@@ -13,6 +13,10 @@
 #ifndef MODULE_HEADER
 #define MODULE_HEADER
 
+#ifndef module_id
+#define module_id 0
+#endif
+
 static const uint32_t _module(module_id) = module_id;
 static const char* _module(module_name) = module_label;
 

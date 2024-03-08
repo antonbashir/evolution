@@ -83,6 +83,34 @@ typedef uint32_t simple_map_int_t;
 #define simple_map_bytemap 0
 #endif
 
+#ifndef simple_map_name
+#define simple_map_name _default
+#endif
+
+#ifndef simple_map_key_t
+#define simple_map_key_t int
+#endif
+
+#ifndef simple_map_node_t
+struct simple_map_default_node_t
+{
+    int key;
+};
+#define simple_map_node_t struct simple_map_default_node_t
+#endif
+
+#ifndef simple_map_arg_t
+#define simple_map_arg_t void*
+#endif
+
+#ifndef simple_map_hash
+#define simple_map_hash(a, arg) (a->key)
+#endif
+
+#ifndef simple_map_cmp
+#define simple_map_cmp(a, b, arg) ((a->key) != (a->key))
+#endif
+
 struct _simple_map(t)
 {
     simple_map_node_t* p;
@@ -202,7 +230,7 @@ _simple_map(find)(struct _simple_map(t) * h, simple_map_key_t key, simple_map_ar
     for (;;)
     {
         if ((simple_map_mayeq(h, i, hk) &&
-                !simple_map_cmp_key(key, simple_map_node(h, i), arg)))
+             !simple_map_cmp_key(key, simple_map_node(h, i), arg)))
             return i;
 
         if (!simple_map_dirty(h, i))

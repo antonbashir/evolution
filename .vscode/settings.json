@@ -96,6 +96,7 @@
     "typeinfo": "c",
     "thread": "c",
     "memory_resource": "c",
-    "module.h": "c"
+    "module.h": "c",
+    "string": "c"
   },
 }
