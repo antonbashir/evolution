@@ -2,7 +2,7 @@
 #define MEMORY_IO_BUFFERS_H
 
 #include <common/common.h>
-#include <common/factory.h>
+#include <modules/modules.h>
 #include <system/types.h>
 #include "memory.h"
 

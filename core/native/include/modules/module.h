@@ -29,6 +29,11 @@
 static const uint32_t _declare_module_id = module_id;
 static const char* _declare_module_name = _declare_module_label;
 
+static FORCEINLINE void _module(delete)(void* object)
+{
+    delete (_declare_module_name, object);
+}
+
 #endif
 
 #if defined(MODULE_SOURCE) || defined(MODULE_UNDEF)

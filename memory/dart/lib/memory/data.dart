@@ -2,7 +2,6 @@ import 'dart:ffi';
 
 import 'package:core/core.dart';
 
-import '../bindings/include/memory_small_data.dart';
 import '../bindings/state/memory_state.dart';
 
 class MemorySmallData {

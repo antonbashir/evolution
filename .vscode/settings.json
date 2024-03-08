@@ -100,6 +100,13 @@
     "string": "c",
     "libunwind.h": "c",
     "stacktrace.h": "c",
-    "future": "c"
+    "future": "c",
+    "deque": "c",
+    "forward_list": "c",
+    "list": "c",
+    "unordered_map": "c",
+    "unordered_set": "c",
+    "vector": "c",
+    "iterator": "c"
   },
 }

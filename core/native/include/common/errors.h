@@ -1,8 +1,8 @@
 #ifndef CORE_COMMON_ERRORS_H
 #define CORE_COMMON_ERRORS_H
 
-#include <common/library.h>
 #include <stacktrace/stacktrace.h>
+#include <common/library.h>
 #include <system/types.h>
 #include "common.h"
 

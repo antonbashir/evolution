@@ -2,7 +2,6 @@
 #define CORE_MODULES_MODULES_H
 
 #include <common/factory.h>
-#include <system/types.h>
 
 #define MODULE_SOURCE
 

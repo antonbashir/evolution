@@ -5,6 +5,7 @@
 #include <common/factory.h>
 #include <system/types.h>
 #include "memory.h"
+#include <modules/modules.h>
 
 #if defined(__cplusplus)
 extern "C"
