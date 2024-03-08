@@ -1,5 +1,5 @@
-#ifndef CORE_SYSTEM_SYSTEM_H
-#define CORE_SYSTEM_SYSTEM_H
+#ifndef CORE_COMMON_LIBRARY_H
+#define CORE_COMMON_LIBRARY_H
 
 #include <assert.h>
 #include <stdint.h>

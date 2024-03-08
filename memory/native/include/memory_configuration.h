@@ -10,12 +10,11 @@ extern "C"
 
 struct memory_configuration
 {
-    // FFI PUBLIC
-    size_t quota_size;
-    size_t preallocation_size;
-    size_t slab_size;
-    size_t static_buffers_capacity;
-    size_t static_buffer_size;
+    size_t quota_size;               // Dart
+    size_t preallocation_size;       // Dart
+    size_t slab_size;                // Dart
+    size_t static_buffers_capacity;  // Dart
+    size_t static_buffer_size;       // Dart
 };
 
 #if defined(__cplusplus)

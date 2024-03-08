@@ -2,6 +2,7 @@
 #define MEMORY_IO_BUFFERS_H
 
 #include <common/common.h>
+#include <common/factory.h>
 #include <system/types.h>
 #include "memory.h"
 
@@ -12,30 +13,33 @@ extern "C"
 
 struct memory_io_buffers
 {
-    // FFI PRIVATE
     struct memory_pool input_buffers;
     struct memory_pool output_buffers;
     struct memory* memory;
 };
 
-extern FORCEINLINE int32_t memory_io_buffers_create(struct memory_io_buffers* pool, struct memory* memory)
+extern FORCEINLINE struct memory_io_buffers* memory_io_buffers_create(struct memory* memory)
 {
+    struct memory_io_buffers* pool = memory_new(memory_io_buffers);
     pool->memory = memory;
     if (memory_pool_create(&pool->input_buffers, memory, sizeof(struct memory_input_buffer)))
     {
-        return -1;
+        memory_delete(pool);
+        return NULL;
     }
     if (memory_pool_create(&pool->output_buffers, memory, sizeof(struct memory_output_buffer)))
     {
-        return -1;
+        memory_delete(pool);
+        return NULL;
     }
-    return 0;
+    return pool;
 }
 
 extern FORCEINLINE void memory_io_buffers_destroy(struct memory_io_buffers* pool)
 {
     memory_pool_destroy(&pool->input_buffers);
     memory_pool_destroy(&pool->output_buffers);
+    memory_delete(pool);
 }
 
 extern FORCEINLINE struct memory_input_buffer* memory_io_buffers_allocate_input(struct memory_io_buffers* buffers, size_t initial_capacity)

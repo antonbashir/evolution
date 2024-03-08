@@ -62,7 +62,7 @@
 #endif
 
 #include <common/common.h>
-#include <system/library.h>
+#include <common/library.h>
 #include <system/types.h>
 
 #define simple_map_cat(a, b) simple_map##a##_##b

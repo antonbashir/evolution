@@ -2,7 +2,7 @@
 #define CORE_SYSTEM_SYSTEM_H
 
 #include <common/common.h>
-#include "library.h"
+#include <common/library.h>
 #include "network.h"
 #include "socket.h"
 #include "string.h"

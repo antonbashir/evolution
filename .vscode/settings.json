@@ -80,6 +80,22 @@
     "type_traits": "c",
     "functional": "c",
     "format.h": "c",
-    "string_view": "c"
+    "string_view": "c",
+    "any": "c",
+    "array": "c",
+    "charconv": "c",
+    "ratio": "c",
+    "tuple": "c",
+    "utility": "c",
+    "variant": "c",
+    "system_error": "c",
+    "format": "cpp",
+    "initializer_list": "cpp",
+    "valarray": "cpp",
+    "factory.h": "c",
+    "typeinfo": "c",
+    "thread": "c",
+    "memory_resource": "c",
+    "module.h": "c"
   },
 }

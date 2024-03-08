@@ -2,6 +2,7 @@
 #define MEMORY_STATIC_BUFFERS_H
 
 #include <common/common.h>
+#include <common/factory.h>
 #include <system/types.h>
 #include "memory.h"
 
@@ -12,16 +13,16 @@ extern "C"
 
 struct memory_static_buffers
 {
-    // FFI PUBLIC
-    size_t available;
-    size_t size;
-    size_t capacity;
-    int32_t* ids;
-    struct iovec* buffers;
+    size_t available;       // Dart
+    size_t size;            // Dart
+    size_t capacity;        // Dart
+    int32_t* ids;           // Dart
+    struct iovec* buffers;  // Dart
 };
 
-extern FORCEINLINE int32_t memory_static_buffers_create(struct memory_static_buffers* pool, size_t capacity, size_t size)
+extern FORCEINLINE struct memory_static_buffers* memory_static_buffers_create(size_t capacity, size_t size)
 {
+    struct memory_static_buffers* pool = memory_new(memory_static_buffers);
     pool->size = size;
     pool->capacity = capacity;
     pool->available = 0;
@@ -29,13 +30,15 @@ extern FORCEINLINE int32_t memory_static_buffers_create(struct memory_static_buf
     pool->ids = malloc(capacity * sizeof(int32_t));
     if (pool->ids == NULL)
     {
-        return -1;
+        memory_delete(pool);
+        return NULL;
     }
 
     pool->buffers = malloc(capacity * sizeof(struct iovec));
     if (pool->buffers == NULL)
     {
-        return -1;
+        memory_delete(pool);
+        return NULL;
     }
 
     int32_t page_size = getpagesize();
@@ -44,14 +47,14 @@ extern FORCEINLINE int32_t memory_static_buffers_create(struct memory_static_buf
         struct iovec* buffer = &pool->buffers[index];
         if (posix_memalign(&buffer->iov_base, page_size, size))
         {
-            return -1;
+            memory_delete(pool);
+            return NULL;
         }
         memset(buffer->iov_base, 0, size);
         buffer->iov_len = size;
         pool->ids[pool->available++] = index;
     }
-
-    return 0;
+    return pool;
 }
 
 extern FORCEINLINE void memory_static_buffers_destroy(struct memory_static_buffers* pool)
@@ -63,6 +66,7 @@ extern FORCEINLINE void memory_static_buffers_destroy(struct memory_static_buffe
     }
     free(pool->ids);
     free(pool->buffers);
+    memory_delete(pool);
 }
 
 extern FORCEINLINE void memory_static_buffers_push(struct memory_static_buffers* pool, int32_t id)

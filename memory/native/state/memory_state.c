@@ -1,9 +1,7 @@
 #include "memory_state.h"
 #include <memory.h>
 #include <memory_io_buffers.h>
-#include <memory_small_data.h>
 #include <memory_static_buffers.h>
-#include <memory_structure_pool.h>
 #include <system/system.h>
 
 int32_t memory_state_create(struct memory_state* memory, struct memory_configuration* configuration)
@@ -14,11 +12,6 @@ int32_t memory_state_create(struct memory_state* memory, struct memory_configura
         return -ENOMEM;
     }
 
-    memory->small_data = calloc(1, sizeof(struct memory_small_data));
-    if (!memory->small_data)
-    {
-        return -ENOMEM;
-    }
 
     memory->static_buffers = calloc(1, sizeof(struct memory_static_buffers));
     if (!memory->static_buffers)
@@ -33,10 +26,6 @@ int32_t memory_state_create(struct memory_state* memory, struct memory_configura
     }
 
     if (memory_create(memory->memory_instance, configuration->quota_size, configuration->preallocation_size, configuration->slab_size))
-    {
-        return -ENOMEM;
-    }
-    if (memory_small_data_create(memory->small_data, memory->memory_instance))
     {
         return -ENOMEM;
     }
@@ -56,10 +45,8 @@ void memory_state_destroy(struct memory_state* memory)
 {
     memory_static_buffers_destroy(memory->static_buffers);
     memory_io_buffers_destroy(memory->io_buffers);
-    memory_small_data_destroy(memory->small_data);
     memory_destroy(memory->memory_instance);
     free(memory->static_buffers);
     free(memory->io_buffers);
-    free(memory->small_data);
     free(memory->memory_instance);
 }

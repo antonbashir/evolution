@@ -8,8 +8,6 @@ export 'memory/objects.dart';
 export 'bindings/include/memory_configuration.dart';
 export 'bindings/include/memory.dart';
 export 'bindings/include/memory_io_buffers.dart';
-export 'bindings/include/memory_small_data.dart';
 export 'bindings/include/memory_static_buffers.dart';
-export 'bindings/include/memory_structure_pool.dart';
 export 'bindings/tuple/memory_tuple.dart';
 export 'bindings/state/memory_state.dart';

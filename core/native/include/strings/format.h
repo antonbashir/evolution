@@ -1,9 +1,10 @@
-#ifndef CORE_SYSTEM_FORMAT_H
-#define CORE_SYSTEM_FORMAT_H
+#ifndef CORE_STRINGS_FORMAT_H
+#define CORE_STRINGS_FORMAT_H
 
 #include <common/common.h>
-#include "library.h"
-#include "time.h"
+#include <common/library.h>
+#include <common/modules.h>
+#include <system/time.h>
 
 #if defined(__cplusplus)
 extern "C"

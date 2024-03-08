@@ -7,7 +7,7 @@
 #include <executor_common.h>
 #include <executor_constants.h>
 #include <liburing.h>
-#include <system/library.h>
+#include <common/library.h>
 #include <system/scheduling.h>
 #include <system/threading.h>
 #include <system/time.h>
@@ -105,7 +105,7 @@ static void* executor_scheduler_listen(void* input)
                     bool result = Dart_PostInteger(executor->callback, executor->id);
                     if (!result)
                     {
-                        native_error_exit(EXECUTOR_MODULE, EXECUTOR_ERROR_BACKGROUND_SCHEDULER_POST, EXECUTOR_SCOPE_BACKGROUND_SCHEDULER, executor_format_cqe(cqe));
+                        error_scoped_exit(EXECUTOR_MODULE, EXECUTOR_ERROR_BACKGROUND_SCHEDULER_POST, EXECUTOR_SCOPE_BACKGROUND_SCHEDULER, executor_format_cqe(cqe));
                     }
                 }
                 continue;
