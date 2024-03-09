@@ -20,14 +20,3 @@ void core_initialize(struct core_module_configuration* configuration)
         system_default_event_printer,
         configuration->print_level);
 }
-
-int main(int argc, char const *argv[])
-{
-  core_module_new(1234);
-  core_module_new(1234);
-  core_module_new(1234);
-  core_module_new(1234);
-  core_module_new(1234);
-  core_module_new(1234);
-  return 0;
-}
