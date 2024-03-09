@@ -16,6 +16,8 @@ extern "C"
 #define MODULE_EVENT_TYPE_DOUBLE 2
 #define MODULE_EVENT_TYPE_STRING 3
 
+#define MODULE_EVENT_FIELD_CODE "code"
+
 struct event_field
 {
     const char* name;

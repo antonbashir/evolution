@@ -1,6 +1,7 @@
 #include <common/common.h>
 #include <cxxabi.h>
 #include <libunwind.h>
+#include <printer/printer.h>
 #include <stacktrace/stacktrace.h>
 #include <strings/format.h>
 
@@ -95,6 +96,6 @@ void stacktrace_print(int skip)
     stacktrace_collect_current(&trace, skip + 2);
     if (stacktrace_format(&trace, buffer, STACKTRACE_PRINT_BUFFER) > 0)
     {
-        printf("%s\n", buffer);
+        system_print_string(buffer);
     }
 }

@@ -1,4 +1,4 @@
-#include <errors/error.h>
+#include <events/events.h>
 #include <system/system.h>
 
 struct t
@@ -15,6 +15,7 @@ NOINLINE void func()
                                              error_field("test 3", -456),
                                              error_field("test 4", 456.135),
                                              error_field("test 5", "test")));
+    printf("test 5: %s\n", error_get_string(err, "test 5"));
     printf("%s", error_format(err));
     error_print(core_error(error_system(ENOMEM)));
     error_raise(err);

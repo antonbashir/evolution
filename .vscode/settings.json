@@ -119,6 +119,11 @@
     "stdarg.h": "c",
     "error.h": "c",
     "wordsize.h": "c",
-    "stdbool.h": "c"
+    "stdbool.h": "c",
+    "field.h": "c",
+    "numbers": "c",
+    "events.h": "c",
+    "string.h": "c",
+    "event.h": "c"
   },
 }

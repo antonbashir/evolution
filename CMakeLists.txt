@@ -10,8 +10,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED true)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED true)
 
-set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -fPIC -O0 -g -Wno-parentheses -fno-stack-protector")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fPIC -O0 -g -Wno-parentheses -fno-stack-protector")
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -fPIC -O0 -g -Wno-parentheses -fno-stack-protector -DTRACE -DDEBUG")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fPIC -O0 -g -Wno-parentheses -fno-stack-protector -DTRACE -DDEBUG")
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC -O2 -Wno-parentheses -fno-stack-protector")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -O2 -Wno-parentheses -fno-stack-protector")
