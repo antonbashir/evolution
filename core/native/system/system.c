@@ -1,4 +1,5 @@
 #include "system.h"
+#include <crash/crash.h>
 #include <events/events.h>
 #include <events/field.h>
 #include <printer/printer.h>
@@ -53,6 +54,7 @@ void system_initialize(printer_function printer, printer_function error_printer,
     system_instance.on_event_raise = event_raiser;
     system_instance.on_event_print = event_printer;
     system_instance.print_level = event_print_level;
+    crash_initialize();
 }
 
 void system_initialize_default()
