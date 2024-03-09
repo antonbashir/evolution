@@ -10,6 +10,7 @@
 #include <system/types.h>
 #include "printer/printer.h"
 
+
 void core_initialize(struct core_module_configuration* configuration)
 {
     system_initialize(
