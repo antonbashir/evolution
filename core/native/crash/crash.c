@@ -48,7 +48,10 @@ static void crash_signal_callback(int signal, siginfo_t* information, void* cont
             event_set_string(crash_event, "code", signal_code);
         else
             event_set_signed(crash_event, "code", information->si_code);
-        event_set_address(crash_event, "address", information->si_addr);
+        if (information->si_addr != NULL)
+        {
+            event_set_address(crash_event, "address", information->si_addr);
+        }
         event_set_address(crash_event, "signal information", information);
         print_event(crash_event);
     }

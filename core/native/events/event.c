@@ -33,7 +33,7 @@
         field->name = name;                                                           \
         event_field_set_##type(field, value);                                         \
         event->fields[event->fields_count] = field;                                   \
-        ++event->fields_count;                                                        \
+        ++(event->fields_count);                                                      \
     }                                                                                 \
     while (0);
 
@@ -45,6 +45,7 @@ static FORCEINLINE struct event_field* event_find_field(struct event* event, con
         field = event->fields[i];
         if (strcmp(name, field->name) == 0)
             break;
+        field = NULL;
     }
     return field;
 }
@@ -67,8 +68,8 @@ struct event* event_create(uint8_t level, const char* function, const char* file
     created->message = message;
     created->level = level;
     created->timestamp = time_now_real();
-    created->raised_module_id = -1;
-    created->raised_module_name = "unknown";
+    created->raised_module_id = MODULE_UNKNOWN;
+    created->raised_module_name = MODULE_UNKNOWN_NAME;
     return created;
 }
 
@@ -142,6 +143,21 @@ void event_set_address(struct event* event, const char* name, void* value)
     event_set_field(event, name, address, value);
 }
 
+void event_set_character(struct event* event, const char* name, char value)
+{
+    event_set_field(event, name, character, value);
+}
+
+char event_get_character(struct event* event, const char* name)
+{
+    struct event_field* field = event_find_field(event, name);
+    if (field == NULL)
+    {
+        _raise("event field %s is not found", name);
+    }
+    return field->character;
+}
+
 void* event_get_address(struct event* event, const char* name)
 {
     struct event_field* field = event_find_field(event, name);
@@ -159,7 +175,7 @@ bool event_get_boolean(struct event* event, const char* name)
     {
         _raise("event field %s is not found", name);
     }
-    return field->signed_number;
+    return field->boolean;
 }
 
 int64_t event_get_signed(struct event* event, const char* name)
@@ -236,21 +252,24 @@ const char* event_format(struct event* event)
         return buffer;
     }
     size += written;
-    if (event->raised_module_id != 0 && strlen(event->raised_module_name) != 0)
+    if (event->raised_module_id != MODULE_UNKNOWN)
     {
         written = snprintf(buffer + size, MODULE_EVENT_BUFFER - size, "module{%d} = %s\n", event->raised_module_id, event->raised_module_name);
+        if (written < 0)
+        {
+            return buffer;
+        }
+        size += written;
     }
-    if (written < 0)
-    {
-        return buffer;
-    }
-    size += written;
     struct event_field* field;
     for (int i = 0; i < event->fields_count; ++i)
     {
         field = event->fields[i];
         switch (field->type)
         {
+            case MODULE_EVENT_TYPE_BOOLEAN:
+                written = snprintf(buffer + size, MODULE_EVENT_BUFFER - size, "%s = %s\n", field->name, field->boolean ? "true" : "false");
+                break;
             case MODULE_EVENT_TYPE_UNSIGNED:
                 written = snprintf(buffer + size, MODULE_EVENT_BUFFER - size, "%s = %ld\n", field->name, field->unsigned_number);
                 break;
@@ -265,6 +284,9 @@ const char* event_format(struct event* event)
                 break;
             case MODULE_EVENT_TYPE_ADDRESS:
                 written = snprintf(buffer + size, MODULE_EVENT_BUFFER - size, "%s = %p\n", field->name, field->address);
+                break;
+            case MODULE_EVENT_TYPE_CHARACTER:
+                written = snprintf(buffer + size, MODULE_EVENT_BUFFER - size, "%s = %c\n", field->name, field->character);
                 break;
         }
         if (written < 0)
