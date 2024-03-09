@@ -1,37 +1,48 @@
 #include "error.h"
 
+#define error_exit(format, ...)                                                                     \
+    printf("(error): %s(...) %s:%d - " format "\n", __FUNCTION__, __FILE__, __LINE__, __VA_ARGS__); \
+    stacktrace_print(0);                                                                            \
+    exit(-1);                                                                                       \
+    unreachable();
+
+#define error_exit_system(code)                                                                                         \
+    printf("(error): %s(...) %s:%d - code = %d, message = %s", __FUNCTION__, __FILE__, __LINE__, code, strerror(code)); \
+    stacktrace_print(0);                                                                                                \
+    exit(-1);                                                                                                           \
+    unreachable();
+
 #define error_find_field(error, name)                     \
     ({                                                    \
-        struct error_field* field;                        \
+        struct event_field* field;                        \
         for (int i = 0; i < error->fields_count; ++i)     \
         {                                                 \
-            struct error_field* field = error->fields[i]; \
+            struct event_field* field = error->fields[i]; \
             if (strcmp(name, field->name) == 0)           \
                 break;                                    \
         }                                                 \
         field;                                            \
     })
 
-#define error_set_field(error, name, type, value)                  \
-    do                                                             \
-    {                                                              \
-        struct error_field* field = error_find_field(error, name); \
-        if (field != NULL)                                         \
-        {                                                          \
-            error_field_set_##type(field, value);                  \
-            break;                                                 \
-        }                                                          \
-        if (error->fields_count == MODULE_ERROR_FIELDS_MAXIMUM)    \
-        {                                                          \
-            exit(-1);                                              \
-            unreachable();                                         \
-        }                                                          \
-        field = calloc(1, sizeof(struct error_field));             \
-        field->name = name;                                        \
-        error_field_set_##type(field, value);                      \
-        error->fields[error->fields_count] = field;                \
-        ++error->fields_count;                                     \
-    }                                                              \
+#define error_set_field(error, name, type, value)                                         \
+    do                                                                                    \
+    {                                                                                     \
+        struct event_field* field = error_find_field(error, name);                        \
+        if (field != NULL)                                                                \
+        {                                                                                 \
+            event_field_set_##type(field, value);                                         \
+            break;                                                                        \
+        }                                                                                 \
+        if (error->fields_count == MODULE_ERROR_FIELDS_MAXIMUM)                           \
+        {                                                                                 \
+            error_exit("error fields limit is reached: %d", MODULE_ERROR_FIELDS_MAXIMUM); \
+        }                                                                                 \
+        field = calloc(1, sizeof(struct event_field));                                    \
+        field->name = name;                                                               \
+        event_field_set_##type(field, value);                                             \
+        error->fields[error->fields_count] = field;                                       \
+        ++error->fields_count;                                                            \
+    }                                                                                     \
     while (0);
 
 struct error* error_create(const char* function, const char* file, uint32_t line, const char* message)
@@ -39,14 +50,12 @@ struct error* error_create(const char* function, const char* file, uint32_t line
     struct error* created = calloc(1, sizeof(struct error));
     if (created == NULL)
     {
-        exit(-1);
-        unreachable();
+        error_exit_system(ENOMEM);
     }
-    created->fields = calloc(MODULE_ERROR_FIELDS_MAXIMUM, sizeof(struct error_field));
+    created->fields = calloc(MODULE_ERROR_FIELDS_MAXIMUM, sizeof(struct event_field));
     if (created->fields == NULL)
     {
-        exit(-1);
-        unreachable();
+        error_exit_system(ENOMEM);
     }
     created->function = function;
     created->file = file;
@@ -62,8 +71,8 @@ struct error* error_build(const char* function, const char* file, uint32_t line,
     va_start(args, fields);
     for (int i = 0; i < fields; ++i)
     {
-        struct error_field field = va_arg(args, struct error_field);
-        struct error_field* new_field = calloc(1, sizeof(struct error_field));
+        struct event_field field = va_arg(args, struct event_field);
+        struct event_field* new_field = calloc(1, sizeof(struct event_field));
         new_field->name = field.name;
         new_field->type = field.type;
         new_field->signed_number = field.signed_number;
@@ -117,55 +126,50 @@ void error_set_string(struct error* error, const char* name, const char* value)
 
 bool error_get_boolean(struct error* error, const char* name)
 {
-    struct error_field* field = error_find_field(error, name);
+    struct event_field* field = error_find_field(error, name);
     if (field == NULL)
     {
-        exit(-1);
-        unreachable();
+        error_exit("field %s is not found", name);
     }
     return field->signed_number;
 }
 
 int64_t error_get_signed(struct error* error, const char* name)
 {
-    struct error_field* field = error_find_field(error, name);
+    struct event_field* field = error_find_field(error, name);
     if (field == NULL)
     {
-        exit(-1);
-        unreachable();
+        error_exit("field %s is not found", name);
     }
     return field->signed_number;
 }
 
 uint64_t error_get_unsigned(struct error* error, const char* name)
 {
-    struct error_field* field = error_find_field(error, name);
+    struct event_field* field = error_find_field(error, name);
     if (field == NULL)
     {
-        exit(-1);
-        unreachable();
+        error_exit("field %s is not found", name);
     }
     return field->unsigned_number;
 }
 
 double error_get_double(struct error* error, const char* name)
 {
-    struct error_field* field = error_find_field(error, name);
+    struct event_field* field = error_find_field(error, name);
     if (field == NULL)
     {
-        exit(-1);
-        unreachable();
+        error_exit("field %s is not found", name);
     }
     return field->double_number;
 }
 
 const char* error_get_string(struct error* error, const char* name)
 {
-    struct error_field* field = error_find_field(error, name);
+    struct event_field* field = error_find_field(error, name);
     if (field == NULL)
     {
-        exit(-1);
-        unreachable();
+        error_exit("field %s is not found", name);
     }
     return field->string;
 }
@@ -173,52 +177,67 @@ const char* error_get_string(struct error* error, const char* name)
 const char* error_format(struct error* error)
 {
     size_t size = 0;
+    int32_t written = 0;
     char* buffer = calloc(MODULE_ERROR_BUFFER, sizeof(char));
     if (buffer == NULL)
     {
-        exit(-1);
-        unreachable();
+        error_exit_system(ENOMEM);
     }
-    size += snprintf(buffer, MODULE_ERROR_BUFFER, "(error): %s(...) %s:%d\n", error->function, error->file, error->line);
+    written = snprintf(buffer, MODULE_ERROR_BUFFER, "(error): %s(...) %s:%d\n", error->function, error->file, error->line);
+    if (written < 0)
+    {
+        return buffer;
+    }
+    size += written;
     if (error->module_id != 0 && strlen(error->module_name) != 0)
     {
-        size += snprintf(buffer + size, MODULE_ERROR_BUFFER - size, "module{%d} = %s\n", error->module_id, error->module_name);
+        written = snprintf(buffer + size, MODULE_ERROR_BUFFER - size, "module{%d} = %s\n", error->module_id, error->module_name);
     }
-    struct error_field* field;
+    if (written < 0)
+    {
+        return buffer;
+    }
+    size += written;
+    struct event_field* field;
     for (int i = 0; i < error->fields_count; ++i)
     {
         field = error->fields[i];
         switch (field->type)
         {
-            case MODULE_ERROR_TYPE_UNSIGNED:
-                size += snprintf(buffer + size, MODULE_ERROR_BUFFER - size, "%s = %ld\n", field->name, field->unsigned_number);
+            case MODULE_EVENT_TYPE_UNSIGNED:
+                written = snprintf(buffer + size, MODULE_ERROR_BUFFER - size, "%s = %ld\n", field->name, field->unsigned_number);
                 break;
-            case MODULE_ERROR_TYPE_SIGNED:
-                size += snprintf(buffer + size, MODULE_ERROR_BUFFER - size, "%s = %ld\n", field->name, field->signed_number);
+            case MODULE_EVENT_TYPE_SIGNED:
+                written = snprintf(buffer + size, MODULE_ERROR_BUFFER - size, "%s = %ld\n", field->name, field->signed_number);
                 break;
-            case MODULE_ERROR_TYPE_DOUBLE:
-                size += snprintf(buffer + size, MODULE_ERROR_BUFFER - size, "%s = %lf\n", field->name, field->double_number);
+            case MODULE_EVENT_TYPE_DOUBLE:
+                written = snprintf(buffer + size, MODULE_ERROR_BUFFER - size, "%s = %lf\n", field->name, field->double_number);
                 break;
-            case MODULE_ERROR_TYPE_STRING:
-                size += snprintf(buffer + size, MODULE_ERROR_BUFFER - size, "%s = %s\n", field->name, field->string);
+            case MODULE_EVENT_TYPE_STRING:
+                written = snprintf(buffer + size, MODULE_ERROR_BUFFER - size, "%s = %s\n", field->name, field->string);
                 break;
         }
+        if (written < 0)
+        {
+            return buffer;
+        }
+        size += written;
     }
-    size += snprintf(buffer + size, MODULE_ERROR_BUFFER - size, "message = %s\n", error->message);
+    snprintf(buffer + size, MODULE_ERROR_BUFFER - size, "message = %s\n", error->message);
     return buffer;
 }
 
 void error_raise(struct error* error)
 {
-  const char* format = error_format(error);
-  printf("%s\n", format);
-  stacktrace_print(0);
-  exit(-1);
-  unreachable();
+    const char* format = error_format(error);
+    printf("%s\n", format);
+    stacktrace_print(0);
+    exit(-1);
+    unreachable();
 }
 
 void error_print(struct error* error)
 {
-  const char* format = error_format(error);
-  printf("%s\n", format);
+    const char* format = error_format(error);
+    printf("%s\n", format);
 }

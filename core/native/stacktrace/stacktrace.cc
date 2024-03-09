@@ -36,6 +36,7 @@ const char* stacktrace_frame_read(const struct stacktrace_frame* frame, uintptr_
     int status;
     size_t size = 0;
     char name[STACKTRACE_PROCEDURE_SIZE];
+    char* result = (char*)calloc(STACKTRACE_PROCEDURE_SIZE, sizeof(char));
 
     unw_accessors_t* accessors = unw_get_accessors(unw_local_addr_space);
     unw_word_t unw_offset;
@@ -47,7 +48,7 @@ const char* stacktrace_frame_read(const struct stacktrace_frame* frame, uintptr_
     }
     *offset = (uintptr_t)unw_offset;
 
-    char* demangled_procedure = abi::__cxa_demangle(name, name, &size, &status);
+    char* demangled_procedure = abi::__cxa_demangle(name, result, &size, &status);
     if (status != 0 && status != -UNW_ENOMEM)
     {
         demangled_procedure = nullptr;
@@ -59,8 +60,8 @@ const char* stacktrace_frame_read(const struct stacktrace_frame* frame, uintptr_
     }
 
     size_t new_size = strlen(name) + 1;
+    result = size < new_size ? (char*)realloc(result, new_size) : result;
     size = size < new_size ? new_size : size;
-    char* result = size < new_size ? (char*)calloc(new_size, sizeof(char)) : (char*)calloc(size, sizeof(char));
     memcpy(result, name, size);
     return (const char*)result;
 }
@@ -75,11 +76,11 @@ int stacktrace_format(struct stacktrace* trace, char* buffer, size_t buffer_size
         const char* procedure = stacktrace_frame_read(frame, &offset);
         bool free = procedure != NULL;
         procedure = procedure != NULL ? procedure : STACKTRACE_UNKNOWN;
-        int written = snprintf(buffer, buffer_size, STACKTRACE_FRAME_FORMAT NEW_LINE, frame_number, frame->instruction, procedure, offset);
+        int written = snprintf(buffer + total, buffer_size - total, STACKTRACE_FRAME_FORMAT NEW_LINE, frame_number, frame->instruction, procedure, offset);
         if (written < 0)
         {
             if (free) delete procedure;
-            return 0;
+            return total;
         }
         total += written;
         if (free) delete procedure;

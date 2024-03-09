@@ -5,7 +5,7 @@ struct t
 {
 };
 
-int main(int argc, char const* argv[])
+NOINLINE void func()
 {
     struct error* err = core_error(error_new("test",
                                              error_field("test 0", false),
@@ -19,5 +19,10 @@ int main(int argc, char const* argv[])
     printf("%s\n", fmt);
     error_print(core_error(error_system(ENOMEM)));
     error_raise(err);
+}
+
+int main(int argc, char const* argv[])
+{
+    func();
     return 0;
 }
