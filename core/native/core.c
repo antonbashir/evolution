@@ -15,8 +15,7 @@ NOINLINE void func()
                                              error_field("test 3", -456),
                                              error_field("test 4", 456.135),
                                              error_field("test 5", "test")));
-    const char* fmt = error_format(err);
-    printf("%s\n", fmt);
+    printf("%s", error_format(err));
     error_print(core_error(error_system(ENOMEM)));
     error_raise(err);
 }
