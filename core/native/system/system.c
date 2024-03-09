@@ -60,8 +60,18 @@ void system_initialize(printer_function printer, printer_function error_printer,
 void system_initialize_default()
 {
 #ifdef TRACE
-    system_initialize(system_default_printer, system_default_error_printer, system_default_event_raiser, system_default_event_printer, SYSTEM_PRINT_LEVEL_TRACE);
+    system_initialize(
+        system_default_printer,
+        system_default_error_printer,
+        system_default_event_raiser,
+        system_default_event_printer,
+        SYSTEM_PRINT_LEVEL_TRACE);
 #else
-    system_initialize(system_default_printer, system_default_error_printer, system_default_event_raiser, system_default_event_printer, SYSTEM_PRINT_LEVEL_ERROR);
+    system_initialize(
+        system_default_printer,
+        system_default_error_printer,
+        system_default_event_raiser,
+        system_default_event_printer,
+        SYSTEM_PRINT_LEVEL_ERROR);
 #endif
 }
