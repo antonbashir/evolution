@@ -1,5 +1,6 @@
 #include <common/common.h>
 #include <common/library.h>
+#include <errors/error.h>
 #include <system/types.h>
 
 #define module_combine(a, b) a##_##b
@@ -27,6 +28,12 @@
 static const uint32_t _declare_module_id = module_id;
 static const char* _declare_module_name = _declare_module_label;
 
+static FORCEINLINE struct error* _module(error)(struct error* error)
+{
+    error_setup(error, _declare_module_id, _declare_module_name);
+    return error;
+}
+
 static FORCEINLINE void* _module(allocate)(uint32_t count, uint32_t size)
 {
     return calloc(count, size);
@@ -34,12 +41,12 @@ static FORCEINLINE void* _module(allocate)(uint32_t count, uint32_t size)
 
 static FORCEINLINE void* _module(allocate_checked)(uint32_t count, uint32_t size)
 {
-    // void* object = calloc(count, size);
-    // if (unlikely(object == NULL))
-    // {
-    //     error_exit(module, ENOMEM, strerror(ENOMEM));
-    // }
-    // return object;
+    void* object = calloc(count, size);
+    if (unlikely(object == NULL))
+    {
+        _module(error)(error_system(ENOMEM));
+    }
+    return object;
 }
 
 static FORCEINLINE void _module(free)(void* object)

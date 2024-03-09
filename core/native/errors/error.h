@@ -45,6 +45,41 @@ struct error
     const char* message;
 };
 
+static FORCEINLINE void error_field_set_boolean(struct error_field* field, bool value)
+{
+    field->type = MODULE_ERROR_TYPE_SIGNED;
+    field->signed_number = value;
+}
+
+static FORCEINLINE void error_field_set_double(struct error_field* field, double value)
+{
+    field->type = MODULE_ERROR_TYPE_DOUBLE;
+    field->double_number = value;
+}
+
+static FORCEINLINE void error_field_set_unsigned(struct error_field* field, uint64_t value)
+{
+    field->type = MODULE_ERROR_TYPE_UNSIGNED;
+    field->unsigned_number = value;
+}
+
+static FORCEINLINE void error_field_set_signed(struct error_field* field, int64_t value)
+{
+    field->type = MODULE_ERROR_TYPE_SIGNED;
+    field->signed_number = value;
+}
+
+static FORCEINLINE void error_field_set_string(struct error_field* field, const char* value)
+{
+    field->type = MODULE_ERROR_TYPE_STRING;
+    field->string = value;
+}
+
+static FORCEINLINE void error_field_set_any(struct error_field* field, ...)
+{
+    unreachable();
+}
+
 struct error* error_create(const char* function, const char* file, uint32_t line, const char* message);
 struct error* error_build(const char* function, const char* file, uint32_t line, const char* message, size_t fields, ...);
 void error_setup(struct error* error, uint32_t module_id, const char* module_name);
@@ -61,47 +96,7 @@ double error_get_double(struct error* error, const char* name);
 const char* error_get_string(struct error* error, const char* name);
 const char* error_format(struct error* error);
 void error_raise(struct error* error);
-
-#define error_new(message, ...)                                                                                                        \
-    ({                                                                                                                                 \
-        struct error* created##__LINE__ = error_build(__FUNCTION__, __FILE__, __LINE__, message, VA_LENGTH(__VA_ARGS__), __VA_ARGS__); \
-        created##__LINE__;                                                                                                             \
-    })
-
-static void error_field_set_boolean(struct error_field* field, bool value)
-{
-    field->type = MODULE_ERROR_TYPE_SIGNED;
-    field->signed_number = value;
-}
-
-static void error_field_set_double(struct error_field* field, double value)
-{
-    field->type = MODULE_ERROR_TYPE_DOUBLE;
-    field->double_number = value;
-}
-
-static void error_field_set_unsigned(struct error_field* field, uint64_t value)
-{
-    field->type = MODULE_ERROR_TYPE_UNSIGNED;
-    field->unsigned_number = value;
-}
-
-static void error_field_set_signed(struct error_field* field, int64_t value)
-{
-    field->type = MODULE_ERROR_TYPE_SIGNED;
-    field->signed_number = value;
-}
-
-static void error_field_set_string(struct error_field* field, const char* value)
-{
-    field->type = MODULE_ERROR_TYPE_STRING;
-    field->string = value;
-}
-
-static void error_field_set_any(struct error_field* field, ...)
-{
-    unreachable();
-}
+void error_print(struct error* error);
 
 #define error_field(field_name, field_value)                                                                         \
     ({                                                                                                               \
@@ -141,6 +136,10 @@ static void error_field_set_any(struct error_field* field, ...)
                                                 error_field_set_any))))))))))(field_pointer##__LINE__, field_value); \
         field##__LINE__;                                                                                             \
     })
+
+#define error_new(message, ...) error_build(__FUNCTION__, __FILE__, __LINE__, message, VA_LENGTH(__VA_ARGS__), __VA_ARGS__)
+
+#define error_system(code, ...) error_new(strerror(code), error_field("code", code), ##__VA_ARGS__)
 
 #if defined(__cplusplus)
 }

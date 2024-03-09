@@ -180,6 +180,10 @@ const char* error_format(struct error* error)
         unreachable();
     }
     size += snprintf(buffer, MODULE_ERROR_BUFFER, "(error): %s(...) %s:%d\n", error->function, error->file, error->line);
+    if (error->module_id != 0 && strlen(error->module_name) != 0)
+    {
+        size += snprintf(buffer + size, MODULE_ERROR_BUFFER - size, "module{%d} = %s\n", error->module_id, error->module_name);
+    }
     struct error_field* field;
     for (int i = 0; i < error->fields_count; ++i)
     {
@@ -206,4 +210,15 @@ const char* error_format(struct error* error)
 
 void error_raise(struct error* error)
 {
+  const char* format = error_format(error);
+  printf("%s\n", format);
+  stacktrace_print(0);
+  exit(-1);
+  unreachable();
+}
+
+void error_print(struct error* error)
+{
+  const char* format = error_format(error);
+  printf("%s\n", format);
 }
