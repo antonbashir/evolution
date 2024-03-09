@@ -63,7 +63,7 @@ extern "C"
 #endif
 
 #ifndef length_of
-#define length_of(array) (sizeof (array) / sizeof ((array)[0]))
+#define length_of(array) (sizeof(array) / sizeof((array)[0]))
 #endif
 
 #define typecheck(type, x)             \
@@ -75,9 +75,9 @@ extern "C"
     })
 
 #ifndef container_of
-#define container_of(ptr, type, member) ({ \
-	const typeof( ((type *)0)->member  ) *__mptr = (ptr); \
-	(type *)( (char *)__mptr - offsetof(type,member)  ); })
+#define container_of(ptr, type, member) (             \
+    const typeof(((type*)0)->member)* __mptr = (ptr); \
+    (type*)((char*)__mptr - offsetof(type, member));)
 #endif
 
 #if defined(__cplusplus)
@@ -166,13 +166,6 @@ extern "C"
 #define API_EXPORT extern __attribute__((nothrow, visibility("default")))
 #else
 #define API_EXPORT extern
-#endif
-
-#if __has_attribute(format) || defined(__GNUC__)
-#define CFORMAT(_archetype, _stringindex, _firsttocheck) \
-    __attribute__((format(_archetype, _stringindex, _firsttocheck)))
-#else
-#define CFORMAT(archetype, stringindex, firsttocheck)
 #endif
 
 #if __has_attribute(packed) || defined(__GNUC__)
