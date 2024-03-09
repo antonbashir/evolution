@@ -10,7 +10,6 @@ static const int crash_signals[] = {SIGILL, SIGBUS, SIGFPE, SIGSEGV};
 
 static void crash_signal_callback(int signal, siginfo_t* information, void* context)
 {
-    print_event(event_new_information("hello", event_field("test", "test 1234")));
     static volatile sig_atomic_t crashing = 0;
     struct event* crash_event = NULL;
     const char* signal_code = NULL;
