@@ -20,16 +20,16 @@ struct memory_io_buffers
 
 extern FORCEINLINE struct memory_io_buffers* memory_io_buffers_create(struct memory* memory)
 {
-    struct memory_io_buffers* pool = memory_new(memory_io_buffers);
+    struct memory_io_buffers* pool = memory_module_new_checked(sizeof(struct memory_io_buffers));
     pool->memory = memory;
     if (memory_pool_create(&pool->input_buffers, memory, sizeof(struct memory_input_buffer)))
     {
-        memory_delete(pool);
+        memory_module_delete(pool);
         return NULL;
     }
     if (memory_pool_create(&pool->output_buffers, memory, sizeof(struct memory_output_buffer)))
     {
-        memory_delete(pool);
+        memory_module_delete(pool);
         return NULL;
     }
     return pool;
@@ -39,7 +39,7 @@ extern FORCEINLINE void memory_io_buffers_destroy(struct memory_io_buffers* pool
 {
     memory_pool_destroy(&pool->input_buffers);
     memory_pool_destroy(&pool->output_buffers);
-    memory_delete(pool);
+    memory_module_delete(pool);
 }
 
 extern FORCEINLINE struct memory_input_buffer* memory_io_buffers_allocate_input(struct memory_io_buffers* buffers, size_t initial_capacity)

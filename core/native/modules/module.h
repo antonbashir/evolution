@@ -4,7 +4,7 @@
 #include <panic/panic.h>
 #include <system/types.h>
 
-#define module_combine(a, b) a##_##b
+#define module_combine(a, b) a##_module_##b
 #define module_append(a, b) a##b
 #define module_to_string(x) #x
 #define module_evaluate_combine(a, b) module_combine(a, b)
@@ -35,6 +35,21 @@ static FORCEINLINE struct event* _module(event)(struct event* event)
     return event;
 }
 
+static FORCEINLINE void* _module(new)(uint32_t size)
+{
+    return calloc(1, size);
+}
+
+static FORCEINLINE void* _module(new_checked)(uint32_t size)
+{
+    void* object = calloc(1, size);
+    if (unlikely(object == NULL))
+    {
+        raise_panic(_module(event)(event_new_system_panic(ENOMEM)));
+    }
+    return object;
+}
+
 static FORCEINLINE void* _module(allocate)(uint32_t count, uint32_t size)
 {
     return calloc(count, size);
@@ -50,7 +65,7 @@ static FORCEINLINE void* _module(allocate_checked)(uint32_t count, uint32_t size
     return object;
 }
 
-static FORCEINLINE void _module(free)(void* object)
+static FORCEINLINE void _module(delete)(void* object)
 {
     free(object);
 }
