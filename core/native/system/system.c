@@ -35,6 +35,7 @@ void system_default_event_printer(struct event* event)
     {
         stacktrace_print(0);
     }
+    event_destroy(event);
 }
 
 void system_default_event_raiser(struct event* event)

@@ -1,5 +1,6 @@
 #include "core.h"
 #include <events/events.h>
+#include <modules/modules.h>
 #include <panic/panic.h>
 #include <system/network.h>
 #include <system/scheduling.h>
@@ -19,8 +20,5 @@ void core_initialize(struct core_module_configuration* configuration)
         system_default_event_raiser,
         system_default_event_printer,
         configuration->print_level);
-    int* a = NULL;
-    int b = (*a);
-    b++;
-    printf("%d\n", b);
+    print_event(core_event(event_new_information_empty("test")));
 }
