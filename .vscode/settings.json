@@ -129,6 +129,7 @@
     "printer.h": "c",
     "signal.h": "c",
     "errno.h": "c",
-    "limits.h": "c"
+    "limits.h": "c",
+    "cstdlib": "cpp"
   },
 }

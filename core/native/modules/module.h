@@ -3,6 +3,7 @@
 #include <events/events.h>
 #include <panic/panic.h>
 #include <printer/printer.h>
+#include <stacktrace/stacktrace.h>
 #include <system/types.h>
 
 #define module_combine(a, b) a##_module_##b
@@ -38,13 +39,13 @@ static FORCEINLINE struct event* _module(event)(struct event* event)
 
 static FORCEINLINE void* _module(new)(uint32_t size)
 {
-    trace_event(_module(event)(event_new_trace_stamp()));
+    trace_event(_module(event)(event_new_trace_stamp(event_field(MODULE_EVENT_FIELD_CALLER, stacktrace_callers(1, 3)))));
     return calloc(1, size);
 }
 
 static FORCEINLINE void* _module(new_checked)(uint32_t size)
 {
-    trace_event(_module(event)(event_new_trace_stamp()));
+    trace_event(_module(event)(event_new_trace_stamp(event_field(MODULE_EVENT_FIELD_CALLER, stacktrace_callers(1, 3)))));
     void* object = calloc(1, size);
     if (unlikely(object == NULL))
     {
@@ -55,13 +56,13 @@ static FORCEINLINE void* _module(new_checked)(uint32_t size)
 
 static FORCEINLINE void* _module(allocate)(uint32_t count, uint32_t size)
 {
-    trace_event(_module(event)(event_new_trace_stamp()));
+    trace_event(_module(event)(event_new_trace_stamp(event_field(MODULE_EVENT_FIELD_CALLER, stacktrace_callers(1, 3)))));
     return calloc(count, size);
 }
 
 static FORCEINLINE void* _module(allocate_checked)(uint32_t count, uint32_t size)
 {
-    trace_event(_module(event)(event_new_trace_stamp()));
+    trace_event(_module(event)(event_new_trace_stamp(event_field(MODULE_EVENT_FIELD_CALLER, stacktrace_callers(1, 3)))));
     void* object = calloc(count, size);
     if (unlikely(object == NULL))
     {
@@ -72,7 +73,7 @@ static FORCEINLINE void* _module(allocate_checked)(uint32_t count, uint32_t size
 
 static FORCEINLINE void _module(check_object)(void* object)
 {
-    trace_event(_module(event)(event_new_trace_stamp()));
+    trace_event(_module(event)(event_new_trace_stamp(event_field(MODULE_EVENT_FIELD_CALLER, stacktrace_callers(1, 3)))));
     if (unlikely(object == NULL))
     {
         raise_panic(_module(event)(event_new_system_panic(ENOMEM)));
@@ -81,7 +82,7 @@ static FORCEINLINE void _module(check_object)(void* object)
 
 static FORCEINLINE void _module(check_code)(int32_t code)
 {
-    trace_event(_module(event)(event_new_trace_stamp()));
+    trace_event(_module(event)(event_new_trace_stamp(event_field(MODULE_EVENT_FIELD_CALLER, stacktrace_callers(1, 3)))));
     if (unlikely(code != 0))
     {
         raise_panic(_module(event)(event_new_system_panic(ENOMEM)));
@@ -90,7 +91,7 @@ static FORCEINLINE void _module(check_code)(int32_t code)
 
 static FORCEINLINE void _module(delete)(void* object)
 {
-    trace_event(_module(event)(event_new_trace_stamp()));
+    trace_event(_module(event)(event_new_trace_stamp(event_field(MODULE_EVENT_FIELD_CALLER, stacktrace_callers(1, 3)))));
     free(object);
 }
 

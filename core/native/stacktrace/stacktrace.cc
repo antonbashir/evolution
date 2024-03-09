@@ -99,3 +99,22 @@ void stacktrace_print(int skip)
         print_string(buffer);
     }
 }
+
+int stacktrace_format_at(int skip, int index, char* buffer, size_t size)
+{
+    struct stacktrace trace;
+    stacktrace_collect_current(&trace, skip + 1);
+    uintptr_t offset = 0;
+    const struct stacktrace_frame* frame = &trace.frames[index];
+    const char* procedure = stacktrace_frame_read(frame, &offset);
+    bool free = procedure != NULL;
+    procedure = procedure != NULL ? procedure : STACKTRACE_UNKNOWN;
+    int written = snprintf(buffer, size, "%s:%lu", procedure, offset);
+    if (written < 0)
+    {
+        if (free) delete procedure;
+        return written;
+    }
+    if (free) delete procedure;
+    return written;
+}

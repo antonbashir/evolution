@@ -17,6 +17,12 @@ extern "C"
 #define event_new_system_error(code, ...) event_new_error(strerror(code), event_field(MODULE_EVENT_FIELD_CODE, code), ##__VA_ARGS__)
 #define event_new_system_panic(code, ...) event_new_panic(strerror(code), event_field(MODULE_EVENT_FIELD_CODE, code), ##__VA_ARGS__)
 
+#define event_new_trace_stamp(...) event_build(MODULE_EVENT_LEVEL_TRACE, __FUNCTION__, __FILENAME__, __LINE__, "", VA_LENGTH(__VA_ARGS__), __VA_ARGS__)
+#define event_new_information_stamp(...) event_build(MODULE_EVENT_LEVEL_INFORMATION, __FUNCTION__, __FILENAME__, __LINE__, "", VA_LENGTH(__VA_ARGS__), __VA_ARGS__)
+#define event_new_warning_stamp(...) event_build(MODULE_EVENT_LEVEL_WARNING, __FUNCTION__, __FILENAME__, __LINE__, "", VA_LENGTH(__VA_ARGS__), __VA_ARGS__)
+#define event_new_error_stamp(...) event_build(MODULE_EVENT_LEVEL_ERROR, __FUNCTION__, __FILENAME__, __LINE__, "", VA_LENGTH(__VA_ARGS__), __VA_ARGS__)
+#define event_new_panic_stamp(...) event_build(MODULE_EVENT_LEVEL_PANIC, __FUNCTION__, __FILENAME__, __LINE__, "", VA_LENGTH(__VA_ARGS__), __VA_ARGS__)
+
 #define event_new_trace_empty(message) event_build(MODULE_EVENT_LEVEL_TRACE, __FUNCTION__, __FILENAME__, __LINE__, message, 0)
 #define event_new_information_empty(message) event_build(MODULE_EVENT_LEVEL_INFORMATION, __FUNCTION__, __FILENAME__, __LINE__, message, 0)
 #define event_new_warning_empty(message) event_build(MODULE_EVENT_LEVEL_WARNING, __FUNCTION__, __FILENAME__, __LINE__, message, 0)
@@ -25,11 +31,11 @@ extern "C"
 #define event_new_system_error_empty(code) event_new_error(strerror(code), event_field(MODULE_EVENT_FIELD_CODE, code), 0)
 #define event_new_system_panic_empty(code) event_new_panic(strerror(code), event_field(MODULE_EVENT_FIELD_CODE, code), 0)
 
-#define event_new_trace_stamp() event_build(MODULE_EVENT_LEVEL_TRACE, __FUNCTION__, __FILENAME__, __LINE__, "", 0)
-#define event_new_information_stamp() event_build(MODULE_EVENT_LEVEL_INFORMATION, __FUNCTION__, __FILENAME__, __LINE__, "", 0)
-#define event_new_warning_stamp() event_build(MODULE_EVENT_LEVEL_WARNING, __FUNCTION__, __FILENAME__, __LINE__, "", 0)
-#define event_new_error_stamp() event_build(MODULE_EVENT_LEVEL_ERROR, __FUNCTION__, __FILENAME__, __LINE__, "", 0)
-#define event_new_panic_stamp() event_build(MODULE_EVENT_LEVEL_PANIC, __FUNCTION__, __FILENAME__, __LINE__, "", 0)
+#define event_new_trace_stamp_empty() event_build(MODULE_EVENT_LEVEL_TRACE, __FUNCTION__, __FILENAME__, __LINE__, "", 0)
+#define event_new_information_stamp_empty() event_build(MODULE_EVENT_LEVEL_INFORMATION, __FUNCTION__, __FILENAME__, __LINE__, "", 0)
+#define event_new_warning_stamp_empty() event_build(MODULE_EVENT_LEVEL_WARNING, __FUNCTION__, __FILENAME__, __LINE__, "", 0)
+#define event_new_error_stamp_empty() event_build(MODULE_EVENT_LEVEL_ERROR, __FUNCTION__, __FILENAME__, __LINE__, "", 0)
+#define event_new_panic_stamp_empty() event_build(MODULE_EVENT_LEVEL_PANIC, __FUNCTION__, __FILENAME__, __LINE__, "", 0)
 
 #if defined(__cplusplus)
 }

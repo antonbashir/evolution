@@ -18,6 +18,7 @@ extern "C"
 #define MODULE_EVENT_TYPE_BOOLEAN 6
 
 #define MODULE_EVENT_FIELD_CODE "code"
+#define MODULE_EVENT_FIELD_CALLER "caller"
 
 struct event_field
 {
@@ -86,51 +87,57 @@ static void event_field_set_any(struct event_field* field, ...)
     va_end(args);
 }
 
-#define event_field(field_name, field_value)                                                                                 \
-    ({                                                                                                                       \
-        struct event_field field##__LINE__;                                                                                  \
-        field##__LINE__.name = field_name;                                                                                   \
-        choose_expression(                                                                                                   \
-            types_compatible(typeof(field_value), char),                                                                     \
-            event_field_set_character,                                                                                       \
-            choose_expression(                                                                                               \
-                types_compatible(typeof(field_value), bool),                                                                 \
-                event_field_set_boolean,                                                                                     \
-                choose_expression(                                                                                           \
-                    types_compatible(typeof(field_value), uint8_t),                                                          \
-                    event_field_set_unsigned,                                                                                \
-                    choose_expression(                                                                                       \
-                        types_compatible(typeof(field_value), uint8_t),                                                      \
-                        event_field_set_unsigned,                                                                            \
-                        choose_expression(                                                                                   \
-                            types_compatible(typeof(field_value), int16_t),                                                  \
-                            event_field_set_signed,                                                                          \
-                            choose_expression(                                                                               \
-                                types_compatible(typeof(field_value), uint16_t),                                             \
-                                event_field_set_unsigned,                                                                    \
-                                choose_expression(                                                                           \
-                                    types_compatible(typeof(field_value), int32_t),                                          \
-                                    event_field_set_signed,                                                                  \
-                                    choose_expression(                                                                       \
-                                        types_compatible(typeof(field_value), uint32_t),                                     \
-                                        event_field_set_unsigned,                                                            \
-                                        choose_expression(                                                                   \
-                                            types_compatible(typeof(field_value), int64_t),                                  \
-                                            event_field_set_signed,                                                          \
-                                            choose_expression(                                                               \
-                                                types_compatible(typeof(field_value), uint64_t),                             \
-                                                event_field_set_unsigned,                                                    \
-                                                choose_expression(                                                           \
-                                                    types_compatible(typeof(field_value), float),                            \
-                                                    event_field_set_double,                                                  \
-                                                    choose_expression(                                                       \
-                                                        types_compatible(typeof(field_value), double),                       \
-                                                        event_field_set_double,                                              \
-                                                        choose_expression(                                                   \
-                                                            types_compatible(typeof(field_value), char[]),                   \
-                                                            event_field_set_string,                                          \
-                                                            event_field_set_any)))))))))))))(&field##__LINE__, field_value); \
-        field##__LINE__;                                                                                                     \
+#define event_field(field_name, field_value)                                                                                           \
+    ({                                                                                                                                 \
+        struct event_field field##__LINE__;                                                                                            \
+        field##__LINE__.name = field_name;                                                                                             \
+        choose_expression(                                                                                                             \
+            types_compatible(typeof(field_value), char),                                                                               \
+            event_field_set_character,                                                                                                 \
+            choose_expression(                                                                                                         \
+                types_compatible(typeof(field_value), bool),                                                                           \
+                event_field_set_boolean,                                                                                               \
+                choose_expression(                                                                                                     \
+                    types_compatible(typeof(field_value), uint8_t),                                                                    \
+                    event_field_set_unsigned,                                                                                          \
+                    choose_expression(                                                                                                 \
+                        types_compatible(typeof(field_value), uint8_t),                                                                \
+                        event_field_set_unsigned,                                                                                      \
+                        choose_expression(                                                                                             \
+                            types_compatible(typeof(field_value), int16_t),                                                            \
+                            event_field_set_signed,                                                                                    \
+                            choose_expression(                                                                                         \
+                                types_compatible(typeof(field_value), uint16_t),                                                       \
+                                event_field_set_unsigned,                                                                              \
+                                choose_expression(                                                                                     \
+                                    types_compatible(typeof(field_value), int32_t),                                                    \
+                                    event_field_set_signed,                                                                            \
+                                    choose_expression(                                                                                 \
+                                        types_compatible(typeof(field_value), uint32_t),                                               \
+                                        event_field_set_unsigned,                                                                      \
+                                        choose_expression(                                                                             \
+                                            types_compatible(typeof(field_value), int64_t),                                            \
+                                            event_field_set_signed,                                                                    \
+                                            choose_expression(                                                                         \
+                                                types_compatible(typeof(field_value), uint64_t),                                       \
+                                                event_field_set_unsigned,                                                              \
+                                                choose_expression(                                                                     \
+                                                    types_compatible(typeof(field_value), float),                                      \
+                                                    event_field_set_double,                                                            \
+                                                    choose_expression(                                                                 \
+                                                        types_compatible(typeof(field_value), double),                                 \
+                                                        event_field_set_double,                                                        \
+                                                        choose_expression(                                                             \
+                                                            types_compatible(typeof(field_value), char[]),                             \
+                                                            event_field_set_string,                                                    \
+                                                            choose_expression(                                                         \
+                                                                types_compatible(typeof(field_value), char*),                          \
+                                                                event_field_set_string,                                                \
+                                                                choose_expression(                                                     \
+                                                                    types_compatible(typeof(field_value), const char*),                \
+                                                                    event_field_set_string,                                            \
+                                                                    event_field_set_any)))))))))))))))(&field##__LINE__, field_value); \
+        field##__LINE__;                                                                                                               \
     })
 
 #if defined(__cplusplus)
