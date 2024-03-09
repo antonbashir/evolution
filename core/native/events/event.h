@@ -1,6 +1,7 @@
 #ifndef COMMON_EVENTS_EVENT_H
 #define COMMON_EVENTS_EVENT_H
 
+#include <system/time.h>
 #include <system/types.h>
 
 #if defined(__cplusplus)
@@ -8,14 +9,14 @@ extern "C"
 {
 #endif
 
-#define MODULE_EVENT_BUFFER 1024
+#define MODULE_EVENT_BUFFER 2048
 #define MODULE_EVENT_FIELDS_MAXIMUM 128
 
-#define MODULE_EVENT_LEVEL_TRACE 0
-#define MODULE_EVENT_LEVEL_INFORMATION 1
+#define MODULE_EVENT_LEVEL_PANIC 0
+#define MODULE_EVENT_LEVEL_ERROR 1
 #define MODULE_EVENT_LEVEL_WARNING 2
-#define MODULE_EVENT_LEVEL_ERROR 3
-#define MODULE_EVENT_LEVEL_PANIC 4
+#define MODULE_EVENT_LEVEL_INFORMATION 3
+#define MODULE_EVENT_LEVEL_TRACE 4
 
 #define MODULE_EVENT_LEVEL_UNKNOWN_LABEL "(unknown)";
 #define MODULE_EVENT_LEVEL_TRACE_LABEL "(trace)";
@@ -35,6 +36,7 @@ struct event
     uint32_t line;
     uint32_t raised_module_id;
     uint8_t level;
+    struct timespec timestamp;
 };
 
 struct event* event_create(uint8_t level, const char* function, const char* file, uint32_t line, const char* message);
@@ -47,6 +49,8 @@ void event_set_signed(struct event* event, const char* name, int64_t value);
 void event_set_unsigned(struct event* event, const char* name, uint64_t value);
 void event_set_double(struct event* event, const char* name, double value);
 void event_set_string(struct event* event, const char* name, const char* value);
+void event_set_address(struct event* event, const char* name, void* value);
+void* event_get_address(struct event* event, const char* name);
 bool event_get_boolean(struct event* event, const char* name);
 int64_t event_get_signed(struct event* event, const char* name);
 uint64_t event_get_unsigned(struct event* event, const char* name);

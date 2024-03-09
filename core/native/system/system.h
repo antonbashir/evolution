@@ -25,6 +25,7 @@ struct system
 {
     bool initialized;
     printer_function on_print;
+    printer_function on_print_error;
     event_raiser_function on_event_raise;
     event_printer_function on_event_print;
     int8_t print_level;
@@ -32,8 +33,12 @@ struct system
 
 extern struct system system_instance;
 
-void system_initialize(printer_function printer, event_raiser_function event_raiser, event_printer_function event_printer, int8_t print_level);
+void system_initialize(printer_function printer, printer_function error_printer, event_raiser_function event_raiser, event_printer_function event_printer, int8_t print_level);
 void system_initialize_default();
+void system_default_printer(const char* format, ...);
+void system_default_error_printer(const char* format, ...);
+void system_default_event_printer(struct event* event);
+void system_default_event_raiser(struct event* event);
 
 FORCEINLINE struct system* system_get()
 {

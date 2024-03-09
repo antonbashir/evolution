@@ -62,6 +62,10 @@ extern "C"
 #define offset_of(type, member) ((size_t) & ((type*)0)->member)
 #endif
 
+#ifndef length_of
+#define length_of(array) (sizeof (array) / sizeof ((array)[0]))
+#endif
+
 #define typecheck(type, x)             \
     ({                                 \
         type __dummy;                  \

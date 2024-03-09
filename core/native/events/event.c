@@ -1,6 +1,7 @@
 #include "event.h"
 #include <printer/printer.h>
 #include <stacktrace/stacktrace.h>
+#include <strings/format.h>
 #include "field.h"
 
 #define _raise(format, ...)                                                                                \
@@ -65,6 +66,9 @@ struct event* event_create(uint8_t level, const char* function, const char* file
     created->line = line;
     created->message = message;
     created->level = level;
+    created->timestamp = time_now_real();
+    created->raised_module_id = -1;
+    created->raised_module_name = "unknown";
     return created;
 }
 
@@ -131,6 +135,21 @@ void event_set_double(struct event* event, const char* name, double value)
 void event_set_string(struct event* event, const char* name, const char* value)
 {
     event_set_field(event, name, string, value);
+}
+
+void event_set_address(struct event* event, const char* name, void* value)
+{
+    event_set_field(event, name, address, value);
+}
+
+void* event_get_address(struct event* event, const char* name)
+{
+    struct event_field* field = event_find_field(event, name);
+    if (field == NULL)
+    {
+        _raise("event field %s is not found", name);
+    }
+    return field->address;
 }
 
 bool event_get_boolean(struct event* event, const char* name)
@@ -211,7 +230,7 @@ const char* event_format(struct event* event)
             type = MODULE_EVENT_LEVEL_PANIC_LABEL;
             break;
     }
-    written = snprintf(buffer, MODULE_EVENT_BUFFER, "%s: %s(...) %s:%d\n", type, event->function, event->file, event->line);
+    written = snprintf(buffer, MODULE_EVENT_BUFFER, "[%s] %s: %s(...) %s:%d\n", time_format_local(event->timestamp), type, event->function, event->file, event->line);
     if (written < 0)
     {
         return buffer;
@@ -243,6 +262,9 @@ const char* event_format(struct event* event)
                 break;
             case MODULE_EVENT_TYPE_STRING:
                 written = snprintf(buffer + size, MODULE_EVENT_BUFFER - size, "%s = %s\n", field->name, field->string);
+                break;
+            case MODULE_EVENT_TYPE_ADDRESS:
+                written = snprintf(buffer + size, MODULE_EVENT_BUFFER - size, "%s = %p\n", field->name, field->address);
                 break;
         }
         if (written < 0)

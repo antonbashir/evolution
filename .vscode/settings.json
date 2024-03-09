@@ -126,6 +126,9 @@
     "string.h": "c",
     "event.h": "c",
     "panic.h": "c",
-    "printer.h": "c"
+    "printer.h": "c",
+    "signal.h": "c",
+    "errno.h": "c",
+    "limits.h": "c"
   },
 }

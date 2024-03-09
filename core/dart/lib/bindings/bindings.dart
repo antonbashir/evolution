@@ -10,6 +10,11 @@ final class iovec extends Struct {
   external int iov_len;
 }
 
+final class core_module_configuration extends Struct {
+  @Uint8()
+  external int print_level;
+}
+
 @Native<Int Function(Pointer<Void>)>()
 external int dlclose(Pointer<Void> handle);
 
@@ -18,3 +23,6 @@ external Pointer<Void> dlopen(Pointer<Char> file, int mode);
 
 @Native<Void Function(Int32)>(symbol: 'system_shutdown_descriptor', assetId: 'core-bindings', isLeaf: true)
 external void system_shutdown_descriptor(int fd);
+
+@Native<Void Function(Pointer<core_module_configuration>)>(symbol: 'core_initialize', assetId: 'core-bindings', isLeaf: true)
+external void core_initialize(Pointer<core_module_configuration> configuration);

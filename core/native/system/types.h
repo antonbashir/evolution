@@ -10,6 +10,8 @@
 #include <string.h>                
 #include <unistd.h>                
 #include <stdarg.h>
+#include <errno.h>
+#include <limits.h>
 
 #if defined(__cplusplus)
 extern "C"

@@ -1,4 +1,5 @@
 import '../core.dart';
+import 'configuration.dart';
 
 @inline
 String systemError(code) => "code = $code, message = ${SystemErrors.of(-code)}";
@@ -7,6 +8,6 @@ String systemError(code) => "code = $code, message = ${SystemErrors.of(-code)}";
 void systemShutdownDescriptor(int descriptor) => system_shutdown_descriptor(descriptor);
 
 void main(List<String> args) {
-  CoreModule.load();
-  systemShutdownDescriptor(12);
+  CoreModule(CoreModuleConfiguration(printLevel: 3));
+  
 }
