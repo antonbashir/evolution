@@ -4,16 +4,16 @@
 #include <strings/format.h>
 #include "field.h"
 
-#define _raise(format, ...)                                                                                \
+#define _raise(format, ...)                                                                                    \
     print_message("(panic): %s(...) %s:%d - " format "\n", __FUNCTION__, __FILENAME__, __LINE__, __VA_ARGS__); \
-    stacktrace_print(0);                                                                                   \
-    exit(-1);                                                                                              \
+    stacktrace_print(0);                                                                                       \
+    exit(-1);                                                                                                  \
     unreachable();
 
-#define _raise_system(code)                                                                                                    \
+#define _raise_system(code)                                                                                                        \
     print_message("(panic): %s(...) %s:%d - code = %d, message = %s", __FUNCTION__, __FILENAME__, __LINE__, code, strerror(code)); \
-    stacktrace_print(0);                                                                                                       \
-    exit(-1);                                                                                                                  \
+    stacktrace_print(0);                                                                                                           \
+    exit(-1);                                                                                                                      \
     unreachable();
 
 #define event_set_field(event, name, type, value)                                     \
@@ -295,6 +295,9 @@ const char* event_format(struct event* event)
         }
         size += written;
     }
-    snprintf(buffer + size, MODULE_EVENT_BUFFER - size, "message = %s\n", event->message);
+    if (strlen(event->message) != 0)
+    {
+        snprintf(buffer + size, MODULE_EVENT_BUFFER - size, "message = %s\n", event->message);
+    }
     return buffer;
 }

@@ -1,39 +1,41 @@
 #include "memory_state.h"
-#include <memory.h>
-#include <memory_io_buffers.h>
-#include <memory_static_buffers.h>
+#include <buffers/memory_io_buffers.h>
+#include <buffers/memory_static_buffers.h>
+#include <memory/memory.h>
 #include <system/system.h>
 
-int32_t memory_state_create(struct memory_state* memory, struct memory_configuration* configuration)
+int32_t memory_state_create(struct memory_state* state, struct memory_configuration* configuration)
 {
-    memory->memory_instance = calloc(1, sizeof(struct memory));
-    if (!memory->memory_instance)
+    state->memory_instance = memory_module_new(sizeof(struct memory));
+    if (state->memory_instance == NULL)
+    {
+        return -ENOMEM;
+    }
+    if (memory_create(state->memory_instance, configuration->quota_size, configuration->preallocation_size, configuration->slab_size))
     {
         return -ENOMEM;
     }
 
-
-    memory->static_buffers = calloc(1, sizeof(struct memory_static_buffers));
-    if (!memory->static_buffers)
+    state->static_buffers = memory_module_new(sizeof(struct memory_static_buffers));
+    if (state->static_buffers == NULL)
     {
         return -ENOMEM;
     }
 
-    memory->io_buffers = calloc(1, sizeof(struct memory_io_buffers));
-    if (!memory->io_buffers)
+    state->static_buffers = memory_static_buffers_create(configuration->static_buffers_capacity, configuration->static_buffer_size);
+    if (state->static_buffers != NULL)
     {
         return -ENOMEM;
     }
 
-    if (memory_create(memory->memory_instance, configuration->quota_size, configuration->preallocation_size, configuration->slab_size))
+    state->io_buffers = memory_module_new(sizeof(struct memory_io_buffers));
+    if (!state->io_buffers)
     {
         return -ENOMEM;
     }
-    if (memory_static_buffers_create(memory->static_buffers, configuration->static_buffers_capacity, configuration->static_buffer_size))
-    {
-        return -ENOMEM;
-    }
-    if (memory_io_buffers_create(memory->io_buffers, memory->memory_instance))
+
+    state->io_buffers = memory_io_buffers_create(state->memory_instance);
+    if (state->io_buffers != NULL)
     {
         return -ENOMEM;
     }
@@ -41,12 +43,12 @@ int32_t memory_state_create(struct memory_state* memory, struct memory_configura
     return 0;
 }
 
-void memory_state_destroy(struct memory_state* memory)
+void memory_state_destroy(struct memory_state* state)
 {
-    memory_static_buffers_destroy(memory->static_buffers);
-    memory_io_buffers_destroy(memory->io_buffers);
-    memory_destroy(memory->memory_instance);
-    free(memory->static_buffers);
-    free(memory->io_buffers);
-    free(memory->memory_instance);
+    memory_static_buffers_destroy(state->static_buffers);
+    memory_io_buffers_destroy(state->io_buffers);
+    memory_destroy(state->memory_instance);
+    free(state->static_buffers);
+    free(state->io_buffers);
+    free(state->memory_instance);
 }

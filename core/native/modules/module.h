@@ -2,6 +2,7 @@
 #include <common/library.h>
 #include <events/events.h>
 #include <panic/panic.h>
+#include <printer/printer.h>
 #include <system/types.h>
 
 #define module_combine(a, b) a##_module_##b
@@ -37,11 +38,13 @@ static FORCEINLINE struct event* _module(event)(struct event* event)
 
 static FORCEINLINE void* _module(new)(uint32_t size)
 {
+    trace_event(_module(event)(event_new_trace_stamp()));
     return calloc(1, size);
 }
 
 static FORCEINLINE void* _module(new_checked)(uint32_t size)
 {
+    trace_event(_module(event)(event_new_trace_stamp()));
     void* object = calloc(1, size);
     if (unlikely(object == NULL))
     {
@@ -52,11 +55,13 @@ static FORCEINLINE void* _module(new_checked)(uint32_t size)
 
 static FORCEINLINE void* _module(allocate)(uint32_t count, uint32_t size)
 {
+    trace_event(_module(event)(event_new_trace_stamp()));
     return calloc(count, size);
 }
 
 static FORCEINLINE void* _module(allocate_checked)(uint32_t count, uint32_t size)
 {
+    trace_event(_module(event)(event_new_trace_stamp()));
     void* object = calloc(count, size);
     if (unlikely(object == NULL))
     {
@@ -65,8 +70,27 @@ static FORCEINLINE void* _module(allocate_checked)(uint32_t count, uint32_t size
     return object;
 }
 
+static FORCEINLINE void _module(check_object)(void* object)
+{
+    trace_event(_module(event)(event_new_trace_stamp()));
+    if (unlikely(object == NULL))
+    {
+        raise_panic(_module(event)(event_new_system_panic(ENOMEM)));
+    }
+}
+
+static FORCEINLINE void _module(check_code)(int32_t code)
+{
+    trace_event(_module(event)(event_new_trace_stamp()));
+    if (unlikely(code != 0))
+    {
+        raise_panic(_module(event)(event_new_system_panic(ENOMEM)));
+    }
+}
+
 static FORCEINLINE void _module(delete)(void* object)
 {
+    trace_event(_module(event)(event_new_trace_stamp()));
     free(object);
 }
 

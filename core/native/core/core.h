@@ -10,7 +10,7 @@ extern "C"
 
 struct core_module_configuration
 {
-    uint8_t print_level;
+    uint8_t print_level;  // Dart
 };
 
 void core_initialize(struct core_module_configuration* configuration);

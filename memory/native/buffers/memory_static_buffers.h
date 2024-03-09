@@ -4,7 +4,7 @@
 #include <common/common.h>
 #include <modules/modules.h>
 #include <system/types.h>
-#include "memory.h"
+#include <memory/memory.h>
 
 #if defined(__cplusplus)
 extern "C"

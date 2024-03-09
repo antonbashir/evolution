@@ -1,10 +1,10 @@
 #ifndef MEMORY_STATE_MEMORY_STATE_H
 #define MEMORY_STATE_MEMORY_STATE_H
 
-#include <memory.h>
-#include <memory_configuration.h>
-#include <memory_io_buffers.h>
-#include <memory_static_buffers.h>
+#include <buffers/memory_io_buffers.h>
+#include <buffers/memory_static_buffers.h>
+#include <memory/memory.h>
+#include <memory/memory_configuration.h>
 #include <system/types.h>
 
 #if defined(__cplusplus)
