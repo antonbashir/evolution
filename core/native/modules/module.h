@@ -1,6 +1,7 @@
 #include <common/common.h>
 #include <common/library.h>
 #include <events/events.h>
+#include <panic/panic.h>
 #include <system/types.h>
 
 #define module_combine(a, b) a##_##b
@@ -44,7 +45,7 @@ static FORCEINLINE void* _module(allocate_checked)(uint32_t count, uint32_t size
     void* object = calloc(count, size);
     if (unlikely(object == NULL))
     {
-        _module(event)(event_system_panic(ENOMEM));
+        raise_panic(_module(event)(event_new_system_panic(ENOMEM)));
     }
     return object;
 }

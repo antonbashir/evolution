@@ -2,9 +2,6 @@
 #define COMMON_ERRORS_event_H
 
 #include <common/common.h>
-#include <common/library.h>
-#include <stacktrace/stacktrace.h>
-#include <stdint.h>
 #include <system/types.h>
 
 #if defined(__cplusplus)

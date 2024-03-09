@@ -124,6 +124,8 @@
     "numbers": "c",
     "events.h": "c",
     "string.h": "c",
-    "event.h": "c"
+    "event.h": "c",
+    "panic.h": "c",
+    "printer.h": "c"
   },
 }

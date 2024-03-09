@@ -96,6 +96,6 @@ void stacktrace_print(int skip)
     stacktrace_collect_current(&trace, skip + 2);
     if (stacktrace_format(&trace, buffer, STACKTRACE_PRINT_BUFFER) > 0)
     {
-        system_print_string(buffer);
+        print_string(buffer);
     }
 }
