@@ -4,10 +4,7 @@ project(core_native C CXX ASM)
 
 include_directories(${PROJECT_BINARY_DIR})
 include_directories(${PROJECT_SOURCE_DIR})
-include_directories(${LIBRARIES_INCLUDE_DIRECTORY}/collections)
-include_directories(${core_libunwind_SOURCE_DIR}/include)
-include_directories(include)
-
+include_directories(${CORE_LIBUNWIND_INCLUDE})
 
 file(GLOB sources
   **/*.c
@@ -17,9 +14,6 @@ file(GLOB sources
   *.c
   *.cc
 )
-
-message(STATUS ${CORE_LIBUNWIND_LIBRARY})
-message(STATUS ${CORE_LIBUNWIND_LIBRARY_SYSTEM})
 
 add_library(core_debug_linux_x64 SHARED ${sources})
 add_dependencies(core_debug_linux_x64 core_libunwind)
@@ -36,4 +30,5 @@ copy_to_assets(core_release_linux_x64)
 add_executable(core_test ${sources})
 add_dependencies(core_test core_debug_linux_x64)
 target_link_libraries(core_test ${CORE_LIBUNWIND_LIBRARIES})
+
 add_custom_target(core_native DEPENDS "core_release_linux_x64;core_debug_linux_x64")

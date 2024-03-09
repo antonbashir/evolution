@@ -18,7 +18,6 @@ struct memory_state
     struct memory_io_buffers* io_buffers;          // Dart
     struct memory* memory_instance;                // Dart
 };
-STRUCTURE_FACTORY(memory_state)
 
 int32_t memory_state_create(struct memory_state* memory, struct memory_configuration* configuration);
 void memory_state_destroy(struct memory_state* memory);

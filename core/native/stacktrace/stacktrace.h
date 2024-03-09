@@ -8,6 +8,7 @@
     "#%-2d %p %s:%"             \
     "l"                         \
     "u"
+#define STACKTRACE_PROCEDURE_SIZE 128
 #define STACKTRACE_FRAME_MAX 128
 #define STACKTRACE_PRINT_BUFFER 1024
 #define STACKTRACE_UNKNOWN "(unknown)"

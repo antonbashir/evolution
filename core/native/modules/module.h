@@ -1,6 +1,4 @@
 #include <common/common.h>
-#include <common/errors.h>
-#include <common/factory.h>
 #include <common/library.h>
 #include <system/types.h>
 
@@ -29,9 +27,24 @@
 static const uint32_t _declare_module_id = module_id;
 static const char* _declare_module_name = _declare_module_label;
 
-static FORCEINLINE void _module(delete)(void* object)
+static FORCEINLINE void* _module(allocate)(uint32_t count, uint32_t size)
 {
-    delete (_declare_module_name, object);
+    return calloc(count, size);
+}
+
+static FORCEINLINE void* _module(allocate_checked)(uint32_t count, uint32_t size)
+{
+    // void* object = calloc(count, size);
+    // if (unlikely(object == NULL))
+    // {
+    //     error_exit(module, ENOMEM, strerror(ENOMEM));
+    // }
+    // return object;
+}
+
+static FORCEINLINE void _module(free)(void* object)
+{
+    free(object);
 }
 
 #endif
@@ -54,3 +67,6 @@ static FORCEINLINE void _module(delete)(void* object)
 #undef _declare_module_id
 #undef _declare_module_name
 #undef _declare_module_label
+#undef _module_new
+#undef _module_allocate
+#undef _module_delete

@@ -14,7 +14,7 @@ extern "C"
 
 #define NANOSECONDS_PER_SECOND 1000000000
 
-#define time_now_real()                                          \
+#define time_now_real()                                     \
     ({                                                      \
         struct timespec _timeout##__LINE__;                 \
         clock_gettime(CLOCK_REALTIME, &_timeout##__LINE__); \
@@ -93,21 +93,21 @@ extern "C"
 
 #define timeout_seconds(seconds)                                                         \
     ({                                                                                   \
-        struct timespec _timeout##__LINE__ = time_now_real();                                 \
+        struct timespec _timeout##__LINE__ = time_now_real();                            \
         struct timespec _timeout_add##__LINE__ = time_from_milliseconds(seconds * 1000); \
         time_add(_timeout##__LINE__, _timeout_add##__LINE__);                            \
     })
 
 #define timeout_microseconds(microseconds)                                                    \
     ({                                                                                        \
-        struct timespec _timeout##__LINE__ = time_now_real();                                      \
+        struct timespec _timeout##__LINE__ = time_now_real();                                 \
         struct timespec _timeout_add##__LINE__ = time_from_milliseconds(microseconds / 1000); \
         time_add(_timeout##__LINE__, _timeout_add##__LINE__);                                 \
     })
 
 #define timeout_milliseconds(milliseconds)                                             \
     ({                                                                                 \
-        struct timespec _timeout##__LINE__ = time_now_real();                               \
+        struct timespec _timeout##__LINE__ = time_now_real();                          \
         struct timespec _timeout_add##__LINE__ = time_from_milliseconds(milliseconds); \
         time_add(_timeout##__LINE__, _timeout_add##__LINE__);                          \
     })

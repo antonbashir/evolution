@@ -11,7 +11,6 @@ FetchContent_Declare(
 
 FetchContent_Populate(core_libunwind)
 
-set(CORE_LIBUNWIND_CONFIGURE_COMMAND)
 add_custom_target(core_libunwind
   COMMAND AR=${CMAKE_AR} CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER} CFLAGS=${LIBUNWIND_CFLAGS} CXXFLAGS=${LIBUNWIND_CXXFLAGS}
   autoreconf -i &> /dev/null
@@ -40,5 +39,6 @@ add_custom_target(core_libunwind
 )
 
 set(CORE_LIBUNWIND_LIBRARIES ${core_libunwind_BINARY_DIR}/lib/libunwind.a ${core_libunwind_BINARY_DIR}/lib/libunwind-${CMAKE_SYSTEM_PROCESSOR}.a)
+set(CORE_LIBUNWIND_INCLUDE ${core_libunwind_BINARY_DIR}/include)
 
 add_subdirectory(native)

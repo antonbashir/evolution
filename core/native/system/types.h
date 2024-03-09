@@ -9,6 +9,7 @@
 #include <stdint.h>                
 #include <string.h>                
 #include <unistd.h>                
+#include <stdarg.h>
 
 #if defined(__cplusplus)
 extern "C"

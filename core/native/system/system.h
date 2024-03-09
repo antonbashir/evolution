@@ -18,7 +18,6 @@ extern "C"
 
 extern FORCEINLINE void system_shutdown_descriptor(int32_t fd)
 {
-    core_error_exit(1, "test");
     shutdown(fd, SHUT_RDWR);
     close(fd);
 }

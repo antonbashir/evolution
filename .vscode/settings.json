@@ -8,10 +8,17 @@
   "clangd.checkUpdates": true,
   "clangd.onConfigChanged": "restart",
   "clangd.arguments": [
+    "--enable-config",
     "-background-index",
     "-header-insertion=never",
     "--inlay-hints",
     "--function-arg-placeholders",
+    "--cross-file-rename",
+    "--all-scopes-completion",
+    "-compile-commands-dir=${workspaceFolder}",
+    "-j=16",
+    "--ranking-model=decision_forest",
+    "--log=verbose",
   ],
   "grammarly.selectors": [
     {
@@ -107,6 +114,11 @@
     "unordered_map": "c",
     "unordered_set": "c",
     "vector": "c",
-    "iterator": "c"
+    "iterator": "c",
+    "optional": "c",
+    "stdarg.h": "c",
+    "error.h": "c",
+    "wordsize.h": "c",
+    "stdbool.h": "c"
   },
 }

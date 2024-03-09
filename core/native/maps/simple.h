@@ -3,7 +3,7 @@
  * with different sets of defines.
  */
 /*
- * Copyright 2010-2016, Tarantool TARANTOOL_AUTHORS, please see TARANTOOL_AUTHORS file.
+ * Copyright 2010-2016, Tarantool TARANTOOL_AUTHORS, please see licenses/tarantool/TARANTOOL_AUTHORS file.
  *
  * Redistribution and use in source and binary forms, with or
  * without modification, are permitted provided that the following

@@ -1,8 +1,8 @@
 #include <common/common.h>
-#include <common/library.h>
 #include <cxxabi.h>
 #include <libunwind.h>
 #include <stacktrace/stacktrace.h>
+#include <strings/format.h>
 
 #ifdef __x86_64__
 __attribute__((__force_align_arg_pointer__))
@@ -35,7 +35,7 @@ const char* stacktrace_frame_read(const struct stacktrace_frame* frame, uintptr_
 {
     int status;
     size_t size = 0;
-    char name[128];
+    char name[STACKTRACE_PROCEDURE_SIZE];
 
     unw_accessors_t* accessors = unw_get_accessors(unw_local_addr_space);
     unw_word_t unw_offset;
@@ -75,7 +75,13 @@ int stacktrace_format(struct stacktrace* trace, char* buffer, size_t buffer_size
         const char* procedure = stacktrace_frame_read(frame, &offset);
         bool free = procedure != NULL;
         procedure = procedure != NULL ? procedure : STACKTRACE_UNKNOWN;
-        string_format(total, snprintf, buffer, buffer_size, STACKTRACE_FRAME_FORMAT "\n", frame_number, frame->instruction, procedure, offset);
+        int written = snprintf(buffer, buffer_size, STACKTRACE_FRAME_FORMAT NEW_LINE, frame_number, frame->instruction, procedure, offset);
+        if (written < 0)
+        {
+            if (free) delete procedure;
+            return 0;
+        }
+        total += written;
         if (free) delete procedure;
     }
     return total;
@@ -86,6 +92,8 @@ void stacktrace_print(int skip)
     char buffer[STACKTRACE_PRINT_BUFFER];
     struct stacktrace trace;
     stacktrace_collect_current(&trace, skip + 2);
-    stacktrace_format(&trace, buffer, STACKTRACE_PRINT_BUFFER);
-    printf("%s\n", buffer);
+    if (stacktrace_format(&trace, buffer, STACKTRACE_PRINT_BUFFER) > 0)
+    {
+        printf("%s\n", buffer);
+    }
 }
