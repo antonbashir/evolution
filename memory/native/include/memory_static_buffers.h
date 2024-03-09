@@ -26,21 +26,8 @@ extern FORCEINLINE struct memory_static_buffers* memory_static_buffers_create(si
     pool->size = size;
     pool->capacity = capacity;
     pool->available = 0;
-
-    pool->ids = malloc(capacity * sizeof(int32_t));
-    if (pool->ids == NULL)
-    {
-        memory_module_delete(pool);
-        return NULL;
-    }
-
-    pool->buffers = malloc(capacity * sizeof(struct iovec));
-    if (pool->buffers == NULL)
-    {
-        memory_module_delete(pool);
-        return NULL;
-    }
-
+    pool->ids = memory_module_allocate_checked(capacity, sizeof(int32_t));
+    pool->buffers = memory_module_allocate_checked(capacity, sizeof(struct iovec));
     int32_t page_size = getpagesize();
     for (size_t index = 0; index < capacity; index++)
     {
@@ -62,10 +49,10 @@ extern FORCEINLINE void memory_static_buffers_destroy(struct memory_static_buffe
     for (size_t index = 0; index < pool->capacity; index++)
     {
         struct iovec* buffer = &pool->buffers[index];
-        free(buffer->iov_base);
+        memory_module_delete(buffer->iov_base);
     }
-    free(pool->ids);
-    free(pool->buffers);
+    memory_module_delete(pool->ids);
+    memory_module_delete(pool->buffers);
     memory_module_delete(pool);
 }
 
