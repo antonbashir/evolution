@@ -129,7 +129,7 @@ bool error_get_boolean(struct error* error, const char* name)
     struct event_field* field = error_find_field(error, name);
     if (field == NULL)
     {
-        error_exit("field %s is not found", name);
+        error_exit("error field %s is not found", name);
     }
     return field->signed_number;
 }
@@ -139,7 +139,7 @@ int64_t error_get_signed(struct error* error, const char* name)
     struct event_field* field = error_find_field(error, name);
     if (field == NULL)
     {
-        error_exit("field %s is not found", name);
+        error_exit("error field %s is not found", name);
     }
     return field->signed_number;
 }
@@ -149,7 +149,7 @@ uint64_t error_get_unsigned(struct error* error, const char* name)
     struct event_field* field = error_find_field(error, name);
     if (field == NULL)
     {
-        error_exit("field %s is not found", name);
+        error_exit("error field %s is not found", name);
     }
     return field->unsigned_number;
 }
@@ -159,7 +159,7 @@ double error_get_double(struct error* error, const char* name)
     struct event_field* field = error_find_field(error, name);
     if (field == NULL)
     {
-        error_exit("field %s is not found", name);
+        error_exit("error field %s is not found", name);
     }
     return field->double_number;
 }
@@ -169,7 +169,7 @@ const char* error_get_string(struct error* error, const char* name)
     struct event_field* field = error_find_field(error, name);
     if (field == NULL)
     {
-        error_exit("field %s is not found", name);
+        error_exit("error field %s is not found", name);
     }
     return field->string;
 }
