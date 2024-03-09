@@ -5,13 +5,13 @@
 #include "field.h"
 
 #define _raise(format, ...)                                                                                \
-    print_message("(panic): %s(...) %s:%d - " format "\n", __FUNCTION__, __FILE__, __LINE__, __VA_ARGS__); \
+    print_message("(panic): %s(...) %s:%d - " format "\n", __FUNCTION__, __FILENAME__, __LINE__, __VA_ARGS__); \
     stacktrace_print(0);                                                                                   \
     exit(-1);                                                                                              \
     unreachable();
 
 #define _raise_system(code)                                                                                                    \
-    print_message("(panic): %s(...) %s:%d - code = %d, message = %s", __FUNCTION__, __FILE__, __LINE__, code, strerror(code)); \
+    print_message("(panic): %s(...) %s:%d - code = %d, message = %s", __FUNCTION__, __FILENAME__, __LINE__, code, strerror(code)); \
     stacktrace_print(0);                                                                                                       \
     exit(-1);                                                                                                                  \
     unreachable();

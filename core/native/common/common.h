@@ -223,6 +223,8 @@ extern "C"
 #define MODULE_UNKNOWN -1
 #define MODULE_UNKNOWN_NAME "unknown"
 
+#define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
+
 #if defined(__cplusplus)
 }
 #endif
