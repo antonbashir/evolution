@@ -254,7 +254,7 @@ const char* event_format(struct event* event)
     size += written;
     if (event->raised_module_id != MODULE_UNKNOWN)
     {
-        written = snprintf(buffer + size, MODULE_EVENT_BUFFER - size, "module{%d} = %s\n", event->raised_module_id, event->raised_module_name);
+        written = snprintf(buffer + size, MODULE_EVENT_BUFFER - size, "module(%d) = %s\n", event->raised_module_id, event->raised_module_name);
         if (written < 0)
         {
             return buffer;
