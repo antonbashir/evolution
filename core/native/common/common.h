@@ -184,6 +184,12 @@ extern "C"
 #define FALLTHROUGH
 #endif
 
+#ifdef __x86_64__
+#define FORCE_ALIGN_ARG_POINTER __attribute__((__force_align_arg_pointer__))
+#else
+#define FORCE_ALIGN_ARG_POINTER
+#endif
+
 #include <sys/time.h>
 #define CLOCK_REALTIME 0
 #define CLOCK_MONOTONIC 1
@@ -210,11 +216,8 @@ extern "C"
 
 #define NEW_LINE "\n"
 
-#define VA_LENGTH(...) VA_LENGTH_(0, ##__VA_ARGS__, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
-#define VA_LENGTH_(_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, N, ...) N
-
-#define MODULE_UNKNOWN -1
-#define MODULE_UNKNOWN_NAME "unknown"
+#define VA_LENGTH(...) VA_LENGTH_(0, ##__VA_ARGS__, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
+#define VA_LENGTH_(_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, N, ...) N
 
 #define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 

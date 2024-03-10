@@ -2,16 +2,8 @@
 #define CORE_STACKTRACE_STACKTRACE
 
 #include <common/common.h>
-#include <system/types.h>
-
-#define STACKTRACE_FRAME_FORMAT \
-    "#%-2d %p %s:%"             \
-    "l"                         \
-    "u"
-#define STACKTRACE_PROCEDURE_SIZE 128
-#define STACKTRACE_FRAME_MAX 128
-#define STACKTRACE_PRINT_BUFFER 1024
-#define STACKTRACE_UNKNOWN "(unknown)"
+#include <common/constants.h>
+#include <system/library.h>
 
 #if defined(__cplusplus)
 extern "C"
@@ -29,11 +21,7 @@ struct stacktrace
     struct stacktrace_frame frames[STACKTRACE_FRAME_MAX];
 };
 
-#ifdef __x86_64__
-__attribute__((__force_align_arg_pointer__))
-#endif
-NOINLINE void
-stacktrace_collect_current(struct stacktrace* trace, int skip);
+FORCE_ALIGN_ARG_POINTER NOINLINE void stacktrace_collect_current(struct stacktrace* trace, int skip);
 int stacktrace_format(struct stacktrace* trace, char* buffer, size_t buffer_size);
 int stacktrace_format_at(int skip, int index, char* buffer, size_t size);
 void stacktrace_print(int skip);

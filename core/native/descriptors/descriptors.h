@@ -1,9 +1,8 @@
-#ifndef CORE_SYSTEM_SOCKET_H
-#define CORE_SYSTEM_SOCKET_H
+#ifndef CORE_DESCRIPTORS_DESCRIPTORS_H
+#define CORE_DESCRIPTORS_DESCRIPTORS_H
 
 #include <common/common.h>
-#include <sys/socket.h>
-#include <system/types.h>
+#include <system/library.h>
 
 #if defined(__cplusplus)
 extern "C"

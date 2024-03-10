@@ -1,22 +1,17 @@
 #include "core.h"
 #include <events/events.h>
 #include <modules/modules.h>
-#include <system/network.h>
-#include <system/scheduling.h>
-#include <system/socket.h>
+#include <system/library.h>
 #include <system/system.h>
-#include <system/threading.h>
-#include <system/time.h>
-#include <system/types.h>
 #include "printer/printer.h"
-
 
 void core_initialize(struct core_module_configuration* configuration)
 {
-    system_initialize(
-        system_default_printer,
-        system_default_error_printer,
-        system_default_event_raiser,
-        system_default_event_printer,
-        configuration->print_level);
+    system_initialize((struct system_configuration){
+        .on_print = system_default_printer,
+        .on_print_error = system_default_error_printer,
+        .on_event_raise = system_default_event_raiser,
+        .on_event_print = system_default_event_printer,
+        .print_level = configuration->print_level,
+    });
 }

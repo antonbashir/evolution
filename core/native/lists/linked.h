@@ -31,7 +31,7 @@
  * SUCH DAMAGE.
  */
 #include <common/common.h>
-#include <system/types.h>
+#include <system/library.h>
 
 #if defined(__cplusplus)
 extern "C"

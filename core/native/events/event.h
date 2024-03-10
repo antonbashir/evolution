@@ -1,29 +1,13 @@
 #ifndef COMMON_EVENTS_EVENT_H
 #define COMMON_EVENTS_EVENT_H
 
-#include <system/time.h>
-#include <system/types.h>
+#include <system/library.h>
+#include <time/time.h>
 
 #if defined(__cplusplus)
 extern "C"
 {
 #endif
-
-#define MODULE_EVENT_BUFFER 2048
-#define MODULE_EVENT_FIELDS_MAXIMUM 128
-
-#define MODULE_EVENT_LEVEL_PANIC 0
-#define MODULE_EVENT_LEVEL_ERROR 1
-#define MODULE_EVENT_LEVEL_WARNING 2
-#define MODULE_EVENT_LEVEL_INFORMATION 3
-#define MODULE_EVENT_LEVEL_TRACE 4
-
-#define MODULE_EVENT_LEVEL_UNKNOWN_LABEL "(unknown)";
-#define MODULE_EVENT_LEVEL_TRACE_LABEL "(trace)";
-#define MODULE_EVENT_LEVEL_INFORMATION_LABEL "(information)";
-#define MODULE_EVENT_LEVEL_WARNING_LABEL "(warning)";
-#define MODULE_EVENT_LEVEL_ERROR_LABEL "(error)";
-#define MODULE_EVENT_LEVEL_PANIC_LABEL "(panic)";
 
 struct event
 {

@@ -4,37 +4,37 @@
 #include <strings/format.h>
 #include "field.h"
 
-#define _raise(format, ...)                                                                                    \
+#define raise(format, ...)                                                                                     \
     print_message("(panic): %s(...) %s:%d - " format "\n", __FUNCTION__, __FILENAME__, __LINE__, __VA_ARGS__); \
     stacktrace_print(0);                                                                                       \
     exit(-1);                                                                                                  \
     unreachable();
 
-#define _raise_system(code)                                                                                                        \
+#define raise_system(code)                                                                                                         \
     print_message("(panic): %s(...) %s:%d - code = %d, message = %s", __FUNCTION__, __FILENAME__, __LINE__, code, strerror(code)); \
     stacktrace_print(0);                                                                                                           \
     exit(-1);                                                                                                                      \
     unreachable();
 
-#define event_set_field(event, name, type, value)                                     \
-    do                                                                                \
-    {                                                                                 \
-        struct event_field* field = event_find_field(event, name);                    \
-        if (field != NULL)                                                            \
-        {                                                                             \
-            event_field_set_##type(field, value);                                     \
-            break;                                                                    \
-        }                                                                             \
-        if (event->fields_count == MODULE_EVENT_FIELDS_MAXIMUM)                       \
-        {                                                                             \
-            _raise("event fields limit is reached: %d", MODULE_EVENT_FIELDS_MAXIMUM); \
-        }                                                                             \
-        field = calloc(1, sizeof(struct event_field));                                \
-        field->name = name;                                                           \
-        event_field_set_##type(field, value);                                         \
-        event->fields[event->fields_count] = field;                                   \
-        ++(event->fields_count);                                                      \
-    }                                                                                 \
+#define event_set_field(event, name, type, value)                                    \
+    do                                                                               \
+    {                                                                                \
+        struct event_field* field = event_find_field(event, name);                   \
+        if (field != NULL)                                                           \
+        {                                                                            \
+            event_field_set_##type(field, value);                                    \
+            break;                                                                   \
+        }                                                                            \
+        if (event->fields_count == MODULE_EVENT_FIELDS_MAXIMUM)                      \
+        {                                                                            \
+            raise("event fields limit is reached: %d", MODULE_EVENT_FIELDS_MAXIMUM); \
+        }                                                                            \
+        field = calloc(1, sizeof(struct event_field));                               \
+        field->name = name;                                                          \
+        event_field_set_##type(field, value);                                        \
+        event->fields[event->fields_count] = field;                                  \
+        ++(event->fields_count);                                                     \
+    }                                                                                \
     while (0);
 
 static FORCEINLINE struct event_field* event_find_field(struct event* event, const char* name)
@@ -55,12 +55,12 @@ struct event* event_create(uint8_t level, const char* function, const char* file
     struct event* created = calloc(1, sizeof(struct event));
     if (created == NULL)
     {
-        _raise_system(ENOMEM);
+        raise_system(ENOMEM);
     }
     created->fields = calloc(MODULE_EVENT_FIELDS_MAXIMUM, sizeof(struct event_field));
     if (created->fields == NULL)
     {
-        _raise_system(ENOMEM);
+        raise_system(ENOMEM);
     }
     created->function = function;
     created->file = file;
@@ -153,7 +153,7 @@ char event_get_character(struct event* event, const char* name)
     struct event_field* field = event_find_field(event, name);
     if (field == NULL)
     {
-        _raise("event field %s is not found", name);
+        raise("event field %s is not found", name);
     }
     return field->character;
 }
@@ -163,7 +163,7 @@ void* event_get_address(struct event* event, const char* name)
     struct event_field* field = event_find_field(event, name);
     if (field == NULL)
     {
-        _raise("event field %s is not found", name);
+        raise("event field %s is not found", name);
     }
     return field->address;
 }
@@ -173,7 +173,7 @@ bool event_get_boolean(struct event* event, const char* name)
     struct event_field* field = event_find_field(event, name);
     if (field == NULL)
     {
-        _raise("event field %s is not found", name);
+        raise("event field %s is not found", name);
     }
     return field->boolean;
 }
@@ -183,7 +183,7 @@ int64_t event_get_signed(struct event* event, const char* name)
     struct event_field* field = event_find_field(event, name);
     if (field == NULL)
     {
-        _raise("event field %s is not found", name);
+        raise("event field %s is not found", name);
     }
     return field->signed_number;
 }
@@ -193,7 +193,7 @@ uint64_t event_get_unsigned(struct event* event, const char* name)
     struct event_field* field = event_find_field(event, name);
     if (field == NULL)
     {
-        _raise("event field %s is not found", name);
+        raise("event field %s is not found", name);
     }
     return field->unsigned_number;
 }
@@ -203,7 +203,7 @@ double event_get_double(struct event* event, const char* name)
     struct event_field* field = event_find_field(event, name);
     if (field == NULL)
     {
-        _raise("event field %s is not found", name);
+        raise("event field %s is not found", name);
     }
     return field->double_number;
 }
@@ -213,7 +213,7 @@ const char* event_get_string(struct event* event, const char* name)
     struct event_field* field = event_find_field(event, name);
     if (field == NULL)
     {
-        _raise("event field %s is not found", name);
+        raise("event field %s is not found", name);
     }
     return field->string;
 }
@@ -225,7 +225,7 @@ const char* event_format(struct event* event)
     char* buffer = calloc(MODULE_EVENT_BUFFER, sizeof(char));
     if (buffer == NULL)
     {
-        _raise_system(ENOMEM);
+        raise_system(ENOMEM);
     }
     const char* type = MODULE_EVENT_LEVEL_UNKNOWN_LABEL;
     switch (event->level)

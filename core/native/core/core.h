@@ -1,7 +1,7 @@
 #ifndef CORE_CORE_H
 #define CORE_CORE_H
 
-#include <system/types.h>
+#include <system/library.h>
 
 #if defined(__cplusplus)
 extern "C"

@@ -4,7 +4,6 @@
 #include <events/field.h>
 #include <printer/printer.h>
 #include <stacktrace/stacktrace.h>
-#include <system/types.h>
 
 struct system system_instance;
 
@@ -47,32 +46,35 @@ void system_default_event_raiser(struct event* event)
     unreachable();
 }
 
-void system_initialize(printer_function printer, printer_function error_printer, event_raiser_function event_raiser, event_printer_function event_printer, int8_t event_print_level)
+void system_initialize(struct system_configuration configuration)
 {
     if (system_instance.initialized) return;
-    system_instance.on_print = printer;
-    system_instance.on_print_error = error_printer;
-    system_instance.on_event_raise = event_raiser;
-    system_instance.on_event_print = event_printer;
-    system_instance.print_level = event_print_level;
+    system_instance.on_print = configuration.on_print;
+    system_instance.on_print_error = configuration.on_print_error;
+    system_instance.on_event_raise = configuration.on_event_raise;
+    system_instance.on_event_print = configuration.on_event_print;
+    system_instance.print_level = configuration.print_level;
     crash_initialize();
 }
+
 
 void system_initialize_default()
 {
 #ifdef TRACE
-    system_initialize(
-        system_default_printer,
-        system_default_error_printer,
-        system_default_event_raiser,
-        system_default_event_printer,
-        SYSTEM_PRINT_LEVEL_TRACE);
+    system_initialize((struct system_configuration){
+        .on_print = system_default_printer,
+        .on_print_error = system_default_error_printer,
+        .on_event_raise = system_default_event_raiser,
+        .on_event_print = system_default_event_printer,
+        .print_level = SYSTEM_PRINT_LEVEL_TRACE,
+    });
 #else
-    system_initialize(
-        system_default_printer,
-        system_default_error_printer,
-        system_default_event_raiser,
-        system_default_event_printer,
-        SYSTEM_PRINT_LEVEL_ERROR);
+    system_initialize((struct system_configuration){
+        .on_print = system_default_printer,
+        .on_print_error = system_default_error_printer,
+        .on_event_raise = system_default_event_raiser,
+        .on_event_print = system_default_event_printer,
+        .print_level = SYSTEM_PRINT_LEVEL_ERROR,
+    });
 #endif
 }

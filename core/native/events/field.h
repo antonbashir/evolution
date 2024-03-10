@@ -1,24 +1,14 @@
-#ifndef COMMON_ERRORS_event_H
-#define COMMON_ERRORS_event_H
+#ifndef COMMON_EVENTS_FIELD_H
+#define COMMON_EVENTS_FIELD_H
 
 #include <common/common.h>
-#include <common/library.h>
-#include <system/types.h>
+#include <common/constants.h>
+#include <system/library.h>
 
 #if defined(__cplusplus)
 extern "C"
 {
 #endif
-#define MODULE_EVENT_TYPE_SIGNED 0
-#define MODULE_EVENT_TYPE_UNSIGNED 1
-#define MODULE_EVENT_TYPE_DOUBLE 2
-#define MODULE_EVENT_TYPE_STRING 3
-#define MODULE_EVENT_TYPE_ADDRESS 4
-#define MODULE_EVENT_TYPE_CHARACTER 5
-#define MODULE_EVENT_TYPE_BOOLEAN 6
-
-#define MODULE_EVENT_FIELD_CODE "code"
-#define MODULE_EVENT_FIELD_CALLER "caller"
 
 struct event_field
 {

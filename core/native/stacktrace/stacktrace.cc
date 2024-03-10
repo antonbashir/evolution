@@ -77,7 +77,7 @@ int stacktrace_format(struct stacktrace* trace, char* buffer, size_t buffer_size
         const char* procedure = stacktrace_frame_read(frame, &offset);
         bool free = procedure != NULL;
         procedure = procedure != NULL ? procedure : STACKTRACE_UNKNOWN;
-        int written = snprintf(buffer + total, buffer_size - total, STACKTRACE_FRAME_FORMAT NEW_LINE, frame_number, frame->instruction, procedure, offset);
+        int written = snprintf(buffer + total, buffer_size - total, STACKTRACE_FRAME_FORMAT_LONG NEW_LINE, frame_number, frame->instruction, procedure, offset);
         if (written < 0)
         {
             if (free) delete procedure;
@@ -109,7 +109,7 @@ int stacktrace_format_at(int skip, int index, char* buffer, size_t size)
     const char* procedure = stacktrace_frame_read(frame, &offset);
     bool free = procedure != NULL;
     procedure = procedure != NULL ? procedure : STACKTRACE_UNKNOWN;
-    int written = snprintf(buffer, size, "%s:%lu", procedure, offset);
+    int written = snprintf(buffer, size, STACKTRACE_FRAME_FORMAT_SHORT, procedure, offset);
     if (written < 0)
     {
         if (free) delete procedure;

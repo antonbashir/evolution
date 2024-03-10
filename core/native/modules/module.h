@@ -1,10 +1,9 @@
 #include <common/common.h>
-#include <common/library.h>
 #include <events/events.h>
 #include <panic/panic.h>
 #include <printer/printer.h>
 #include <stacktrace/stacktrace.h>
-#include <system/types.h>
+#include <system/library.h>
 
 #define module_combine(a, b) a##_module_##b
 #define module_append(a, b) a##b

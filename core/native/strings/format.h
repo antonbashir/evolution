@@ -2,8 +2,7 @@
 #define CORE_STRINGS_FORMAT_H
 
 #include <common/common.h>
-#include <common/library.h>
-#include <system/time.h>
+#include <system/library.h>
 
 #if defined(__cplusplus)
 extern "C"

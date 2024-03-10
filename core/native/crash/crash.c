@@ -1,10 +1,11 @@
 #include "crash.h"
 #include <common/common.h>
+#include <common/constants.h>
 #include <events/events.h>
 #include <panic/panic.h>
 #include <printer/printer.h>
 #include <stacktrace/stacktrace.h>
-#include <system/signal.h>
+#include <system/library.h>
 
 static const int crash_signals[] = {SIGILL, SIGBUS, SIGFPE, SIGSEGV};
 
@@ -19,45 +20,45 @@ static void crash_signal_callback(int signal, siginfo_t* information, void* cont
         switch (signal)
         {
             case SIGILL:
-                crash_event = event_new_panic_empty("Crashed: Illegal instruction");
+                crash_event = event_new_panic(CRASH_ILLEGAL_INSTRUCTION);
                 break;
             case SIGBUS:
-                crash_event = event_new_panic_empty("Crashed: Bus error");
+                crash_event = event_new_panic(CRASH_BUS_ERROR);
                 break;
             case SIGFPE:
-                crash_event = event_new_panic_empty("Crashed: Floating-point error");
+                crash_event = event_new_panic(CRASH_FLOATING_POINT_ERROR);
                 break;
             case SIGSEGV:
-                crash_event = event_new_panic_empty("Crashed: Segmentation fault");
+                crash_event = event_new_panic(CRASH_SEGMENTATION_FAULT);
                 switch (information->si_code)
                 {
                     case SEGV_MAPERR:
-                        signal_code = "SEGV_MAPERR";
+                        signal_code = SIGNAL_CODE_MAPPER;
                         break;
                     case SEGV_ACCERR:
-                        signal_code = "SEGV_ACCERR";
+                        signal_code = SIGNAL_CODE_ACCERR;
                         break;
                 }
                 break;
             default:
-                print_error("Unexpected fatal signal: %d", signal);
+                print_error(ERROR_UNEXPECTED_SIGNAL, signal);
                 break;
         }
 
         if (signal_code != NULL)
-            event_set_string(crash_event, "code", signal_code);
+            event_set_string(crash_event, MODULE_EVENT_FIELD_CODE, signal_code);
         else
-            event_set_signed(crash_event, "code", information->si_code);
+            event_set_signed(crash_event, MODULE_EVENT_FIELD_CODE, information->si_code);
         if (information->si_addr != NULL)
         {
-            event_set_address(crash_event, "address", information->si_addr);
+            event_set_address(crash_event, MODULE_EVENT_FIELD_ADDRESS, information->si_addr);
         }
-        event_set_address(crash_event, "signal information", information);
+        event_set_address(crash_event, MODULE_EVENT_FIELD_SIGNAL_INFORMATION, information);
         print_event(crash_event);
     }
     else
     {
-        print_error("Error %d while handling crash", signal);
+        print_error(ERROR_CRASH_HANDLING, signal);
     }
 
     struct sigaction default_signal_action = {.sa_handler = SIG_DFL};

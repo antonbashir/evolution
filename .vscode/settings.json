@@ -130,6 +130,7 @@
     "signal.h": "c",
     "errno.h": "c",
     "limits.h": "c",
-    "cstdlib": "cpp"
+    "cstdlib": "cpp",
+    "crash.h": "c"
   },
 }

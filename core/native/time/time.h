@@ -1,11 +1,7 @@
 #ifndef CORE_SYSTEM_TIME_H
 #define CORE_SYSTEM_TIME_H
 
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
-#include <sys/time.h>
-#include <time.h>
+#include <system/library.h>
 
 #if defined(__cplusplus)
 extern "C"
