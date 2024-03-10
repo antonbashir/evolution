@@ -42,7 +42,7 @@ void system_default_error_printer(const char* format, ...);
 void system_default_event_printer(struct event* event);
 void system_default_event_raiser(struct event* event);
 
-static FORCEINLINE struct system* system_get()
+FORCEINLINE struct system* system_get()
 {
     return &system_instance;
 }

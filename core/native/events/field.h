@@ -26,56 +26,49 @@ struct event_field
     uint8_t type;
 };
 
-static void event_field_set_boolean(struct event_field* field, bool value)
+FORCEINLINE void event_field_set_boolean(struct event_field* field, bool value)
 {
     field->type = MODULE_EVENT_TYPE_BOOLEAN;
     field->boolean = value;
 }
 
-static void event_field_set_double(struct event_field* field, double value)
+FORCEINLINE void event_field_set_double(struct event_field* field, double value)
 {
     field->type = MODULE_EVENT_TYPE_DOUBLE;
     field->double_number = value;
 }
 
-static void event_field_set_unsigned(struct event_field* field, uint64_t value)
+FORCEINLINE void event_field_set_unsigned(struct event_field* field, uint64_t value)
 {
     field->type = MODULE_EVENT_TYPE_UNSIGNED;
     field->unsigned_number = value;
 }
 
-static void event_field_set_signed(struct event_field* field, int64_t value)
+FORCEINLINE void event_field_set_signed(struct event_field* field, int64_t value)
 {
     field->type = MODULE_EVENT_TYPE_SIGNED;
     field->signed_number = value;
 }
 
-static void event_field_set_string(struct event_field* field, const char* value)
+FORCEINLINE void event_field_set_string(struct event_field* field, const char* value)
 {
     field->type = MODULE_EVENT_TYPE_STRING;
     field->string = value;
 }
 
-static void event_field_set_character(struct event_field* field, char value)
+FORCEINLINE void event_field_set_character(struct event_field* field, char value)
 {
     field->type = MODULE_EVENT_TYPE_CHARACTER;
     field->character = value;
 }
 
-static void event_field_set_address(struct event_field* field, void* value)
+FORCEINLINE void event_field_set_address(struct event_field* field, void* value)
 {
     field->type = MODULE_EVENT_TYPE_ADDRESS;
     field->address = value;
 }
 
-static void event_field_set_any(struct event_field* field, ...)
-{
-    va_list args;
-    va_start(args, field);
-    field->type = MODULE_EVENT_TYPE_ADDRESS;
-    field->address = va_arg(args, void*);
-    va_end(args);
-}
+void event_field_set_any(struct event_field* field, ...);
 
 #define event_message(message) event_field(MODULE_EVENT_FIELD_MESSAGE, message)
 

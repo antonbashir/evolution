@@ -5,11 +5,7 @@
 #include <stacktrace/stacktrace.h>
 #include <strings/format.h>
 
-#ifdef __x86_64__
-__attribute__((__force_align_arg_pointer__))
-#endif
-NOINLINE void
-stacktrace_collect_current(struct stacktrace* trace, int skip)
+FORCE_ALIGN_ARG_POINTER NOINLINE void stacktrace_collect_current(struct stacktrace* trace, int skip)
 {
     unw_accessors_t* accessors = unw_get_accessors(unw_local_addr_space);
     if (accessors->get_proc_name == NULL)

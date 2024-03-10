@@ -10,8 +10,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED true)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED true)
 
-set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -fPIC -O0 -g -Wno-parentheses -fno-stack-protector -DTRACE -DDEBUG")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fPIC -O0 -g -Wno-parentheses -fno-stack-protector -DTRACE -DDEBUG")
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -fPIC -O0 -g -Wno-parentheses -fno-stack-protector -fkeep-inline-functions -DTRACE -DDEBUG")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fPIC -O0 -g -Wno-parentheses -fno-stack-protector -fkeep-inline-functions -DTRACE -DDEBUG")
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC -O2 -Wno-parentheses -fno-stack-protector")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -O2 -Wno-parentheses -fno-stack-protector")
@@ -32,8 +32,10 @@ set(DEPENDENCY_TARANTOOL_REPOSITORY "developer@git.local:dependencies/tarantool.
 set(DEPENDENCY_TARANTOOL_VERSION evolution-3.0.0)
 
 set(CORE_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/core/native)
-set(EXECUTOR_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/executor/native/include)
-set(MEMORY_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/memory/native/include)
+set(EXECUTOR_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/executor/native)
+set(MEMORY_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/memory/native)
+set(TRANSPORT_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/transport/native)
+set(STORAGE_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/storage/native)
 
 include(FetchContent)
 include(ExternalProject)

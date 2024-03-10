@@ -132,6 +132,8 @@
     "limits.h": "c",
     "cstdlib": "cpp",
     "crash.h": "c",
-    "context.h": "c"
+    "context.h": "c",
+    "static_buffers.h": "c",
+    "tuple.h": "c"
   },
 }

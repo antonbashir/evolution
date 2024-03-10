@@ -1,4 +1,4 @@
-#include "core.h"
+#include "module.h"
 
 extern struct core_module* core();
 

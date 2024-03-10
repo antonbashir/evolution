@@ -1,6 +1,8 @@
 import 'dart:typed_data';
 
+import '../core.dart';
 import 'constants.dart';
+import 'defaults.dart';
 
 const int _oneByteLimit = 0x7f;
 const int _twoByteLimit = 0x7ff;
@@ -34,4 +36,8 @@ extension StringExtension on String {
     }
     return offset - startOffset;
   }
+}
+
+void main(List<String> args) {
+  launch((creator) => creator.create(CoreModule(), CoreDefaults.coreConfiguration)).activate(() => system_shutdown_descriptor(123));
 }

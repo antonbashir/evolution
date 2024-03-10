@@ -9,21 +9,18 @@
 #include <small/slab_arena.h>
 #include <small/slab_cache.h>
 #include <small/small.h>
-#include <system/types.h>
+#include "module.h"
 
 #if defined(__cplusplus)
 extern "C"
 {
 #endif
 
-#define MEMORY_BUFFER_USED -1
-
 struct memory
 {
     struct quota quota;
     struct slab_arena arena;
     struct slab_cache cache;
-    bool initialized;
 };
 
 struct memory_pool
@@ -49,17 +46,25 @@ struct memory_output_buffer
     struct obuf buffer;
 };
 
-static FORCEINLINE int32_t memory_create(struct memory* memory, size_t quota_size, size_t preallocation_size, size_t slab_size)
+FORCEINLINE struct memory* memory_create(size_t quota_size, size_t preallocation_size, size_t slab_size)
 {
+    struct memory* memory = memory_module_new(sizeof(struct memory));
+    if (memory == NULL)
+    {
+        return NULL;
+    }
     int32_t result;
     quota_init(&memory->quota, quota_size);
-    if ((result = slab_arena_create(&memory->arena, &memory->quota, preallocation_size, slab_size, MAP_PRIVATE))) return result;
+    if ((result = slab_arena_create(&memory->arena, &memory->quota, preallocation_size, slab_size, MAP_PRIVATE)))
+    {
+        memory_module_delete(memory);
+        return NULL;
+    }
     slab_cache_create(&memory->cache, &memory->arena);
-    memory->initialized = true;
-    return 0;
+    return memory;
 }
 
-static FORCEINLINE void memory_destroy(struct memory* memory)
+FORCEINLINE void memory_destroy(struct memory* memory)
 {
     slab_cache_destroy(&memory->cache);
     slab_arena_destroy(&memory->arena);
@@ -67,48 +72,48 @@ static FORCEINLINE void memory_destroy(struct memory* memory)
     {
         quota_release(&memory->quota, quota_used(&memory->quota));
     }
-    memory->initialized = false;
+    memory_module_delete(memory);
 }
 
-static FORCEINLINE int32_t memory_pool_create(struct memory_pool* pool, struct memory* memory, size_t size)
+FORCEINLINE int32_t memory_pool_create(struct memory_pool* pool, struct memory* memory, size_t size)
 {
     mempool_create(&pool->pool, &memory->cache, size);
     return mempool_is_initialized(&pool->pool) ? 0 : -1;
 }
 
-static FORCEINLINE void memory_pool_destroy(struct memory_pool* pool)
+FORCEINLINE void memory_pool_destroy(struct memory_pool* pool)
 {
     mempool_destroy(&pool->pool);
 }
 
-static FORCEINLINE void* memory_pool_allocate(struct memory_pool* pool)
+FORCEINLINE void* memory_pool_allocate(struct memory_pool* pool)
 {
     return mempool_alloc(&pool->pool);
 }
 
-static FORCEINLINE void memory_pool_free(struct memory_pool* pool, void* ptr)
+FORCEINLINE void memory_pool_free(struct memory_pool* pool, void* ptr)
 {
     mempool_free(&pool->pool, ptr);
 }
 
-static FORCEINLINE int32_t memory_small_allocator_create(struct memory_small_allocator* pool, struct memory* memory)
+FORCEINLINE int32_t memory_small_allocator_create(struct memory_small_allocator* pool, float allocation_factor, struct memory* memory)
 {
-    float actual_alloc_factor;
-    small_alloc_create(&pool->allocator, &memory->cache, 3 * sizeof(int), sizeof(uintptr_t), 1.05, &actual_alloc_factor);
+    float actual_allocation_factor;
+    small_alloc_create(&pool->allocator, &memory->cache, 3 * sizeof(int32_t), sizeof(uintptr_t), allocation_factor, &actual_allocation_factor);
     return pool->allocator.cache == NULL ? -1 : 0;
 }
 
-static FORCEINLINE void* memory_small_allocator_allocate(struct memory_small_allocator* pool, size_t size)
+FORCEINLINE void* memory_small_allocator_allocate(struct memory_small_allocator* pool, size_t size)
 {
     return (void*)smalloc(&pool->allocator, size);
 }
 
-static FORCEINLINE void memory_small_allocator_free(struct memory_small_allocator* pool, void* ptr, size_t size)
+FORCEINLINE void memory_small_allocator_free(struct memory_small_allocator* pool, void* ptr, size_t size)
 {
     smfree(&pool->allocator, ptr, size);
 }
 
-static FORCEINLINE void memory_small_allocator_destroy(struct memory_small_allocator* pool)
+FORCEINLINE void memory_small_allocator_destroy(struct memory_small_allocator* pool)
 {
     small_alloc_destroy(&pool->allocator);
 }

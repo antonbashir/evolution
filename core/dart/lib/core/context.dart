@@ -10,7 +10,7 @@ final _context = _Context._();
 ContextProvider context() => _context;
 
 typedef ModuleLoader = ContextLoader Function(ContextLoader loader);
-typedef ModuleCreator = ContextCreator Function(ContextCreator preloader);
+typedef ModuleCreator = ContextCreator Function(ContextCreator creator);
 
 mixin ModuleProvider<NativeType extends Struct, ConfigurationType extends ModuleConfiguration, StateType extends ModuleState> {
   int get id;

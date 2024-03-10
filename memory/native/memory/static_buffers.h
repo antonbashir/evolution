@@ -3,8 +3,9 @@
 
 #include <common/common.h>
 #include <memory/memory.h>
-#include <modules/modules.h>
-#include <system/types.h>
+#include <system/library.h>
+#include "constants.h"
+#include "module.h"
 
 #if defined(__cplusplus)
 extern "C"

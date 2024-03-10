@@ -19,14 +19,26 @@ struct context
 
 extern struct context context_instance;
 
-FORCEINLINE struct context* context_get()
+static inline void test ()
 {
+
+}
+
+#ifdef FFI_EXPORTER
+#define FFI FORCEINLINE
+#else 
+#define FFI static FORCEINLINE
+#endif
+
+FFI struct context* context_get()
+{
+    test();
     return &context_instance;
 }
 
 void context_create();
-void* context_get_module(uint32_t module_id);
-void context_put_module(uint32_t module_id, void* module);
+void* context_get_module(uint32_t id);
+void context_put_module(uint32_t id, void* module);
 
 #if defined(__cplusplus)
 }

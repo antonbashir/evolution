@@ -1,7 +1,7 @@
 #ifndef MEMORY_CONFIGURATION_H
 #define MEMORY_CONFIGURATION_H
 
-#include <system/types.h>
+#include <system/library.h>
 
 #if defined(__cplusplus)
 extern "C"
