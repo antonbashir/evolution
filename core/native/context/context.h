@@ -27,7 +27,6 @@ FORCEINLINE struct context* context_get()
 void context_create();
 void* context_get_module(uint32_t module_id);
 void context_put_module(uint32_t module_id, void* module);
-void context_destroy();
 
 #if defined(__cplusplus)
 }

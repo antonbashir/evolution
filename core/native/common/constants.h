@@ -69,6 +69,8 @@ extern "C"
 #define ERROR_UNEXPECTED_SIGNAL "Unexpected fatal signal: %d"
 #define ERROR_CRASH_HANDLING "Error %d while handling crash"
 
+#define PANIC_CONTEXT_CREATED "Context already created"
+
 #if defined(__cplusplus)
 }
 #endif

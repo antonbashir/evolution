@@ -30,7 +30,7 @@ extern "C"
         gmtime_r(&time.tv_sec, &_temporary_time##__LINE__);                                                         \
         char _zone##__LINE__[7];                                                                                    \
         strftime(_zone##__LINE__, 7, "%Z", &_temporary_time##__LINE__);                                             \
-        int length##__LINE__ = strftime(_buffer##__LINE__, 31, "%d-%m-%Y %H:%M:%S", &_temporary_time##__LINE__);    \
+        int length##__LINE__ = strftime(_buffer##__LINE__, 31, "%Y-%m-%d %H:%M:%S", &_temporary_time##__LINE__);    \
         long _time_as_micros##__LINE__ = time.tv_nsec / 1000;                                                       \
         snprintf(_buffer##__LINE__ + length##__LINE__, 31 - length##__LINE__, ".%04ld", _time_as_micros##__LINE__); \
         _buffer_pointer##__LINE__;                                                                                  \
@@ -43,7 +43,7 @@ extern "C"
         struct tm* _temporary_time##__LINE__ = localtime(&time.tv_sec);                                                                 \
         char _zone##__LINE__[7];                                                                                                        \
         strftime(_zone##__LINE__, 7, "%Z", _temporary_time##__LINE__);                                                                  \
-        int length##__LINE__ = strftime(_buffer##__LINE__, 31, "%d-%m-%Y %H:%M:%S", _temporary_time##__LINE__);                         \
+        int length##__LINE__ = strftime(_buffer##__LINE__, 31, "%Y-%m-%d %H:%M:%S", _temporary_time##__LINE__);                         \
         long _time_as_micros##__LINE__ = time.tv_nsec / 1000;                                                                           \
         length##__LINE__ += snprintf(_buffer##__LINE__ + length##__LINE__, 31 - length##__LINE__, ".%04ld", _time_as_micros##__LINE__); \
         snprintf(_buffer##__LINE__ + length##__LINE__, 31 - length##__LINE__, " %s", _zone##__LINE__);                                  \

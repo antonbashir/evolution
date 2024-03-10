@@ -3,6 +3,7 @@ import 'dart:ffi';
 
 import '../bindings/context/context.dart';
 import '../core.dart';
+import 'printer.dart';
 
 final _context = _Context._();
 ContextProvider context() => _context;
@@ -10,15 +11,22 @@ ContextProvider context() => _context;
 typedef ModuleLoader = ContextLoader Function(ContextLoader loader);
 typedef ModuleCreator = ContextCreator Function(ContextCreator preloader);
 
-mixin ModuleProvider<ConfigurationType extends ModuleConfiguration> {
+mixin ModuleProvider<ConfigurationType extends ModuleConfiguration, StateType extends ModuleState> {
   int get id;
   String get name;
   ConfigurationType get configuration;
+  StateType get state;
 }
 
-mixin Module<NativeType extends Struct, ConfigurationType extends ModuleConfiguration> implements ModuleProvider<ConfigurationType> {
+mixin ModuleState {}
+
+mixin ModuleConfiguration {}
+
+mixin Module<NativeType extends Struct, ConfigurationType extends ModuleConfiguration, StateType extends ModuleState> implements ModuleProvider<ConfigurationType, StateType> {
   int get id;
   String get name;
+  StateType get state;
+
   late final Pointer<NativeType> native;
   late final ConfigurationType configuration;
 
@@ -49,10 +57,8 @@ mixin Module<NativeType extends Struct, ConfigurationType extends ModuleConfigur
   }
 }
 
-mixin ModuleConfiguration {}
-
 mixin ContextProvider {
-  Module get(int id);
+  dynamic get(int id);
   bool has(int id);
 }
 
@@ -110,12 +116,22 @@ final _forker = Forker._();
 class Launcher {
   Launcher._();
 
-  Future<void> activate(FutureOr<void> Function() main) async {
-    await Future.wait(_context._modules.map((module) => Future.value(module?.initialize())));
-    await main();
-    await Future.wait(_context._modules.map((module) => Future.value(module?.shutdown())));
-    _context._modules.forEach((module) => module?.destroy());
-  }
+  Future<void> activate(FutureOr<void> Function() main) async => runZonedGuarded(() async {
+        await Future.wait(_context._modules.map((module) => Future.value(module?.initialize())));
+        await main();
+        await Future.wait(_context._modules.map((module) => Future.value(module?.shutdown())));
+        _context._modules.forEach((module) => module?.destroy());
+      }, (error, stack) {
+        if (error is Error) {
+          Printer.printError(error, stack);
+          return;
+        }
+        if (error is Exception) {
+          Printer.printException(error, stack);
+          return;
+        }
+        Printer.print("$error\n$stack");
+      });
 }
 
 class Forker {
