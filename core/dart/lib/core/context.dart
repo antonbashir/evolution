@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'dart:ffi';
 
-import '../bindings/context/context.dart';
-import '../core.dart';
+import 'bindings.dart';
+import 'constants.dart';
+import 'library.dart';
 import 'printer.dart';
 
 final _context = _Context._();

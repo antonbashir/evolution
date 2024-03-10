@@ -1,4 +1,3 @@
-import '../core.dart';
 import 'constants.dart';
 
 class CoreException implements Exception {
@@ -7,7 +6,7 @@ class CoreException implements Exception {
   const CoreException(this.message);
 
   @override
-  String toString() => "[$coreModuleName]:\n$message";
+  String toString() => "[$coreModuleName]: $message";
 }
 
 class SystemException implements Exception {

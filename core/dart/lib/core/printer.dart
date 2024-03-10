@@ -1,5 +1,6 @@
-import '../core.dart';
+import 'constants.dart';
 import 'context.dart';
+import 'module.dart';
 
 class Printer {
   const Printer._();

@@ -14,7 +14,6 @@ struct system system_instance = {
 
 void system_default_printer(const char* format, ...)
 {
-    if (system_get()->print_level == SYSTEM_PRINT_LEVEL_SILENT) return;
     va_list args;
     va_start(args, format);
     vfprintf(stdout, format, args);

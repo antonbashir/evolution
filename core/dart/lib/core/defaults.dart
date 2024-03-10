@@ -1,5 +1,5 @@
-import '../core.dart';
 import 'configuration.dart';
+import 'constants.dart';
 import 'state.dart';
 
 class CoreDefaults {
