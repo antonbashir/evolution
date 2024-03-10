@@ -15,6 +15,7 @@ extern "C"
 #define module_name core
 struct core_module_configuration
 {
+    bool silent;
     uint8_t print_level;
     const char* component;
 };

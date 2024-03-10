@@ -10,6 +10,8 @@ final class core_module extends Struct {
 }
 
 final class core_module_configuration extends Struct {
+  @Bool()
+  external bool silent;
   @Uint8()
   external int print_level;
   external Pointer<Utf8> component;

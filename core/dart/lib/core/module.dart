@@ -17,14 +17,10 @@ class CoreModule with Module<core_module, CoreModuleConfiguration, CoreModuleSta
   CoreModule({CoreModuleState? state}) : this.state = state ?? CoreDefaults.coreState;
 
   @override
-  Pointer<core_module> create(CoreModuleConfiguration configuration) {
-    return using((arena) => core_module_create(configuration.toNative(arena)));
-  }
+  Pointer<core_module> create(CoreModuleConfiguration configuration) => using((arena) => core_module_create(configuration.toNative(arena)));
 
   @override
-  CoreModuleConfiguration load(Pointer<core_module> native) {
-    return CoreModuleConfiguration.fromNative(native.ref.configuration);
-  }
+  CoreModuleConfiguration load(Pointer<core_module> native) => CoreModuleConfiguration.fromNative(native.ref.configuration);
 
   @override
   void destroy() => core_module_destroy(native);

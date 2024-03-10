@@ -137,12 +137,22 @@ class Launcher {
 class Forker {
   Forker._();
 
-  Future<void> activate(FutureOr<void> Function() main) async {
-    await Future.wait(_context._modules.map((module) => Future.value(module?.fork())));
-    await main();
-    await Future.wait(_context._modules.map((module) => Future.value(module?.unfork())));
-    _context._modules.forEach((module) => module?.unload());
-  }
+  Future<void> activate(FutureOr<void> Function() main) async => runZonedGuarded(() async {
+        await Future.wait(_context._modules.map((module) => Future.value(module?.fork())));
+        await main();
+        await Future.wait(_context._modules.map((module) => Future.value(module?.unfork())));
+        _context._modules.forEach((module) => module?.unload());
+      }, (error, stack) {
+        if (error is Error) {
+          Printer.printError(error, stack);
+          return;
+        }
+        if (error is Exception) {
+          Printer.printException(error, stack);
+          return;
+        }
+        Printer.print("$error\n$stack");
+      });
 }
 
 Launcher launch(ModuleCreator creator) {
