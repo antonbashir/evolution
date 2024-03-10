@@ -45,7 +45,8 @@ const printLevelInformationLabel = "(information)";
 const printLevelTraceLabel = "(trace)";
 
 const printExceptionLabel = "(exception)";
-const printSystemExceptionLabel = "(system)";
+
+const printSystemExceptionTag = "system";
 
 const printErrorStackPart = "Error stack:";
 const printCatchStackPart = "Catch stack:";
