@@ -17,7 +17,6 @@ struct core_module_configuration
 {
     bool silent;
     uint8_t print_level;
-    const char* component;
 };
 #define module_configuration struct core_module_configuration
 struct core_module
