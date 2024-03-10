@@ -221,6 +221,12 @@ extern "C"
 
 #define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 
+#ifdef DART_EXPORT
+#define DART_INLINE FORCEINLINE
+#else 
+#define DART_INLINE static FORCEINLINE
+#endif
+
 #if defined(__cplusplus)
 }
 #endif

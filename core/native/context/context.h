@@ -19,20 +19,8 @@ struct context
 
 extern struct context context_instance;
 
-static inline void test ()
+DART_INLINE struct context* context_get()
 {
-
-}
-
-#ifdef FFI_EXPORTER
-#define FFI FORCEINLINE
-#else 
-#define FFI static FORCEINLINE
-#endif
-
-FFI struct context* context_get()
-{
-    test();
     return &context_instance;
 }
 
