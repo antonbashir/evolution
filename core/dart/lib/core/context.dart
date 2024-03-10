@@ -1,11 +1,10 @@
 import 'dart:async';
 import 'dart:ffi';
 
-import '../core.dart';
 import 'bindings.dart';
 import 'constants.dart';
 import 'library.dart';
-import 'printer.dart';
+import 'module.dart';
 
 final _context = _Context._();
 ContextProvider context() => _context;
