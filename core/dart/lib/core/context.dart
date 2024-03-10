@@ -12,18 +12,19 @@ ContextProvider context() => _context;
 typedef ModuleLoader = ContextLoader Function(ContextLoader loader);
 typedef ModuleCreator = ContextCreator Function(ContextCreator preloader);
 
-mixin ModuleProvider<ConfigurationType extends ModuleConfiguration, StateType extends ModuleState> {
+mixin ModuleProvider<NativeType extends Struct, ConfigurationType extends ModuleConfiguration, StateType extends ModuleState> {
   int get id;
   String get name;
   ConfigurationType get configuration;
   StateType get state;
+  Pointer<NativeType> get native;
 }
 
 mixin ModuleState {}
 
 mixin ModuleConfiguration {}
 
-mixin Module<NativeType extends Struct, ConfigurationType extends ModuleConfiguration, StateType extends ModuleState> implements ModuleProvider<ConfigurationType, StateType> {
+mixin Module<NativeType extends Struct, ConfigurationType extends ModuleConfiguration, StateType extends ModuleState> implements ModuleProvider<NativeType, ConfigurationType, StateType> {
   int get id;
   String get name;
   StateType get state;

@@ -27,5 +27,5 @@ class CoreModule with Module<core_module, CoreModuleConfiguration, CoreModuleSta
 }
 
 extension ContextProviderCoreExtensions on ContextProvider {
-  ModuleProvider<CoreModuleConfiguration, CoreModuleState> core() => get(coreModuleId);
+  ModuleProvider<core_module, CoreModuleConfiguration, CoreModuleState> core() => get(coreModuleId);
 }
