@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ffi';
 
+import '../core.dart';
 import 'bindings.dart';
 import 'constants.dart';
 import 'library.dart';
@@ -118,43 +119,59 @@ final _forker = Forker._();
 class Launcher {
   Launcher._();
 
-  Future<void> activate(FutureOr<void> Function() main) async => runZonedGuarded(() async {
-        await Future.wait(_context._modules.map((module) => Future.value(module?.initialize())));
-        await main();
-        await Future.wait(_context._modules.map((module) => Future.value(module?.shutdown())));
-        _context._modules.forEach((module) => module?.destroy());
-      }, (error, stack) {
-        if (error is Error) {
-          Printer.printError(error, stack);
-          return;
-        }
-        if (error is Exception) {
-          Printer.printException(error, stack);
-          return;
-        }
-        Printer.print("$error\n$stack");
-      });
+  Future<void> activate(FutureOr<void> Function() main) async => runZonedGuarded(
+        () async {
+          for (var module in _context._modules) {
+            await Future.value(module?.initialize());
+          }
+          await main();
+          for (var module in _context._modules.reversed) {
+            await Future.value(module?.shutdown());
+          }
+          for (var module in _context._modules.reversed) {
+            module?.destroy();
+          }
+        },
+        (error, stack) {
+          if (error is Error) {
+            context().core().state.errorHandler(error, stack);
+            return;
+          }
+          if (error is Exception) {
+            context().core().state.exceptionHandler(error, stack);
+            return;
+          }
+        },
+      );
 }
 
 class Forker {
   Forker._();
 
-  Future<void> activate(FutureOr<void> Function() main) async => runZonedGuarded(() async {
-        await Future.wait(_context._modules.map((module) => Future.value(module?.fork())));
-        await main();
-        await Future.wait(_context._modules.map((module) => Future.value(module?.unfork())));
-        _context._modules.forEach((module) => module?.unload());
-      }, (error, stack) {
-        if (error is Error) {
-          Printer.printError(error, stack);
-          return;
-        }
-        if (error is Exception) {
-          Printer.printException(error, stack);
-          return;
-        }
-        Printer.print("$error\n$stack");
-      });
+  Future<void> activate(FutureOr<void> Function() main) async => runZonedGuarded(
+        () async {
+          for (var module in _context._modules) {
+            await Future.value(module?.fork());
+          }
+          await main();
+          for (var module in _context._modules.reversed) {
+            await Future.value(module?.unfork());
+          }
+          for (var module in _context._modules.reversed) {
+            module?.unload();
+          }
+        },
+        (error, stack) {
+          if (error is Error) {
+            context().core().state.errorHandler(error, stack);
+            return;
+          }
+          if (error is Exception) {
+            context().core().state.exceptionHandler(error, stack);
+            return;
+          }
+        },
+      );
 }
 
 Launcher launch(ModuleCreator creator) {

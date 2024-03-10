@@ -5,8 +5,8 @@ import 'dart:typed_data';
 
 import 'package:core/core.dart';
 
-import '../bindings/include/memory_io_buffers.dart';
-import '../bindings/include/memory_static_buffers.dart';
+import '../bindings/buffers/memory_io_buffers.dart';
+import '../bindings/buffers/memory_static_buffers.dart';
 import '../bindings/state/memory_state.dart';
 import 'constants.dart';
 

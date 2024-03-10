@@ -2,7 +2,7 @@ import 'dart:ffi';
 
 import 'package:core/core.dart';
 
-import 'memory.dart';
+import '../memory/memory.dart';
 
 final class memory_io_buffers extends Opaque {}
 

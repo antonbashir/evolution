@@ -407,9 +407,6 @@ int tupleWriteMap(ByteData data, int length, int offset) {
   throw FormatException("Byte $bytes is invalid map length");
 }
 
-void main(List<String> args) {
-  context().core().native.ref.id
-}
 
 class MemoryTuples {
   final Pointer<memory_state> _memory;

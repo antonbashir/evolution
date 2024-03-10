@@ -1,9 +1,9 @@
 import 'dart:ffi';
 
-import '../include/memory.dart';
-import '../include/memory_configuration.dart';
-import '../include/memory_io_buffers.dart';
-import '../include/memory_static_buffers.dart';
+import '../memory/memory.dart';
+import '../memory/memory_configuration.dart';
+import '../buffers/memory_io_buffers.dart';
+import '../buffers/memory_static_buffers.dart';
 
 final class memory_state extends Struct {
   external Pointer<memory_static_buffers> static_buffers;

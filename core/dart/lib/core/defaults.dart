@@ -1,5 +1,6 @@
 import 'configuration.dart';
 import 'constants.dart';
+import 'printer.dart';
 import 'state.dart';
 
 class CoreDefaults {
@@ -12,5 +13,7 @@ class CoreDefaults {
 
   static final CoreModuleState coreState = CoreModuleState(
     printer: print,
+    errorHandler: Printer.printError,
+    exceptionHandler: Printer.printException,
   );
 }
