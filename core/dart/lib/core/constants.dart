@@ -3,8 +3,10 @@ import 'dart:ffi';
 const inline = pragma("vm:prefer-inline");
 const neverInline = pragma("vm:never-inline");
 
-final coreLibraryName = bool.fromEnvironment("DEBUG") ? "libcore_debug_${Abi.current()}.so" : "libcore_release_${Abi.current()}.so";
+const coreModuleId = 0;
+const coreModuleName = "core";
 const corePackageName = "core";
+final coreLibraryName = bool.fromEnvironment("DEBUG") ? "libcore_debug_${Abi.current()}.so" : "libcore_release_${Abi.current()}.so";
 
 const empty = "";
 const unknown = "unknown";
@@ -12,6 +14,7 @@ const newLine = "\n";
 const slash = "/";
 const dot = ".";
 const star = "*";
+const dash = "-";
 const equalSpaced = " = ";
 const openingBracket = "{";
 const closingBracket = "}";
@@ -27,9 +30,6 @@ const int32MaxValue = 2147483647;
 const soFileExtension = "so";
 const nativeDirectory = "native";
 
-const coreModuleId = 0;
-const coreModuleName = "core";
-
 const modules_maximum = 64;
 
 const printLevelPanic = 0;
@@ -37,6 +37,18 @@ const printLevelError = 1;
 const printLevelWarning = 2;
 const printLevelInformation = 3;
 const printLevelTrace = 4;
+
+const printLevelPanicLabel = "(panic)";
+const printLevelErrorLabel = "(error)";
+const printLevelWarningLabel = "(warning)";
+const printLevelInformationLabel = "(information)";
+const printLevelTraceLabel = "(trace)";
+
+const printExceptionLabel = "(exception)";
+const printSystemExceptionLabel = "(system)";
+
+const printErrorStackPart = "Error stack:";
+const printCatchStackPart = "Catch stack:";
 
 enum LibraryPackageMode {
   shared,

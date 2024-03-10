@@ -16,5 +16,5 @@ class SystemException implements Exception {
   SystemException(this.code) : message = SystemErrors.of(code).message;
 
   @override
-  String toString() => "[system]: ($code) - $message";
+  String toString() => "$printSystemExceptionLabel: $code $dash $message";
 }
