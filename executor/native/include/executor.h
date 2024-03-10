@@ -38,7 +38,7 @@ void executor_awake_complete(struct executor* executor, uint32_t completions);
 int8_t executor_call_native(struct executor* executor, int32_t target_ring_fd, struct executor_task* message);
 int8_t executor_callback_to_native(struct executor* executor, struct executor_task* message);
 
-extern FORCEINLINE int8_t executor_call_dart(struct io_uring* ring, int32_t source_ring_fd, int32_t target_ring_fd, struct executor_task* message)
+FORCEINLINE int8_t executor_call_dart(struct io_uring* ring, int32_t source_ring_fd, int32_t target_ring_fd, struct executor_task* message)
 {
     struct io_uring_sqe* sqe = io_uring_get_sqe(ring);
     if (unlikely(sqe == NULL))
@@ -53,7 +53,7 @@ extern FORCEINLINE int8_t executor_call_dart(struct io_uring* ring, int32_t sour
     return 0;
 }
 
-extern FORCEINLINE int8_t executor_callback_to_dart(struct io_uring* ring, int32_t source_ring_fd, struct executor_task* message)
+FORCEINLINE int8_t executor_callback_to_dart(struct io_uring* ring, int32_t source_ring_fd, struct executor_task* message)
 {
     struct io_uring_sqe* sqe = io_uring_get_sqe(ring);
     if (unlikely(sqe == NULL))

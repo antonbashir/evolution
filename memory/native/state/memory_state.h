@@ -14,9 +14,9 @@ extern "C"
 
 struct memory_state
 {
-    struct memory_static_buffers* static_buffers;  // Dart
-    struct memory_io_buffers* io_buffers;          // Dart
-    struct memory* memory_instance;                // Dart
+    struct memory_static_buffers* static_buffers;
+    struct memory_io_buffers* io_buffers;
+    struct memory* memory_instance;
 };
 
 int32_t memory_state_create(struct memory_state* memory, struct memory_configuration* configuration);

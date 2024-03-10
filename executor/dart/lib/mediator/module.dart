@@ -20,7 +20,7 @@ class ExecutorModule {
   late final Pointer<executor_scheduler> _notifier;
 
   static void load({String? libraryPath}) {
-    CoreModule.load();
+    CoreModule.configure();
     if (libraryPath != null) {
       SystemLibrary.loadByPath(libraryPath);
       return;

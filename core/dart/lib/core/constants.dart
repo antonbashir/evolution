@@ -22,6 +22,22 @@ const packageConfigJsonFile = "package_config.json";
 const pubspecYamlFile = 'pubspec.yaml';
 const pubspecYmlFile = 'pubspec.yml';
 
+const int64MaxValue = 9223372036854775807;
+const int32MaxValue = 2147483647;
+const soFileExtension = "so";
+const nativeDirectory = "native";
+
+const coreModuleId = 0;
+const coreModuleName = "core";
+
+const modules_maximum = 64;
+
+const printLevelPanic = 0;
+const printLevelError = 1;
+const printLevelWarning = 2;
+const printLevelInformation = 3;
+const printLevelTrace = 4;
+
 enum LibraryPackageMode {
   shared,
   static,
@@ -50,11 +66,6 @@ class PackageConfigFields {
   static const name = 'name';
   static const packages = 'packages';
 }
-
-const int64MaxValue = 9223372036854775807;
-const int32MaxValue = 2147483647;
-const soFileExtension = "so";
-const nativeDirectory = "native";
 
 class SystemError {
   final int code;

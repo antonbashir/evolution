@@ -2,9 +2,9 @@
 #define MEMORY_STATIC_BUFFERS_H
 
 #include <common/common.h>
+#include <memory/memory.h>
 #include <modules/modules.h>
 #include <system/types.h>
-#include <memory/memory.h>
 
 #if defined(__cplusplus)
 extern "C"
@@ -13,14 +13,14 @@ extern "C"
 
 struct memory_static_buffers
 {
-    size_t available;       // Dart
-    size_t size;            // Dart
-    size_t capacity;        // Dart
-    int32_t* ids;           // Dart
-    struct iovec* buffers;  // Dart
+    size_t available;
+    size_t size;
+    size_t capacity;
+    int32_t* ids;
+    struct iovec* buffers;
 };
 
-extern FORCEINLINE struct memory_static_buffers* memory_static_buffers_create(size_t capacity, size_t size)
+FORCEINLINE struct memory_static_buffers* memory_static_buffers_create(size_t capacity, size_t size)
 {
     struct memory_static_buffers* pool = memory_module_new_checked(sizeof(struct memory_static_buffers));
     pool->size = size;
@@ -44,7 +44,7 @@ extern FORCEINLINE struct memory_static_buffers* memory_static_buffers_create(si
     return pool;
 }
 
-extern FORCEINLINE void memory_static_buffers_destroy(struct memory_static_buffers* pool)
+FORCEINLINE void memory_static_buffers_destroy(struct memory_static_buffers* pool)
 {
     for (size_t index = 0; index < pool->capacity; index++)
     {
@@ -56,7 +56,7 @@ extern FORCEINLINE void memory_static_buffers_destroy(struct memory_static_buffe
     memory_module_delete(pool);
 }
 
-extern FORCEINLINE void memory_static_buffers_push(struct memory_static_buffers* pool, int32_t id)
+FORCEINLINE void memory_static_buffers_push(struct memory_static_buffers* pool, int32_t id)
 {
     struct iovec* buffer = &pool->buffers[id];
     memset(buffer->iov_base, 0, pool->size);
@@ -64,14 +64,14 @@ extern FORCEINLINE void memory_static_buffers_push(struct memory_static_buffers*
     pool->ids[pool->available++] = id;
 }
 
-extern FORCEINLINE int32_t memory_static_buffers_pop(struct memory_static_buffers* pool)
+FORCEINLINE int32_t memory_static_buffers_pop(struct memory_static_buffers* pool)
 {
     if (unlikely(pool->available == 0))
         return MEMORY_BUFFER_USED;
     return pool->ids[--pool->available];
 }
 
-extern FORCEINLINE int32_t memory_static_buffers_used(struct memory_static_buffers* pool)
+FORCEINLINE int32_t memory_static_buffers_used(struct memory_static_buffers* pool)
 {
     return pool->capacity - pool->available;
 }

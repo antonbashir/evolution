@@ -77,6 +77,8 @@ static void event_field_set_any(struct event_field* field, ...)
     va_end(args);
 }
 
+#define event_message(message) event_field(MODULE_EVENT_FIELD_MESSAGE, message)
+
 #define event_field(field_name, field_value)                                                                                           \
     ({                                                                                                                                 \
         struct event_field field##__LINE__;                                                                                            \

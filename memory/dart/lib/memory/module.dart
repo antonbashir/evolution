@@ -18,7 +18,7 @@ class MemoryModule {
   late final MemoryStructurePool<Double> doubles;
 
   static void load({String? libraryPath, LibraryPackageMode mode = LibraryPackageMode.static}) {
-    CoreModule.load();
+    CoreModule.configure();
     if (libraryPath != null) {
       SystemLibrary.loadByPath(libraryPath);
       return;

@@ -50,7 +50,7 @@ static FORCEINLINE struct event_field* event_find_field(struct event* event, con
     return field;
 }
 
-struct event* event_create(uint8_t level, const char* function, const char* file, uint32_t line, const char* message)
+struct event* event_create(uint8_t level, const char* function, const char* file, uint32_t line)
 {
     struct event* created = calloc(1, sizeof(struct event));
     if (created == NULL)
@@ -65,7 +65,6 @@ struct event* event_create(uint8_t level, const char* function, const char* file
     created->function = function;
     created->file = file;
     created->line = line;
-    created->message = message;
     created->level = level;
     created->timestamp = time_now_real();
     created->raised_module_id = MODULE_UNKNOWN;
@@ -73,9 +72,9 @@ struct event* event_create(uint8_t level, const char* function, const char* file
     return created;
 }
 
-struct event* event_build(uint8_t level, const char* function, const char* file, uint32_t line, const char* message, size_t fields, ...)
+struct event* event_build(uint8_t level, const char* function, const char* file, uint32_t line, size_t fields, ...)
 {
-    struct event* event = event_create(level, function, file, line, message);
+    struct event* event = event_create(level, function, file, line);
     va_list args;
     va_start(args, fields);
     for (int i = 0; i < fields; ++i)
@@ -294,10 +293,6 @@ const char* event_format(struct event* event)
             return buffer;
         }
         size += written;
-    }
-    if (strlen(event->message) != 0)
-    {
-        snprintf(buffer + size, MODULE_EVENT_BUFFER - size, "message = %s\n", event->message);
     }
     return buffer;
 }

@@ -9,6 +9,8 @@ extern "C"
 #define MODULE_UNKNOWN -1
 #define MODULE_UNKNOWN_NAME "unknown"
 
+#define MODULES_MAXIMUM 64
+
 #define MODULE_EVENT_BUFFER 2048
 #define MODULE_EVENT_FIELDS_MAXIMUM 20
 
@@ -33,6 +35,7 @@ extern "C"
 #define MODULE_EVENT_TYPE_CHARACTER 5
 #define MODULE_EVENT_TYPE_BOOLEAN 6
 
+#define MODULE_EVENT_FIELD_MESSAGE "message"
 #define MODULE_EVENT_FIELD_CODE "code"
 #define MODULE_EVENT_FIELD_CALLER "caller"
 #define MODULE_EVENT_FIELD_ADDRESS "address"

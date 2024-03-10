@@ -9,7 +9,7 @@ extern "C"
 {
 #endif
 
-extern FORCEINLINE void system_shutdown_descriptor(int32_t fd)
+FORCEINLINE void system_shutdown_descriptor(int32_t fd)
 {
     shutdown(fd, SHUT_RDWR);
     close(fd);

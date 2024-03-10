@@ -44,7 +44,6 @@ void system_default_event_raiser(struct event* event);
 
 static FORCEINLINE struct system* system_get()
 {
-    if (unlikely(!system_instance.initialized)) system_initialize_default();
     return &system_instance;
 }
 

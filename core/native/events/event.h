@@ -15,7 +15,6 @@ struct event
     struct event_field** fields;
     const char* function;
     const char* file;
-    const char* message;
     size_t fields_count;
     uint32_t line;
     uint32_t raised_module_id;
@@ -23,8 +22,8 @@ struct event
     struct timespec timestamp;
 };
 
-struct event* event_create(uint8_t level, const char* function, const char* file, uint32_t line, const char* message);
-struct event* event_build(uint8_t level, const char* function, const char* file, uint32_t line, const char* message, size_t fields, ...);
+struct event* event_create(uint8_t level, const char* function, const char* file, uint32_t line);
+struct event* event_build(uint8_t level, const char* function, const char* file, uint32_t line, size_t fields, ...);
 void event_setup(struct event* event, uint32_t raised_module_id, const char* raised_module_name);
 void event_destroy(struct event* event);
 

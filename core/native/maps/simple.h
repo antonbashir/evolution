@@ -197,13 +197,13 @@ void _simple_map(dump)(struct _simple_map(t) * h);
 #define put_slot(h, node, exist, arg) \
     _simple_map(put_slot)(h, node, exist, arg)
 
-static inline simple_map_node_t*
+static FORCEINLINE simple_map_node_t*
 _simple_map(node)(struct _simple_map(t) * h, simple_map_int_t x)
 {
     return (simple_map_node_t*)&(h->p[x]);
 }
 
-static inline simple_map_int_t
+static FORCEINLINE simple_map_int_t
 _simple_map(next_slot)(simple_map_int_t slot, simple_map_int_t inc, simple_map_int_t size)
 {
     slot += inc;
@@ -216,7 +216,7 @@ _simple_map(next_slot)(simple_map_int_t slot, simple_map_int_t inc, simple_map_i
  * than a hash node, define simple_map_hash_key and simple_map_eq_key
  * and use simple_map_find().
  */
-static inline simple_map_int_t
+static FORCEINLINE simple_map_int_t
 _simple_map(find)(struct _simple_map(t) * h, simple_map_key_t key, simple_map_arg_t arg)
 {
     (void)arg;
@@ -240,7 +240,7 @@ _simple_map(find)(struct _simple_map(t) * h, simple_map_key_t key, simple_map_ar
 }
 #endif
 
-static inline simple_map_int_t
+static FORCEINLINE simple_map_int_t
 _simple_map(get)(struct _simple_map(t) * h, const simple_map_node_t* node, simple_map_arg_t arg)
 {
     (void)arg;
@@ -262,7 +262,7 @@ _simple_map(get)(struct _simple_map(t) * h, const simple_map_node_t* node, simpl
     }
 }
 
-static inline simple_map_int_t
+static FORCEINLINE simple_map_int_t
 _simple_map(random)(struct _simple_map(t) * h, simple_map_int_t rnd)
 {
     simple_map_int_t res = simple_map_next(h, rnd % simple_map_end(h));
@@ -271,7 +271,7 @@ _simple_map(random)(struct _simple_map(t) * h, simple_map_int_t rnd)
     return simple_map_first(h);
 }
 
-static inline simple_map_int_t
+static FORCEINLINE simple_map_int_t
 _simple_map(put_slot)(struct _simple_map(t) * h, const simple_map_node_t* node, int* exist, simple_map_arg_t arg)
 {
     (void)arg;
@@ -330,7 +330,7 @@ _simple_map(put_slot)(struct _simple_map(t) * h, const simple_map_node_t* node, 
  * @retval != simple_map_end()   pos of the new node, ret is either NULL
  *                       or copy of the old node
  */
-static inline simple_map_int_t
+static FORCEINLINE simple_map_int_t
 _simple_map(put)(struct _simple_map(t) * h, const simple_map_node_t* node, simple_map_node_t** ret, simple_map_arg_t arg)
 {
     simple_map_int_t x = simple_map_end(h);
@@ -367,7 +367,7 @@ _simple_map(put)(struct _simple_map(t) * h, const simple_map_node_t* node, simpl
     return x;
 }
 
-static inline void
+static FORCEINLINE void
 _simple_map(del)(struct _simple_map(t) * h, simple_map_int_t x, simple_map_arg_t arg)
 {
     if (x != h->n_buckets && simple_map_exist(h, x))
@@ -384,7 +384,7 @@ _simple_map(del)(struct _simple_map(t) * h, simple_map_int_t x, simple_map_arg_t
 }
 #endif
 
-static inline void
+static FORCEINLINE void
 _simple_map(remove)(struct _simple_map(t) * h, const simple_map_node_t* node, simple_map_arg_t arg)
 {
     simple_map_int_t k = _simple_map(get)(h, node, arg);

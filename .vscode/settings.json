@@ -131,6 +131,7 @@
     "errno.h": "c",
     "limits.h": "c",
     "cstdlib": "cpp",
-    "crash.h": "c"
+    "crash.h": "c",
+    "context.h": "c"
   },
 }

@@ -38,14 +38,14 @@ struct memory_small_allocator
 
 struct memory_input_buffer
 {
-    uint8_t* read_position;   // Dart
-    uint8_t* write_position;  // Dart
+    uint8_t* read_position;
+    uint8_t* write_position;
     struct ibuf buffer;
 };
 
 struct memory_output_buffer
 {
-    struct iovec* content;  // Dart
+    struct iovec* content;
     struct obuf buffer;
 };
 

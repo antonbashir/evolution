@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:ffi/ffi.dart';
 
-import '../bindings/bindings.dart';
+import '../bindings/system/library.dart';
 import 'constants.dart';
 import 'exceptions.dart';
 import 'lookup.dart';
@@ -53,6 +53,7 @@ class SystemLibrary {
       throw CoreException(CoreErrors.unableToFindProjectRoot);
     }
   }
+
   factory SystemLibrary.loadByPath(String libraryPath) {
     if (_loadedByPath.containsKey(libraryPath)) return _loadedByPath[libraryPath]!;
     final library = File(libraryPath).existsSync()
