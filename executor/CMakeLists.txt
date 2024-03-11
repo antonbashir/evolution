@@ -9,10 +9,28 @@ FetchContent_Declare(
   BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/liburing-binary
 )
 FetchContent_MakeAvailable(executor_liburing)
-add_custom_target(executor_liburing
-  COMMAND ./configure --prefix=${executor_liburing_SOURCE_DIR}/build &> /dev/null
-  && make -j &> /dev/null
-  && make install &> /dev/null
+
+add_custom_command(
+  OUTPUT ${executor_liburing_SOURCE_DIR}/configure
+  WORKING_DIRECTORY ${executor_liburing_SOURCE_DIR}
+  COMMAND AR=${CMAKE_AR} CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER} CFLAGS=${LIBURING_CFLAGS} CXXFLAGS=${LIBURING_CXXFLAGS}
+  autoreconf -i &> /dev/null
+  && autoupdate &> /dev/null
+  COMMAND touch configure
+  DEPENDS ${autotool_files}
+)
+
+add_custom_command(
+  OUTPUT ${executor_liburing_SOURCE_DIR}/Makefile
+  WORKING_DIRECTORY ${executor_liburing_SOURCE_DIR}
+  COMMAND AR=${CMAKE_AR} CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER} CFLAGS=${LIBURING_CFLAGS} CXXFLAGS=${LIBURING_CXXFLAGS}
+  ./configure --prefix=${executor_liburing_BINARY_DIR} &> /dev/null
+  DEPENDS ${executor_liburing_SOURCE_DIR}/configure
+)
+
+add_custom_target(executor_liburing_build
+  COMMAND AR=${CMAKE_AR} CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER} CFLAGS=${LIBURING_CFLAGS} CXXFLAGS=${LIBURING_CXXFLAGS}
+  make -j &> /dev/null && make install DESTDIR=${executor_liburing_BINARY_DIR} &> /dev/null
   WORKING_DIRECTORY ${executor_liburing_SOURCE_DIR}
 )
 

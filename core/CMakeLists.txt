@@ -8,14 +8,23 @@ FetchContent_Declare(
   SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/libunwind-source
   BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/libunwind-binary
 )
-
 FetchContent_Populate(core_libunwind)
 
-add_custom_target(core_libunwind
+add_custom_command(
+  OUTPUT ${core_libunwind_SOURCE_DIR}/configure
+  WORKING_DIRECTORY ${core_libunwind_SOURCE_DIR}
   COMMAND AR=${CMAKE_AR} CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER} CFLAGS=${LIBUNWIND_CFLAGS} CXXFLAGS=${LIBUNWIND_CXXFLAGS}
   autoreconf -i &> /dev/null
   && autoupdate &> /dev/null
-  && ./configure
+  COMMAND touch configure
+  DEPENDS ${autotool_files}
+)
+
+add_custom_command(
+  OUTPUT ${core_libunwind_SOURCE_DIR}/Makefile
+  WORKING_DIRECTORY ${core_libunwind_SOURCE_DIR}
+  COMMAND AR=${CMAKE_AR} CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER} CFLAGS=${LIBUNWIND_CFLAGS} CXXFLAGS=${LIBUNWIND_CXXFLAGS}
+  ${core_libunwind_SOURCE_DIR}/configure
   --prefix=${core_libunwind_BINARY_DIR}
   --silent
   --with-pic
@@ -33,8 +42,12 @@ add_custom_target(core_libunwind
   --disable-minidebuginfo
   --disable-zlibdebuginfo
   &> /dev/null
-  && make -j &> /dev/null
-  && make install prefix=${core_libunwind_BINARY_DIR} &> /dev/null
+  DEPENDS ${core_libunwind_SOURCE_DIR}/configure
+)
+
+add_custom_target(core_libunwind_build
+  COMMAND AR=${CMAKE_AR} CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER} CFLAGS=${LIBUNWIND_CFLAGS} CXXFLAGS=${LIBUNWIND_CXXFLAGS}
+  make -j &> /dev/null && make install prefix=${core_libunwind_BINARY_DIR} &> /dev/null
   WORKING_DIRECTORY ${core_libunwind_SOURCE_DIR}
 )
 

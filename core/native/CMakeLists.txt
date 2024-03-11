@@ -16,13 +16,13 @@ file(GLOB sources
 )
 
 add_library(core_debug_linux_x64 SHARED ${sources})
-add_dependencies(core_debug_linux_x64 core_libunwind)
+add_dependencies(core_debug_linux_x64 core_libunwind_build)
 set_target_properties(core_debug_linux_x64 PROPERTIES COMPILE_FLAGS "${CMAKE_C_FLAGS_DEBUG}" LINKER_LANGUAGE CXX)
 target_link_libraries(core_debug_linux_x64 ${CORE_LIBUNWIND_LIBRARIES})
 copy_to_assets(core_debug_linux_x64)
 
 add_library(core_release_linux_x64 SHARED ${sources})
-add_dependencies(core_release_linux_x64 core_libunwind)
+add_dependencies(core_release_linux_x64 core_libunwind_build)
 set_target_properties(core_release_linux_x64 PROPERTIES COMPILE_FLAGS ${CMAKE_C_FLAGS} LINKER_LANGUAGE CXX)
 target_link_libraries(core_release_linux_x64 ${CORE_LIBUNWIND_LIBRARIES})
 copy_to_assets(core_release_linux_x64)
