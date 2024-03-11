@@ -17,7 +17,6 @@ add_custom_command(
   autoreconf -i &> /dev/null
   && autoupdate &> /dev/null
   COMMAND touch configure
-  DEPENDS ${autotool_files}
 )
 
 add_custom_command(

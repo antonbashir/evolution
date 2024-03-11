@@ -16,7 +16,6 @@ add_custom_command(
   COMMAND AR=${CMAKE_AR} CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER} CFLAGS=${LIBURING_CFLAGS} CXXFLAGS=${LIBURING_CXXFLAGS}
   autoreconf -i &> /dev/null && autoupdate &> /dev/null
   COMMAND touch configure
-  DEPENDS ${autotool_files}
 )
 
 add_custom_command(
@@ -33,6 +32,8 @@ add_custom_target(executor_liburing_build
   WORKING_DIRECTORY ${executor_liburing_SOURCE_DIR}
   DEPENDS ${executor_liburing_SOURCE_DIR}/Makefile
 )
+
+set (LIBURING_LIBRARY ${executor_liburing_BINARY_DIR}/usr/lib/liburing.a)
 
 add_subdirectory(native)
 add_subdirectory(test/native)
