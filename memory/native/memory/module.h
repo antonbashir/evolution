@@ -10,6 +10,8 @@ extern "C"
 {
 #endif
 
+#define MODULE_SOURCE
+
 #define module_id 1
 #define module_name memory
 struct memory_module_configuration

@@ -135,6 +135,7 @@
     "context.h": "c",
     "static_buffers.h": "c",
     "tuple.h": "c",
-    "descriptors.h": "c"
+    "descriptors.h": "c",
+    "io_buffers.h": "c"
   },
 }

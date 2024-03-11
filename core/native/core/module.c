@@ -1,7 +1,5 @@
 #include "module.h"
 
-extern struct core_module* core();
-
 void empty_printer(const char* format, ...)
 {
 }

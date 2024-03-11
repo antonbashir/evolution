@@ -4,12 +4,12 @@
 #include <context/context.h>
 #include <system/library.h>
 
-#define MODULE_SOURCE
-
 #if defined(__cplusplus)
 extern "C"
 {
 #endif
+
+#define MODULE_SOURCE
 
 #define module_id 0
 #define module_name core

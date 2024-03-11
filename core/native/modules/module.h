@@ -13,7 +13,6 @@
 #define module_evaluate_append(a, b) module_append(a, b)
 #define module_evaluate_to_string(x) module_to_string(x)
 #define _module(x) module_evaluate_combine(module_name, x)
-#define _declare_module_getter FORCEINLINE module_structure* module_name()
 #define _declare_module_id module_evaluate_append(module_name, _module_id)
 #define _declare_module_name module_evaluate_append(module_name, _module_name)
 #define _declare_module_label module_evaluate_to_string(module_name)
@@ -44,30 +43,31 @@ struct _unknown_module
 #define module_id 0
 #endif
 
-const uint32_t _declare_module_id = module_id;
-const char* _declare_module_name = _declare_module_label;
+static const uint32_t _declare_module_id = module_id;
+static const char* _declare_module_name = _declare_module_label;
+
 
 module_structure* _module(create)(module_configuration* configuration);
 void _module(destroy)(module_structure* module);
 
-_declare_module_getter
+static FORCEINLINE module_structure* module_name()
 {
     return context_get_module(_declare_module_id);
 }
 
-FORCEINLINE struct event* _module(event)(struct event* event)
+static FORCEINLINE struct event* _module(event)(struct event* event)
 {
     event_setup(event, _declare_module_id, _declare_module_name);
     return event;
 }
 
-FORCEINLINE void* _module(new)(uint32_t size)
+static FORCEINLINE void* _module(new)(uint32_t size)
 {
     trace_event(_module(event)(event_trace(event_field(MODULE_EVENT_FIELD_CALLER, stacktrace_callers(1, 3)))));
     return calloc(1, size);
 }
 
-FORCEINLINE void* _module(new_checked)(uint32_t size)
+static FORCEINLINE void* _module(new_checked)(uint32_t size)
 {
     trace_event(_module(event)(event_trace(event_field(MODULE_EVENT_FIELD_CALLER, stacktrace_callers(1, 3)))));
     void* object = calloc(1, size);
@@ -78,13 +78,13 @@ FORCEINLINE void* _module(new_checked)(uint32_t size)
     return object;
 }
 
-FORCEINLINE void* _module(allocate)(uint32_t count, uint32_t size)
+static FORCEINLINE void* _module(allocate)(uint32_t count, uint32_t size)
 {
     trace_event(_module(event)(event_trace(event_field(MODULE_EVENT_FIELD_CALLER, stacktrace_callers(1, 3)))));
     return calloc(count, size);
 }
 
-FORCEINLINE void* _module(allocate_checked)(uint32_t count, uint32_t size)
+static FORCEINLINE void* _module(allocate_checked)(uint32_t count, uint32_t size)
 {
     trace_event(_module(event)(event_trace(event_field(MODULE_EVENT_FIELD_CALLER, stacktrace_callers(1, 3)))));
     void* object = calloc(count, size);
@@ -95,7 +95,7 @@ FORCEINLINE void* _module(allocate_checked)(uint32_t count, uint32_t size)
     return object;
 }
 
-FORCEINLINE void _module(check_object)(void* object)
+static FORCEINLINE void _module(check_object)(void* object)
 {
     trace_event(_module(event)(event_trace(event_field(MODULE_EVENT_FIELD_CALLER, stacktrace_callers(1, 3)))));
     if (unlikely(object == NULL))
@@ -104,7 +104,7 @@ FORCEINLINE void _module(check_object)(void* object)
     }
 }
 
-FORCEINLINE void _module(check_code)(int32_t code)
+static FORCEINLINE void _module(check_code)(int32_t code)
 {
     trace_event(_module(event)(event_trace(event_field(MODULE_EVENT_FIELD_CALLER, stacktrace_callers(1, 3)))));
     if (unlikely(code != 0))
@@ -113,7 +113,7 @@ FORCEINLINE void _module(check_code)(int32_t code)
     }
 }
 
-FORCEINLINE void _module(delete)(void* object)
+static FORCEINLINE void _module(delete)(void* object)
 {
     trace_event(_module(event)(event_trace(event_field(MODULE_EVENT_FIELD_CALLER, stacktrace_callers(1, 3)))));
     free(object);
