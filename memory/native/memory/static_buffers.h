@@ -21,7 +21,7 @@ struct memory_static_buffers
     struct iovec* buffers;
 };
 
-FORCEINLINE struct memory_static_buffers* memory_static_buffers_create(size_t capacity, size_t size)
+DART_INLINE struct memory_static_buffers* memory_static_buffers_create(size_t capacity, size_t size)
 {
     struct memory_static_buffers* pool = memory_module_new_checked(sizeof(struct memory_static_buffers));
     pool->size = size;
@@ -45,7 +45,7 @@ FORCEINLINE struct memory_static_buffers* memory_static_buffers_create(size_t ca
     return pool;
 }
 
-FORCEINLINE void memory_static_buffers_destroy(struct memory_static_buffers* pool)
+DART_INLINE void memory_static_buffers_destroy(struct memory_static_buffers* pool)
 {
     for (size_t index = 0; index < pool->capacity; index++)
     {
@@ -57,7 +57,7 @@ FORCEINLINE void memory_static_buffers_destroy(struct memory_static_buffers* poo
     memory_module_delete(pool);
 }
 
-FORCEINLINE void memory_static_buffers_push(struct memory_static_buffers* pool, int32_t id)
+DART_INLINE void memory_static_buffers_push(struct memory_static_buffers* pool, int32_t id)
 {
     struct iovec* buffer = &pool->buffers[id];
     memset(buffer->iov_base, 0, pool->size);
@@ -65,14 +65,14 @@ FORCEINLINE void memory_static_buffers_push(struct memory_static_buffers* pool, 
     pool->ids[pool->available++] = id;
 }
 
-FORCEINLINE int32_t memory_static_buffers_pop(struct memory_static_buffers* pool)
+DART_INLINE int32_t memory_static_buffers_pop(struct memory_static_buffers* pool)
 {
     if (unlikely(pool->available == 0))
         return MEMORY_BUFFER_USED;
     return pool->ids[--pool->available];
 }
 
-FORCEINLINE int32_t memory_static_buffers_used(struct memory_static_buffers* pool)
+DART_INLINE int32_t memory_static_buffers_used(struct memory_static_buffers* pool)
 {
     return pool->capacity - pool->available;
 }

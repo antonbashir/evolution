@@ -54,6 +54,3 @@ void memory_module_state_destroy(struct memory_module_state* state)
     memory_module_delete(state->memory_instance);
     memory_module_delete(state);
 }
-
-
-extern uint8_t* memory_output_buffer_finalize_reserve(struct memory_output_buffer* buffer, size_t delta, size_t size);
