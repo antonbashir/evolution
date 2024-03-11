@@ -49,6 +49,7 @@ add_custom_target(core_libunwind_build
   COMMAND AR=${CMAKE_AR} CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER} CFLAGS=${LIBUNWIND_CFLAGS} CXXFLAGS=${LIBUNWIND_CXXFLAGS}
   make -j &> /dev/null && make install prefix=${core_libunwind_BINARY_DIR} &> /dev/null
   WORKING_DIRECTORY ${core_libunwind_SOURCE_DIR}
+  DEPENDS ${core_libunwind_SOURCE_DIR}/Makefile
 )
 
 set(CORE_LIBUNWIND_LIBRARIES ${core_libunwind_BINARY_DIR}/lib/libunwind.a ${core_libunwind_BINARY_DIR}/lib/libunwind-${CMAKE_SYSTEM_PROCESSOR}.a)
