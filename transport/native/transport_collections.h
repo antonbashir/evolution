@@ -8,6 +8,8 @@ extern "C"
 {
 #endif
 
+#define SIMPLE_MAP_SOURCE
+
 struct simple_map_events_node_t
 {
     uint64_t data;
@@ -24,7 +26,6 @@ struct simple_map_events_node_t
 #define simple_map_hash_key(a, arg) (a)
 #define simple_map_cmp(a, b, arg) ((a->data) != (b->data))
 #define simple_map_cmp_key(a, b, arg) ((a) != (b->data))
-#define SIMPLE_MAP_SOURCE
 #include <maps/simple.h>
 
 #if defined(__cplusplus)

@@ -100,9 +100,18 @@ Map<String, FileDeclarations> collectNative(String nativeDirectory) {
     if (nativeFiles.containsKey(fileName)) return;
     final fileDeclarations = FileDeclarations();
     nativeFiles[fileName] = fileDeclarations;
+    bool commentBlock = false;
     StructureDeclaration? currentStructureDeclaration = null;
     FunctionDeclaration? currentFunctionDeclaration = null;
     File(child.absolute.path).readAsLinesSync().forEach((line) {
+      if (line.trimLeft().startsWith("//") || line.trimLeft().startsWith("/*")) {
+        commentBlock = commentBlock || (line.trimLeft().startsWith("/*") && !line.contains("*/"));
+        return;
+      }
+      if (line.contains("*/")) {
+        commentBlock = false;
+        line = line.substring(line.lastIndexOf("*/") + 2, line.length);
+      }
       if (currentStructureDeclaration != null) {
         if (line == "};") {
           currentStructureDeclaration = null;

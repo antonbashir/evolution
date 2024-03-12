@@ -23,7 +23,7 @@ DART_TYPE struct msghdr;
 DART_STRUCTURE struct transport_configuration
 {
     DART_FIELD struct memory_configuration memory_instance_configuration;
-    DART_FIELD struct executor_configuration executor_configuration;
+    // DART_FIELD struct executor_configuration executor_configuration;
     DART_FIELD uint64_t timeout_checker_period_milliseconds;
     DART_FIELD bool trace;
 };

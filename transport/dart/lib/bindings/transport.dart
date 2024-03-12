@@ -21,7 +21,6 @@ final class msghdr extends Opaque {}
 
 final class transport_configuration extends Struct {
   external memory_configuration memory_instance_configuration;
-  external executor_configuration executor_configuration;
   @Uint64()
   external int timeout_checker_period_milliseconds;
   @Bool()

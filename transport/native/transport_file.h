@@ -3,13 +3,14 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include "common/common.h"
 
 #if defined(__cplusplus)
 extern "C"
 {
 #endif
 
-int32_t transport_file_open(const char* path, int32_t mode, bool truncate, bool create);
+DART_LEAF_FUNCTION int32_t transport_file_open(const char* path, int32_t mode, bool truncate, bool create);
 
 #if defined(__cplusplus)
 }
