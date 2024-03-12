@@ -10,11 +10,11 @@ extern "C"
 {
 #endif
 
-DART_INLINE uint64_t memory_tuple_next(const char* buffer, uint64_t offset)
+DART_INLINE_FUNCTION uint64_t memory_tuple_next(uint8_t* buffer, uint64_t offset)
 {
-    const char* offset_buffer = buffer + offset;
+    const char* offset_buffer = (const char*)buffer + offset;
     mp_next(&offset_buffer);
-    return (uint64_t)(offset_buffer - buffer);
+    return (uint64_t)(offset_buffer - (const char*)buffer);
 }
 
 #if defined(__cplusplus)

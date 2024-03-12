@@ -50,7 +50,7 @@ class TransportClientsFactory {
       );
       if (result < 0) {
         if (clientPointer.ref.fd > 0) {
-          systemShutdownDescriptor(clientPointer.ref.fd);
+          system_shutdown_descriptor(clientPointer.ref.fd);
           calloc.free(clientPointer);
           throw TransportInitializationException(TransportMessages.clientError(result));
         }
@@ -101,7 +101,7 @@ class TransportClientsFactory {
       );
       if (result < 0) {
         if (pointer.ref.fd > 0) {
-          systemShutdownDescriptor(pointer.ref.fd);
+          system_shutdown_descriptor(pointer.ref.fd);
           calloc.free(pointer);
           throw TransportInitializationException(TransportMessages.clientError(result));
         }
@@ -184,7 +184,7 @@ class TransportClientsFactory {
       );
       if (result < 0) {
         if (clientPointer.ref.fd > 0) {
-          systemShutdownDescriptor(clientPointer.ref.fd);
+          system_shutdown_descriptor(clientPointer.ref.fd);
           calloc.free(clientPointer);
           throw TransportInitializationException(TransportMessages.clientError(result));
         }

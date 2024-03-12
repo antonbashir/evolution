@@ -5,19 +5,20 @@ import 'dart:typed_data';
 
 import 'package:core/core.dart';
 
-import '../bindings/buffers/memory_io_buffers.dart';
-import '../bindings/buffers/memory_static_buffers.dart';
-import '../bindings/state/memory_state.dart';
+import 'bindings.dart';
 import 'constants.dart';
 
 class MemoryStaticBuffers {
-  final Pointer<iovec> native;
-  final int bufferSize;
-  final int buffersCapacity;
-  final Queue<Completer<void>> _finalizers = Queue();
+  final Pointer<memory_static_buffers> native;
+  final Pointer<Int32> ids;
+  final Pointer<iovec> buffers;
   final Pointer<memory_state> _memory;
+  final Queue<Completer<void>> _finalizers = Queue();
 
-  MemoryStaticBuffers(this._memory, this.buffersCapacity, this.bufferSize) : native = _memory.ref.static_buffers.ref.buffers;
+  MemoryStaticBuffers(this._memory)
+      : native = _memory.ref.static_buffers,
+        ids = _memory.ref.static_buffers.ref.ids,
+        buffers = _memory.ref.static_buffers.ref.buffers;
 
   @inline
   void release(int bufferId) {
@@ -27,40 +28,39 @@ class MemoryStaticBuffers {
 
   @inline
   Uint8List read(int bufferId) {
-    final buffer = native + bufferId;
+    final buffer = buffers + bufferId;
     final bufferBytes = buffer.ref.iov_base.cast<Uint8>();
     return bufferBytes.asTypedList(buffer.ref.iov_len);
   }
 
   @inline
-  void setLength(int bufferId, int length) => (native + bufferId).ref.iov_len = length;
+  void setLength(int bufferId, int length) => (buffers + bufferId).ref.iov_len = length;
 
   @inline
   void write(int bufferId, Uint8List bytes) {
-    final buffer = native + bufferId;
+    final buffer = buffers + bufferId;
     buffer.ref.iov_base.cast<Uint8>().asTypedList(bytes.length).setAll(0, bytes);
     buffer.ref.iov_len = bytes.length;
   }
 
   @inline
   int? get() {
-    final buffer = memory_static_buffers_pop(_memory.ref.static_buffers);
-    if (buffer == memoryBufferUsed) return null;
-    return buffer;
+    if (native.ref.available == 0) return null;
+    return ids[--native.ref.available];
   }
 
   Future<int> allocate() async {
-    var bufferId = memory_static_buffers_pop(_memory.ref.static_buffers);
-    while (bufferId == memoryBufferUsed) {
+    var bufferId = get();
+    while (bufferId == null) {
       if (_finalizers.isNotEmpty) {
         await _finalizers.last.future;
-        bufferId = memory_static_buffers_pop(_memory.ref.static_buffers);
+        bufferId = get();
         continue;
       }
       final completer = Completer();
       _finalizers.add(completer);
       await completer.future;
-      bufferId = memory_static_buffers_pop(_memory.ref.static_buffers);
+      bufferId = get();
     }
     return bufferId;
   }

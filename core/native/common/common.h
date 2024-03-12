@@ -222,10 +222,16 @@ extern "C"
 #define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 
 #ifdef DART_FFI
-#define DART_INLINE extern FORCEINLINE
+#define DART_INLINE_FUNCTION extern FORCEINLINE
 #else
-#define DART_INLINE static FORCEINLINE
+#define DART_INLINE_FUNCTION static FORCEINLINE
 #endif
+
+#define DART_FUNCTION
+
+#define DART_STRUCTURE
+
+#define DART_FIELD
 
 #if defined(__cplusplus)
 }

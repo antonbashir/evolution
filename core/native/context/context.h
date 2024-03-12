@@ -10,23 +10,23 @@ extern "C"
 {
 #endif
 
-struct context
+DART_STRUCTURE struct context
 {
     bool initialized;
     size_t size;
-    void** modules;
+    DART_FIELD void** modules;
 };
 
 extern struct context context_instance;
 
-DART_INLINE struct context* context_get()
+DART_INLINE_FUNCTION struct context* context_get()
 {
     return &context_instance;
 }
 
-void context_create();
-void* context_get_module(uint32_t id);
-void context_put_module(uint32_t id, void* module);
+DART_FUNCTION void context_create();
+DART_FUNCTION void* context_get_module(uint32_t id);
+DART_FUNCTION void context_put_module(uint32_t id, void* module);
 
 #if defined(__cplusplus)
 }
