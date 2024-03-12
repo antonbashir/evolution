@@ -12,8 +12,8 @@ extern "C"
 
 DART_STRUCTURE struct context
 {
-    bool initialized;
-    size_t size;
+    DART_FIELD bool initialized;
+    DART_FIELD size_t size;
     DART_FIELD void** modules;
 };
 

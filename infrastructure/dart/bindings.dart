@@ -181,7 +181,7 @@ final class ${structure.name} extends ${structure.fields.isEmpty ? "Opaque" : "S
   return resultContent;
 }
 
-String generateStructureField(String type, String name) {
+String generateStructureField(String type, String name) { 
   type = type.replaceAll(constWord, "").replaceAll(structWord, "").trim();
   var pointers = 0;
   while (type.endsWith("*")) {

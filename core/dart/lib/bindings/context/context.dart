@@ -3,6 +3,10 @@
 import 'dart:ffi';
 
 final class context extends Struct {
+  @Bool()
+  external bool initialized;
+  @Size()
+  external int size;
   external Pointer<Pointer<Void>> modules;
 }
 
