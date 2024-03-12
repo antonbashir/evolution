@@ -46,7 +46,7 @@ DART_STRUCTURE struct memory_output_buffer
     struct obuf buffer;
 };
 
-DART_INLINE_FUNCTION struct memory* memory_create(size_t quota_size, size_t preallocation_size, size_t slab_size)
+DART_INLINE_LEAF_FUNCTION struct memory* memory_create(size_t quota_size, size_t preallocation_size, size_t slab_size)
 {
     struct memory* memory = memory_module_new(sizeof(struct memory));
     if (memory == NULL)
@@ -64,7 +64,7 @@ DART_INLINE_FUNCTION struct memory* memory_create(size_t quota_size, size_t prea
     return memory;
 }
 
-DART_INLINE_FUNCTION void memory_destroy(struct memory* memory)
+DART_INLINE_LEAF_FUNCTION void memory_destroy(struct memory* memory)
 {
     slab_cache_destroy(&memory->cache);
     slab_arena_destroy(&memory->arena);
@@ -75,45 +75,45 @@ DART_INLINE_FUNCTION void memory_destroy(struct memory* memory)
     memory_module_delete(memory);
 }
 
-DART_INLINE_FUNCTION int32_t memory_pool_create(struct memory_pool* pool, struct memory* memory, size_t size)
+DART_INLINE_LEAF_FUNCTION int32_t memory_pool_create(struct memory_pool* pool, struct memory* memory, size_t size)
 {
     mempool_create(&pool->pool, &memory->cache, size);
     return mempool_is_initialized(&pool->pool) ? 0 : -1;
 }
 
-DART_INLINE_FUNCTION void memory_pool_destroy(struct memory_pool* pool)
+DART_INLINE_LEAF_FUNCTION void memory_pool_destroy(struct memory_pool* pool)
 {
     mempool_destroy(&pool->pool);
 }
 
-DART_INLINE_FUNCTION void* memory_pool_allocate(struct memory_pool* pool)
+DART_INLINE_LEAF_FUNCTION void* memory_pool_allocate(struct memory_pool* pool)
 {
     return mempool_alloc(&pool->pool);
 }
 
-DART_INLINE_FUNCTION void memory_pool_free(struct memory_pool* pool, void* ptr)
+DART_INLINE_LEAF_FUNCTION void memory_pool_free(struct memory_pool* pool, void* ptr)
 {
     mempool_free(&pool->pool, ptr);
 }
 
-DART_INLINE_FUNCTION int32_t memory_small_allocator_create(struct memory_small_allocator* pool, float allocation_factor, struct memory* memory)
+DART_INLINE_LEAF_FUNCTION int32_t memory_small_allocator_create(struct memory_small_allocator* pool, float allocation_factor, struct memory* memory)
 {
     float actual_allocation_factor;
     small_alloc_create(&pool->allocator, &memory->cache, 3 * sizeof(int32_t), sizeof(uintptr_t), allocation_factor, &actual_allocation_factor);
     return pool->allocator.cache == NULL ? -1 : 0;
 }
 
-DART_INLINE_FUNCTION void* memory_small_allocator_allocate(struct memory_small_allocator* pool, size_t size)
+DART_INLINE_LEAF_FUNCTION void* memory_small_allocator_allocate(struct memory_small_allocator* pool, size_t size)
 {
     return (void*)smalloc(&pool->allocator, size);
 }
 
-DART_INLINE_FUNCTION void memory_small_allocator_free(struct memory_small_allocator* pool, void* ptr, size_t size)
+DART_INLINE_LEAF_FUNCTION void memory_small_allocator_free(struct memory_small_allocator* pool, void* ptr, size_t size)
 {
     smfree(&pool->allocator, ptr, size);
 }
 
-DART_INLINE_FUNCTION void memory_small_allocator_destroy(struct memory_small_allocator* pool)
+DART_INLINE_LEAF_FUNCTION void memory_small_allocator_destroy(struct memory_small_allocator* pool)
 {
     small_alloc_destroy(&pool->allocator);
 }

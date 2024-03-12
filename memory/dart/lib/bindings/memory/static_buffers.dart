@@ -5,13 +5,17 @@ import '../../memory/bindings.dart';
 
 final class memory_static_buffers extends Struct {
   @Size()
+  external int available;
+  @Size()
+  external int size;
+  @Size()
   external int capacity;
   external Pointer<Int32> ids;
   external Pointer<iovec> buffers;
 }
 
-@Native<Pointer<memory_static_buffers> Function(Size size)>(isLeaf: true)
-external Pointer<memory_static_buffers> memory_static_buffers_create(int size);
+@Native<Pointer<memory_static_buffers> Function(Size capacity, Size size)>(isLeaf: true)
+external Pointer<memory_static_buffers> memory_static_buffers_create(int capacity, int size);
 
 @Native<Void Function(Pointer<memory_static_buffers> pool)>(isLeaf: true)
 external void memory_static_buffers_destroy(Pointer<memory_static_buffers> pool);

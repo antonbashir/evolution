@@ -19,14 +19,14 @@ DART_STRUCTURE struct context
     DART_FIELD void** modules;
 };
 
-DART_INLINE_FUNCTION struct context* context_get()
+DART_INLINE_LEAF_FUNCTION struct context* context_get()
 {
     return &context_instance;
 }
 
-DART_FUNCTION void context_create();
-DART_FUNCTION void* context_get_module(uint32_t id);
-DART_FUNCTION void context_put_module(uint32_t id, void* module);
+DART_LEAF_FUNCTION void context_create();
+DART_LEAF_FUNCTION void* context_get_module(uint32_t id);
+DART_LEAF_FUNCTION void context_put_module(uint32_t id, void* module);
 
 #if defined(__cplusplus)
 }

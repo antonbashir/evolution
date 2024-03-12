@@ -1,6 +1,7 @@
 // ignore_for_file: unused_import
 
 import 'dart:ffi';
+import 'package:ffi/ffi.dart';
 import '../../transport/bindings.dart';
 
 final class transport_server_configuration extends Struct {
@@ -43,3 +44,9 @@ final class transport_server extends Struct {
   @Int32()
   external int server_address_length;
 }
+
+@Native<Int32 Function(Pointer<transport_server> server, Pointer<transport_server_configuration> configuration, Pointer<Utf8> ip, Int32 port)>(isLeaf: true)
+external int transport_server_initialize_udp(Pointer<transport_server> server, Pointer<transport_server_configuration> configuration, Pointer<Utf8> ip, int port);
+
+@Native<Void Function(Pointer<transport_server> server)>(isLeaf: true)
+external void transport_server_destroy(Pointer<transport_server> server);

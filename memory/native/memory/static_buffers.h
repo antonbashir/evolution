@@ -21,7 +21,7 @@ DART_STRUCTURE struct memory_static_buffers
     DART_FIELD struct iovec* buffers;
 };
 
-DART_INLINE_FUNCTION struct memory_static_buffers* memory_static_buffers_create(size_t capacity, size_t size)
+DART_INLINE_LEAF_FUNCTION struct memory_static_buffers* memory_static_buffers_create(size_t capacity, size_t size)
 {
     struct memory_static_buffers* pool = memory_module_new_checked(sizeof(struct memory_static_buffers));
     pool->size = size;
@@ -45,7 +45,7 @@ DART_INLINE_FUNCTION struct memory_static_buffers* memory_static_buffers_create(
     return pool;
 }
 
-DART_INLINE_FUNCTION void memory_static_buffers_destroy(struct memory_static_buffers* pool)
+DART_INLINE_LEAF_FUNCTION void memory_static_buffers_destroy(struct memory_static_buffers* pool)
 {
     for (size_t index = 0; index < pool->capacity; index++)
     {
@@ -57,7 +57,7 @@ DART_INLINE_FUNCTION void memory_static_buffers_destroy(struct memory_static_buf
     memory_module_delete(pool);
 }
 
-DART_INLINE_FUNCTION void memory_static_buffers_push(struct memory_static_buffers* pool, int32_t id)
+DART_INLINE_LEAF_FUNCTION void memory_static_buffers_push(struct memory_static_buffers* pool, int32_t id)
 {
     struct iovec* buffer = &pool->buffers[id];
     memset(buffer->iov_base, 0, pool->size);
@@ -65,14 +65,14 @@ DART_INLINE_FUNCTION void memory_static_buffers_push(struct memory_static_buffer
     pool->ids[pool->available++] = id;
 }
 
-DART_INLINE_FUNCTION int32_t memory_static_buffers_pop(struct memory_static_buffers* pool)
+DART_INLINE_LEAF_FUNCTION int32_t memory_static_buffers_pop(struct memory_static_buffers* pool)
 {
     if (unlikely(pool->available == 0))
         return MEMORY_BUFFER_USED;
     return pool->ids[--pool->available];
 }
 
-DART_INLINE_FUNCTION int32_t memory_static_buffers_used(struct memory_static_buffers* pool)
+DART_INLINE_LEAF_FUNCTION int32_t memory_static_buffers_used(struct memory_static_buffers* pool)
 {
     return pool->capacity - pool->available;
 }

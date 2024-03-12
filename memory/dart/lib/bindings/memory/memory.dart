@@ -10,6 +10,7 @@ final class memory_pool extends Opaque {}
 final class memory_small_allocator extends Opaque {}
 
 final class memory_input_buffer extends Struct {
+  external Pointer<Uint8> read_position;
   external Pointer<Uint8> write_position;
 }
 
@@ -17,8 +18,8 @@ final class memory_output_buffer extends Struct {
   external Pointer<iovec> content;
 }
 
-@Native<Pointer<memory> Function(Size slab_size)>(isLeaf: true)
-external Pointer<memory> memory_create(int slab_size);
+@Native<Pointer<memory> Function(Size quota_size, Size preallocation_size, Size slab_size)>(isLeaf: true)
+external Pointer<memory> memory_create(int quota_size, int preallocation_size, int slab_size);
 
 @Native<Void Function(Pointer<memory> memory)>(isLeaf: true)
 external void memory_destroy(Pointer<memory> memory);

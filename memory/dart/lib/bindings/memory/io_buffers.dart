@@ -31,8 +31,8 @@ external Pointer<Uint8> memory_input_buffer_reserve(Pointer<memory_input_buffer>
 @Native<Pointer<Uint8> Function(Pointer<memory_input_buffer> buffer, Size size)>(isLeaf: true)
 external Pointer<Uint8> memory_input_buffer_finalize(Pointer<memory_input_buffer> buffer, int size);
 
-@Native<Pointer<Uint8> Function(Pointer<memory_input_buffer> buffer, Size size)>(isLeaf: true)
-external Pointer<Uint8> memory_input_buffer_finalize_reserve(Pointer<memory_input_buffer> buffer, int size);
+@Native<Pointer<Uint8> Function(Pointer<memory_input_buffer> buffer, Size delta, Size size)>(isLeaf: true)
+external Pointer<Uint8> memory_input_buffer_finalize_reserve(Pointer<memory_input_buffer> buffer, int delta, int size);
 
 @Native<Pointer<Uint8> Function(Pointer<memory_output_buffer> buffer, Size size)>(isLeaf: true)
 external Pointer<Uint8> memory_output_buffer_reserve(Pointer<memory_output_buffer> buffer, int size);
@@ -40,5 +40,5 @@ external Pointer<Uint8> memory_output_buffer_reserve(Pointer<memory_output_buffe
 @Native<Pointer<Uint8> Function(Pointer<memory_output_buffer> buffer, Size size)>(isLeaf: true)
 external Pointer<Uint8> memory_output_buffer_finalize(Pointer<memory_output_buffer> buffer, int size);
 
-@Native<Pointer<Uint8> Function(Pointer<memory_output_buffer> buffer, Size size)>(isLeaf: true)
-external Pointer<Uint8> memory_output_buffer_finalize_reserve(Pointer<memory_output_buffer> buffer, int size);
+@Native<Pointer<Uint8> Function(Pointer<memory_output_buffer> buffer, Size delta, Size size)>(isLeaf: true)
+external Pointer<Uint8> memory_output_buffer_finalize_reserve(Pointer<memory_output_buffer> buffer, int delta, int size);

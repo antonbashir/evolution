@@ -35,7 +35,9 @@ final dartTypeMapping = {
 const dartField = "DART_FIELD";
 const dartStructure = "DART_STRUCTURE";
 const dartFunction = "DART_FUNCTION";
-const dartInlineFunction = "DART_INLINE_FUNCTION";
+const dartInlineFunction = "DART_LEAF_FUNCTION";
+const dartLeafFunction = "DART_LEAF_FUNCTION";
+const dartLeafInlineFunction = "DART_INLINE_LEAF_FUNCTION";
 const dartType = "DART_TYPE";
 const dartSubstitute = "DART_SUBSTITUTE";
 final dartSubstituteRegexp = RegExp(r"DART_SUBSTITUTE\((.+)\)");
@@ -54,6 +56,7 @@ class FunctionDeclaration {
   String returnType = "";
   String functionName = "";
   Map<String, String> arguments = {};
+  bool leaf = false;
 }
 
 class FileDeclarations {
@@ -118,8 +121,9 @@ Map<String, FileDeclarations> collectNative(String nativeDirectory) {
         fileDeclarations.types.add(line.replaceAll(";", "").replaceAll(structWord, "").trim());
         return;
       }
-      if (line.contains(dartInlineFunction) || line.contains(dartFunction)) {
-        line = line.replaceAll(dartInlineFunction, "").replaceAll(dartFunction, "");
+      if (line.contains(dartInlineFunction) || line.contains(dartFunction) || line.contains(dartLeafFunction) || line.contains(dartLeafInlineFunction)) {
+        final leaf = line.contains(dartLeafFunction) || line.contains(dartLeafInlineFunction);
+        line = line.replaceAll(dartInlineFunction, "").replaceAll(dartFunction, "").replaceAll(dartLeafFunction, "").replaceAll(dartLeafInlineFunction, "");
         if (line.isEmpty) return;
         if (!(line.contains("(") && line.contains(")"))) return;
         final functionDeclaration = FunctionDeclaration();
@@ -139,6 +143,7 @@ Map<String, FileDeclarations> collectNative(String nativeDirectory) {
         functionDeclaration.functionName = functionName;
         functionDeclaration.returnType = returnType;
         functionDeclaration.arguments = arguments;
+        functionDeclaration.leaf = leaf;
       }
     });
   });
@@ -154,7 +159,7 @@ void generateDart(Map<String, FileDeclarations> declarations, String nativeDirec
     final dartContent = File(dartDirectory + '/$key.dart').readAsLinesSync();
     var resultContent = "// ignore_for_file: unused_import\n\n";
     final imports = dartContent.where((element) => element.startsWith("import")).toList();
-    if (imports.isEmpty) resultContent += "import 'dart:ffi';\nimport '../../$moduleName/bindings.dart';\n";
+    if (imports.isEmpty) resultContent += "import 'dart:ffi';import 'package:ffi/ffi.dart';\nimport '../../$moduleName/bindings.dart';\n";
     if (imports.isNotEmpty) imports.forEach((element) => resultContent += "${element}\n");
     resultContent += "\n";
     resultContent += value.types.map((type) => "final class $type extends Opaque {}").join("\n");
@@ -175,7 +180,7 @@ void generateDart(Map<String, FileDeclarations> declarations, String nativeDirec
 String generateFunctions(FileDeclarations value, String resultContent) {
   for (var function in value.functions) {
     resultContent += """
-@Native<${generateFunctionPart(function.returnType).$1} Function(${function.arguments.entries.map((argument) => "${generateFunctionPart(argument.value).$1} ${argument.key.trim()}").join(", ")})>(isLeaf: true)
+@Native<${generateFunctionPart(function.returnType).$1} Function(${function.arguments.entries.map((argument) => "${generateFunctionPart(argument.value).$1} ${argument.key.trim()}").join(", ")})>(isLeaf: ${function.leaf})
 external ${generateFunctionPart(function.returnType).$2} ${function.functionName}(${function.arguments.entries.map((argument) => "${generateFunctionPart(argument.value).$2} ${argument.key.trim()}").join(", ")});
   
 """;
