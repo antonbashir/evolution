@@ -84,7 +84,9 @@ DART_LEAF_FUNCTION void transport_cancel_by_fd(struct transport* transport, int3
 DART_LEAF_FUNCTION void transport_check_event_timeouts(struct transport* transport);
 DART_LEAF_FUNCTION void transport_remove_event(struct transport* transport, uint64_t data);
 
-DART_LEAF_FUNCTION struct sockaddr* transport_get_datagram_address(struct transport* transport, DART_SUBSTITUTE(uint8_t) transport_socket_family_t socket_family, int32_t buffer_id);
+DART_LEAF_FUNCTION struct sockaddr* transport_get_datagram_address(struct transport* transport,
+                                                                   DART_SUBSTITUTE(uint8_t) transport_socket_family_t socket_family,
+                                                                   int32_t buffer_id);
 
 DART_LEAF_FUNCTION void transport_destroy(struct transport* transport);
 #if defined(__cplusplus)

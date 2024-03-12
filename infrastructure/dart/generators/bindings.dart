@@ -160,7 +160,6 @@ Map<String, FileDeclarations> collectNative(String nativeDirectory) {
           final closeBraceIndex = line.lastIndexOf(')');
           final functionName = line.substring(0, openBraceIndex).split(" ").last;
           final returnType = line.substring(0, line.indexOf(functionName)).trim();
-          print(line.substring(openBraceIndex + 1, closeBraceIndex).split(","));
           final arguments = Map.fromEntries(
             line
                 .substring(openBraceIndex + 1, closeBraceIndex)
