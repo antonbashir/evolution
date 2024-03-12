@@ -233,6 +233,10 @@ extern "C"
 
 #define DART_FIELD
 
+#define DART_SUBSTITUTE(x)
+
+#define DART_TYPE
+
 #if defined(__cplusplus)
 }
 #endif

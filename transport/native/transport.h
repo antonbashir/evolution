@@ -15,6 +15,9 @@ extern "C"
 
 struct small_map_events_t;
 struct executor;
+DART_TYPE struct ip_mreqn;
+DART_TYPE struct sockaddr_in;
+DART_TYPE struct sockaddr_un;
 
 struct transport_configuration
 {

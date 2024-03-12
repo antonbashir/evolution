@@ -3,41 +3,39 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include "common/common.h"
 #include "transport_constants.h"
 
 #if defined(__cplusplus)
 extern "C"
 {
 #endif
-struct ip_mreqn;
-struct sockaddr_in;
-struct sockaddr_un;
 
-struct transport_server_configuration
+DART_STRUCTURE struct transport_server_configuration
 {
-    int32_t socket_max_connections;
-    uint64_t socket_configuration_flags;
-    uint32_t socket_receive_buffer_size;
-    uint32_t socket_send_buffer_size;
-    uint32_t socket_receive_low_at;
-    uint32_t socket_send_low_at;
-    uint16_t ip_ttl;
-    uint32_t tcp_keep_alive_idle;
-    uint32_t tcp_keep_alive_max_count;
-    uint32_t tcp_keep_alive_individual_count;
-    uint32_t tcp_max_segment_size;
-    uint16_t tcp_syn_count;
-    struct ip_mreqn* ip_multicast_interface;
-    uint32_t ip_multicast_ttl;
+    DART_FIELD int32_t socket_max_connections;
+    DART_FIELD uint64_t socket_configuration_flags;
+    DART_FIELD uint32_t socket_receive_buffer_size;
+    DART_FIELD uint32_t socket_send_buffer_size;
+    DART_FIELD uint32_t socket_receive_low_at;
+    DART_FIELD uint32_t socket_send_low_at;
+    DART_FIELD uint16_t ip_ttl;
+    DART_FIELD uint32_t tcp_keep_alive_idle;
+    DART_FIELD uint32_t tcp_keep_alive_max_count;
+    DART_FIELD uint32_t tcp_keep_alive_individual_count;
+    DART_FIELD uint32_t tcp_max_segment_size;
+    DART_FIELD uint16_t tcp_syn_count;
+    DART_FIELD struct ip_mreqn* ip_multicast_interface;
+    DART_FIELD uint32_t ip_multicast_ttl;
 };
 
-struct transport_server
+DART_STRUCTURE struct transport_server
 {
-    int32_t fd;
-    transport_socket_family_t family;
-    struct sockaddr_in* inet_server_address;
-    struct sockaddr_un* unix_server_address;
-    __socklen_t server_address_length;
+    DART_FIELD int32_t fd;
+    DART_FIELD DART_SUBSTITUTE(int16_t) transport_socket_family_t family;
+    DART_FIELD struct sockaddr_in* inet_server_address;
+    DART_FIELD struct sockaddr_un* unix_server_address;
+    DART_FIELD DART_SUBSTITUTE(int32_t) __socklen_t server_address_length;
 };
 
 int32_t transport_server_initialize_tcp(struct transport_server* server,

@@ -36,12 +36,18 @@ const dartField = "DART_FIELD";
 const dartStructure = "DART_STRUCTURE";
 const dartFunction = "DART_FUNCTION";
 const dartInlineFunction = "DART_INLINE_FUNCTION";
+const dartType = "DART_TYPE";
+const dartSubstitute = "DART_SUBSTITUTE";
+final dartSubstituteRegexp = RegExp(r"DART_SUBSTITUTE\((.+)\)");
 const structWord = "struct";
 const constWord = "const";
 
 class StructureDeclaration {
   String name = "";
   Map<String, String> fields = {};
+
+  @override
+  String toString() => "$name$fields";
 }
 
 class FunctionDeclaration {
@@ -51,6 +57,7 @@ class FunctionDeclaration {
 }
 
 class FileDeclarations {
+  Set<String> types = {};
   List<StructureDeclaration> structures = [];
   List<FunctionDeclaration> functions = [];
 }
@@ -83,8 +90,14 @@ Map<String, FileDeclarations> collectNative(String nativeDirectory) {
           return;
         }
         if (line.contains(dartField)) {
+          if (line.contains(dartSubstitute)) {
+            final type = dartSubstituteRegexp.allMatches(line).first.group(1)!;
+            final name = line.replaceAll(dartField, "").replaceAll(dartSubstituteRegexp, "").replaceAll("struct", "").replaceAll(";", "").trim().split(" ")[1];
+            currentStructureDeclaration!.fields[name] = type;
+            return;
+          }
           line = line.replaceAll(dartField, "").replaceAll("struct", "").replaceAll(";", "").trim();
-          currentStructureDeclaration!.fields[line.split(" ")[0]] = line.split(" ")[1];
+          currentStructureDeclaration!.fields[line.split(" ")[1]] = line.split(" ")[0];
           return;
         }
       }
@@ -96,6 +109,13 @@ Map<String, FileDeclarations> collectNative(String nativeDirectory) {
         fileDeclarations.structures.add(currentStructureDeclaration!);
         currentStructureDeclaration!.name = line.replaceAll(structWord, "").replaceAll("{", "").trim();
         currentStructureDeclaration!.fields = {};
+        return;
+      }
+      if (line.contains(dartType)) {
+        line = line.replaceAll(dartType, "");
+        if (line.isEmpty) return;
+        if (!(line.contains(structWord))) return;
+        fileDeclarations.types.add(line.replaceAll(";", "").replaceAll(structWord, "").trim());
         return;
       }
       if (line.contains(dartInlineFunction) || line.contains(dartFunction)) {
@@ -114,7 +134,7 @@ Map<String, FileDeclarations> collectNative(String nativeDirectory) {
               .split(",")
               .map((e) => e.trim())
               .where((element) => element.isNotEmpty && element.contains(" "))
-              .map((e) => MapEntry(e.substring(0, e.lastIndexOf(' ')), e.substring(e.lastIndexOf(' ')))),
+              .map((e) => MapEntry(e.substring(e.lastIndexOf(' ')), e.substring(0, e.lastIndexOf(' ')))),
         );
         functionDeclaration.functionName = functionName;
         functionDeclaration.returnType = returnType;
@@ -122,7 +142,7 @@ Map<String, FileDeclarations> collectNative(String nativeDirectory) {
       }
     });
   });
-  nativeFiles.removeWhere((key, value) => value.structures.isEmpty && value.functions.isEmpty);
+  nativeFiles.removeWhere((key, value) => value.structures.isEmpty && value.functions.isEmpty && value.types.isEmpty);
   return nativeFiles;
 }
 
@@ -137,6 +157,7 @@ void generateDart(Map<String, FileDeclarations> declarations, String nativeDirec
     if (imports.isEmpty) resultContent += "import 'dart:ffi';\nimport '../../$moduleName/bindings.dart';\n";
     if (imports.isNotEmpty) imports.forEach((element) => resultContent += "${element}\n");
     resultContent += "\n";
+    resultContent += value.types.map((type) => "final class $type extends Opaque {}").join("\n");
     resultContent = generateStructures(value, resultContent);
     resultContent = generateFunctions(value, resultContent);
     File(dartDirectory + '/$key.dart').writeAsStringSync(resultContent);
@@ -154,8 +175,8 @@ void generateDart(Map<String, FileDeclarations> declarations, String nativeDirec
 String generateFunctions(FileDeclarations value, String resultContent) {
   for (var function in value.functions) {
     resultContent += """
-@Native<${generateFunctionPart(function.returnType).$1} Function(${function.arguments.entries.map((argument) => "${generateFunctionPart(argument.key).$1} ${argument.value.trim()}").join(", ")})>(isLeaf: true)
-external ${generateFunctionPart(function.returnType).$2} ${function.functionName}(${function.arguments.entries.map((argument) => "${generateFunctionPart(argument.key).$2} ${argument.value.trim()}").join(", ")});
+@Native<${generateFunctionPart(function.returnType).$1} Function(${function.arguments.entries.map((argument) => "${generateFunctionPart(argument.value).$1} ${argument.key.trim()}").join(", ")})>(isLeaf: true)
+external ${generateFunctionPart(function.returnType).$2} ${function.functionName}(${function.arguments.entries.map((argument) => "${generateFunctionPart(argument.value).$2} ${argument.key.trim()}").join(", ")});
   
 """;
   }
@@ -181,7 +202,7 @@ final class ${structure.name} extends ${structure.fields.isEmpty ? "Opaque" : "S
   return resultContent;
 }
 
-String generateStructureField(String type, String name) { 
+String generateStructureField(String name, String type) {
   type = type.replaceAll(constWord, "").replaceAll(structWord, "").trim();
   var pointers = 0;
   while (type.endsWith("*")) {

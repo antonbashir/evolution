@@ -1,3 +1,3 @@
 #!/bin/bash
 
-dart run bindings.dart
+dart run bindings.dart $@
