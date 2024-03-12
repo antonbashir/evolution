@@ -101,5 +101,5 @@ class TransportChannel {
   }
 
   @inline
-  void close() => systemShutdownDescriptor(fd);
+  void close() => system_shutdown_descriptor(fd);
 }

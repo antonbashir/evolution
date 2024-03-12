@@ -159,7 +159,7 @@ class TransportServerConnectionChannel {
     _active = false;
     if (_inboundEvents.hasListener) await _inboundEvents.close();
     _server._removeConnection(_fd);
-    systemShutdownDescriptor(_fd);
+    system_shutdown_descriptor(_fd);
   }
 
   Future<void> closeServer({Duration? gracefulTimeout}) => _server.close(gracefulTimeout: gracefulTimeout);
@@ -394,7 +394,7 @@ class TransportServerChannel implements TransportServer {
     _active = false;
     if (_inboundEvents.hasListener) await _inboundEvents.close();
     _registry.removeServer(pointer.ref.fd);
-    systemShutdownDescriptor(pointer.ref.fd);
+    system_shutdown_descriptor(pointer.ref.fd);
     transport_server_destroy(pointer);
   }
 }
