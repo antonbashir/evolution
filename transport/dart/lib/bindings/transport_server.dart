@@ -46,7 +46,13 @@ final class transport_server extends Struct {
 }
 
 @Native<Int32 Function(Pointer<transport_server> server, Pointer<transport_server_configuration> configuration, Pointer<Utf8> ip, Int32 port)>(isLeaf: true)
+external int transport_server_initialize_tcp(Pointer<transport_server> server, Pointer<transport_server_configuration> configuration, Pointer<Utf8> ip, int port);
+
+@Native<Int32 Function(Pointer<transport_server> server, Pointer<transport_server_configuration> configuration, Pointer<Utf8> ip, Int32 port)>(isLeaf: true)
 external int transport_server_initialize_udp(Pointer<transport_server> server, Pointer<transport_server_configuration> configuration, Pointer<Utf8> ip, int port);
+
+@Native<Int32 Function(Pointer<transport_server> server, Pointer<transport_server_configuration> configuration, Pointer<Utf8> path)>(isLeaf: true)
+external int transport_server_initialize_unix_stream(Pointer<transport_server> server, Pointer<transport_server_configuration> configuration, Pointer<Utf8> path);
 
 @Native<Void Function(Pointer<transport_server> server)>(isLeaf: true)
 external void transport_server_destroy(Pointer<transport_server> server);

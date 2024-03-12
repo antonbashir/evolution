@@ -83,6 +83,7 @@ Map<String, FileDeclarations> collectNative(String nativeDirectory) {
     final fileDeclarations = FileDeclarations();
     nativeFiles[fileName] = fileDeclarations;
     StructureDeclaration? currentStructureDeclaration = null;
+    FunctionDeclaration? currentFunctionDeclaration = null;
     File(child.absolute.path).readAsLinesSync().forEach((line) {
       if (currentStructureDeclaration != null) {
         if (line == "};") {
@@ -103,6 +104,31 @@ Map<String, FileDeclarations> collectNative(String nativeDirectory) {
           currentStructureDeclaration!.fields[line.split(" ")[1]] = line.split(" ")[0];
           return;
         }
+      }
+      if (currentFunctionDeclaration != null) {
+        final end = line.endsWith(");");
+        line = line.replaceAll(");", "");
+        final arguments = Map.fromEntries(
+          line
+              .split(",")
+              .map((element) => element.trim())
+              .map((element) {
+                if (element.contains(dartSubstitute)) {
+                  final type = dartSubstituteRegexp.allMatches(element).first.group(1)!;
+                  final name = element.replaceAll(dartSubstituteRegexp, "").replaceAll("struct", "").trim().split(" ")[1];
+                  return MapEntry(name, type);
+                }
+                if (element.isNotEmpty && element.contains(" ")) {
+                  return MapEntry(element.substring(element.lastIndexOf(' ')), element.substring(0, element.lastIndexOf(' ')));
+                }
+                return null;
+              })
+              .where((element) => element != null)
+              .map((entry) => entry!),
+        );
+        currentFunctionDeclaration!.arguments.addAll(arguments);
+        if (end) currentFunctionDeclaration = null;
+        return;
       }
       if (line.contains(dartStructure)) {
         line = line.replaceAll(dartStructure, "");
@@ -125,25 +151,69 @@ Map<String, FileDeclarations> collectNative(String nativeDirectory) {
         final leaf = line.contains(dartLeafFunction) || line.contains(dartLeafInlineFunction);
         line = line.replaceAll(dartInlineFunction, "").replaceAll(dartFunction, "").replaceAll(dartLeafFunction, "").replaceAll(dartLeafInlineFunction, "");
         if (line.isEmpty) return;
-        if (!(line.contains("(") && line.contains(")"))) return;
-        final functionDeclaration = FunctionDeclaration();
-        fileDeclarations.functions.add(functionDeclaration);
-        final openBraceIndex = line.indexOf('(');
-        final closeBraceIndex = line.indexOf(')');
-        final functionName = line.substring(0, openBraceIndex).split(" ").last;
-        final returnType = line.substring(0, line.indexOf(functionName)).trim();
-        final arguments = Map.fromEntries(
-          line
-              .substring(openBraceIndex + 1, closeBraceIndex)
+        if (line.contains("(") || line.contains(")")) {
+          currentFunctionDeclaration = FunctionDeclaration();
+          fileDeclarations.functions.add(currentFunctionDeclaration!);
+        }
+        if (line.contains("(") && line.contains(")")) {
+          final openBraceIndex = line.indexOf('(');
+          final closeBraceIndex = line.lastIndexOf(')');
+          final functionName = line.substring(0, openBraceIndex).split(" ").last;
+          final returnType = line.substring(0, line.indexOf(functionName)).trim();
+          print(line.substring(openBraceIndex + 1, closeBraceIndex).split(","));
+          final arguments = Map.fromEntries(
+            line
+                .substring(openBraceIndex + 1, closeBraceIndex)
+                .split(",")
+                .map((element) => element.trim())
+                .map((element) {
+                  if (element.contains(dartSubstitute)) {
+                    final type = dartSubstituteRegexp.allMatches(element).first.group(1)!;
+                    final name = element.replaceAll(dartSubstituteRegexp, "").replaceAll("struct", "").trim().split(" ")[1];
+                    return MapEntry(name, type);
+                  }
+                  if (element.isNotEmpty && element.contains(" ")) {
+                    return MapEntry(element.substring(element.lastIndexOf(' ')), element.substring(0, element.lastIndexOf(' ')));
+                  }
+                  return null;
+                })
+                .where((element) => element != null)
+                .map((entry) => entry!),
+          );
+          currentFunctionDeclaration!.functionName = functionName;
+          currentFunctionDeclaration!.returnType = returnType;
+          currentFunctionDeclaration!.arguments = arguments;
+          currentFunctionDeclaration!.leaf = leaf;
+          currentFunctionDeclaration = null;
+          return;
+        }
+        if (line.contains("(")) {
+          final openBraceIndex = line.indexOf('(');
+          final functionName = line.substring(0, openBraceIndex).split(" ").last;
+          final returnType = line.substring(0, line.indexOf(functionName)).trim();
+          final arguments = Map.fromEntries(line
+              .substring(openBraceIndex + 1)
               .split(",")
-              .map((e) => e.trim())
-              .where((element) => element.isNotEmpty && element.contains(" "))
-              .map((e) => MapEntry(e.substring(e.lastIndexOf(' ')), e.substring(0, e.lastIndexOf(' ')))),
-        );
-        functionDeclaration.functionName = functionName;
-        functionDeclaration.returnType = returnType;
-        functionDeclaration.arguments = arguments;
-        functionDeclaration.leaf = leaf;
+              .map((element) => element.trim())
+              .map((element) {
+                if (element.contains(dartSubstitute)) {
+                  final type = dartSubstituteRegexp.allMatches(element).first.group(1)!;
+                  final name = element.replaceAll(dartSubstituteRegexp, "").replaceAll("struct", "").trim().split(" ")[1];
+                  return MapEntry(name, type);
+                }
+                if (element.isNotEmpty && element.contains(" ")) {
+                  return MapEntry(element.substring(element.lastIndexOf(' ')), element.substring(0, element.lastIndexOf(' ')));
+                }
+                return null;
+              })
+              .where((element) => element != null)
+              .map((entry) => entry!));
+          currentFunctionDeclaration!.functionName = functionName;
+          currentFunctionDeclaration!.returnType = returnType;
+          currentFunctionDeclaration!.arguments = arguments;
+          currentFunctionDeclaration!.leaf = leaf;
+          return;
+        }
       }
     });
   });
@@ -215,7 +285,8 @@ String generateStructureField(String name, String type) {
     type = type.substring(0, type.length - 1);
   }
   if (pointers == 1 && type == "char") return "external Pointer<Utf8> ${name};\n";
-  if (pointers == 0) return "@${ffiTypeMapping[type] ?? type}()\nexternal ${dartTypeMapping[type] ?? type} ${name};\n";
+  if (pointers == 0 && ffiTypeMapping.containsKey(type)) return "@${ffiTypeMapping[type] ?? type}()\nexternal ${dartTypeMapping[type] ?? type} ${name};\n";
+  if (pointers == 0 && !ffiTypeMapping.containsKey(type)) return "external ${dartTypeMapping[type] ?? type} ${name};\n";
   if (pointers == 1) return "external Pointer<${ffiTypeMapping[type] ?? type}> ${name};\n" "";
   var pointerType = "";
   var pointersCount = pointers;

@@ -11,6 +11,10 @@ extern "C"
 {
 #endif
 
+struct ip_mreqn;
+struct sockaddr_in;
+struct sockaddr_un;
+
 DART_STRUCTURE struct transport_server_configuration
 {
     DART_FIELD int32_t socket_max_connections;
@@ -39,13 +43,13 @@ DART_STRUCTURE struct transport_server
 };
 
 DART_LEAF_FUNCTION int32_t transport_server_initialize_tcp(struct transport_server* server,
-                                        struct transport_server_configuration* configuration,
-                                        const char* ip,
-                                        int32_t port);
+                                                           struct transport_server_configuration* configuration,
+                                                           const char* ip,
+                                                           int32_t port);
 DART_LEAF_FUNCTION int32_t transport_server_initialize_udp(struct transport_server* server, struct transport_server_configuration* configuration, const char* ip, int32_t port);
 DART_LEAF_FUNCTION int32_t transport_server_initialize_unix_stream(struct transport_server* server,
-                                                struct transport_server_configuration* configuration,
-                                                const char* path);
+                                                                   struct transport_server_configuration* configuration,
+                                                                   const char* path);
 DART_LEAF_FUNCTION void transport_server_destroy(struct transport_server* server);
 
 #if defined(__cplusplus)
