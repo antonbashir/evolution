@@ -44,6 +44,10 @@ final dartSubstituteRegexp = RegExp(r"DART_SUBSTITUTE\((.+)\)");
 const structWord = "struct";
 const constWord = "const";
 
+const exclusions = [
+  "CMakeFiles",
+];
+
 class StructureDeclaration {
   String name = "";
   Map<String, String> fields = {};
@@ -75,7 +79,12 @@ Future<void> main(List<String> args) async {
 
 Map<String, FileDeclarations> collectNative(String nativeDirectory) {
   final nativeFiles = <String, FileDeclarations>{};
-  Directory(nativeDirectory).listSync(recursive: true).forEach((child) {
+  Directory(nativeDirectory).listSync(recursive: false).forEach((child) {
+    if (child.statSync().type == FileSystemEntityType.directory) {
+      if (exclusions.any(child.path.endsWith)) return;
+      nativeFiles.addAll(collectNative(child.path));
+      return;
+    }
     if (!child.path.endsWith(".h")) return;
     if (child.statSync().type != FileSystemEntityType.file) return;
     final fileName = child.path.replaceRange(0, child.path.lastIndexOf('native/') + 7, "").substring(0, child.path.replaceRange(0, child.path.lastIndexOf('native/') + 7, "").indexOf('.'));
@@ -235,7 +244,7 @@ void generateDart(Map<String, FileDeclarations> declarations, String nativeDirec
     resultContent = generateStructures(value, resultContent);
     resultContent = generateFunctions(value, resultContent);
     File(dartDirectory + '/$key.dart').writeAsStringSync(resultContent);
-    Process.runSync("dart", ["format", "-l 500", dartDirectory + '/$key.dart']);
+    Process.run("dart", ["format", "-l 500", dartDirectory + '/$key.dart']);
     if (File(Directory.current.path + "/dart/lib/$moduleName/bindings.dart").existsSync()) {
       final exports = File(Directory.current.path + "/dart/lib/$moduleName/bindings.dart").readAsLinesSync().toSet();
       exports.addAll(declarations.keys.map((e) => "export '../bindings/$e.dart';"));
