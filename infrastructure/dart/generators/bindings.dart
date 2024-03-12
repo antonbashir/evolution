@@ -265,7 +265,7 @@ void generateDart(Map<String, FileDeclarations> declarations, String nativeDirec
     Process.run("dart", ["format", "-l 500", dartDirectory + '/$key.dart']);
     if (File(Directory.current.path + "/dart/lib/$moduleName/bindings.dart").existsSync()) {
       final exports = File(Directory.current.path + "/dart/lib/$moduleName/bindings.dart").readAsLinesSync().where((element) => element.startsWith("export")).toSet();
-      exports.addAll(declarations.keys.map((e) => "export '../bindings/$e.dart';"));
+      exports.addAll(declarations.keys.map((fileName) => "export '../bindings/$fileName.dart';"));
       File(Directory.current.path + "/dart/lib/$moduleName/bindings.dart").writeAsStringSync(prefix + exports.join("\n"));
       return;
     }
