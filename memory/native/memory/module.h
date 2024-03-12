@@ -27,15 +27,15 @@ struct memory_module
 #define module_structure struct memory_module
 #include <modules/module.h>
 
-struct memory_module_state
+DART_STRUCTURE struct memory_module_state
 {
-    struct memory_static_buffers* static_buffers;
-    struct memory_io_buffers* io_buffers;
-    struct memory* memory_instance;
+    DART_FIELD struct memory_static_buffers* static_buffers;
+    DART_FIELD struct memory_io_buffers* io_buffers;
+    DART_FIELD struct memory* memory_instance;
 };
 
-struct memory_module_state* memory_module_state_create(struct memory_configuration* configuration);
-void memory_module_state_destroy(struct memory_module_state* state);
+DART_LEAF_FUNCTION struct memory_module_state* memory_module_state_create(struct memory_configuration* configuration);
+DART_LEAF_FUNCTION void memory_module_state_destroy(struct memory_module_state* state);
 
 #if defined(__cplusplus)
 }

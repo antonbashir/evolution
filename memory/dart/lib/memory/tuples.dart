@@ -2,10 +2,7 @@ import 'dart:convert';
 import 'dart:ffi';
 import 'dart:typed_data';
 
-import 'package:core/core.dart';
-
-import '../bindings/state/memory_state.dart';
-import '../bindings/tuple/memory_tuple.dart';
+import 'bindings.dart';
 
 const _decoder = const Utf8Decoder();
 
@@ -407,14 +404,13 @@ int tupleWriteMap(ByteData data, int length, int offset) {
   throw FormatException("Byte $bytes is invalid map length");
 }
 
-
 class MemoryTuples {
-  final Pointer<memory_state> _memory;
+  final Pointer<memory_small_allocator> _small;
 
   late final (Pointer<Uint8>, int) emptyList;
   late final (Pointer<Uint8>, int) emptyMap;
 
-  MemoryTuples(this._memory) {
+  MemoryTuples(this._small) {
     emptyList = _createEmptyList();
     emptyMap = _createEmptyMap();
   }
@@ -423,18 +419,18 @@ class MemoryTuples {
   int next(Pointer<Uint8> pointer, int offset) => memory_tuple_next(pointer.cast(), offset);
 
   @inline
-  Pointer<Uint8> allocateSmall(int capacity) => memory_small_data_allocate(_memory.ref.small_data, capacity).cast();
+  Pointer<Uint8> allocateSmall(int capacity) => memory_small_allocator_allocate(_small, capacity).cast();
 
   @inline
   (Pointer<Uint8>, Uint8List, ByteData) prepareSmall(int size) {
-    final pointer = memory_small_data_allocate(_memory.ref.small_data, size).cast<Uint8>();
+    final pointer = memory_small_allocator_allocate(_small, size).cast<Uint8>();
     final buffer = pointer.asTypedList(size);
     final data = ByteData.view(buffer.buffer, buffer.offsetInBytes);
     return (pointer, buffer, data);
   }
 
   @inline
-  void freeSmall(Pointer<Uint8> tuple, int size) => memory_small_data_free(_memory.ref.small_data, tuple.cast(), size);
+  void freeSmall(Pointer<Uint8> tuple, int size) => memory_small_allocator_free(_small, tuple.cast(), size);
 
   (Pointer<Uint8>, int) _createEmptyList() {
     final size = tupleSizeOfList(0);

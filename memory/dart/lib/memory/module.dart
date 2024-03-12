@@ -1,16 +1,13 @@
 import 'dart:ffi';
 
-import 'package:core/core.dart';
 import 'package:ffi/ffi.dart';
 
-import '../bindings/state/memory_state.dart';
 import '../memory.dart';
 import 'constants.dart';
 import 'defaults.dart';
-import 'exceptions.dart';
 
 class MemoryModule {
-  late final Pointer<memory_state> pointer;
+  late final Pointer<memory_module_state> pointer;
   late final MemoryStaticBuffers staticBuffers;
   late final MemoryInputOutputBuffers inputOutputBuffers;
   late final MemoryStructurePools structures;
@@ -18,7 +15,6 @@ class MemoryModule {
   late final MemoryStructurePool<Double> doubles;
 
   static void load({String? libraryPath, LibraryPackageMode mode = LibraryPackageMode.static}) {
-    CoreModule.configure();
     if (libraryPath != null) {
       SystemLibrary.loadByPath(libraryPath);
       return;
@@ -31,22 +27,18 @@ class MemoryModule {
   }
 
   void initialize({MemoryModuleConfiguration configuration = MemoryDefaults.module}) {
-    pointer = calloc<memory_state>(sizeOf<memory_state>());
-    if (pointer == nullptr) throw MemoryException(MemoryErrors.outOfMemory);
-    final result = using((arena) => memory_state_create(pointer, configuration.toNativePointer(arena<memory_configuration>())));
-    if (result < 0) {
-      memory_state_destroy(pointer);
-      calloc.free(pointer);
-      throw MemoryException(systemError(result));
+    final pointer = using((arena) => memory_module_state_create(configuration.toNativePointer(arena<memory_configuration>())));
+    if (pointer == nullptr) {
+      //throw MemoryException(systemError(result));
     }
-    staticBuffers = MemoryStaticBuffers(pointer, configuration.staticBuffersCapacity, configuration.staticBufferSize);
-    inputOutputBuffers = MemoryInputOutputBuffers(pointer);
-    structures = MemoryStructurePools(pointer);
-    smallDatas = MemorySmallData(pointer);
+    staticBuffers = MemoryStaticBuffers(pointer.ref.static_buffers);
+    inputOutputBuffers = MemoryInputOutputBuffers(pointer.ref.io_buffers);
+    structures = MemoryStructurePools(pointer.ref.memory_instance);
+    smallDatas = MemorySmallData(memory_small_allocator_create(1.05, pointer.ref.memory_instance));
     doubles = structures.register(sizeOf<Double>());
   }
 
   void destroy() {
-    memory_state_destroy(pointer);
+    memory_module_state_destroy(pointer);
   }
 }

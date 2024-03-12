@@ -2,16 +2,16 @@ import 'dart:ffi';
 
 import 'package:core/core.dart';
 
-import '../bindings/state/memory_state.dart';
+import '../bindings/memory/memory.dart';
 
 class MemorySmallData {
-  final Pointer<memory_state> _memory;
+  final Pointer<memory_small_allocator> _allocator;
 
-  MemorySmallData(this._memory);
-
-  @inline
-  Pointer<Void> allocate(int size) => memory_small_data_allocate(_memory.ref.small_data, size);
+  MemorySmallData(this._allocator);
 
   @inline
-  void free(Pointer<Void> pointer, int size) => memory_small_data_free(_memory.ref.small_data, pointer, size);
+  Pointer<Void> allocate(int size) => memory_small_allocator_allocate(_allocator, size);
+
+  @inline
+  void free(Pointer<Void> pointer, int size) => memory_small_allocator_free(_allocator, pointer, size);
 }

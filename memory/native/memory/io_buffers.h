@@ -14,8 +14,8 @@ extern "C"
 DART_STRUCTURE struct memory_io_buffers
 {
     DART_FIELD struct memory* memory_instance;
-    struct memory_pool input_buffers;
-    struct memory_pool output_buffers;
+    DART_FIELD struct memory_pool* input_buffers;
+    DART_FIELD struct memory_pool* output_buffers;
 };
 
 DART_INLINE_LEAF_FUNCTION struct memory_io_buffers* memory_io_buffers_create(struct memory* memory)
@@ -26,12 +26,14 @@ DART_INLINE_LEAF_FUNCTION struct memory_io_buffers* memory_io_buffers_create(str
         return NULL;
     }
     pool->memory_instance = memory;
-    if (memory_pool_create(&pool->input_buffers, memory, sizeof(struct memory_input_buffer)))
+    pool->input_buffers = memory_pool_create(memory, sizeof(struct memory_input_buffer));
+    if (!pool->input_buffers)
     {
         memory_module_delete(pool);
         return NULL;
     }
-    if (memory_pool_create(&pool->output_buffers, memory, sizeof(struct memory_output_buffer)))
+    pool->output_buffers = memory_pool_create(memory, sizeof(struct memory_output_buffer));
+    if (!pool->output_buffers)
     {
         memory_module_delete(pool);
         return NULL;
@@ -41,14 +43,14 @@ DART_INLINE_LEAF_FUNCTION struct memory_io_buffers* memory_io_buffers_create(str
 
 DART_INLINE_LEAF_FUNCTION void memory_io_buffers_destroy(struct memory_io_buffers* pool)
 {
-    memory_pool_destroy(&pool->input_buffers);
-    memory_pool_destroy(&pool->output_buffers);
+    memory_pool_destroy(pool->input_buffers);
+    memory_pool_destroy(pool->output_buffers);
     memory_module_delete(pool);
 }
 
 DART_INLINE_LEAF_FUNCTION struct memory_input_buffer* memory_io_buffers_allocate_input(struct memory_io_buffers* buffers, size_t initial_capacity)
 {
-    struct memory_input_buffer* buffer = memory_pool_allocate(&buffers->input_buffers);
+    struct memory_input_buffer* buffer = memory_pool_allocate(buffers->input_buffers);
     if (buffer == NULL)
     {
         return NULL;
@@ -62,12 +64,12 @@ DART_INLINE_LEAF_FUNCTION struct memory_input_buffer* memory_io_buffers_allocate
 DART_INLINE_LEAF_FUNCTION void memory_io_buffers_free_input(struct memory_io_buffers* buffers, struct memory_input_buffer* buffer)
 {
     ibuf_destroy(&buffer->buffer);
-    memory_pool_free(&buffers->input_buffers, buffer);
+    memory_pool_free(buffers->input_buffers, buffer);
 }
 
 DART_INLINE_LEAF_FUNCTION struct memory_output_buffer* memory_io_buffers_allocate_output(struct memory_io_buffers* buffers, size_t initial_capacity)
 {
-    struct memory_output_buffer* buffer = memory_pool_allocate(&buffers->output_buffers);
+    struct memory_output_buffer* buffer = memory_pool_allocate(buffers->output_buffers);
     if (buffer == NULL)
     {
         return NULL;
@@ -80,7 +82,7 @@ DART_INLINE_LEAF_FUNCTION struct memory_output_buffer* memory_io_buffers_allocat
 DART_INLINE_LEAF_FUNCTION void memory_io_buffers_free_output(struct memory_io_buffers* buffers, struct memory_output_buffer* buffer)
 {
     obuf_destroy(&buffer->buffer);
-    memory_pool_free(&buffers->output_buffers, buffer);
+    memory_pool_free(buffers->output_buffers, buffer);
 }
 
 DART_INLINE_LEAF_FUNCTION uint8_t* memory_input_buffer_reserve(struct memory_input_buffer* buffer, size_t size)

@@ -3,26 +3,21 @@ import 'dart:collection';
 import 'dart:ffi';
 import 'dart:typed_data';
 
-import 'package:core/core.dart';
-
 import 'bindings.dart';
-import 'constants.dart';
 
 class MemoryStaticBuffers {
   final Pointer<memory_static_buffers> native;
   final Pointer<Int32> ids;
   final Pointer<iovec> buffers;
-  final Pointer<memory_state> _memory;
   final Queue<Completer<void>> _finalizers = Queue();
 
-  MemoryStaticBuffers(this._memory)
-      : native = _memory.ref.static_buffers,
-        ids = _memory.ref.static_buffers.ref.ids,
-        buffers = _memory.ref.static_buffers.ref.buffers;
+  MemoryStaticBuffers(this.native)
+      : ids = native.ref.ids,
+        buffers = native.ref.buffers;
 
   @inline
   void release(int bufferId) {
-    memory_static_buffers_push(_memory.ref.static_buffers, bufferId);
+    memory_static_buffers_push(native, bufferId);
     if (_finalizers.isNotEmpty) _finalizers.removeLast().complete();
   }
 
@@ -72,10 +67,10 @@ class MemoryStaticBuffers {
   }
 
   @inline
-  int available() => _memory.ref.static_buffers.ref.available;
+  int available() => native.ref.available;
 
   @inline
-  int used() => _memory.ref.static_buffers.ref.capacity - _memory.ref.static_buffers.ref.available;
+  int used() => native.ref.capacity - native.ref.available;
 
   @inline
   void releaseArray(List<int> buffers) {
@@ -84,21 +79,21 @@ class MemoryStaticBuffers {
 }
 
 class MemoryInputOutputBuffers {
-  final Pointer<memory_state> _memory;
+  final Pointer<memory_io_buffers> _memory;
 
   MemoryInputOutputBuffers(this._memory);
 
   @inline
-  Pointer<memory_input_buffer> allocateInputBuffer(int capacity) => memory_io_buffers_allocate_input(_memory.ref.io_buffers, capacity);
+  Pointer<memory_input_buffer> allocateInputBuffer(int capacity) => memory_io_buffers_allocate_input(_memory, capacity);
 
   @inline
-  Pointer<memory_output_buffer> allocateOutputBuffer(int capacity) => memory_io_buffers_allocate_output(_memory.ref.io_buffers, capacity);
+  Pointer<memory_output_buffer> allocateOutputBuffer(int capacity) => memory_io_buffers_allocate_output(_memory, capacity);
 
   @inline
-  void freeInputBuffer(Pointer<memory_input_buffer> buffer) => memory_io_buffers_free_input(_memory.ref.io_buffers, buffer);
+  void freeInputBuffer(Pointer<memory_input_buffer> buffer) => memory_io_buffers_free_input(_memory, buffer);
 
   @inline
-  void freeOutputBuffer(Pointer<memory_output_buffer> buffer) => memory_io_buffers_free_output(_memory.ref.io_buffers, buffer);
+  void freeOutputBuffer(Pointer<memory_output_buffer> buffer) => memory_io_buffers_free_output(_memory, buffer);
 }
 
 extension MemoryInputBufferExtensions on Pointer<memory_input_buffer> {

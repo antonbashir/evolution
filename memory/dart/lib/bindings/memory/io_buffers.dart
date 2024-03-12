@@ -6,6 +6,8 @@ import '../../memory/bindings.dart';
 
 final class memory_io_buffers extends Struct {
   external Pointer<memory> memory_instance;
+  external Pointer<memory_pool> input_buffers;
+  external Pointer<memory_pool> output_buffers;
 }
 
 @Native<Pointer<memory_io_buffers> Function(Pointer<memory> memory)>(isLeaf: true)
