@@ -44,6 +44,9 @@ final dartSubstituteRegexp = RegExp(r"DART_SUBSTITUTE\((.+)\)");
 const structWord = "struct";
 const constWord = "const";
 
+const prefix = "// Generated\n// ignore_for_file: unused_import\n\n";
+const defaultImports = "import 'dart:ffi';\nimport 'package:ffi/ffi.dart';";
+
 const exclusions = [
   "CMakeFiles",
 ];
@@ -235,9 +238,9 @@ void generateDart(Map<String, FileDeclarations> declarations, String nativeDirec
   declarations.forEach((key, value) {
     if (!File(dartDirectory + '/$key.dart').existsSync()) File(dartDirectory + '/$key.dart').createSync();
     final dartContent = File(dartDirectory + '/$key.dart').readAsLinesSync();
-    var resultContent = "// ignore_for_file: unused_import\n\n";
+    var resultContent = prefix;
     final imports = dartContent.where((element) => element.startsWith("import")).toList();
-    if (imports.isEmpty) resultContent += "import 'dart:ffi';import 'package:ffi/ffi.dart';\nimport '../../$moduleName/bindings.dart';\n";
+    if (imports.isEmpty) resultContent += "$defaultImports\nimport '../../$moduleName/bindings.dart';\n";
     if (imports.isNotEmpty) imports.forEach((element) => resultContent += "${element}\n");
     resultContent += "\n";
     resultContent += value.types.map((type) => "final class $type extends Opaque {}").join("\n");
@@ -246,9 +249,9 @@ void generateDart(Map<String, FileDeclarations> declarations, String nativeDirec
     File(dartDirectory + '/$key.dart').writeAsStringSync(resultContent);
     Process.run("dart", ["format", "-l 500", dartDirectory + '/$key.dart']);
     if (File(Directory.current.path + "/dart/lib/$moduleName/bindings.dart").existsSync()) {
-      final exports = File(Directory.current.path + "/dart/lib/$moduleName/bindings.dart").readAsLinesSync().toSet();
+      final exports = File(Directory.current.path + "/dart/lib/$moduleName/bindings.dart").readAsLinesSync().where((element) => element.startsWith("export")).toSet();
       exports.addAll(declarations.keys.map((e) => "export '../bindings/$e.dart';"));
-      File(Directory.current.path + "/dart/lib/$moduleName/bindings.dart").writeAsStringSync(exports.join("\n"));
+      File(Directory.current.path + "/dart/lib/$moduleName/bindings.dart").writeAsStringSync(prefix + exports.join("\n"));
       return;
     }
     File(Directory.current.path + "/dart/lib/$moduleName/bindings.dart").writeAsStringSync("${declarations.keys.map((e) => "export '../bindings/$e.dart';").join("\n")}");
