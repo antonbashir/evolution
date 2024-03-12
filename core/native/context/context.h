@@ -10,14 +10,14 @@ extern "C"
 {
 #endif
 
+extern struct context context_instance;
+
 DART_STRUCTURE struct context
 {
     DART_FIELD bool initialized;
     DART_FIELD size_t size;
     DART_FIELD void** modules;
 };
-
-extern struct context context_instance;
 
 DART_INLINE_FUNCTION struct context* context_get()
 {
