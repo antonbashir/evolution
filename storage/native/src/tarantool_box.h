@@ -3,47 +3,50 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include "executor_task.h"
+#include "common/common.h"
+#include <executor/executor_task.h>
 
 #if defined(__cplusplus)
 extern "C"
 {
 #endif
-    struct tarantool_box
+    typedef void (*executor_action)(struct executor_task*);
+
+    DART_STRUCTURE struct tarantool_box
     {
-        void (*tarantool_evaluate_address)(struct executor_task*);
-        void (*tarantool_call_address)(struct executor_task*);
-        void (*tarantool_iterator_next_single_address)(struct executor_task*);
-        void (*tarantool_iterator_next_many_address)(struct executor_task*);
-        void (*tarantool_iterator_destroy_address)(struct executor_task*);
-        void (*tarantool_free_output_buffer_address)(struct executor_task*);
-        void (*tarantool_space_id_by_name_address)(struct executor_task*);
-        void (*tarantool_space_count_address)(struct executor_task*);
-        void (*tarantool_space_length_address)(struct executor_task*);
-        void (*tarantool_space_iterator_address)(struct executor_task*);
-        void (*tarantool_space_insert_single_address)(struct executor_task*);
-        void (*tarantool_space_insert_many_address)(struct executor_task*);
-        void (*tarantool_space_put_single_address)(struct executor_task*);
-        void (*tarantool_space_put_many_address)(struct executor_task*);
-        void (*tarantool_space_delete_single_address)(struct executor_task*);
-        void (*tarantool_space_delete_many_address)(struct executor_task*);
-        void (*tarantool_space_update_single_address)(struct executor_task*);
-        void (*tarantool_space_update_many_address)(struct executor_task*);
-        void (*tarantool_space_get_address)(struct executor_task*);
-        void (*tarantool_space_min_address)(struct executor_task*);
-        void (*tarantool_space_max_address)(struct executor_task*);
-        void (*tarantool_space_truncate_address)(struct executor_task*);
-        void (*tarantool_space_upsert_address)(struct executor_task*);
-        void (*tarantool_index_count_address)(struct executor_task*);
-        void (*tarantool_index_length_address)(struct executor_task*);
-        void (*tarantool_index_iterator_address)(struct executor_task*);
-        void (*tarantool_index_get_address)(struct executor_task*);
-        void (*tarantool_index_max_address)(struct executor_task*);
-        void (*tarantool_index_min_address)(struct executor_task*);
-        void (*tarantool_index_update_single_address)(struct executor_task*);
-        void (*tarantool_index_update_many_address)(struct executor_task*);
-        void (*tarantool_index_select_address)(struct executor_task*);
-        void (*tarantool_index_id_by_name_address)(struct executor_task*);
+        DART_FIELD DART_SUBSTITUTE(uintptr_t) executor_action tarantool_evaluate_address;
+        DART_FIELD DART_SUBSTITUTE(uintptr_t) executor_action tarantool_call_address;
+        DART_FIELD DART_SUBSTITUTE(uintptr_t) executor_action tarantool_iterator_next_single_address;
+        DART_FIELD DART_SUBSTITUTE(uintptr_t) executor_action tarantool_iterator_next_many_address;
+        DART_FIELD DART_SUBSTITUTE(uintptr_t) executor_action tarantool_iterator_destroy_address;
+        DART_FIELD DART_SUBSTITUTE(uintptr_t) executor_action tarantool_free_output_buffer_address;
+        DART_FIELD DART_SUBSTITUTE(uintptr_t) executor_action tarantool_space_id_by_name_address;
+        DART_FIELD DART_SUBSTITUTE(uintptr_t) executor_action tarantool_space_count_address;
+        DART_FIELD DART_SUBSTITUTE(uintptr_t) executor_action tarantool_space_length_address;
+        DART_FIELD DART_SUBSTITUTE(uintptr_t) executor_action tarantool_space_iterator_address;
+        DART_FIELD DART_SUBSTITUTE(uintptr_t) executor_action tarantool_space_insert_single_address;
+        DART_FIELD DART_SUBSTITUTE(uintptr_t) executor_action tarantool_space_insert_many_address;
+        DART_FIELD DART_SUBSTITUTE(uintptr_t) executor_action tarantool_space_put_single_address;
+        DART_FIELD DART_SUBSTITUTE(uintptr_t) executor_action tarantool_space_put_many_address;
+        DART_FIELD DART_SUBSTITUTE(uintptr_t) executor_action tarantool_space_delete_single_address;
+        DART_FIELD DART_SUBSTITUTE(uintptr_t) executor_action tarantool_space_delete_many_address;
+        DART_FIELD DART_SUBSTITUTE(uintptr_t) executor_action tarantool_space_update_single_address;
+        DART_FIELD DART_SUBSTITUTE(uintptr_t) executor_action tarantool_space_update_many_address;
+        DART_FIELD DART_SUBSTITUTE(uintptr_t) executor_action tarantool_space_get_address;
+        DART_FIELD DART_SUBSTITUTE(uintptr_t) executor_action tarantool_space_min_address;
+        DART_FIELD DART_SUBSTITUTE(uintptr_t) executor_action tarantool_space_max_address;
+        DART_FIELD DART_SUBSTITUTE(uintptr_t) executor_action tarantool_space_truncate_address;
+        DART_FIELD DART_SUBSTITUTE(uintptr_t) executor_action tarantool_space_upsert_address;
+        DART_FIELD DART_SUBSTITUTE(uintptr_t) executor_action tarantool_index_count_address;
+        DART_FIELD DART_SUBSTITUTE(uintptr_t) executor_action tarantool_index_length_address;
+        DART_FIELD DART_SUBSTITUTE(uintptr_t) executor_action tarantool_index_iterator_address;
+        DART_FIELD DART_SUBSTITUTE(uintptr_t) executor_action tarantool_index_get_address;
+        DART_FIELD DART_SUBSTITUTE(uintptr_t) executor_action tarantool_index_max_address;
+        DART_FIELD DART_SUBSTITUTE(uintptr_t) executor_action tarantool_index_min_address;
+        DART_FIELD DART_SUBSTITUTE(uintptr_t) executor_action tarantool_index_update_single_address;
+        DART_FIELD DART_SUBSTITUTE(uintptr_t) executor_action tarantool_index_update_many_address;
+        DART_FIELD DART_SUBSTITUTE(uintptr_t) executor_action tarantool_index_select_address;
+        DART_FIELD DART_SUBSTITUTE(uintptr_t) executor_action tarantool_index_id_by_name_address;
     };
 
     struct tarantool_space_request
@@ -169,9 +172,9 @@ extern "C"
         struct executor_task message;
     };
 
-    struct tarantool_index_select_request
+    DART_STRUCTURE struct tarantool_index_select_request
     {
-        const uint8_t* key;
+        DART_FIELD const uint8_t* key;
         size_t key_size;
         uint32_t space_id;
         uint32_t index_id;
@@ -187,31 +190,31 @@ extern "C"
         uint32_t index_id;
     };
 
-    void tarantool_initialize_box(struct tarantool_box* box);
-    void tarantool_destroy_box(struct tarantool_box* box);
+    DART_LEAF_FUNCTION void tarantool_initialize_box(struct tarantool_box* box);
+    DART_LEAF_FUNCTION void tarantool_destroy_box(struct tarantool_box* box);
 
-    void tarantool_evaluate(struct executor_task* message);
-    void tarantool_call(struct executor_task* message);
+    DART_LEAF_FUNCTION void tarantool_evaluate(struct executor_task* message);
+    DART_LEAF_FUNCTION void tarantool_call(struct executor_task* message);
 
-    void tarantool_space_iterator(struct executor_task* message);
-    void tarantool_space_count(struct executor_task* message);
-    void tarantool_space_length(struct executor_task* message);
-    void tarantool_space_truncate(struct executor_task* message);
+    DART_LEAF_FUNCTION void tarantool_space_iterator(struct executor_task* message);
+    DART_LEAF_FUNCTION void tarantool_space_count(struct executor_task* message);
+    DART_LEAF_FUNCTION void tarantool_space_length(struct executor_task* message);
+    DART_LEAF_FUNCTION void tarantool_space_truncate(struct executor_task* message);
 
-    void tarantool_space_put_single(struct executor_task* message);
-    void tarantool_space_insert_single(struct executor_task* message);
-    void tarantool_space_update_single(struct executor_task* message);
-    void tarantool_space_delete_single(struct executor_task* message);
-    void tarantool_space_put_many(struct executor_task* message);
-    void tarantool_space_insert_many(struct executor_task* message);
-    void tarantool_space_update_many(struct executor_task* message);
-    void tarantool_space_delete_many(struct executor_task* message);
-    void tarantool_space_upsert(struct executor_task* message);
-    void tarantool_space_get(struct executor_task* message);
-    void tarantool_space_min(struct executor_task* message);
-    void tarantool_space_max(struct executor_task* message);
-    void tarantool_space_select(struct executor_task* message);
-    void tarantool_space_id_by_name(struct executor_task* message);
+    DART_LEAF_FUNCTION void tarantool_space_put_single(struct executor_task* message);
+    DART_LEAF_FUNCTION void tarantool_space_insert_single(struct executor_task* message);
+    DART_LEAF_FUNCTION void tarantool_space_update_single(struct executor_task* message);
+    DART_LEAF_FUNCTION void tarantool_space_delete_single(struct executor_task* message);
+    DART_LEAF_FUNCTION void tarantool_space_put_many(struct executor_task* message);
+    DART_LEAF_FUNCTION void tarantool_space_insert_many(struct executor_task* message);
+    DART_LEAF_FUNCTION void tarantool_space_update_many(struct executor_task* message);
+    DART_LEAF_FUNCTION void tarantool_space_delete_many(struct executor_task* message);
+    DART_LEAF_FUNCTION void tarantool_space_upsert(struct executor_task* message);
+    DART_LEAF_FUNCTION void tarantool_space_get(struct executor_task* message);
+    DART_LEAF_FUNCTION void tarantool_space_min(struct executor_task* message);
+    DART_LEAF_FUNCTION void tarantool_space_max(struct executor_task* message);
+    DART_LEAF_FUNCTION void tarantool_space_select(struct executor_task* message);
+    DART_LEAF_FUNCTION void tarantool_space_id_by_name(struct executor_task* message);
 
     void tarantool_index_iterator(struct executor_task* message);
     void tarantool_index_count(struct executor_task* message);

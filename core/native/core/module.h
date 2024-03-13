@@ -13,20 +13,22 @@ extern "C"
 
 #define module_id 0
 #define module_name core
-struct core_module_configuration
+DART_STRUCTURE struct core_module_configuration
 {
-    bool silent;
-    uint8_t print_level;
+    DART_FIELD bool silent;
+    DART_FIELD uint8_t print_level;
 };
 #define module_configuration struct core_module_configuration
-struct core_module
+DART_STRUCTURE struct core_module
 {
-    uint32_t id;
-    const char* name;
-    struct core_module_configuration* configuration;
+    DART_FIELD uint32_t id;
+    DART_FIELD const char* name;
+    DART_FIELD struct core_module_configuration* configuration;
 };
 #define module_structure struct core_module
 #include <modules/module.h>
+DART_LEAF_FUNCTION struct core_module* core_module_create(struct core_module_configuration* configuration);
+DART_LEAF_FUNCTION void core_module_destroy(struct core_module* module);
 
 #if defined(__cplusplus)
 }

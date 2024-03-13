@@ -15,6 +15,14 @@ final ffiTypeMapping = {
   "uint64_t": "Uint64",
   "intptr_t": "Int64",
   "uintptr_t": "Uint64",
+  "__s8": "Int8",
+  "__u8": "Uint8",
+  "__s16": "Int16",
+  "__u16": "Uint16",
+  "__s32": "Int32",
+  "__u32": "Uint32",
+  "__s64": "Int64",
+  "__u64": "Uint64",
   "char": "Uint8",
   "void": "Void",
 };
@@ -35,6 +43,14 @@ final dartTypeMapping = {
   "uint64_t": "int",
   "intptr_t": "int",
   "uintptr_t": "int",
+  "__s8": "int",
+  "__u8": "int",
+  "__s16": "int",
+  "__u16": "int",
+  "__s32": "int",
+  "__u32": "int",
+  "__s64": "int",
+  "__u64": "int",
   "char": "int",
 };
 
@@ -123,11 +139,11 @@ Map<String, FileDeclarations> collectNative(String nativeDirectory) {
         if (line.contains(dartField)) {
           if (line.contains(dartSubstitute)) {
             final type = dartSubstituteRegexp.allMatches(line).first.group(1)!;
-            final name = line.replaceAll(dartField, "").replaceAll(dartSubstituteRegexp, "").replaceAll("struct", "").replaceAll(";", "").trim().split(" ")[1];
+            final name = line.replaceAll(dartField, "").replaceAll(dartSubstituteRegexp, "").replaceAll(constWord, "").replaceAll(structWord, "").replaceAll(";", "").trim().split(" ")[1];
             currentStructureDeclaration!.fields[name] = type;
             return;
           }
-          line = line.replaceAll(dartField, "").replaceAll("struct", "").replaceAll(";", "").trim();
+          line = line.replaceAll(dartField, "").replaceAll(constWord, "").replaceAll(structWord, "").replaceAll(";", "").trim();
           currentStructureDeclaration!.fields[line.split(" ")[1]] = line.split(" ")[0];
           return;
         }
@@ -142,7 +158,7 @@ Map<String, FileDeclarations> collectNative(String nativeDirectory) {
               .map((element) {
                 if (element.contains(dartSubstitute)) {
                   final type = dartSubstituteRegexp.allMatches(element).first.group(1)!;
-                  final name = element.replaceAll(dartSubstituteRegexp, "").replaceAll("struct", "").trim().split(" ")[1];
+                  final name = element.replaceAll(dartSubstituteRegexp, "").replaceAll(constWord, "").replaceAll(structWord, "").trim().split(" ")[1];
                   return MapEntry(name, type);
                 }
                 if (element.isNotEmpty && element.contains(" ")) {
@@ -171,7 +187,7 @@ Map<String, FileDeclarations> collectNative(String nativeDirectory) {
         line = line.replaceAll(dartType, "");
         if (line.isEmpty) return;
         if (!(line.contains(structWord))) return;
-        fileDeclarations.types.add(line.replaceAll(";", "").replaceAll(structWord, "").trim());
+        fileDeclarations.types.add(line.replaceAll(constWord, "").replaceAll(structWord, "").replaceAll(";", "").trim());
         return;
       }
       if (line.contains(dartInlineFunction) || line.contains(dartFunction) || line.contains(dartLeafFunction) || line.contains(dartLeafInlineFunction)) {
@@ -195,7 +211,7 @@ Map<String, FileDeclarations> collectNative(String nativeDirectory) {
                 .map((element) {
                   if (element.contains(dartSubstitute)) {
                     final type = dartSubstituteRegexp.allMatches(element).first.group(1)!;
-                    final name = element.replaceAll(dartSubstituteRegexp, "").replaceAll("struct", "").trim().split(" ")[1];
+                    final name = element.replaceAll(dartSubstituteRegexp, "").replaceAll(constWord, "").replaceAll(structWord, "").trim().split(" ")[1];
                     return MapEntry(name, type);
                   }
                   if (element.isNotEmpty && element.contains(" ")) {
@@ -224,7 +240,7 @@ Map<String, FileDeclarations> collectNative(String nativeDirectory) {
               .map((element) {
                 if (element.contains(dartSubstitute)) {
                   final type = dartSubstituteRegexp.allMatches(element).first.group(1)!;
-                  final name = element.replaceAll(dartSubstituteRegexp, "").replaceAll("struct", "").trim().split(" ")[1];
+                  final name = element.replaceAll(dartSubstituteRegexp, "").replaceAll(constWord, "").replaceAll(structWord, "").trim().split(" ")[1];
                   return MapEntry(name, type);
                 }
                 if (element.isNotEmpty && element.contains(" ")) {
@@ -248,9 +264,12 @@ Map<String, FileDeclarations> collectNative(String nativeDirectory) {
 }
 
 void generateDart(Map<String, FileDeclarations> declarations, String nativeDirectory, String dartDirectory) {
-  if (!Directory(dartDirectory).existsSync()) Directory(dartDirectory).createSync(recursive: true);
   final moduleName = Directory.current.path.substring(Directory.current.path.lastIndexOf('/') + 1);
+  if (!Directory(dartDirectory + '/').existsSync()) Directory(dartDirectory + '/').createSync(recursive: true);
   declarations.forEach((key, value) {
+    if (key.contains("/")) {
+      if (!Directory(dartDirectory + '/' + key.substring(0, key.lastIndexOf('/'))).existsSync()) Directory(dartDirectory + '/' + key.substring(0, key.lastIndexOf('/'))).createSync(recursive: true);
+    }
     if (!File(dartDirectory + '/$key.dart').existsSync()) File(dartDirectory + '/$key.dart').createSync();
     final dartContent = File(dartDirectory + '/$key.dart').readAsLinesSync();
     var resultContent = prefix;

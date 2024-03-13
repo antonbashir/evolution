@@ -46,10 +46,6 @@ struct _unknown_module
 static const uint32_t _declare_module_id = module_id;
 static const char* _declare_module_name = _declare_module_label;
 
-
-module_structure* _module(create)(module_configuration* configuration);
-void _module(destroy)(module_structure* module);
-
 static FORCEINLINE module_structure* module_name()
 {
     return context_get_module(_declare_module_id);
