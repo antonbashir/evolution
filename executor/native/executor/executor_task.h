@@ -30,7 +30,7 @@ extern "C"
         DART_FIELD __u64 user_data;
         DART_FIELD __s32 res;
         DART_FIELD __u32 flags;
-        __u64 big_cqe[2];
+        DART_FIELD __u64 big_cqe[2];
     };
 #if defined(__cplusplus)
 }

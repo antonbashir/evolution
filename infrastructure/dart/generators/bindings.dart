@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 final ffiTypeMapping = {
@@ -63,11 +64,14 @@ const dartLeafInlineFunction = "DART_INLINE_LEAF_FUNCTION";
 const dartType = "DART_TYPE";
 const dartSubstitute = "DART_SUBSTITUTE";
 final dartSubstituteRegexp = RegExp(r"DART_SUBSTITUTE\((.+)\)");
+
 const structWord = "struct";
 const constWord = "const";
 
-const prefix = "// Generated\n// ignore_for_file: unused_import\n\n";
-const defaultImports = "import 'dart:ffi';\nimport 'package:ffi/ffi.dart';";
+const dartFormatLine = 500;
+
+const generatedFilePrefix = "// Generated\n// ignore_for_file: unused_import\n\n";
+const generatedFileImports = "import 'dart:ffi';\nimport 'package:ffi/ffi.dart';";
 
 const exclusions = [
   "CMakeFiles",
@@ -100,6 +104,27 @@ Future<void> main(List<String> args) async {
   final dartDirectory = current + '/' + 'dart/lib/bindings';
   final natives = collectNative(nativeDirectory);
   generateDart(natives, nativeDirectory, dartDirectory);
+}
+
+extension ArgumentsExtension on List<String> {
+  Iterable<MapEntry<String, String>> toArguments() => map((element) => element.trim())
+      .map((element) {
+        if (element.contains(dartSubstitute)) {
+          final type = dartSubstituteRegexp.allMatches(element).first.group(1)!;
+          final name = element.replaceAll(dartSubstituteRegexp, "").clear().split(" ")[1];
+          return MapEntry(name, type);
+        }
+        if (element.isNotEmpty && element.contains(" ")) {
+          return MapEntry(element.substring(element.lastIndexOf(' ')), element.substring(0, element.lastIndexOf(' ')));
+        }
+        return null;
+      })
+      .where((element) => element != null)
+      .map((entry) => entry!);
+}
+
+extension StringExtension on String {
+  String clear() => replaceAll(constWord, "").replaceAll(structWord, "").replaceAll(";", "").trim();
 }
 
 Map<String, FileDeclarations> collectNative(String nativeDirectory) {
@@ -139,11 +164,11 @@ Map<String, FileDeclarations> collectNative(String nativeDirectory) {
         if (line.contains(dartField)) {
           if (line.contains(dartSubstitute)) {
             final type = dartSubstituteRegexp.allMatches(line).first.group(1)!;
-            final name = line.replaceAll(dartField, "").replaceAll(dartSubstituteRegexp, "").replaceAll(constWord, "").replaceAll(structWord, "").replaceAll(";", "").trim().split(" ")[1];
+            final name = line.replaceAll(dartField, "").replaceAll(dartSubstituteRegexp, "").clear().split(" ")[1];
             currentStructureDeclaration!.fields[name] = type;
             return;
           }
-          line = line.replaceAll(dartField, "").replaceAll(constWord, "").replaceAll(structWord, "").replaceAll(";", "").trim();
+          line = line.replaceAll(dartField, "").clear();
           currentStructureDeclaration!.fields[line.split(" ")[1]] = line.split(" ")[0];
           return;
         }
@@ -151,25 +176,7 @@ Map<String, FileDeclarations> collectNative(String nativeDirectory) {
       if (currentFunctionDeclaration != null) {
         final end = line.endsWith(");");
         line = line.replaceAll(");", "");
-        final arguments = Map.fromEntries(
-          line
-              .split(",")
-              .map((element) => element.trim())
-              .map((element) {
-                if (element.contains(dartSubstitute)) {
-                  final type = dartSubstituteRegexp.allMatches(element).first.group(1)!;
-                  final name = element.replaceAll(dartSubstituteRegexp, "").replaceAll(constWord, "").replaceAll(structWord, "").trim().split(" ")[1];
-                  return MapEntry(name, type);
-                }
-                if (element.isNotEmpty && element.contains(" ")) {
-                  return MapEntry(element.substring(element.lastIndexOf(' ')), element.substring(0, element.lastIndexOf(' ')));
-                }
-                return null;
-              })
-              .where((element) => element != null)
-              .map((entry) => entry!),
-        );
-        currentFunctionDeclaration!.arguments.addAll(arguments);
+        currentFunctionDeclaration!.arguments.addAll(Map.fromEntries(line.split(",").toArguments()));
         if (end) currentFunctionDeclaration = null;
         return;
       }
@@ -187,7 +194,7 @@ Map<String, FileDeclarations> collectNative(String nativeDirectory) {
         line = line.replaceAll(dartType, "");
         if (line.isEmpty) return;
         if (!(line.contains(structWord))) return;
-        fileDeclarations.types.add(line.replaceAll(constWord, "").replaceAll(structWord, "").replaceAll(";", "").trim());
+        fileDeclarations.types.add(line.clear());
         return;
       }
       if (line.contains(dartInlineFunction) || line.contains(dartFunction) || line.contains(dartLeafFunction) || line.contains(dartLeafInlineFunction)) {
@@ -203,25 +210,7 @@ Map<String, FileDeclarations> collectNative(String nativeDirectory) {
           final closeBraceIndex = line.lastIndexOf(')');
           final functionName = line.substring(0, openBraceIndex).split(" ").last;
           final returnType = line.substring(0, line.indexOf(functionName)).trim();
-          final arguments = Map.fromEntries(
-            line
-                .substring(openBraceIndex + 1, closeBraceIndex)
-                .split(",")
-                .map((element) => element.trim())
-                .map((element) {
-                  if (element.contains(dartSubstitute)) {
-                    final type = dartSubstituteRegexp.allMatches(element).first.group(1)!;
-                    final name = element.replaceAll(dartSubstituteRegexp, "").replaceAll(constWord, "").replaceAll(structWord, "").trim().split(" ")[1];
-                    return MapEntry(name, type);
-                  }
-                  if (element.isNotEmpty && element.contains(" ")) {
-                    return MapEntry(element.substring(element.lastIndexOf(' ')), element.substring(0, element.lastIndexOf(' ')));
-                  }
-                  return null;
-                })
-                .where((element) => element != null)
-                .map((entry) => entry!),
-          );
+          final arguments = Map.fromEntries(line.substring(openBraceIndex + 1, closeBraceIndex).split(",").toArguments());
           currentFunctionDeclaration!.functionName = functionName;
           currentFunctionDeclaration!.returnType = returnType;
           currentFunctionDeclaration!.arguments = arguments;
@@ -233,23 +222,7 @@ Map<String, FileDeclarations> collectNative(String nativeDirectory) {
           final openBraceIndex = line.indexOf('(');
           final functionName = line.substring(0, openBraceIndex).split(" ").last;
           final returnType = line.substring(0, line.indexOf(functionName)).trim();
-          final arguments = Map.fromEntries(line
-              .substring(openBraceIndex + 1)
-              .split(",")
-              .map((element) => element.trim())
-              .map((element) {
-                if (element.contains(dartSubstitute)) {
-                  final type = dartSubstituteRegexp.allMatches(element).first.group(1)!;
-                  final name = element.replaceAll(dartSubstituteRegexp, "").replaceAll(constWord, "").replaceAll(structWord, "").trim().split(" ")[1];
-                  return MapEntry(name, type);
-                }
-                if (element.isNotEmpty && element.contains(" ")) {
-                  return MapEntry(element.substring(element.lastIndexOf(' ')), element.substring(0, element.lastIndexOf(' ')));
-                }
-                return null;
-              })
-              .where((element) => element != null)
-              .map((entry) => entry!));
+          final arguments = Map.fromEntries(line.substring(openBraceIndex + 1).split(",").toArguments());
           currentFunctionDeclaration!.functionName = functionName;
           currentFunctionDeclaration!.returnType = returnType;
           currentFunctionDeclaration!.arguments = arguments;
@@ -272,24 +245,28 @@ void generateDart(Map<String, FileDeclarations> declarations, String nativeDirec
     }
     if (!File(dartDirectory + '/$key.dart').existsSync()) File(dartDirectory + '/$key.dart').createSync();
     final dartContent = File(dartDirectory + '/$key.dart').readAsLinesSync();
-    var resultContent = prefix;
+    var resultContent = generatedFilePrefix;
     final imports = dartContent.where((element) => element.startsWith("import")).toList();
-    if (imports.isEmpty) resultContent += "$defaultImports\nimport '../../$moduleName/bindings.dart';\n";
+    if (imports.isEmpty) resultContent += "$generatedFileImports\nimport '../../$moduleName/bindings.dart';\n";
     if (imports.isNotEmpty) imports.forEach((element) => resultContent += "${element}\n");
     resultContent += "\n";
     resultContent += value.types.map((type) => "final class $type extends Opaque {}").join("\n");
     resultContent = generateStructures(value, resultContent);
     resultContent = generateFunctions(value, resultContent);
     File(dartDirectory + '/$key.dart').writeAsStringSync(resultContent);
-    Process.run("dart", ["format", "-l 500", dartDirectory + '/$key.dart']);
-    if (File(Directory.current.path + "/dart/lib/$moduleName/bindings.dart").existsSync()) {
-      final exports = File(Directory.current.path + "/dart/lib/$moduleName/bindings.dart").readAsLinesSync().where((element) => element.startsWith("export")).toSet();
-      exports.addAll(declarations.keys.map((fileName) => "export '../bindings/$fileName.dart';"));
-      File(Directory.current.path + "/dart/lib/$moduleName/bindings.dart").writeAsStringSync(prefix + exports.join("\n"));
-      return;
-    }
-    File(Directory.current.path + "/dart/lib/$moduleName/bindings.dart").writeAsStringSync("${declarations.keys.map((e) => "export '../bindings/$e.dart';").join("\n")}");
+    unawaited(Process.run("dart", ["format", "-l ${dartFormatLine}", dartDirectory + '/$key.dart']));
+    generateBindings(declarations, moduleName);
   });
+}
+
+void generateBindings(Map<String, FileDeclarations> declarations, String moduleName) {
+  if (File(Directory.current.path + "/dart/lib/$moduleName/bindings.dart").existsSync()) {
+    final exports = File(Directory.current.path + "/dart/lib/$moduleName/bindings.dart").readAsLinesSync().where((element) => element.startsWith("export")).toSet();
+    exports.addAll(declarations.keys.map((fileName) => "export '../bindings/$fileName.dart';"));
+    File(Directory.current.path + "/dart/lib/$moduleName/bindings.dart").writeAsStringSync(generatedFilePrefix + exports.join("\n"));
+    return;
+  }
+  File(Directory.current.path + "/dart/lib/$moduleName/bindings.dart").writeAsStringSync("${declarations.keys.map((e) => "export '../bindings/$e.dart';").join("\n")}");
 }
 
 String generateFunctions(FileDeclarations value, String resultContent) {
@@ -323,26 +300,54 @@ final class ${structure.name} extends ${structure.fields.isEmpty ? "Opaque" : "S
 }
 
 String generateStructureField(String name, String type) {
-  type = type.replaceAll(constWord, "").replaceAll(structWord, "").trim();
+  type = type.clear();
   var pointers = 0;
+  final arrays = <int>[];
   while (type.endsWith("*")) {
     pointers++;
     type = type.substring(0, type.length - 1);
   }
-  if (pointers == 1 && type == "char") return "external Pointer<Utf8> ${name};\n";
-  if (pointers == 0 && ffiTypeMapping.containsKey(type)) return "@${ffiTypeMapping[type] ?? type}()\nexternal ${dartTypeMapping[type] ?? type} ${name};\n";
-  if (pointers == 0 && !ffiTypeMapping.containsKey(type)) return "external ${dartTypeMapping[type] ?? type} ${name};\n";
-  if (pointers == 1) return "external Pointer<${ffiTypeMapping[type] ?? type}> ${name};\n" "";
+  while (name.contains("[")) {
+    arrays.add(int.parse(name.substring(name.indexOf("[") + 1, name.indexOf("]"))));
+    name = name.replaceRange(name.indexOf("["), name.indexOf("]") + 1, "");
+  }
+  if (arrays.isEmpty) {
+    if (pointers == 1 && type == "char") return "external Pointer<Utf8> ${name};\n";
+    if (pointers == 0 && ffiTypeMapping.containsKey(type)) return "@${ffiTypeMapping[type] ?? type}()\nexternal ${dartTypeMapping[type] ?? type} ${name};\n";
+    if (pointers == 0 && !ffiTypeMapping.containsKey(type)) return "external $type ${name};\n";
+    if (pointers == 1) return "external Pointer<${ffiTypeMapping[type] ?? type}> ${name};\n" "";
+    var pointerType = "";
+    var pointersCount = pointers;
+    while (pointers-- > 0) pointerType = "Pointer<$pointerType";
+    pointerType = "$pointerType${ffiTypeMapping[type] ?? type}";
+    while (pointersCount-- > 0) pointerType = "$pointerType>";
+    return "external ${pointerType} ${name};\n";
+  }
+
+  String wrapArray(String type) {
+    var arrayType = "";
+    var arraysLength = arrays.length;
+    var arraysCount = arrays.length;
+    while (arraysLength-- > 0) arrayType = "Array<$arrayType";
+    arrayType = "$arrayType${type}";
+    while (arraysCount-- > 0) arrayType = "$arrayType>";
+    return arrayType;
+  }
+
+  if (pointers == 1 && type == "char") return "@Array(${arrays.join(",")})\nexternal ${wrapArray("Pointer<Utf8>")} ${name};\n";
+  if (pointers == 0 && ffiTypeMapping.containsKey(type)) return "@Array(${arrays.join(",")})\nexternal ${wrapArray(ffiTypeMapping[type] ?? type)} ${name};\n";
+  if (pointers == 0 && !ffiTypeMapping.containsKey(type)) return "@Array(${arrays.join(",")})\nexternal ${wrapArray(type)} ${name};\n";
+  if (pointers == 1) return "@Array(${arrays.join(",")})\nexternal ${wrapArray("Pointer<${ffiTypeMapping[type] ?? type}>")} ${name};\n" "";
   var pointerType = "";
   var pointersCount = pointers;
   while (pointers-- > 0) pointerType = "Pointer<$pointerType";
   pointerType = "$pointerType${ffiTypeMapping[type] ?? type}";
   while (pointersCount-- > 0) pointerType = "$pointerType>";
-  return "external ${pointerType} ${name};\n";
+  return "@Array(${arrays.join(",")})\nexternal ${wrapArray(pointerType)} ${name};\n";
 }
 
 (String, String) generateFunctionPart(String type) {
-  type = type.replaceAll(constWord, "").replaceAll("struct", "").trim();
+  type = type.clear();
   var pointers = 0;
   while (type.endsWith("*")) {
     pointers++;

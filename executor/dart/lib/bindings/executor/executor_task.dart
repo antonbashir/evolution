@@ -33,4 +33,6 @@ final class executor_completion_event extends Struct {
   external int res;
   @Uint32()
   external int flags;
+  @Array(2)
+  external Array<Uint64> big_cqe;
 }
