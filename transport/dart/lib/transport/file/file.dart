@@ -76,7 +76,7 @@ class TransportFileChannel {
         sqeFlags: transportIosqeIoLink,
         offset: offset,
       );
-      offset += buffers.bufferSize;
+      offset += buffers.size;
     }
     _channel.read(
       lastBufferId,
@@ -104,7 +104,7 @@ class TransportFileChannel {
         sqeFlags: transportIosqeIoLink,
         offset: offset,
       );
-      offset += buffers.bufferSize;
+      offset += buffers.size;
       if (onError != null) _outboundErrorHandlers[bufferId] = onError;
       if (onDone != null) _outboundDoneHandlers[bufferId] = onDone;
     }

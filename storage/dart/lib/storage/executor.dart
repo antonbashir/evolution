@@ -119,7 +119,7 @@ class StorageExecutor {
   MemoryModule get memory => _executor.memory;
 
   Future<void> initialize(ExecutorModule executorModule) async {
-    _executor = Executor(executorModule.executor());
+    _executor = Executor(executorModule.spawn());
     await _executor.initialize();
     _descriptor = tarantool_executor_descriptor();
     _nativeFactory = calloc<tarantool_factory>(sizeOf<tarantool_factory>());

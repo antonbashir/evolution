@@ -1,59 +1,72 @@
 import 'dart:async';
 import 'dart:ffi';
-import 'dart:isolate';
 
+import 'package:core/core.dart';
 import 'package:core/core/exceptions.dart';
 import 'package:ffi/ffi.dart';
+import 'package:memory/memory/constants.dart';
 
-import 'bindings.dart';
-import 'configuration.dart';
+import '../executor.dart';
 import 'constants.dart';
-import 'defaults.dart';
-import 'exception.dart';
 
-class ExecutorModule {
-  final _workerClosers = <SendPort>[];
-  final _workerPorts = <RawReceivePort>[];
-  final _workerDestroyer = ReceivePort();
+class ExecutorModuleState implements ModuleState {
+  final List<Executor> _executors = [];
   late final Pointer<executor_scheduler> _scheduler;
 
-  void initialize({ExecutorNotifierConfiguration configuration = ExecutorDefaults.notifier}) {
-    final _scheduler = using((Arena arena) => executor_scheduler_initialize(configuration.toNative(arena<executor_scheduler_configuration>()))).check();
-    if (!_scheduler.ref.initialized) {
-      final error = _scheduler.ref.initialization_error.cast<Utf8>().toDartString();
-      calloc.free(_scheduler);
+  ExecutorModuleState();
+
+  Pointer<executor_scheduler> register(Executor executor) {
+    _executors.add(executor);
+    return _scheduler;
+  }
+}
+
+class ExecutorModule with Module<executor_module, ExecutorModuleConfiguration, ExecutorModuleState> {
+  final id = executorModuleId;
+  final name = executorModuleName;
+  final dependencies = {coreModuleName, memoryModuleName};
+  final ExecutorModuleState state;
+
+  ExecutorModule({ExecutorModuleState? state}) : state = state ?? ExecutorModuleState();
+
+  @override
+  Pointer<executor_module> create(ExecutorModuleConfiguration configuration) {
+    SystemLibrary.loadByName(executorLibraryName, executorPackageName);
+    return using((arena) => executor_module_create(configuration.toNative(arena<executor_module_configuration>())));
+  }
+
+  @override
+  ExecutorModuleConfiguration load(Pointer<executor_module> native) => ExecutorModuleConfiguration.fromNative(native.ref.configuration);
+
+  @override
+  FutureOr<void> initialize() {
+    state._scheduler = using((Arena arena) => executor_scheduler_initialize(configuration.schedulerConfiguration.toNative(arena<executor_scheduler_configuration>()))).check();
+    if (!state._scheduler.ref.initialized) {
+      final error = state._scheduler.ref.initialization_error.cast<Utf8>().toDartString();
+      calloc.free(state._scheduler);
       throw ExecutorException(error);
     }
   }
 
   Future<void> shutdown() async {
-    _workerClosers.forEach((worker) => worker.send(null));
-    await _workerDestroyer.take(_workerClosers.length).toList();
-    _workerDestroyer.close();
-    _workerPorts.forEach((port) => port.close());
-    if (!executor_scheduler_shutdown(_scheduler)) {
-      final error = _scheduler.ref.shutdown_error.cast<Utf8>().toDartString();
-      calloc.free(_scheduler);
+    if (!executor_scheduler_shutdown(state._scheduler)) {
+      final error = state._scheduler.ref.shutdown_error.cast<Utf8>().toDartString();
+      calloc.free(state._scheduler);
       throw ExecutorException(error);
     }
   }
 
-  SendPort executor({ExecutorConfiguration configuration = ExecutorDefaults.executor}) {
-    final port = RawReceivePort((ports) async {
-      SendPort toWorker = ports[0];
-      _workerClosers.add(ports[1]);
-      final executorPointer = calloc<executor_instance>();
-      if (executorPointer == nullptr) throw ExecutorException(ExecutorErrors.executorMemoryError);
-      final result = using((arena) => executor_initialize(executorPointer, configuration.toNative(arena<executor_configuration>()), _scheduler, _workerClosers.length));
-      if (result < 0) {
-        executor_destroy(executorPointer);
-        calloc.free(executorPointer);
-        throw ExecutorException(ExecutorErrors.executorError(result));
-      }
-      final workerInput = [executorPointer.address, _workerDestroyer.sendPort, result];
-      toWorker.send(workerInput);
-    });
-    _workerPorts.add(port);
-    return port.sendPort;
+  @override
+  FutureOr<void> fork() {
+    state._scheduler = native.ref.scheduler;
   }
+
+  @override
+  void destroy() {
+    executor_module_destroy(native);
+  }
+}
+
+extension ContextProviderExecutorExtensions on ContextProvider {
+  ModuleProvider<executor_module, ExecutorModuleConfiguration, ExecutorModuleState> executor() => get(executorModuleId);
 }

@@ -1,6 +1,19 @@
 import 'dart:ffi';
 
+import 'package:core/core.dart';
+
 import 'bindings.dart';
+
+class ExecutorModuleConfiguration implements ModuleConfiguration {
+  final ExecutorSchedulerConfiguration schedulerConfiguration;
+
+  const ExecutorModuleConfiguration(this.schedulerConfiguration);
+
+  Pointer<executor_module_configuration> toNative(Pointer<executor_module_configuration> native) => native;
+  factory ExecutorModuleConfiguration.fromNative(Pointer<executor_module_configuration> native) => ExecutorModuleConfiguration(
+        ExecutorSchedulerConfiguration.fromNative(native.ref.scheduler_configuration),
+      );
+}
 
 class ExecutorConfiguration {
   final int staticBuffersCapacity;
@@ -63,7 +76,7 @@ class ExecutorConfiguration {
       );
 }
 
-class ExecutorNotifierConfiguration {
+class ExecutorSchedulerConfiguration {
   final int ringSize;
   final int ringFlags;
   final Duration initializationTimeout;
@@ -77,28 +90,28 @@ class ExecutorNotifierConfiguration {
     return native;
   }
 
-  factory ExecutorNotifierConfiguration.fromNative(Pointer<executor_scheduler_configuration> native) => ExecutorNotifierConfiguration(
+  factory ExecutorSchedulerConfiguration.fromNative(Pointer<executor_scheduler_configuration> native) => ExecutorSchedulerConfiguration(
         ringFlags: native.ref.ring_flags,
         ringSize: native.ref.ring_size,
         initializationTimeout: Duration(seconds: native.ref.initialization_timeout_seconds),
         shutdownTimeout: Duration(seconds: native.ref.shutdown_timeout_seconds),
       );
 
-  const ExecutorNotifierConfiguration({
+  const ExecutorSchedulerConfiguration({
     required this.ringSize,
     required this.ringFlags,
     required this.initializationTimeout,
     required this.shutdownTimeout,
   });
 
-  ExecutorNotifierConfiguration copyWith({
+  ExecutorSchedulerConfiguration copyWith({
     int? ringSize,
     int? ringFlags,
     Duration? initializationTimeout,
     Duration? shutdownTimeout,
     int? completionPeekCount,
   }) =>
-      ExecutorNotifierConfiguration(
+      ExecutorSchedulerConfiguration(
         ringSize: ringSize ?? this.ringSize,
         ringFlags: ringFlags ?? this.ringFlags,
         initializationTimeout: initializationTimeout ?? this.initializationTimeout,

@@ -5,9 +5,11 @@
 #include <system/library.h>
 #include "configuration.h"
 #include "constants.h"
+#include "module.h"
 
-int32_t executor_initialize(struct executor_instance* executor, struct executor_configuration* configuration, struct executor_scheduler* scheduler, uint32_t id)
+struct executor_instance* executor_create(struct executor_configuration* configuration, struct executor_scheduler* scheduler, uint32_t id)
 {
+    struct executor_instance* executor = executor_module_new(sizeof(struct executor_instance));
     executor->id = id;
     executor->configuration = *configuration;
     executor->scheduler = scheduler;

@@ -3,6 +3,8 @@ import 'configuration.dart';
 class ExecutorDefaults {
   ExecutorDefaults._();
 
+  static const ExecutorModuleConfiguration module = ExecutorModuleConfiguration(scheduler);
+
   static const ExecutorConfiguration executor = ExecutorConfiguration(
     staticBuffersCapacity: 4096,
     staticBufferSize: 4096,
@@ -13,7 +15,7 @@ class ExecutorDefaults {
     memoryQuotaSize: 16 * 1024 * 1024,
   );
 
-  static const ExecutorNotifierConfiguration notifier = ExecutorNotifierConfiguration(
+  static const ExecutorSchedulerConfiguration scheduler = ExecutorSchedulerConfiguration(
     ringSize: 16384,
     ringFlags: 0,
     initializationTimeout: Duration(seconds: 5),

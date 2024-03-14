@@ -22,8 +22,8 @@ final class executor_instance extends Struct {
   external int state;
 }
 
-@Native<Int32 Function(Pointer<executor_instance> executor, Pointer<executor_configuration> configuration, Pointer<executor_scheduler> scheduler, Uint32 id)>(isLeaf: true)
-external int executor_initialize(Pointer<executor_instance> executor, Pointer<executor_configuration> configuration, Pointer<executor_scheduler> scheduler, int id);
+@Native<Pointer<executor_instance> Function(Pointer<executor_configuration> configuration, Pointer<executor_scheduler> scheduler, Uint32 id)>(isLeaf: true)
+external Pointer<executor_instance> executor_create(Pointer<executor_configuration> configuration, Pointer<executor_scheduler> scheduler, int id);
 
 @Native<Int8 Function(Pointer<executor_instance> executor, Int64 callback)>(isLeaf: true)
 external int executor_register_scheduler(Pointer<executor_instance> executor, int callback);

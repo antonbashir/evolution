@@ -25,7 +25,7 @@ DART_STRUCTURE struct executor_instance
     DART_FIELD int8_t state;
 };
 
-DART_LEAF_FUNCTION int32_t executor_initialize(struct executor_instance* executor, struct executor_configuration* configuration, struct executor_scheduler* scheduler, uint32_t id);
+DART_LEAF_FUNCTION struct executor_instance* executor_create(struct executor_configuration* configuration, struct executor_scheduler* scheduler, uint32_t id);
 
 DART_LEAF_FUNCTION int8_t executor_register_scheduler(struct executor_instance* executor, int64_t callback);
 DART_LEAF_FUNCTION int8_t executor_unregister_scheduler(struct executor_instance* executor);

@@ -47,7 +47,7 @@ class MemoryModule with Module<memory_module, MemoryModuleConfiguration, MemoryM
   final dependencies = {coreModuleName};
   final MemoryModuleState state;
 
-  MemoryModule(this.state);
+  MemoryModule({MemoryModuleState? state}) : state = state ?? MemoryModuleState();
 
   @override
   Pointer<memory_module> create(MemoryModuleConfiguration configuration) {

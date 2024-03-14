@@ -6,3 +6,4 @@ export 'memory/module.dart';
 export 'memory/objects.dart';
 export 'memory/structures.dart';
 export 'memory/tuples.dart';
+export 'memory/defaults.dart';

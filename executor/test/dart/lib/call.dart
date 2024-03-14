@@ -1,166 +1,171 @@
 import 'dart:async';
 import 'dart:ffi';
 
+import 'package:core/core/defaults.dart';
 import 'package:executor/executor.dart';
+import 'package:memory/memory.dart';
+import 'package:memory/memory/defaults.dart';
 import 'package:test/test.dart';
 
 import 'bindings.dart';
 import 'consumer.dart';
 import 'producer.dart';
 
+ContextCreator _initialize(ContextCreator creator) => creator.create(CoreModule(), CoreDefaults.module).create(MemoryModule(), MemoryDefaults.module).create(ExecutorModule(), ExecutorDefaults.module);
+
 void testCallNative() {
   test("dart(null) <-> native(null)", () async {
-    final executors = ExecutorModule()..initialize();
-    final executor = Executor(executors.executor());
-    test_call_reset();
-    await executor.initialize();
-    final native = test_executor_initialize(true);
-    final producer = executor.producer(TestNativeProducer());
-    executor.activate();
-    final call = producer.testCallNative(test_executor_descriptor(native), executor.messages.allocate());
-    await _awaitNativeCall(native);
-    final result = await call;
-    executor.messages.free(result);
-    await executors.shutdown();
-    test_executor_destroy(native, true);
+    launch(_initialize).activate(() async {
+      final executor = Executor();
+      test_call_reset();
+      await executor.initialize();
+      final native = test_executor_initialize(true);
+      final producer = executor.producer(TestNativeProducer());
+      executor.activate();
+      final call = producer.testCallNative(test_executor_descriptor(native), executor.tasks.allocate());
+      await _awaitNativeCall(native);
+      final result = await call;
+      executor.tasks.free(result);
+      test_executor_destroy(native, true);
+    });
   });
 
   test("dart(bool) <-> native(bool)", () async {
-    final executors = ExecutorModule()..initialize();
-    final executor = Executor(executors.executor());
-    test_call_reset();
-    await executor.initialize();
-    final native = test_executor_initialize(true);
-    final producer = executor.producer(TestNativeProducer());
-    executor.activate();
-    final call = producer.testCallNative(test_executor_descriptor(native), executor.messages.allocate()..inputBool = true);
-    await _awaitNativeCall(native);
-    final result = await call;
-    expect(result.outputBool, true);
-    executor.messages.free(result);
-    await executors.shutdown();
-    test_executor_destroy(native, true);
+    launch(_initialize).activate(() async {
+      final executor = Executor();
+      test_call_reset();
+      await executor.initialize();
+      final native = test_executor_initialize(true);
+      final producer = executor.producer(TestNativeProducer());
+      executor.activate();
+      final call = producer.testCallNative(test_executor_descriptor(native), executor.tasks.allocate()..inputBool = true);
+      await _awaitNativeCall(native);
+      final result = await call;
+      expect(result.outputBool, true);
+      executor.tasks.free(result);
+      test_executor_destroy(native, true);
+    });
   });
 
   test("dart(int) <-> native(int)", () async {
-    final executors = ExecutorModule()..initialize();
-    final executor = Executor(executors.executor());
-    test_call_reset();
-    await executor.initialize();
-    final native = test_executor_initialize(true);
-    final producer = executor.producer(TestNativeProducer());
-    executor.activate();
-    final call = producer.testCallNative(test_executor_descriptor(native), executor.messages.allocate()..inputInt = 123);
-    await _awaitNativeCall(native);
-    final result = await call;
-    expect(result.outputInt, 123);
-    executor.messages.free(result);
-    await executors.shutdown();
-    test_executor_destroy(native, true);
+    launch(_initialize).activate(() async {
+      final executor = Executor();
+      test_call_reset();
+      await executor.initialize();
+      final native = test_executor_initialize(true);
+      final producer = executor.producer(TestNativeProducer());
+      executor.activate();
+      final call = producer.testCallNative(test_executor_descriptor(native), executor.tasks.allocate()..inputInt = 123);
+      await _awaitNativeCall(native);
+      final result = await call;
+      expect(result.outputInt, 123);
+      executor.tasks.free(result);
+      test_executor_destroy(native, true);
+    });
   });
 
   test("dart(double) <-> native(double)", () async {
-    final executors = ExecutorModule()..initialize();
-    final executor = Executor(executors.executor());
-    test_call_reset();
-    await executor.initialize();
-    final native = test_executor_initialize(true);
-    final producer = executor.producer(TestNativeProducer());
-    executor.activate();
-    final value = executor.memory.doubles.allocate();
-    value.value = 123.45;
-    final call = producer.testCallNative(test_executor_descriptor(native), executor.messages.allocate()..setInputDouble(value));
-    await _awaitNativeCall(native);
-    final result = await call;
-    expect(result.outputDouble, 123.45);
-    executor.messages.free(result);
-    await executors.shutdown();
-    test_executor_destroy(native, true);
+    launch(_initialize).activate(() async {
+      final executor = Executor();
+      test_call_reset();
+      await executor.initialize();
+      final native = test_executor_initialize(true);
+      final producer = executor.producer(TestNativeProducer());
+      executor.activate();
+      final value = context().doubles().allocate();
+      value.value = 123.45;
+      final call = producer.testCallNative(test_executor_descriptor(native), executor.tasks.allocate()..setInputDouble(value));
+      await _awaitNativeCall(native);
+      final result = await call;
+      expect(result.outputDouble, 123.45);
+      executor.tasks.free(result);
+      test_executor_destroy(native, true);
+    });
   });
 }
 
 void testCallDart() {
   test("native(null) <-> dart(null)", () async {
-    final executors = ExecutorModule()..initialize();
-    final executor = Executor(executors.executor());
+    launch(_initialize).activate(() async {
+      final executor = Executor();
 
-    test_call_reset();
-    await executor.initialize();
-    final native = test_executor_initialize(true);
-    final completer = Completer();
-    executor.consumer(TestNativeConsumer((message) => completer.complete()));
-    executor.activate();
-    test_call_dart_bool(native, executor.descriptor, 0, true);
-    await _awaitDartCall(native);
-    await completer.future;
-    await executors.shutdown();
-    test_executor_destroy(native, true);
+      test_call_reset();
+      await executor.initialize();
+      final native = test_executor_initialize(true);
+      final completer = Completer();
+      executor.consumer(TestNativeConsumer((message) => completer.complete()));
+      executor.activate();
+      test_call_dart_bool(native, executor.descriptor, 0, true);
+      await _awaitDartCall(native);
+      await completer.future;
+      test_executor_destroy(native, true);
+    });
   });
 
   test("native(bool) <-> dart(bool)", () async {
-    final executors = ExecutorModule()..initialize();
-    final executor = Executor(executors.executor());
+    launch(_initialize).activate(() async {
+      final executor = Executor();
 
-    test_call_reset();
-    await executor.initialize();
-    final native = test_executor_initialize(true);
-    final completer = Completer();
-    executor.consumer(TestNativeConsumer(
-      (message) {
-        expect(message.inputBool, true);
-        completer.complete();
-      },
-    ));
-    executor.activate();
-    test_call_dart_bool(native, executor.descriptor, 0, true);
-    await _awaitDartCall(native);
-    await completer.future;
-    await executors.shutdown();
-    test_executor_destroy(native, true);
+      test_call_reset();
+      await executor.initialize();
+      final native = test_executor_initialize(true);
+      final completer = Completer();
+      executor.consumer(TestNativeConsumer(
+        (message) {
+          expect(message.inputBool, true);
+          completer.complete();
+        },
+      ));
+      executor.activate();
+      test_call_dart_bool(native, executor.descriptor, 0, true);
+      await _awaitDartCall(native);
+      await completer.future;
+      test_executor_destroy(native, true);
+    });
   });
 
   test("native(int) <-> dart(int)", () async {
-    final executors = ExecutorModule()..initialize();
-    final executor = Executor(executors.executor());
+    launch(_initialize).activate(() async {
+      final executor = Executor();
 
-    test_call_reset();
-    await executor.initialize();
-    final native = test_executor_initialize(true);
-    final completer = Completer();
-    executor.consumer(TestNativeConsumer(
-      (message) {
-        expect(message.inputInt, 123);
-        completer.complete();
-      },
-    ));
-    executor.activate();
-    test_call_dart_int(native, executor.descriptor, 0, 123);
-    await _awaitDartCall(native);
-    await completer.future;
-    await executors.shutdown();
-    test_executor_destroy(native, true);
+      test_call_reset();
+      await executor.initialize();
+      final native = test_executor_initialize(true);
+      final completer = Completer();
+      executor.consumer(TestNativeConsumer(
+        (message) {
+          expect(message.inputInt, 123);
+          completer.complete();
+        },
+      ));
+      executor.activate();
+      test_call_dart_int(native, executor.descriptor, 0, 123);
+      await _awaitDartCall(native);
+      await completer.future;
+      test_executor_destroy(native, true);
+    });
   });
 
   test("native(double) <-> dart(double)", () async {
-    final executors = ExecutorModule()..initialize();
-    final executor = Executor(executors.executor());
+    launch(_initialize).activate(() async {
+      final executor = Executor();
 
-    test_call_reset();
-    await executor.initialize();
-    final native = test_executor_initialize(true);
-    final completer = Completer();
-    executor.consumer(TestNativeConsumer(
-      (message) {
-        expect(message.inputDouble, 123.45);
-        completer.complete();
-      },
-    ));
-    executor.activate();
-    test_call_dart_double(native, executor.descriptor, 0, 123.45);
-    await _awaitDartCall(native);
-    await completer.future;
-    await executors.shutdown();
-    test_executor_destroy(native, true);
+      test_call_reset();
+      await executor.initialize();
+      final native = test_executor_initialize(true);
+      final completer = Completer();
+      executor.consumer(TestNativeConsumer(
+        (message) {
+          expect(message.inputDouble, 123.45);
+          completer.complete();
+        },
+      ));
+      executor.activate();
+      test_call_dart_double(native, executor.descriptor, 0, 123.45);
+      await _awaitDartCall(native);
+      await completer.future;
+      test_executor_destroy(native, true);
+    });
   });
 }
 

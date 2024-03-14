@@ -5,11 +5,8 @@ import 'dart:isolate';
 import 'package:ffi/ffi.dart';
 import 'package:memory/memory.dart';
 
-import 'bindings.dart';
+import '../executor.dart';
 import 'constants.dart';
-import 'declaration.dart';
-import 'exception.dart';
-import 'tasks.dart';
 import 'registry.dart';
 
 final _executors = List<Executor>.empty(growable: true);
@@ -20,22 +17,18 @@ void _awakeExecutor(int id) => _executors[id]._awake();
 typedef ExecutorProcessor = void Function(Pointer<Pointer<executor_completion_event>> completions, int count);
 
 class Executor {
-  final _fromModule = ReceivePort();
   final _callback = RawReceivePort(Zone.current.bindUnaryCallbackGuarded(_awakeExecutor));
+  final ExecutorConfiguration configuration;
 
-  late final ExecutorConsumerRegistry _consumers;
-  late final ExecutorProducerRegistry _producers;
-
-  late final Pointer<Pointer<executor_completion_event>> _completions;
-  late final RawReceivePort _closer;
-  late final SendPort _destroyer;
-
-  late final int descriptor;
-  late final ExecutorTasks messages;
-  late final MemoryModule memory;
   late final Pointer<executor_instance> instance;
+  late final int descriptor;
+  late final ExecutorTasks tasks;
 
   late ExecutorProcessor _processor = _process;
+  late final ExecutorConsumerRegistry _consumers;
+  late final ExecutorProducerRegistry _producers;
+  late final Pointer<Pointer<executor_completion_event>> _completions;
+  late final Pointer<executor_scheduler> _scheduler;
 
   @inline
   int get id => instance.ref.id;
@@ -43,21 +36,16 @@ class Executor {
   @inline
   bool get active => instance.ref.state & executorStateStopped == 0;
 
-  Executor(SendPort toModule) {
-    _closer = RawReceivePort(shutdown);
-    toModule.send([_fromModule.sendPort, _closer.sendPort]);
+  Executor({this.configuration = ExecutorDefaults.executor}) {
+    _scheduler = context().executor().state.register(this);
   }
 
   Future<void> initialize({ExecutorProcessor? processor}) async {
     _processor = processor ?? _processor;
-    final configuration = await _fromModule.first as List;
-    instance = Pointer.fromAddress(configuration[0] as int).cast<executor_instance>();
-    _destroyer = configuration[1] as SendPort;
-    descriptor = configuration[2] as int;
-    _fromModule.close();
+    instance = using((arena) => executor_create(configuration.toNative(arena<executor_configuration>()), _scheduler, id));
+    descriptor = instance.ref.descriptor;
+    tasks = ExecutorTasks();
     _completions = instance.ref.completions;
-    memory = MemoryModule()..initialize();
-    messages = ExecutorTasks();
     _consumers = ExecutorConsumerRegistry(instance);
     _producers = ExecutorProducerRegistry(instance);
     while (instance.ref.id >= _executors.length) _executors.add(this);
@@ -68,10 +56,7 @@ class Executor {
     deactivate();
     _executors.remove(instance.ref.id);
     _callback.close();
-    memory.destroy();
     calloc.free(instance);
-    _closer.close();
-    _destroyer.send(null);
   }
 
   void activate() {

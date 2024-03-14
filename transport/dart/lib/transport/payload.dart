@@ -1,14 +1,13 @@
 import 'dart:typed_data';
 
-import 'package:core/core.dart';
 import 'package:memory/memory.dart';
 
 class TransportPayloadPool {
   final MemoryStaticBuffers _buffers;
   final _payloads = <TransportPayload>[];
 
-  TransportPayloadPool(int buffersCount, this._buffers) {
-    for (var bufferId = 0; bufferId < buffersCount; bufferId++) {
+  TransportPayloadPool(this._buffers) {
+    for (var bufferId = 0; bufferId < _buffers.capacity; bufferId++) {
       _payloads.add(TransportPayload(bufferId, this));
     }
   }

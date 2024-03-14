@@ -10,10 +10,14 @@ class MemoryStaticBuffers {
   final Pointer<Int32> ids;
   final Pointer<iovec> contents;
   final Queue<Completer<void>> _finalizers = Queue();
+  final int size;
+  final int capacity;
 
   MemoryStaticBuffers(this.buffers)
       : ids = buffers.ref.ids,
-        contents = buffers.ref.buffers;
+        contents = buffers.ref.buffers,
+        size = buffers.ref.size,
+        capacity = buffers.ref.capacity;
 
   @inline
   void release(int bufferId) {

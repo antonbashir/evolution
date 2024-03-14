@@ -2,9 +2,6 @@ import 'dart:async';
 import 'dart:ffi';
 import 'dart:typed_data';
 
-import 'package:core/core.dart';
-import 'package:memory/memory.dart';
-
 import '../bindings.dart';
 import '../channel.dart';
 import 'server.dart';
@@ -13,8 +10,8 @@ class TransportServerDatagramResponderPool {
   final MemoryStaticBuffers _buffers;
   final _datagramResponders = <TransportServerDatagramResponder>[];
 
-  TransportServerDatagramResponderPool(int buffersCount, this._buffers) {
-    for (var bufferId = 0; bufferId < buffersCount; bufferId++) {
+  TransportServerDatagramResponderPool(this._buffers) {
+    for (var bufferId = 0; bufferId < _buffers.capacity; bufferId++) {
       _datagramResponders.add(TransportServerDatagramResponder(bufferId, this));
     }
   }

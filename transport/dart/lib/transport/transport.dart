@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:ffi';
 import 'dart:isolate';
 
-import 'package:executor/executor.dart';
 import 'package:meta/meta.dart';
 
 import 'bindings.dart';
@@ -77,8 +76,8 @@ class Transport {
     if (result != 0) {
       throw TransportInitializationException(TransportMessages.workerError(result));
     }
-    _payloadPool = TransportPayloadPool(_memory.staticBuffers.buffersCapacity, _buffers);
-    _datagramResponderPool = TransportServerDatagramResponderPool(_memory.staticBuffers.buffersCapacity, _buffers);
+    _payloadPool = TransportPayloadPool(_buffers);
+    _datagramResponderPool = TransportServerDatagramResponderPool(_buffers);
     _clientRegistry = TransportClientRegistry();
     _serverRegistry = TransportServerRegistry();
     _serversFactory = TransportServersFactory(

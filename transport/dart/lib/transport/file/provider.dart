@@ -102,7 +102,7 @@ class TransportFile {
         }
         if (++counter == blocksCount) {
           counter = 0;
-          blocksCount = min(blocksCount, max(left ~/ _file.buffers.bufferSize, 1));
+          blocksCount = min(blocksCount, max(left ~/ _file.buffers.size, 1));
           unawaited(_file.readMany(blocksCount, offset: offset + bytes.length).onError((error, stackTrace) {
             if (!completer.isCompleted) completer.completeError(error!);
           }));

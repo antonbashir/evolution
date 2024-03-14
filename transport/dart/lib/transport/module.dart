@@ -46,7 +46,7 @@ class TransportModule {
         bindings.transport_destroy(transportPointer);
         throw TransportInitializationException(TransportMessages.workerError(result));
       }
-      final workerInput = [transportPointer.address, _transportDestroyer.sendPort, _executor.executor()];
+      final workerInput = [transportPointer.address, _transportDestroyer.sendPort, _executor.spawn()];
       toTransport.send(workerInput);
     });
     _transportPorts.add(port);
