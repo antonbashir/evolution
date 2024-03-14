@@ -14,28 +14,21 @@ extern "C"
 
 #define module_id 1
 #define module_name memory
-struct memory_module_configuration
+DART_STRUCTURE struct memory_module_configuration
 {
+  DART_FIELD uint8_t library_package_mode;
 };
 #define module_configuration struct memory_module_configuration
-struct memory_module
+DART_STRUCTURE struct memory_module
 {
-    uint32_t id;
-    const char* name;
-    struct memory_module_configuration* configuration;
+    DART_FIELD uint32_t id;
+    DART_FIELD const char* name;
+    DART_FIELD struct memory_module_configuration* configuration;
 };
 #define module_structure struct memory_module
 #include <modules/module.h>
-
-DART_STRUCTURE struct memory_module_state
-{
-    DART_FIELD struct memory_static_buffers* static_buffers;
-    DART_FIELD struct memory_io_buffers* io_buffers;
-    DART_FIELD struct memory* memory_instance;
-};
-
-DART_LEAF_FUNCTION struct memory_module_state* memory_module_state_create(struct memory_configuration* configuration);
-DART_LEAF_FUNCTION void memory_module_state_destroy(struct memory_module_state* state);
+DART_LEAF_FUNCTION struct memory_module* memory_module_create(struct memory_module_configuration* configuration);
+DART_LEAF_FUNCTION void memory_module_destroy(struct memory_module* module);
 
 #if defined(__cplusplus)
 }

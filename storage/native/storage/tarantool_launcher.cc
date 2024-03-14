@@ -407,7 +407,7 @@ void tarantool_launcher_launch(char* binary_path)
     }
 }
 
-void tarantool_launcher_shutdown(int code)
+void tarantool_launcher_shutdown(int32_t code)
 {
     if (start_loop)
     {

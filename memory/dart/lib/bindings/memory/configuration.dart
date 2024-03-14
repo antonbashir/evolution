@@ -16,4 +16,6 @@ final class memory_configuration extends Struct {
   external int static_buffers_capacity;
   @Size()
   external int static_buffer_size;
+  @Double()
+  external double small_allocation_factor;
 }

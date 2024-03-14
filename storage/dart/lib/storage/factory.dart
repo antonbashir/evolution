@@ -1,9 +1,5 @@
 import 'dart:ffi';
 
-import 'package:core/core.dart';
-import 'package:executor/executor.dart';
-import 'package:memory/memory.dart';
-
 import 'bindings.dart';
 import 'strings.dart';
 
@@ -57,23 +53,24 @@ class StorageFactory {
   final _indexIdMessageOffset = sizeOf<tarantool_index_id_request>() - executorMessageSize;
   late final MemoryObjects<Pointer<tarantool_index_id_request>> _indexIdRequests;
 
-  StorageFactory(MemoryModule memory, this._strings) {
-    _messages = memory.structures.register<executor_task>(sizeOf<executor_task>()).asObjectPool();
-    _spaceRequests = memory.structures.register<tarantool_space_request>(sizeOf<tarantool_space_request>()).asObjectPool();
-    _spaceCountRequests = memory.structures.register<tarantool_space_count_request>(sizeOf<tarantool_space_count_request>()).asObjectPool();
-    _spaceSelectRequests = memory.structures.register<tarantool_space_select_request>(sizeOf<tarantool_space_select_request>()).asObjectPool();
-    _spaceUpdateRequests = memory.structures.register<tarantool_space_update_request>(sizeOf<tarantool_space_update_request>()).asObjectPool();
-    _spaceUpsertRequests = memory.structures.register<tarantool_space_upsert_request>(sizeOf<tarantool_space_upsert_request>()).asObjectPool();
-    _spaceIteratorRequests = memory.structures.register<tarantool_space_iterator_request>(sizeOf<tarantool_space_iterator_request>()).asObjectPool();
-    _indexRequests = memory.structures.register<tarantool_index_request>(sizeOf<tarantool_index_request>()).asObjectPool();
-    _indexCountRequests = memory.structures.register<tarantool_index_count_request>(sizeOf<tarantool_index_count_request>()).asObjectPool();
-    _indexIdByNameRequests = memory.structures.register<tarantool_index_id_by_name_request>(sizeOf<tarantool_index_id_by_name_request>()).asObjectPool();
-    _indexUpdateRequests = memory.structures.register<tarantool_index_update_request>(sizeOf<tarantool_index_update_request>()).asObjectPool();
-    _indexIteratorRequests = memory.structures.register<tarantool_index_iterator_request>(sizeOf<tarantool_index_iterator_request>()).asObjectPool();
-    _callRequests = memory.structures.register<tarantool_call_request>(sizeOf<tarantool_call_request>()).asObjectPool();
-    _evaluateRequests = memory.structures.register<tarantool_evaluate_request>(sizeOf<tarantool_evaluate_request>()).asObjectPool();
-    _indexSelectRequests = memory.structures.register<tarantool_index_select_request>(sizeOf<tarantool_index_select_request>()).asObjectPool();
-    _indexIdRequests = memory.structures.register<tarantool_index_id_request>(sizeOf<tarantool_index_id_request>()).asObjectPool();
+  StorageFactory(this._strings) {
+    MemoryStructurePools pools = context().structures();
+    _messages = pools.register<executor_task>(sizeOf<executor_task>()).asObjectPool();
+    _spaceRequests = pools.register<tarantool_space_request>(sizeOf<tarantool_space_request>()).asObjectPool();
+    _spaceCountRequests = pools.register<tarantool_space_count_request>(sizeOf<tarantool_space_count_request>()).asObjectPool();
+    _spaceSelectRequests = pools.register<tarantool_space_select_request>(sizeOf<tarantool_space_select_request>()).asObjectPool();
+    _spaceUpdateRequests = pools.register<tarantool_space_update_request>(sizeOf<tarantool_space_update_request>()).asObjectPool();
+    _spaceUpsertRequests = pools.register<tarantool_space_upsert_request>(sizeOf<tarantool_space_upsert_request>()).asObjectPool();
+    _spaceIteratorRequests = pools.register<tarantool_space_iterator_request>(sizeOf<tarantool_space_iterator_request>()).asObjectPool();
+    _indexRequests = pools.register<tarantool_index_request>(sizeOf<tarantool_index_request>()).asObjectPool();
+    _indexCountRequests = pools.register<tarantool_index_count_request>(sizeOf<tarantool_index_count_request>()).asObjectPool();
+    _indexIdByNameRequests = pools.register<tarantool_index_id_by_name_request>(sizeOf<tarantool_index_id_by_name_request>()).asObjectPool();
+    _indexUpdateRequests = pools.register<tarantool_index_update_request>(sizeOf<tarantool_index_update_request>()).asObjectPool();
+    _indexIteratorRequests = pools.register<tarantool_index_iterator_request>(sizeOf<tarantool_index_iterator_request>()).asObjectPool();
+    _callRequests = pools.register<tarantool_call_request>(sizeOf<tarantool_call_request>()).asObjectPool();
+    _evaluateRequests = pools.register<tarantool_evaluate_request>(sizeOf<tarantool_evaluate_request>()).asObjectPool();
+    _indexSelectRequests = pools.register<tarantool_index_select_request>(sizeOf<tarantool_index_select_request>()).asObjectPool();
+    _indexIdRequests = pools.register<tarantool_index_id_request>(sizeOf<tarantool_index_id_request>()).asObjectPool();
   }
 
   @inline

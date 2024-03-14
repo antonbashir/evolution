@@ -62,6 +62,10 @@ class CoreErrors {
   static String systemLibraryLoadError(path) => "Unable to load library ${path}";
   static const nonLinuxError = "You should use Linux";
   static const unableToFindProjectRoot = "Unable to find project root";
+  static moduleAlreadyLoaded(int id) => "Module was already loaded: $id";
+  static moduleNotLoaded(int id) => "Module was not loaded: $id";
+  static moduleNotFound(int id) => "Module was not found: $id";
+  static moduleDependenciesNotFound(List<String> dependencies) => "Module dependencies were not found: ${dependencies}";
 }
 
 class SourcesDirectories {

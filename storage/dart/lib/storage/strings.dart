@@ -1,6 +1,6 @@
 import 'dart:ffi';
 
-import 'package:core/core.dart';
+import 'package:ffi/ffi.dart';
 
 import 'bindings.dart';
 
@@ -10,7 +10,7 @@ class StorageStrings {
   StorageStrings(this._factory);
 
   @inline
-  (Pointer<Char>, int) allocate(String source) {
+  (Pointer<Utf8>, int) allocate(String source) {
     final Pointer<Uint8> result = tarantool_create_string(_factory, source.length + 1).cast();
     final units = result.asTypedList(source.length + 1);
     final length = source.encode(units, 0);
@@ -19,5 +19,5 @@ class StorageStrings {
   }
 
   @inline
-  void free(Pointer<Char> string, int size) => tarantool_free_string(_factory, string, size + 1);
+  void free(Pointer<Utf8> string, int size) => tarantool_free_string(_factory, string, size + 1);
 }

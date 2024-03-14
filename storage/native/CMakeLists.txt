@@ -2,9 +2,9 @@ cmake_minimum_required(VERSION 3.16.0)
 project(storage_native C CXX ASM)
 
 file(GLOB sources
-  src/*.h
-  src/*.c
-  src/*.cc
+  **/*.h
+  **/*.c
+  **/*.cc
 )
 
 file(GLOB tests

@@ -9,7 +9,7 @@
 #include "memory_small_data.h"
 
 static pthread_mutex_t mutex;
-struct memory memory_module;
+struct memory_instance memory_module;
 struct memory_pool pool;
 struct memory_small_data small_data;
 

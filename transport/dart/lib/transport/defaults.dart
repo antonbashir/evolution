@@ -9,7 +9,7 @@ class TransportDefaults {
   TransportDefaults._();
 
   static const transport = TransportConfiguration(
-    memoryConfiguration: MemoryDefaults.module,
+    memoryConfiguration: MemoryDefaults.memory,
     executorConfiguration: ExecutorDefaults.executor,
     trace: false,
     timeoutCheckerPeriod: Duration(milliseconds: 500),

@@ -16,7 +16,7 @@ extern "C"
 {
 #endif
 
-DART_STRUCTURE struct memory
+DART_STRUCTURE struct memory_instance
 {
     struct quota quota;
     struct slab_arena arena;
@@ -34,22 +34,9 @@ DART_STRUCTURE struct memory_small_allocator
     struct small_alloc allocator;
 };
 
-DART_STRUCTURE struct memory_input_buffer
+DART_INLINE_LEAF_FUNCTION struct memory_instance* memory_create(size_t quota_size, size_t preallocation_size, size_t slab_size)
 {
-    DART_FIELD uint8_t* read_position;
-    DART_FIELD uint8_t* write_position;
-    struct ibuf buffer;
-};
-
-DART_STRUCTURE struct memory_output_buffer
-{
-    DART_FIELD struct iovec* content;
-    struct obuf buffer;
-};
-
-DART_INLINE_LEAF_FUNCTION struct memory* memory_create(size_t quota_size, size_t preallocation_size, size_t slab_size)
-{
-    struct memory* memory = memory_module_new(sizeof(struct memory));
+    struct memory_instance* memory = memory_module_new(sizeof(struct memory_instance));
     if (memory == NULL)
     {
         return NULL;
@@ -65,7 +52,7 @@ DART_INLINE_LEAF_FUNCTION struct memory* memory_create(size_t quota_size, size_t
     return memory;
 }
 
-DART_INLINE_LEAF_FUNCTION void memory_destroy(struct memory* memory)
+DART_INLINE_LEAF_FUNCTION void memory_destroy(struct memory_instance* memory)
 {
     slab_cache_destroy(&memory->cache);
     slab_arena_destroy(&memory->arena);
@@ -76,7 +63,7 @@ DART_INLINE_LEAF_FUNCTION void memory_destroy(struct memory* memory)
     memory_module_delete(memory);
 }
 
-DART_INLINE_LEAF_FUNCTION struct memory_pool* memory_pool_create(struct memory* memory, size_t size)
+DART_INLINE_LEAF_FUNCTION struct memory_pool* memory_pool_create(struct memory_instance* memory, size_t size)
 {
     struct memory_pool* pool = memory_module_new(sizeof(struct memory_pool));
     pool->size = size;
@@ -87,6 +74,7 @@ DART_INLINE_LEAF_FUNCTION struct memory_pool* memory_pool_create(struct memory* 
 DART_INLINE_LEAF_FUNCTION void memory_pool_destroy(struct memory_pool* pool)
 {
     mempool_destroy(&pool->pool);
+    memory_module_delete(pool);
 }
 
 DART_INLINE_LEAF_FUNCTION void* memory_pool_allocate(struct memory_pool* pool)
@@ -99,7 +87,7 @@ DART_INLINE_LEAF_FUNCTION void memory_pool_free(struct memory_pool* pool, void* 
     mempool_free(&pool->pool, ptr);
 }
 
-DART_INLINE_LEAF_FUNCTION struct memory_small_allocator* memory_small_allocator_create(float allocation_factor, struct memory* memory)
+DART_INLINE_LEAF_FUNCTION struct memory_small_allocator* memory_small_allocator_create(float allocation_factor, struct memory_instance* memory)
 {
     struct memory_small_allocator* allocator = memory_module_new(sizeof(struct memory_small_allocator));
     float actual_allocation_factor;

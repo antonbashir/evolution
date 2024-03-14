@@ -4,14 +4,25 @@
 import 'dart:ffi';
 import '../../memory/bindings.dart';
 
+final class memory_input_buffer extends Struct {
+  external Pointer<Uint8> read_position;
+  external Pointer<Uint8> write_position;
+}
+
+final class memory_output_buffer extends Struct {
+  external Pointer<iovec> content;
+  @Size()
+  external int content_count;
+}
+
 final class memory_io_buffers extends Struct {
-  external Pointer<memory> memory_instance;
+  external Pointer<memory_instance> instance;
   external Pointer<memory_pool> input_buffers;
   external Pointer<memory_pool> output_buffers;
 }
 
-@Native<Pointer<memory_io_buffers> Function(Pointer<memory> memory)>(isLeaf: true)
-external Pointer<memory_io_buffers> memory_io_buffers_create(Pointer<memory> memory);
+@Native<Pointer<memory_io_buffers> Function(Pointer<memory_instance> memory)>(isLeaf: true)
+external Pointer<memory_io_buffers> memory_io_buffers_create(Pointer<memory_instance> memory);
 
 @Native<Void Function(Pointer<memory_io_buffers> pool)>(isLeaf: true)
 external void memory_io_buffers_destroy(Pointer<memory_io_buffers> pool);

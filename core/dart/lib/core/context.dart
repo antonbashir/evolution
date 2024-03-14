@@ -3,6 +3,7 @@ import 'dart:ffi';
 
 import 'bindings.dart';
 import 'constants.dart';
+import 'exceptions.dart';
 import 'library.dart';
 import 'module.dart';
 
@@ -28,6 +29,7 @@ mixin Module<NativeType extends Struct, ConfigurationType extends ModuleConfigur
   int get id;
   String get name;
   StateType get state;
+  Set<String> get dependencies => {};
 
   late final Pointer<NativeType> native;
   late final ConfigurationType configuration;
@@ -93,11 +95,17 @@ class _Context with ContextCreator, ContextLoader, ContextProvider {
   bool has(int id) => _modules[id] != null;
 
   @override
-  Module get(int id) => _modules[id]!;
+  Module get(int id) {
+    final module = _modules[id];
+    if (module == null) throw CoreException(CoreErrors.moduleNotFound(id));
+    return module;
+  }
 
   @override
   ContextCreator create(Module module, ModuleConfiguration configuration) {
-    if (_native[module.id] != nullptr) throw Error();
+    if (_native[module.id] != nullptr) throw CoreException(CoreErrors.moduleAlreadyLoaded(module.id));
+    final failedDependencies = module.dependencies.where((dependency) => !_modules.any((existing) => existing?.name == dependency)).toList();
+    if (failedDependencies.isNotEmpty) throw CoreException(CoreErrors.moduleDependenciesNotFound(failedDependencies));
     _modules[module.id] = module.._spawn(configuration);
     context_put_module(module.id, module.native.cast());
     _native[module.id] = module.native.cast();
@@ -106,7 +114,7 @@ class _Context with ContextCreator, ContextLoader, ContextProvider {
 
   @override
   ContextLoader load(Module module) {
-    if (_native[module.id] == nullptr) throw Error();
+    if (_native[module.id] == nullptr) throw CoreException(CoreErrors.moduleNotLoaded(module.id));
     _modules[module.id] = module.._fetch(_native[module.id].cast());
     return this;
   }

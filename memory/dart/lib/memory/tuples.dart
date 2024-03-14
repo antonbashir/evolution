@@ -3,6 +3,8 @@ import 'dart:ffi';
 import 'dart:typed_data';
 
 import 'bindings.dart';
+import 'buffers.dart';
+import 'constants.dart';
 
 const _decoder = const Utf8Decoder();
 
@@ -170,7 +172,7 @@ int tupleWriteString(Uint8List buffer, ByteData data, String value, int offset) 
     value.encode(buffer, offset);
     return offset + length;
   }
-  throw ArgumentError('Max string length is 0xFFFFFFFF');
+  throw ArgumentError(TupleErrors.maxStringLength);
 }
 
 @inline
@@ -196,7 +198,7 @@ int tupleWriteBinary(Uint8List buffer, ByteData data, Uint8List value, int offse
     buffer.setRange(offset, offset + length, value);
     return offset + length;
   }
-  throw ArgumentError('Max binary length is 0xFFFFFFFF');
+  throw ArgumentError(TupleErrors.maxBinaryLength);
 }
 
 @inline
@@ -215,7 +217,7 @@ int tupleWriteList(ByteData data, int length, int offset) {
     data.setUint32(offset, length);
     return offset + 4;
   }
-  throw ArgumentError('Max list length is 4294967295');
+  throw ArgumentError(TupleErrors.maxListLength);
 }
 
 @inline
@@ -234,7 +236,7 @@ int tupleWriteMap(ByteData data, int length, int offset) {
     data.setUint32(offset, length);
     return offset + 4;
   }
-  throw ArgumentError('Max map length is 4294967295');
+  throw ArgumentError(TupleErrors.maxMapLength);
 }
 
 @inline
@@ -248,7 +250,7 @@ int tupleWriteMap(ByteData data, int length, int offset) {
     case 0xc0:
       return (value: null, offset: offset + 1);
   }
-  throw FormatException("Byte $value is not bool");
+  throw FormatException(TupleErrors.notBool(value));
 }
 
 @inline
@@ -288,7 +290,7 @@ int tupleWriteMap(ByteData data, int length, int offset) {
       value = null;
       return (value: value, offset: offset + 1);
   }
-  throw FormatException("Byte $value is not int");
+  throw FormatException(TupleErrors.notInt(value));
 }
 
 @inline
@@ -306,25 +308,25 @@ int tupleWriteMap(ByteData data, int length, int offset) {
       value = null;
       return (value: value, offset: offset + 1);
   }
-  throw FormatException("Byte $value is not double");
+  throw FormatException(TupleErrors.notDouble(value));
 }
 
 @inline
 ({String? value, int offset}) tupleReadString(Uint8List buffer, ByteData data, int offset) {
-  final bytes = data.getUint8(offset);
+  final byte = data.getUint8(offset);
   final innerBuffer = buffer.buffer;
   final offsetInBytes = buffer.offsetInBytes;
-  if (bytes == 0xc0) {
+  if (byte == 0xc0) {
     return (value: null, offset: offset + 1);
   }
   int length;
-  if (bytes & 0xE0 == 0xA0) {
-    length = bytes & 0x1F;
+  if (byte & 0xE0 == 0xA0) {
+    length = byte & 0x1F;
     offset += 1;
     final view = innerBuffer.asUint8List(offsetInBytes + offset, length);
     return (value: _decoder.convert(view), offset: offset + length);
   }
-  switch (bytes) {
+  switch (byte) {
     case 0xc0:
       return (value: null, offset: offset + 1);
     case 0xd9:
@@ -340,16 +342,16 @@ int tupleWriteMap(ByteData data, int length, int offset) {
       offset += 4;
       return (value: _decoder.convert(innerBuffer.asUint8List(offsetInBytes + offset, length)), offset: offset + length);
   }
-  throw FormatException("Byte $bytes is not string");
+  throw FormatException(TupleErrors.notString(byte));
 }
 
 @inline
 ({Uint8List value, int offset}) tupleReadBinary(Uint8List buffer, ByteData data, int offset) {
-  final bytes = data.getUint8(offset);
+  final byte = data.getUint8(offset);
   final innerBuffer = buffer.buffer;
   final offsetInBytes = buffer.offsetInBytes;
   int length;
-  switch (bytes) {
+  switch (byte) {
     case 0xc4:
       length = data.getUint8(++offset);
       offset += 1;
@@ -367,16 +369,16 @@ int tupleWriteMap(ByteData data, int length, int offset) {
       offset += 4;
       return (value: innerBuffer.asUint8List(offsetInBytes + offset, length), offset: offset + length);
   }
-  throw FormatException("Byte $bytes is not binary");
+  throw FormatException(TupleErrors.notBinary(byte));
 }
 
 @inline
 ({int length, int offset}) tupleReadList(ByteData data, int offset) {
-  final bytes = data.getUint8(offset);
-  if (bytes & 0xF0 == 0x90) {
-    return (length: bytes & 0xF, offset: offset + 1);
+  final byte = data.getUint8(offset);
+  if (byte & 0xF0 == 0x90) {
+    return (length: byte & 0xF, offset: offset + 1);
   }
-  switch (bytes) {
+  switch (byte) {
     case 0xc0:
       return (length: offset += 1, offset: 0);
     case 0xdc:
@@ -384,16 +386,16 @@ int tupleWriteMap(ByteData data, int length, int offset) {
     case 0xdd:
       return (length: data.getUint32(++offset), offset: offset + 4);
   }
-  throw FormatException("Byte $bytes is invalid list length");
+  throw FormatException(TupleErrors.notList(byte));
 }
 
 @inline
 ({int length, int offset}) tupleReadMap(ByteData data, int offset) {
-  final bytes = data.getUint8(offset);
-  if (bytes & 0xF0 == 0x80) {
-    return (length: bytes & 0xF, offset: offset + 1);
+  final byte = data.getUint8(offset);
+  if (byte & 0xF0 == 0x80) {
+    return (length: byte & 0xF, offset: offset + 1);
   }
-  switch (bytes) {
+  switch (byte) {
     case 0xc0:
       return (length: offset += 1, offset: 0);
     case 0xde:
@@ -401,16 +403,17 @@ int tupleWriteMap(ByteData data, int length, int offset) {
     case 0xdf:
       return (length: data.getUint32(++offset), offset: offset + 4);
   }
-  throw FormatException("Byte $bytes is invalid map length");
+  throw FormatException(TupleErrors.notMap(byte));
 }
 
 class MemoryTuples {
   final Pointer<memory_small_allocator> _small;
+  final Pointer<memory_io_buffers> _buffers;
 
   late final (Pointer<Uint8>, int) emptyList;
   late final (Pointer<Uint8>, int) emptyMap;
 
-  MemoryTuples(this._small) {
+  MemoryTuples(this._small, this._buffers) {
     emptyList = _createEmptyList();
     emptyMap = _createEmptyMap();
   }
@@ -432,6 +435,24 @@ class MemoryTuples {
   @inline
   void freeSmall(Pointer<Uint8> tuple, int size) => memory_small_allocator_free(_small, tuple.cast(), size);
 
+  ({Pointer<Uint8> tuple, int size, void Function() cleaner}) writeForInput(int size, int Function(Uint8List buffer, ByteData data, int offset) writer) {
+    final inputBuffer = memory_io_buffers_allocate_input(_buffers, size);
+    final reserved = inputBuffer.reserve(size);
+    final buffer = reserved.cast<Uint8>().asTypedList(size);
+    final data = ByteData.view(buffer.buffer, buffer.offsetInBytes);
+    inputBuffer.finalize(writer(buffer, data, 0));
+    return (tuple: inputBuffer.readPosition, size: size, cleaner: () => memory_io_buffers_free_input(_buffers, inputBuffer));
+  }
+
+  ({Pointer<iovec> content, int count, int fullSize, void Function() cleaner}) writeForOutput(int size, int Function(Uint8List buffer, ByteData data, int offset) writer) {
+    final outputBuffer = memory_io_buffers_allocate_output(_buffers, size);
+    final reserved = outputBuffer.reserve(size);
+    final buffer = reserved.cast<Uint8>().asTypedList(size);
+    final data = ByteData.view(buffer.buffer, buffer.offsetInBytes);
+    outputBuffer.finalize(writer(buffer, data, 0));
+    return (content: outputBuffer.content, count: outputBuffer.ref.content_count, fullSize: size, cleaner: () => memory_io_buffers_free_output(_buffers, outputBuffer));
+  }
+
   (Pointer<Uint8>, int) _createEmptyList() {
     final size = tupleSizeOfList(0);
     final list = allocateSmall(size);
@@ -449,9 +470,8 @@ class MemoryTuples {
   }
 }
 
-abstract interface class MemoryTuple {
+abstract mixin class MemoryTuple {
   int get tupleSize;
-
   int serialize(Uint8List buffer, ByteData data, int offset);
 }
 

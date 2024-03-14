@@ -72,9 +72,9 @@ class Transport {
     _fromTransport.close();
     await _executor.initialize(processor: _process);
     _memory = MemoryModule(load: false);
-    _memory.initialize(configuration: MemoryModuleConfiguration.fromNativeValue(_pointer.ref.configuration.memory_configuration));
+    _memory.initialize(configuration: MemoryConfiguration.fromNativeValue(_pointer.ref.configuration.memory_configuration));
     _buffers = _memory.staticBuffers;
-    _pointer.ref.buffers = _buffers.native;
+    _pointer.ref.buffers = _buffers.buffers;
     final result = transport_setup(_pointer, _executor.pointer);
     if (result != 0) {
       throw TransportInitializationException(TransportMessages.workerError(result));

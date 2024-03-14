@@ -74,8 +74,164 @@ final class tarantool_box extends Struct {
   external int tarantool_index_id_by_name_address;
 }
 
+final class tarantool_space_request extends Struct {
+  @Size()
+  external int tuple_size;
+  external Pointer<Uint8> tuple;
+  @Uint32()
+  external int space_id;
+}
+
+final class tarantool_space_count_request extends Struct {
+  @Size()
+  external int key_size;
+  external Pointer<Uint8> key;
+  @Uint32()
+  external int space_id;
+  @Int32()
+  external int iterator_type;
+}
+
+final class tarantool_space_select_request extends Struct {
+  @Size()
+  external int key_size;
+  external Pointer<Uint8> key;
+  @Uint32()
+  external int space_id;
+  @Uint32()
+  external int offset;
+  @Uint32()
+  external int limit;
+  @Int32()
+  external int iterator_type;
+}
+
+final class tarantool_space_update_request extends Struct {
+  @Size()
+  external int key_size;
+  @Size()
+  external int operations_size;
+  external Pointer<Uint8> key;
+  external Pointer<Uint8> operations;
+  @Uint32()
+  external int space_id;
+}
+
+final class tarantool_space_upsert_request extends Struct {
+  @Size()
+  external int tuple_size;
+  external Pointer<Uint8> tuple;
+  external Pointer<Uint8> operations;
+  @Size()
+  external int operations_size;
+  @Uint32()
+  external int space_id;
+}
+
+final class tarantool_space_iterator_request extends Struct {
+  @Size()
+  external int key_size;
+  external Pointer<Uint8> key;
+  @Uint32()
+  external int space_id;
+  @Int32()
+  external int type;
+}
+
+final class tarantool_index_request extends Struct {
+  @Size()
+  external int tuple_size;
+  external Pointer<Uint8> tuple;
+  @Uint32()
+  external int space_id;
+  @Uint32()
+  external int index_id;
+}
+
+final class tarantool_index_count_request extends Struct {
+  @Size()
+  external int key_size;
+  external Pointer<Uint8> key;
+  @Uint32()
+  external int space_id;
+  @Uint32()
+  external int index_id;
+  @Int32()
+  external int iterator_type;
+}
+
+final class tarantool_index_id_by_name_request extends Struct {
+  external Pointer<Utf8> name;
+  @Size()
+  external int name_length;
+  @Uint32()
+  external int space_id;
+}
+
+final class tarantool_index_update_request extends Struct {
+  external Pointer<Uint8> key;
+  @Size()
+  external int key_size;
+  external Pointer<Uint8> operations;
+  @Size()
+  external int operations_size;
+  @Uint32()
+  external int space_id;
+  @Uint32()
+  external int index_id;
+}
+
+final class tarantool_call_request extends Struct {
+  external Pointer<Utf8> function;
+  external Pointer<Uint8> input;
+  @Size()
+  external int input_size;
+  @Uint32()
+  external int function_length;
+}
+
+final class tarantool_evaluate_request extends Struct {
+  external Pointer<Utf8> expression;
+  external Pointer<Uint8> input;
+  @Size()
+  external int input_size;
+  @Uint32()
+  external int expression_length;
+}
+
+final class tarantool_index_iterator_request extends Struct {
+  external Pointer<Uint8> key;
+  @Size()
+  external int key_size;
+  @Uint32()
+  external int space_id;
+  @Uint32()
+  external int index_id;
+  @Int32()
+  external int type;
+}
+
 final class tarantool_index_select_request extends Struct {
   external Pointer<Uint8> key;
+  @Size()
+  external int key_size;
+  @Uint32()
+  external int space_id;
+  @Uint32()
+  external int index_id;
+  @Uint32()
+  external int offset;
+  @Uint32()
+  external int limit;
+  @Int32()
+  external int iterator_type;
+}
+
+final class tarantool_index_id_request extends Struct {
+  @Uint32()
+  external int space_id;
+  @Uint32()
+  external int index_id;
 }
 
 @Native<Void Function(Pointer<tarantool_box> box)>(isLeaf: true)

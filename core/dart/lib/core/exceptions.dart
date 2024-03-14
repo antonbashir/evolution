@@ -1,7 +1,6 @@
-import 'dart:io';
+import 'dart:ffi';
 
 import 'constants.dart';
-import 'printer.dart';
 
 class CoreException implements Exception {
   final String message;
@@ -18,23 +17,32 @@ class SystemException implements Exception {
 
   SystemException(this.code) : message = SystemErrors.of(code).message;
 
+  @inline
+  static Pointer<T> checkPointer<T extends NativeType>(Pointer<T> result, [void Function()? finalizer]) {
+    if (result == nullptr) {
+      finalizer?.call();
+      throw SystemException(SystemErrors.ENOMEM.code);
+    }
+    return result;
+  }
+
+  @inline
+  static int checkResult(int result, [void Function()? finalizer]) {
+    if (result < 0) {
+      finalizer?.call();
+      throw SystemException(-result);
+    }
+    return result;
+  }
+
   @override
   String toString() => "[$printSystemExceptionTag]: ($code) $dash $message";
 }
 
-void defaultErrorHandler(Error error, StackTrace stack) {
-  Printer.printError(error, stack);
-  exit(-1);
+extension SystemExceptionPointerExtensions<T extends NativeType> on Pointer<T> {
+  Pointer<T> check([void Function()? finalizer]) => SystemException.checkPointer(this, finalizer);
 }
 
-void defaultExceptionHandler(Exception exception, StackTrace stack) {
-  if (exception is CoreException) {
-    Printer.printException(exception, stack);
-    exit(-1);
-  }
-  if (exception is SystemException) {
-    Printer.printException(exception, stack);
-    exit(-exception.code);
-  }
-  Printer.printException(exception, stack);
+extension SystemExceptionIntExtensions on int {
+  int check([void Function()? finalizer]) => SystemException.checkResult(this, finalizer);
 }

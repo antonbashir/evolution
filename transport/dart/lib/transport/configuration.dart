@@ -6,7 +6,7 @@ import 'package:memory/memory.dart';
 import 'bindings.dart';
 
 class TransportConfiguration {
-  final MemoryModuleConfiguration memoryConfiguration;
+  final MemoryConfiguration memoryConfiguration;
   final ExecutorConfiguration executorConfiguration;
   final Duration timeoutCheckerPeriod;
   final bool trace;
@@ -27,7 +27,7 @@ class TransportConfiguration {
   });
 
   TransportConfiguration copyWith({
-    MemoryModuleConfiguration? memoryConfiguration,
+    MemoryConfiguration? memoryConfiguration,
     ExecutorConfiguration? executorConfiguration,
     Duration? timeoutCheckerPeriod,
     bool? trace,

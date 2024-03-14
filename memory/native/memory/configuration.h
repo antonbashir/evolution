@@ -16,6 +16,7 @@ DART_STRUCTURE struct memory_configuration
     DART_FIELD size_t slab_size;
     DART_FIELD size_t static_buffers_capacity;
     DART_FIELD size_t static_buffer_size;
+    DART_FIELD double small_allocation_factor;
 };
 
 #if defined(__cplusplus)

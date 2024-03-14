@@ -10,7 +10,7 @@ import 'exceptions.dart';
 class MemoryStructurePools {
   final Map<int, Pointer<memory_pool>> _pools = {};
 
-  final Pointer<memory> _memory;
+  final Pointer<memory_instance> _memory;
 
   MemoryStructurePools(this._memory);
 
@@ -26,7 +26,7 @@ class MemoryStructurePools {
   @inline
   Pointer<T> allocate<T extends NativeType>() {
     final pool = _pools[T.hashCode];
-    if (pool == null) throw MemoryException(MemoryErrors.outOfMemory);
+    if (pool == null) throw MemoryException(MemoryErrors.unknownStructurePool(T.toString()));
     return memory_pool_allocate(pool).cast();
   }
 
@@ -40,7 +40,6 @@ class MemoryStructurePools {
   @inline
   void destroy() {
     _pools.values.forEach((pool) => memory_pool_destroy(pool));
-    _pools.values.forEach((pool) => calloc.free(pool));
     _pools.clear();
   }
 }
@@ -50,10 +49,7 @@ class MemoryStructurePool<T extends NativeType> {
 
   MemoryStructurePool(this._pool);
 
-  MemoryObjects<Pointer<T>> asObjectPool({
-    MemoryObjectsConfiguration configuration = MemoryDefaults.objects,
-  }) =>
-      MemoryObjects(
+  MemoryObjects<Pointer<T>> asObjectPool({MemoryObjectsConfiguration configuration = MemoryDefaults.objects}) => MemoryObjects(
         allocate,
         free,
         configuration: configuration,

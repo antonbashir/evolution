@@ -14,4 +14,9 @@ class MemorySmallData {
 
   @inline
   void free(Pointer<Void> pointer, int size) => memory_small_allocator_free(_allocator, pointer, size);
+
+  @inline
+  void destroy() {
+    memory_small_allocator_destroy(_allocator);
+  }
 }

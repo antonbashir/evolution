@@ -18,3 +18,5 @@ export "storage/bindings.dart" show tarantool_tuple;
 export "storage/lua.dart";
 
 export "storage/constants.dart" show StorageIteratorType, StorageEngine, StorageIndexType, StorageFieldType, StorageIndexPartType;
+
+export "storage/tuple.dart";

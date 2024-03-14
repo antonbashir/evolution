@@ -11,21 +11,35 @@ extern "C"
 {
 #endif
 
+DART_STRUCTURE struct memory_input_buffer
+{
+    DART_FIELD uint8_t* read_position;
+    DART_FIELD uint8_t* write_position;
+    struct ibuf buffer;
+};
+
+DART_STRUCTURE struct memory_output_buffer
+{
+    DART_FIELD struct iovec* content;
+    DART_FIELD size_t content_count;
+    struct obuf buffer;
+};
+
 DART_STRUCTURE struct memory_io_buffers
 {
-    DART_FIELD struct memory* memory_instance;
+    DART_FIELD struct memory_instance* instance;
     DART_FIELD struct memory_pool* input_buffers;
     DART_FIELD struct memory_pool* output_buffers;
 };
 
-DART_INLINE_LEAF_FUNCTION struct memory_io_buffers* memory_io_buffers_create(struct memory* memory)
+DART_INLINE_LEAF_FUNCTION struct memory_io_buffers* memory_io_buffers_create(struct memory_instance* memory)
 {
     struct memory_io_buffers* pool = memory_module_new(sizeof(struct memory_io_buffers));
     if (pool == NULL)
     {
         return NULL;
     }
-    pool->memory_instance = memory;
+    pool->instance = memory;
     pool->input_buffers = memory_pool_create(memory, sizeof(struct memory_input_buffer));
     if (!pool->input_buffers)
     {
@@ -55,7 +69,7 @@ DART_INLINE_LEAF_FUNCTION struct memory_input_buffer* memory_io_buffers_allocate
     {
         return NULL;
     }
-    ibuf_create(&buffer->buffer, &buffers->memory_instance->cache, initial_capacity);
+    ibuf_create(&buffer->buffer, &buffers->instance->cache, initial_capacity);
     buffer->read_position = (uint8_t*)buffer->buffer.rpos;
     buffer->write_position = (uint8_t*)buffer->buffer.wpos;
     return buffer;
@@ -74,7 +88,7 @@ DART_INLINE_LEAF_FUNCTION struct memory_output_buffer* memory_io_buffers_allocat
     {
         return NULL;
     }
-    obuf_create(&buffer->buffer, &buffers->memory_instance->cache, initial_capacity);
+    obuf_create(&buffer->buffer, &buffers->instance->cache, initial_capacity);
     buffer->content = buffer->buffer.iov;
     return buffer;
 }

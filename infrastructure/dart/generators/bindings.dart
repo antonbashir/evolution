@@ -4,6 +4,7 @@ import 'dart:io';
 final ffiTypeMapping = {
   "bool": "Bool",
   "double": "Double",
+  "int": "Int",
   "float": "Float",
   "size_t": "Size",
   "int8_t": "Int8",
@@ -31,6 +32,7 @@ final ffiTypeMapping = {
 final dartTypeMapping = {
   "bool": "bool",
   "void": "void",
+  "int": "int",
   "double": "double",
   "float": "double",
   "size_t": "int",
