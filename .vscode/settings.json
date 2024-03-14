@@ -137,6 +137,7 @@
     "tuple.h": "c",
     "descriptors.h": "c",
     "io_buffers.h": "c",
-    "transport_constants.h": "c"
+    "transport_constants.h": "c",
+    "constants.h": "c"
   },
 }

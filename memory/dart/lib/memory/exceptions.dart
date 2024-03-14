@@ -6,5 +6,5 @@ class MemoryException implements Exception {
   const MemoryException(this.message);
 
   @override
-  String toString() => "[$memoryModuleName]: $message";
+  String toString() => "[$memoryModuleName] $message";
 }

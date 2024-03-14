@@ -5,7 +5,7 @@ import 'bindings.dart';
 class MemoryModuleConfiguration implements ModuleConfiguration {
   final LibraryPackageMode libraryPackageMode;
 
-  MemoryModuleConfiguration({required this.libraryPackageMode});
+  const MemoryModuleConfiguration({required this.libraryPackageMode});
 
   factory MemoryModuleConfiguration.fromNative(Pointer<memory_module_configuration> native) => MemoryModuleConfiguration(
         libraryPackageMode: LibraryPackageMode.values[native.ref.library_package_mode],

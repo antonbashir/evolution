@@ -26,7 +26,7 @@ void _defaultExceptionHandler(Exception exception, StackTrace stack) {
 class CoreDefaults {
   CoreDefaults._();
 
-  static const CoreModuleConfiguration coreConfiguration = CoreModuleConfiguration(
+  static const CoreModuleConfiguration module = CoreModuleConfiguration(
     printLevel: printLevelInformation,
     silent: false,
   );

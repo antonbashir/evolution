@@ -1,4 +1,3 @@
-#define DART_FFI
-#include <context/context.h>
+#define DART_EXPORT_INLINES
 #include <descriptors/descriptors.h>
-#undef DART_FFI
+#undef DART_EXPORT_INLINES

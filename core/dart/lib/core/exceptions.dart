@@ -8,7 +8,7 @@ class CoreException implements Exception {
   const CoreException(this.message);
 
   @override
-  String toString() => "[$coreModuleName]: $message";
+  String toString() => "[$coreModuleName] $message";
 }
 
 class SystemException implements Exception {
@@ -36,7 +36,7 @@ class SystemException implements Exception {
   }
 
   @override
-  String toString() => "[$printSystemExceptionTag]: ($code) $dash $message";
+  String toString() => "[$printSystemExceptionTag] ($code) $dash $message";
 }
 
 extension SystemExceptionPointerExtensions<T extends NativeType> on Pointer<T> {

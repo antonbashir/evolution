@@ -44,13 +44,14 @@ class MemoryModuleState implements ModuleState {
 class MemoryModule with Module<memory_module, MemoryModuleConfiguration, MemoryModuleState> {
   final id = memoryModuleId;
   final name = memoryModuleName;
+  final dependencies = {coreModuleName};
   final MemoryModuleState state;
 
   MemoryModule(this.state);
 
   @override
   Pointer<memory_module> create(MemoryModuleConfiguration configuration) {
-    SystemLibrary.loadByName(configuration.libraryPackageMode == LibraryPackageMode.shared ? memorySharedLibraryName : memoryLibraryName, corePackageName);
+    SystemLibrary.loadByName(configuration.libraryPackageMode == LibraryPackageMode.shared ? memorySharedLibraryName : memoryLibraryName, memoryPackageName);
     return using((arena) => memory_module_create(configuration.toNative(arena<memory_module_configuration>())));
   }
 

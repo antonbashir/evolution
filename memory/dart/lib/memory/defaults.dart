@@ -1,7 +1,12 @@
+import 'bindings.dart';
 import 'configuration.dart';
 
 class MemoryDefaults {
   MemoryDefaults._();
+
+  static const module = MemoryModuleConfiguration(
+    libraryPackageMode: LibraryPackageMode.static,
+  );
 
   static const memory = MemoryConfiguration(
     staticBuffersCapacity: 4096,

@@ -4,7 +4,10 @@
 
 struct context context_instance;
 
-extern struct context* context_get();
+struct context* context_get()
+{
+  return &context_instance;
+}
 
 void context_create()
 {

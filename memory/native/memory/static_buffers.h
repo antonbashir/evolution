@@ -35,6 +35,8 @@ DART_INLINE_LEAF_FUNCTION struct memory_static_buffers* memory_static_buffers_cr
         struct iovec* buffer = &pool->buffers[index];
         if (posix_memalign(&buffer->iov_base, page_size, size))
         {
+            memory_module_delete(pool->ids);
+            memory_module_delete(pool->buffers);
             memory_module_delete(pool);
             return NULL;
         }

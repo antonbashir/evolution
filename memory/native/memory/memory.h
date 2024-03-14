@@ -68,7 +68,7 @@ DART_INLINE_LEAF_FUNCTION struct memory_pool* memory_pool_create(struct memory_i
     struct memory_pool* pool = memory_module_new(sizeof(struct memory_pool));
     pool->size = size;
     mempool_create(&pool->pool, &memory->cache, size);
-    return mempool_is_initialized(&pool->pool) ? NULL : pool;
+    return mempool_is_initialized(&pool->pool) ? pool : NULL;
 }
 
 DART_INLINE_LEAF_FUNCTION void memory_pool_destroy(struct memory_pool* pool)
