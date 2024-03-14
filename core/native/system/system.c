@@ -32,7 +32,7 @@ void system_default_event_printer(struct event* event)
 {
     if (system_get()->print_level < event->level) return;
     const char* buffer = event_format(event);
-    system_get()->on_print("%s", buffer);
+    system_get()->on_print("%s\n", buffer);
     free((void*)buffer);
     if (event->level <= MODULE_EVENT_LEVEL_ERROR)
     {

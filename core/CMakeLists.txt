@@ -10,13 +10,18 @@ FetchContent_Declare(
 )
 FetchContent_Populate(core_libunwind)
 
+set(autotool_files_standard configure.ac acinclude.m4)
+list_add_prefix(autotool_files_standard "${core_libunwind_SOURCE_DIR}/" autotool_files_standard)
+file(GLOB_RECURSE autotool_files_am CONFIGURE_DEPENDS RELATIVE "${PROJECT_SOURCE_DIR}" "${core_libunwind_SOURCE_DIR}/*.am")
+set(autotool_files ${autotool_files_am} ${autotool_files_standard})
+file(GLOB_RECURSE config_files_in CONFIGURE_DEPENDS RELATIVE "${PROJECT_SOURCE_DIR}" "${core_libunwind_SOURCE_DIR}/*.in")
+
 add_custom_command(
   OUTPUT ${core_libunwind_SOURCE_DIR}/configure
   WORKING_DIRECTORY ${core_libunwind_SOURCE_DIR}
-  COMMAND AR=${CMAKE_AR} CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER} CFLAGS=${LIBUNWIND_CFLAGS} CXXFLAGS=${LIBUNWIND_CXXFLAGS}
-  autoreconf -i &> /dev/null
-  && autoupdate &> /dev/null
+  COMMAND AR=${CMAKE_AR} CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER} CFLAGS=${LIBunwind_CFLAGS} CXXFLAGS=${LIBunwind_CXXFLAGS} autoreconf -i
   COMMAND touch configure
+  DEPENDS ${autotool_files}
 )
 
 add_custom_command(
@@ -40,15 +45,25 @@ add_custom_command(
   --disable-unwind-header
   --disable-minidebuginfo
   --disable-zlibdebuginfo
-  &> /dev/null
   DEPENDS ${core_libunwind_SOURCE_DIR}/configure
 )
 
+add_custom_command(
+  OUTPUT ${core_libunwind_SOURCE_DIR}/config.log
+  WORKING_DIRECTORY ${core_libunwind_SOURCE_DIR}
+  COMMAND ./config.status
+  DEPENDS
+  ${config_files_in}
+  ${core_libunwind_SOURCE_DIR}/Makefile
+)
+
+
 add_custom_target(core_libunwind_build
   COMMAND AR=${CMAKE_AR} CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER} CFLAGS=${LIBUNWIND_CFLAGS} CXXFLAGS=${LIBUNWIND_CXXFLAGS}
-  make -j &> /dev/null && make install prefix=${core_libunwind_BINARY_DIR} &> /dev/null
+  make &> /dev/null && make install prefix=${core_libunwind_BINARY_DIR} &> /dev/null
   WORKING_DIRECTORY ${core_libunwind_SOURCE_DIR}
-  DEPENDS ${core_libunwind_SOURCE_DIR}/Makefile
+  DEPENDS ${core_libunwind_SOURCE_DIR}/Makefile ${core_libunwind_SOURCE_DIR}/config.log
+  BYPRODUCTS ${core_libunwind_BINARY_DIR}/lib/libunwind.a ${core_libunwind_BINARY_DIR}/lib/libunwind-${CMAKE_SYSTEM_PROCESSOR}.a
 )
 
 set(CORE_LIBUNWIND_LIBRARIES ${core_libunwind_BINARY_DIR}/lib/libunwind.a ${core_libunwind_BINARY_DIR}/lib/libunwind-${CMAKE_SYSTEM_PROCESSOR}.a)

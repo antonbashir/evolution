@@ -6,7 +6,7 @@
 #include <sys/time.h>
 #include <sys/un.h>
 #include <unistd.h>
-#include "executor_constants.h"
+#include <executor/constants.h>
 #include "executor.h"
 #include "memory_configuration.h"
 #include "transport.h"

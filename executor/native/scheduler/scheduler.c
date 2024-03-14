@@ -187,7 +187,7 @@ struct executor_scheduler* executor_scheduler_initialize(struct executor_schedul
         scheduler->initialization_error = strerror(error);
         return false;
     }
-    return true;
+    return scheduler;
 }
 
 bool executor_scheduler_shutdown(struct executor_scheduler* scheduler)

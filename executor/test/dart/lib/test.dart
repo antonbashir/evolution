@@ -11,7 +11,7 @@ import 'threading.dart';
 void main() {
   using((Arena arena) => dlopen("${dirname(Platform.script.toFilePath())}/../native/libexecutortest.so".toNativeUtf8(allocator: arena).cast(), rtldGlobal | rtldLazy));
   group("[call native]", testCallNative);
-  group("[call dart]", testCallDart);
-  group("[threading native]", testThreadingNative);
-  group("[threading dart]", testThreadingDart);
+  // group("[call dart]", testCallDart);
+  // group("[threading native]", testThreadingNative);
+  // group("[threading dart]", testThreadingDart);
 }

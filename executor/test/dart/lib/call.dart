@@ -1,10 +1,8 @@
 import 'dart:async';
 import 'dart:ffi';
 
-import 'package:core/core/defaults.dart';
 import 'package:executor/executor.dart';
 import 'package:memory/memory.dart';
-import 'package:memory/memory/defaults.dart';
 import 'package:test/test.dart';
 
 import 'bindings.dart';

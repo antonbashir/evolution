@@ -39,7 +39,15 @@ set(STORAGE_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/storage/native)
 
 include(FetchContent)
 include(ExternalProject)
+include(ProcessorCount)
 include(infrastructure/cmake/infrastructure.cmake)
+
+ProcessorCount(nproc)
+if (nproc)
+    set(make make -j${nproc})
+else()
+    set(make make)
+endif()
 
 add_subdirectory(core)
 add_subdirectory(memory)
