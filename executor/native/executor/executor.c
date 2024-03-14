@@ -15,27 +15,27 @@ struct executor_instance* executor_create(struct executor_configuration* configu
     executor->scheduler = scheduler;
     executor->state = EXECUTOR_STATE_STOPPED;
 
-    executor->completions = malloc(sizeof(struct io_uring_cqe*) * configuration->ring_size);
+    executor->completions = executor_module_allocate(configuration->ring_size, sizeof(struct io_uring_cqe*));
     if (!executor->completions)
     {
-        return -ENOMEM;
+        return NULL;
     }
 
-    executor->ring = calloc(1, sizeof(struct io_uring));
+    executor->ring = executor_module_new(sizeof(struct io_uring));
     if (!executor->ring)
     {
-        return -ENOMEM;
+        return NULL;
     }
 
     int32_t result = io_uring_queue_init(configuration->ring_size, executor->ring, configuration->ring_flags);
     if (result)
     {
-        return result;
+        return NULL;
     }
 
     executor->descriptor = executor->ring->ring_fd;
 
-    return executor->descriptor;
+    return executor;
 }
 
 int8_t executor_register_scheduler(struct executor_instance* executor, int64_t callback)
@@ -112,8 +112,9 @@ int8_t executor_callback_to_native(struct executor_instance* executor, struct ex
 void executor_destroy(struct executor_instance* executor)
 {
     io_uring_queue_exit(executor->ring);
-    free(executor->ring);
-    free(executor->completions);
+    executor_module_delete(executor->ring);
+    executor_module_delete(executor->completions);
+    executor_module_delete(executor);
 }
 
 void executor_submit(struct executor_instance* executor)
