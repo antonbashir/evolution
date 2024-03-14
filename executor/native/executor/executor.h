@@ -3,42 +3,43 @@
 
 #include <common/common.h>
 #include <liburing.h>
-#include "executor_configuration.h"
-#include "executor_constants.h"
-#include "executor_task.h"
+#include "configuration.h"
+#include "constants.h"
+#include "task.h"
 
 #if defined(__cplusplus)
 extern "C"
 {
 #endif
 
-struct executor
+DART_TYPE struct io_uring;
+DART_STRUCTURE struct executor_instance
 {
-    int64_t callback;
-    struct executor_scheduler* scheduler;
-    struct io_uring* ring;
-    struct io_uring_cqe** completions;
-    struct executor_configuration configuration;
-    int32_t descriptor;
-    uint32_t id;
-    int8_t state;
+    DART_FIELD int64_t callback;
+    DART_FIELD struct executor_scheduler* scheduler;
+    DART_FIELD struct io_uring* ring;
+    DART_FIELD DART_SUBSTITUTE(struct executor_completion_event**) struct io_uring_cqe** completions;
+    DART_FIELD struct executor_configuration configuration;
+    DART_FIELD int32_t descriptor;
+    DART_FIELD uint32_t id;
+    DART_FIELD int8_t state;
 };
 
-int32_t executor_initialize(struct executor* executor, struct executor_configuration* configuration, struct executor_scheduler* scheduler, uint32_t id);
+DART_LEAF_FUNCTION int32_t executor_initialize(struct executor_instance* executor, struct executor_configuration* configuration, struct executor_scheduler* scheduler, uint32_t id);
 
-int8_t executor_register_background(struct executor* executor, int64_t callback);
-int8_t executor_unregister_background(struct executor* executor);
+DART_LEAF_FUNCTION int8_t executor_register_scheduler(struct executor_instance* executor, int64_t callback);
+DART_LEAF_FUNCTION int8_t executor_unregister_scheduler(struct executor_instance* executor);
 
-int32_t executor_peek(struct executor* executor);
-void executor_submit(struct executor* executor);
+DART_LEAF_FUNCTION int32_t executor_peek(struct executor_instance* executor);
+DART_LEAF_FUNCTION void executor_submit(struct executor_instance* executor);
 
-int8_t executor_awake_begin(struct executor* executor);
-void executor_awake_complete(struct executor* executor, uint32_t completions);
+DART_LEAF_FUNCTION int8_t executor_awake_begin(struct executor_instance* executor);
+DART_LEAF_FUNCTION void executor_awake_complete(struct executor_instance* executor, uint32_t completions);
 
-int8_t executor_call_native(struct executor* executor, int32_t target_ring_fd, struct executor_task* message);
-int8_t executor_callback_to_native(struct executor* executor, struct executor_task* message);
+DART_LEAF_FUNCTION int8_t executor_call_native(struct executor_instance* executor, int32_t target_ring_fd, struct executor_task* message);
+DART_LEAF_FUNCTION int8_t executor_callback_to_native(struct executor_instance* executor, struct executor_task* message);
 
-FORCEINLINE int8_t executor_call_dart(struct io_uring* ring, int32_t source_ring_fd, int32_t target_ring_fd, struct executor_task* message)
+DART_INLINE_LEAF_FUNCTION int8_t executor_call_dart(struct io_uring* ring, int32_t source_ring_fd, int32_t target_ring_fd, struct executor_task* message)
 {
     struct io_uring_sqe* sqe = io_uring_get_sqe(ring);
     if (unlikely(sqe == NULL))
@@ -53,7 +54,7 @@ FORCEINLINE int8_t executor_call_dart(struct io_uring* ring, int32_t source_ring
     return 0;
 }
 
-FORCEINLINE int8_t executor_callback_to_dart(struct io_uring* ring, int32_t source_ring_fd, struct executor_task* message)
+DART_INLINE_LEAF_FUNCTION int8_t executor_callback_to_dart(struct io_uring* ring, int32_t source_ring_fd, struct executor_task* message)
 {
     struct io_uring_sqe* sqe = io_uring_get_sqe(ring);
     if (unlikely(sqe == NULL))
@@ -69,7 +70,7 @@ FORCEINLINE int8_t executor_callback_to_dart(struct io_uring* ring, int32_t sour
     return 0;
 }
 
-void executor_destroy(struct executor* executor);
+DART_LEAF_FUNCTION void executor_destroy(struct executor_instance* executor);
 
 #if defined(__cplusplus)
 }

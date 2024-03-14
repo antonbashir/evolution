@@ -17,13 +17,13 @@ class ExecutorConsumerExecutor {
 }
 
 class ExecutorCallbackExecutor {
-  final Pointer<executor> _executor;
-  final FutureOr<void> Function(Pointer<executor_task> notification) _executor;
+  final Pointer<executor_instance> _executor;
+  final FutureOr<void> Function(Pointer<executor_task> notification) _callback;
 
-  ExecutorCallbackExecutor(this._executor, this._executor);
+  ExecutorCallbackExecutor(this._executor, this._callback);
 
   @inline
-  void call(Pointer<executor_task> message) => Future.value(_executor(message)).then((_) => _respond(message));
+  void call(Pointer<executor_task> message) => Future.value(_callback(message)).then((_) => _respond(message));
 
   @inline
   void _respond(Pointer<executor_task> message) {

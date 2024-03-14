@@ -22,17 +22,6 @@ class ExecutorConfiguration {
     return native;
   }
 
-  executor_configuration fillNative(executor_configuration native) {
-    native.ring_flags = ringFlags;
-    native.ring_size = ringSize;
-    native.static_buffer_size = staticBufferSize;
-    native.static_buffers_capacity = staticBuffersCapacity;
-    native.slab_size = memorySlabSize;
-    native.preallocation_size = memoryPreallocationSize;
-    native.quota_size = memoryQuotaSize;
-    return native;
-  }
-
   factory ExecutorConfiguration.fromNative(Pointer<executor_configuration> native) => ExecutorConfiguration(
         ringFlags: native.ref.ring_flags,
         ringSize: native.ref.ring_size,

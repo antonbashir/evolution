@@ -1,16 +1,12 @@
-#include "executor_scheduler.h"
+#include "scheduler.h"
 #include <common/common.h>
-#include <common/errors.h>
-#include <common/modules.h>
 #include <dart/dart_native_api.h>
-#include <executor.h>
-#include <executor_common.h>
-#include <executor_constants.h>
+#include <executor/executor.h>
+#include <executor/module.h>
 #include <liburing.h>
-#include <common/library.h>
-#include <system/scheduling.h>
-#include <system/threading.h>
-#include <system/time.h>
+#include <system/library.h>
+#include <time/time.h>
+#include "executor/common.h"
 
 static FORCEINLINE struct io_uring_sqe* executor_scheduler_provide_sqe(struct io_uring* ring)
 {
@@ -57,7 +53,7 @@ static void* executor_scheduler_listen(void* input)
         scheduler->initialization_error = strerror(error);
         return NULL;
     }
-    uintptr_t executors[executor_scheduler_LIMIT];
+    uintptr_t executors[EXECUTOR_SCHEDULER_LIMIT];
     struct io_uring_cqe* cqe;
     unsigned head;
     unsigned count = 0;
@@ -99,21 +95,21 @@ static void* executor_scheduler_listen(void* input)
 
             if (cqe->res & POLLIN)
             {
-                struct executor* executor = (struct executor*)cqe->user_data;
+                struct executor_instance* executor = (struct executor_instance*)cqe->user_data;
                 if (likely(executors[executor->id]))
                 {
                     bool result = Dart_PostInteger(executor->callback, executor->id);
                     if (!result)
                     {
-                        error_scoped_exit(EXECUTOR_MODULE, EXECUTOR_ERROR_BACKGROUND_SCHEDULER_POST, EXECUTOR_SCOPE_BACKGROUND_SCHEDULER, executor_format_cqe(cqe));
+                        print_event(executor_module_event(event_error(event_scope(EXECUTOR_SCOPE_SCHEDULER), executor_format_cqe(cqe))));
                     }
                 }
                 continue;
             }
 
-            if (cqe->res & executor_scheduler_POLL)
+            if (cqe->res & EXECUTOR_SCHEDULER_POLL)
             {
-                struct executor* executor = (struct executor*)cqe->user_data;
+                struct executor_instance* executor = (struct executor_instance*)cqe->user_data;
                 if (likely(executors[executor->id]))
                 {
                     struct io_uring_sqe* sqe = executor_scheduler_provide_sqe(ring);
@@ -123,9 +119,9 @@ static void* executor_scheduler_listen(void* input)
                 continue;
             }
 
-            if (cqe->res & executor_scheduler_REGISTER)
+            if (cqe->res & EXECUTOR_SCHEDULER_REGISTER)
             {
-                struct executor* executor = (struct executor*)cqe->user_data;
+                struct executor_instance* executor = (struct executor_instance*)cqe->user_data;
                 struct io_uring_sqe* sqe = executor_scheduler_provide_sqe(ring);
                 io_uring_prep_poll_add(sqe, executor->descriptor, POLLIN);
                 io_uring_sqe_set_data(sqe, executor);
@@ -133,9 +129,9 @@ static void* executor_scheduler_listen(void* input)
                 continue;
             }
 
-            if (cqe->res & executor_scheduler_UNREGISTER)
+            if (cqe->res & EXECUTOR_SCHEDULER_UNREGISTER)
             {
-                struct executor* executor = (struct executor*)executors[cqe->user_data];
+                struct executor_instance* executor = (struct executor_instance*)executors[cqe->user_data];
                 if (likely(executor))
                 {
                     struct io_uring_sqe* sqe = executor_scheduler_provide_sqe(ring);
@@ -151,8 +147,9 @@ static void* executor_scheduler_listen(void* input)
     unreachable();
 }
 
-bool executor_scheduler_initialize(struct executor_scheduler* scheduler, struct executor_scheduler_configuration* configuration)
+struct executor_scheduler* executor_scheduler_initialize(struct executor_scheduler_configuration* configuration)
 {
+    struct executor_scheduler* scheduler = executor_module_new_checked(sizeof(struct executor_scheduler));
     scheduler->configuration = *configuration;
     struct timespec timeout = timeout_seconds(configuration->initialization_timeout_seconds);
     int32_t error;

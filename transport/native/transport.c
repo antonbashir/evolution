@@ -58,7 +58,7 @@ int32_t transport_initialize(struct transport* transport,
     return 0;
 }
 
-int32_t transport_setup(struct transport* transport, struct executor* transport_executor)
+int32_t transport_setup(struct transport* transport, struct executor_instance* transport_executor)
 {
     transport->transport_executor = transport_executor;
     struct io_uring* ring = transport_executor->ring;

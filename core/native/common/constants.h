@@ -37,6 +37,7 @@ extern "C"
 
 #define MODULE_EVENT_FIELD_MESSAGE "message"
 #define MODULE_EVENT_FIELD_CODE "code"
+#define MODULE_EVENT_FIELD_SCOPE "scope"
 #define MODULE_EVENT_FIELD_CALLER "caller"
 #define MODULE_EVENT_FIELD_ADDRESS "address"
 #define MODULE_EVENT_FIELD_SIGNAL_INFORMATION "signal-information"

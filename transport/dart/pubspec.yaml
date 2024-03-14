@@ -6,7 +6,6 @@ environment:
   sdk: ">=3.3.0 <4.0.0"
 
 dev_dependencies:
-  ffigen: ^11.0.0
   test: ^1.24.6
 
 dependencies:
@@ -17,68 +16,3 @@ dependencies:
     path: ../../memory/dart
   executor:
     path: ../../executor/dart
-
-ffigen:
-  name: "TransportBindings"
-  ffi-native:
-    assetId: "transport-bindings"
-  description: "Bindings for Transport"
-  output: "lib/transport/bindings.dart"
-  headers:
-    entry-points:
-      - "../native/transport.h"
-      - "../native/transport_constants.h"
-      - "../native/transport_server.h"
-      - "../native/transport_client.h"
-      - "../native/transport_file.h"
-      - "../native/transport_socket.h"
-  compiler-opts:
-    - "-I../native/include"
-    - "-I../../executor/native/include"
-    - "-I../../memory/native/include"
-  globals:
-    exclude:
-      - "_(.*)"
-  functions:
-    leaf:
-      include:
-        - "transport_.*"
-    symbol-address:
-      include:
-        - ".*"
-    exclude:
-      - "_(.*)"
-  macros:
-    exclude:
-      - "_(.*)"
-      - "true"
-      - "false"
-  typedefs:
-    exclude:
-      - "_(.*)"
-  structs:
-    exclude:
-      - "_(.*)"
-      - "max_align_t"
-      - "file_(.*)"
-  type-map:
-    structs:
-      "iovec":
-        lib: "memory"
-        c-type: "iovec"
-        dart-type: "iovec"
-      "memory_module_configuration":
-        lib: "memory"
-        c-type: "memory_module_configuration"
-        dart-type: "memory_module_configuration"
-      "executor_configuration":
-        lib: "executor"
-        c-type: "executor_configuration"
-        dart-type: "executor_configuration"
-      "executor":
-        lib: "executor"
-        c-type: "executor"
-        dart-type: "executor"
-  library-imports:
-    executor: package:executor/executor.dart
-    memory: package:memory/memory.dart

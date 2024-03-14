@@ -1,7 +1,7 @@
 #ifndef TARANTOOL_BOX_H
 #define TARANTOOL_BOX_H
 
-#include <executor/executor_task.h>
+#include <executor/task.h>
 #include <stddef.h>
 #include <stdint.h>
 #include "common/common.h"

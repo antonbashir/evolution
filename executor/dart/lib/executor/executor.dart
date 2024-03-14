@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:ffi';
 import 'dart:isolate';
 
-import 'package:core/core.dart';
 import 'package:ffi/ffi.dart';
 import 'package:memory/memory.dart';
 
@@ -10,7 +9,7 @@ import 'bindings.dart';
 import 'constants.dart';
 import 'declaration.dart';
 import 'exception.dart';
-import 'messages.dart';
+import 'tasks.dart';
 import 'registry.dart';
 
 final _executors = List<Executor>.empty(growable: true);
@@ -32,17 +31,17 @@ class Executor {
   late final SendPort _destroyer;
 
   late final int descriptor;
-  late final ExecutorMessages messages;
+  late final ExecutorTasks messages;
   late final MemoryModule memory;
-  late final Pointer<executor> pointer;
+  late final Pointer<executor_instance> instance;
 
   late ExecutorProcessor _processor = _process;
 
   @inline
-  int get id => pointer.ref.id;
+  int get id => instance.ref.id;
 
   @inline
-  bool get active => pointer.ref.state & executorStateStopped == 0;
+  bool get active => instance.ref.state & executorStateStopped == 0;
 
   Executor(SendPort toModule) {
     _closer = RawReceivePort(shutdown);
@@ -52,37 +51,37 @@ class Executor {
   Future<void> initialize({ExecutorProcessor? processor}) async {
     _processor = processor ?? _processor;
     final configuration = await _fromModule.first as List;
-    pointer = Pointer.fromAddress(configuration[0] as int).cast<executor>();
+    instance = Pointer.fromAddress(configuration[0] as int).cast<executor_instance>();
     _destroyer = configuration[1] as SendPort;
     descriptor = configuration[2] as int;
     _fromModule.close();
-    _completions = pointer.ref.completions;
-    memory = MemoryModule(load: false)..initialize();
-    messages = ExecutorMessages(memory);
-    _consumers = ExecutorConsumerRegistry(pointer);
-    _producers = ExecutorProducerRegistry(pointer);
-    while (pointer.ref.id >= _executors.length) _executors.add(this);
-    _executors[pointer.ref.id] = this;
+    _completions = instance.ref.completions;
+    memory = MemoryModule()..initialize();
+    messages = ExecutorTasks();
+    _consumers = ExecutorConsumerRegistry(instance);
+    _producers = ExecutorProducerRegistry(instance);
+    while (instance.ref.id >= _executors.length) _executors.add(this);
+    _executors[instance.ref.id] = this;
   }
 
   Future<void> shutdown() async {
     deactivate();
-    _executors.remove(pointer.ref.id);
+    _executors.remove(instance.ref.id);
     _callback.close();
     memory.destroy();
-    calloc.free(pointer);
+    calloc.free(instance);
     _closer.close();
     _destroyer.send(null);
   }
 
   void activate() {
-    if (executor_register(pointer, _callback.sendPort.nativePort) == executorErrorRingFull) {
+    if (executor_register_scheduler(instance, _callback.sendPort.nativePort) == executorErrorRingFull) {
       throw ExecutorException(ExecutorErrors.executorRingFullError);
     }
   }
 
   void deactivate() {
-    if (executor_unregister(pointer) == executorErrorRingFull) {
+    if (executor_unregister_scheduler(instance) == executorErrorRingFull) {
       throw ExecutorException(ExecutorErrors.executorRingFullError);
     }
   }
@@ -93,15 +92,15 @@ class Executor {
 
   @inline
   void _awake() {
-    if (pointer.ref.state & executorStateStopped == 0) {
-      if (executor_awake(pointer) == executorErrorRingFull) {
-        executor_sleep(pointer, 0);
+    if (instance.ref.state & executorStateStopped == 0) {
+      if (executor_awake_begin(instance) == executorErrorRingFull) {
+        executor_awake_complete(instance, 0);
         throw ExecutorException(ExecutorErrors.executorRingFullError);
       }
-      final count = executor_peek(pointer);
+      final count = executor_peek(instance);
       if (count == 0) return;
       _processor(_completions, count);
-      executor_sleep(pointer, count);
+      executor_awake_complete(instance, count);
     }
   }
 

@@ -12,12 +12,12 @@ class ExecutorProducerExecutor implements ExecutorProducerRegistrat {
   final Map<int, ExecutorMethodExecutor> _methods = {};
 
   final int _id;
-  final Pointer<executor> _pointer;
+  final Pointer<executor_instance> _executor;
 
-  ExecutorProducerExecutor(this._id, this._pointer);
+  ExecutorProducerExecutor(this._id, this._executor);
 
   ExecutorMethod register(Pointer<NativeFunction<Void Function(Pointer<executor_task>)>> pointer) {
-    final executor = ExecutorMethodExecutor(pointer.address, _id, _pointer);
+    final executor = ExecutorMethodExecutor(pointer.address, _id, _executor);
     _methods[pointer.address] = executor;
     return executor;
   }
@@ -30,12 +30,12 @@ class ExecutorMethodExecutor implements ExecutorMethod {
   final Map<int, Completer<Pointer<executor_task>>> _calls = {};
   final int _methodId;
   final int _executorId;
-  final Pointer<executor> _pointer;
+  final Pointer<executor_instance> _executor;
 
   ExecutorMethodExecutor(
     this._methodId,
     this._executorId,
-    this._pointer,
+    this._executor,
   );
 
   @override
@@ -45,7 +45,7 @@ class ExecutorMethodExecutor implements ExecutorMethod {
     message.ref.owner = _executorId;
     message.ref.method = _methodId;
     _calls[message.address] = completer;
-    if (executor_call_native(_pointer, target, message) == executorErrorRingFull) {
+    if (executor_call_native(_executor, target, message) == executorErrorRingFull) {
       _calls.remove(message.address);
       throw ExecutorException(ExecutorErrors.executorRingFullError);
     }

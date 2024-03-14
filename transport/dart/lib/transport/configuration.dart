@@ -1,7 +1,6 @@
 import 'dart:ffi';
 
-import 'package:executor/executor.dart';
-import 'package:memory/memory.dart';
+import 'package:ffi/ffi.dart';
 
 import 'bindings.dart';
 
@@ -11,10 +10,10 @@ class TransportConfiguration {
   final Duration timeoutCheckerPeriod;
   final bool trace;
 
-  Pointer<transport_configuration> toNative(Pointer<transport_configuration> native) {
-    native.ref.memory_configuration = memoryConfiguration.toNativeValue(native.ref.memory_configuration);
-    native.ref.executor_configuration = executorConfiguration.fillNative(native.ref.executor_configuration);
-    native.ref.timeout_checker_period_millis = timeoutCheckerPeriod.inMilliseconds;
+  Pointer<transport_configuration> toNative(Pointer<transport_configuration> native, Arena arena) {
+    native.ref.memory_instance_configuration = memoryConfiguration.toNative(arena<memory_configuration>());
+    native.ref.executor_instance_configuration = executorConfiguration.toNative(arena<executor_configuration>());
+    native.ref.timeout_checker_period_milliseconds = timeoutCheckerPeriod.inMilliseconds;
     native.ref.trace = trace;
     return native;
   }

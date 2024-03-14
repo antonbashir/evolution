@@ -194,25 +194,25 @@ class TransportMessages {
   TransportMessages._();
 
   static final workerMemoryError = "[worker] out of memory";
-  static workerError(int result) => "[worker] code = $result, message = ${systemError(result)}";
+  static workerError(int result) => "[worker] code = $result, message = ${SystemErrors.of(result)}";
   static workerTrace(TransportEvent event, int id, int result, int data, int fd) => "event = $event, worker = $id, result = $result,  bid = ${((data >> 16) & 0xffff)}, fd = $fd";
 
   static final serverMemoryError = "[server] out of memory";
   static final serverClosedError = "[server] closed";
-  static serverError(int result) => "[server] code = $result, message = ${systemError(result)}";
+  static serverError(int result) => "[server] code = $result, message = ${SystemErrors.of(result)}";
   static serverSocketError(int result) => "[server] unable to set socket option: ${-result}";
 
   static final clientMemoryError = "[client] out of memory";
   static final clientClosedError = "[client] closed";
-  static clientError(int result) => "[client] code = $result, message = ${systemError(result)}";
+  static clientError(int result) => "[client] code = $result, message = ${SystemErrors.of(result)}";
   static clientSocketError(int result) => "[client] unable to set socket option: ${-result}";
 
   static final fileMemory = "[file] out of memory";
   static final fileClosedError = "[file] closed";
   static fileOpenError(String path) => "[file] open file failed: $path";
-  static fileError(int result) => "[file] code = $result, message = ${systemError(result)}";
+  static fileError(int result) => "[file] code = $result, message = ${SystemErrors.of(result)}";
 
-  static internalError(TransportEvent event, int code) => "[$event] code = $code, message = ${systemError(code)}";
+  static internalError(TransportEvent event, int code) => "[$event] code = $code, message = ${SystemErrors.of(code)}";
   static canceledError(TransportEvent event) => "[$event] canceled";
   static zeroDataError(TransportEvent event) => "[$event] completed with zero result (no data)";
 }

@@ -10,7 +10,7 @@ class ExecutorErrors {
 
   static const executorMemoryError = "[executor] out of memory";
   static const executorRingFullError = "[executor] ring is full";
-  static executorError(int result) => systemError(-result);
+  static executorError(int result) => SystemErrors.of(-result);
 }
 
 const executorErrorNotifierPost = 0;

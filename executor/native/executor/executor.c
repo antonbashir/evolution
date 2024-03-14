@@ -1,12 +1,12 @@
-#include <executor.h>
-#include <executor_configuration.h>
-#include <executor_constants.h>
+#include "executor.h"
 #include <liburing.h>
 #include <liburing/io_uring.h>
-#include <scheduler/executor_scheduler.h>
-#include <common/library.h>
+#include <scheduler/scheduler.h>
+#include <system/library.h>
+#include "configuration.h"
+#include "constants.h"
 
-int32_t executor_initialize(struct executor* executor, struct executor_configuration* configuration, struct executor_scheduler* scheduler, uint32_t id)
+int32_t executor_initialize(struct executor_instance* executor, struct executor_configuration* configuration, struct executor_scheduler* scheduler, uint32_t id)
 {
     executor->id = id;
     executor->configuration = *configuration;
@@ -36,7 +36,7 @@ int32_t executor_initialize(struct executor* executor, struct executor_configura
     return executor->descriptor;
 }
 
-int8_t executor_register_background(struct executor* executor, int64_t callback)
+int8_t executor_register_scheduler(struct executor_instance* executor, int64_t callback)
 {
     executor->callback = callback;
     executor->state = EXECUTOR_STATE_IDLE;
@@ -45,13 +45,13 @@ int8_t executor_register_background(struct executor* executor, int64_t callback)
     {
         return EXECUTOR_ERROR_RING_FULL;
     }
-    io_uring_prep_msg_ring(sqe, executor->scheduler->descriptor, executor_scheduler_REGISTER, (uintptr_t)executor, 0);
+    io_uring_prep_msg_ring(sqe, executor->scheduler->descriptor, EXECUTOR_SCHEDULER_REGISTER, (uintptr_t)executor, 0);
     sqe->flags |= IOSQE_CQE_SKIP_SUCCESS;
     io_uring_submit(executor->ring);
     return 0;
 }
 
-int8_t executor_unregister_background(struct executor* executor)
+int8_t executor_unregister_scheduler(struct executor_instance* executor)
 {
     executor->state = EXECUTOR_STATE_STOPPED;
     struct io_uring_sqe* sqe = io_uring_get_sqe(executor->ring);
@@ -59,20 +59,20 @@ int8_t executor_unregister_background(struct executor* executor)
     {
         return EXECUTOR_ERROR_RING_FULL;
     }
-    io_uring_prep_msg_ring(sqe, executor->scheduler->descriptor, executor_scheduler_UNREGISTER, executor->id, 0);
+    io_uring_prep_msg_ring(sqe, executor->scheduler->descriptor, EXECUTOR_SCHEDULER_UNREGISTER, executor->id, 0);
     sqe->flags |= IOSQE_CQE_SKIP_SUCCESS;
     io_uring_submit(executor->ring);
     return 0;
 }
 
-int32_t executor_peek(struct executor* executor)
+int32_t executor_peek(struct executor_instance* executor)
 {
     struct executor_configuration* configuration = &executor->configuration;
     io_uring_submit_and_get_events(executor->ring);
     return io_uring_peek_batch_cqe(executor->ring, &executor->completions[0], configuration->ring_size);
 }
 
-int8_t executor_call_native(struct executor* executor, int32_t target_ring_fd, struct executor_task* message)
+int8_t executor_call_native(struct executor_instance* executor, int32_t target_ring_fd, struct executor_task* message)
 {
     struct io_uring* ring = executor->ring;
     struct io_uring_sqe* sqe = io_uring_get_sqe(ring);
@@ -89,7 +89,7 @@ int8_t executor_call_native(struct executor* executor, int32_t target_ring_fd, s
     return 0;
 }
 
-int8_t executor_callback_to_native(struct executor* executor, struct executor_task* message)
+int8_t executor_callback_to_native(struct executor_instance* executor, struct executor_task* message)
 {
     struct io_uring* ring = executor->ring;
     struct io_uring_sqe* sqe = io_uring_get_sqe(ring);
@@ -107,19 +107,19 @@ int8_t executor_callback_to_native(struct executor* executor, struct executor_ta
     return 0;
 }
 
-void executor_destroy(struct executor* executor)
+void executor_destroy(struct executor_instance* executor)
 {
     io_uring_queue_exit(executor->ring);
     free(executor->ring);
     free(executor->completions);
 }
 
-void executor_submit(struct executor* executor)
+void executor_submit(struct executor_instance* executor)
 {
     io_uring_submit(executor->ring);
 }
 
-int8_t executor_awake_begin(struct executor* executor)
+int8_t executor_awake_begin(struct executor_instance* executor)
 {
     executor->state = EXECUTOR_STATE_WAKING;
     struct io_uring_sqe* sqe = io_uring_get_sqe(executor->ring);
@@ -127,12 +127,12 @@ int8_t executor_awake_begin(struct executor* executor)
     {
         return EXECUTOR_ERROR_RING_FULL;
     }
-    io_uring_prep_msg_ring(sqe, executor->scheduler->descriptor, executor_scheduler_POLL, (uintptr_t)executor, 0);
+    io_uring_prep_msg_ring(sqe, executor->scheduler->descriptor, EXECUTOR_SCHEDULER_POLL, (uintptr_t)executor, 0);
     sqe->flags |= IOSQE_CQE_SKIP_SUCCESS;
     return 0;
 }
 
-void executor_awake_complete(struct executor* executor, uint32_t completions)
+void executor_awake_complete(struct executor_instance* executor, uint32_t completions)
 {
     io_uring_cq_advance(executor->ring, completions);
     io_uring_submit(executor->ring);

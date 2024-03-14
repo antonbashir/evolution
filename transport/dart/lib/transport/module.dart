@@ -2,13 +2,11 @@ import 'dart:async';
 import 'dart:ffi';
 import 'dart:isolate';
 
-import 'package:core/core.dart';
 import 'package:ffi/ffi.dart';
-import 'package:executor/executor.dart';
-import 'package:memory/memory.dart';
 import 'package:transport/transport/defaults.dart';
 
 import 'bindings.dart' as bindings;
+import 'bindings.dart';
 import 'configuration.dart';
 import 'constants.dart';
 import 'exception.dart';
@@ -18,11 +16,6 @@ class TransportModule {
   final _transportPorts = <RawReceivePort>[];
   final _transportDestroyer = ReceivePort();
   final _executor = ExecutorModule();
-
-  TransportModule({String? libraryPath, LibraryPackageMode memoryMode = LibraryPackageMode.static}) {
-    libraryPath == null ? SystemLibrary.loadByName(transportLibraryName, transportPackageName) : SystemLibrary.loadByPath(libraryPath);
-    MemoryModule.load(mode: memoryMode);
-  }
 
   void initialize() {
     _executor.initialize();
@@ -45,7 +38,7 @@ class TransportModule {
       final result = using(
         (arena) => bindings.transport_initialize(
           transportPointer,
-          configuration.toNative(arena<bindings.transport_configuration>()),
+          configuration.toNative(arena<transport_configuration>(), arena),
           _transportClosers.length,
         ),
       );

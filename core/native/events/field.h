@@ -71,6 +71,7 @@ FORCEINLINE void event_field_set_address(struct event_field* field, void* value)
 void event_field_set_any(struct event_field* field, ...);
 
 #define event_message(message) event_field(MODULE_EVENT_FIELD_MESSAGE, message)
+#define event_scope(scope) event_field(MODULE_EVENT_FIELD_SCOPE, scope)
 
 #define event_field(field_name, field_value)                                                                                           \
     ({                                                                                                                                 \

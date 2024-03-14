@@ -2,9 +2,7 @@ import 'dart:async';
 import 'dart:ffi';
 import 'dart:isolate';
 
-import 'package:core/core.dart';
 import 'package:executor/executor.dart';
-import 'package:memory/memory.dart';
 import 'package:meta/meta.dart';
 
 import 'bindings.dart';
@@ -71,11 +69,11 @@ class Transport {
     _executor = Executor(configuration[2] as SendPort);
     _fromTransport.close();
     await _executor.initialize(processor: _process);
-    _memory = MemoryModule(load: false);
-    _memory.initialize(configuration: MemoryConfiguration.fromNativeValue(_pointer.ref.configuration.memory_configuration));
-    _buffers = _memory.staticBuffers;
-    _pointer.ref.buffers = _buffers.buffers;
-    final result = transport_setup(_pointer, _executor.pointer);
+    // _memory = MemoryModule(load: false);
+    // _memory.initialize(configuration: MemoryConfiguration.fromNativeValue(_pointer.ref.configuration.memory_configuration));
+    // _buffers = _memory.staticBuffers;
+    // _pointer.ref.buffers = _buffers.buffers;
+    final result = transport_setup(_pointer, _executor.instance);
     if (result != 0) {
       throw TransportInitializationException(TransportMessages.workerError(result));
     }
@@ -105,13 +103,12 @@ class Transport {
     );
     _timeoutChecker = TransportTimeoutChecker(
       _pointer,
-      Duration(milliseconds: _pointer.ref.configuration.timeout_checker_period_millis),
+      Duration(milliseconds: _pointer.ref.configuration.timeout_checker_period_milliseconds),
     );
     _timeoutChecker.start();
     _executor.activate();
   }
 
-  @inline
   void _process(Pointer<Pointer<executor_completion_event>> completions, int count) {
     for (var index = 0; index < count; index++) {
       Pointer<executor_completion_event> completion = (completions + index).value.cast();

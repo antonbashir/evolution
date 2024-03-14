@@ -5,47 +5,9 @@ publish_to: none
 environment:
   sdk: ">=3.3.0 <4.0.0"
 
-dev_dependencies:
-  ffigen: ^11.0.0
-
 dependencies:
   ffi: ^2.1.0
   core:
-    path:
-      ../../core/dart
+    path: ../../core/dart
   memory:
-    path:
-      ../../memory/dart
-
-ffigen:
-  name: "ExecutorBindings"
-  ffi-native:
-    assetId: "executor-bindings"
-  description: "Bindings for Executor"
-  output: "lib/executor/bindings.dart"
-  compiler-opts:
-    - "-I../native/include"
-  headers:
-    entry-points:
-      - "../native/include/executor.h"
-      - "../native/executor_scheduler.h"
-  globals:
-    exclude:
-      - "(.*)"
-  macros:
-    exclude:
-      - "(.*)"
-  typedefs:
-    exclude:
-      - "_(.*)"
-  functions:
-    leaf:
-      include:
-        - "executor_.*"
-    exclude:
-      - "_(.*)"
-  structs:
-    exclude:
-      - "_(.*)"
-      - "max_align_t"
-      - "file_(.*)"
+    path: ../../memory/dart

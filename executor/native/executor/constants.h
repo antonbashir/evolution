@@ -15,8 +15,7 @@ extern "C"
 
 #define EXECUTOR_ERROR_BACKGROUND_SCHEDULER_POST 0
 #define EXECUTOR_ERROR_RING_FULL -1
-
-#define EXECUTOR_SCOPE_BACKGROUND_SCHEDULER "background-scheduler"
+#define EXECUTOR_SCOPE_SCHEDULER "scheduler"
 
 #if defined(__cplusplus)
 }
