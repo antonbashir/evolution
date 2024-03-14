@@ -3,11 +3,7 @@ import 'dart:ffi';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:core/core.dart';
 import 'package:ffi/ffi.dart';
-import 'package:executor/executor.dart';
-import 'package:memory/memory.dart';
-import 'package:memory/memory/defaults.dart';
 
 import 'bindings.dart';
 import 'configuration.dart';
@@ -116,10 +112,9 @@ class StorageExecutor {
 
   StorageSchema get schema => _schema;
   MemoryTuples get tuples => _tuples;
-  MemoryModule get memory => _executor.memory;
 
   Future<void> initialize(ExecutorModule executorModule) async {
-    _executor = Executor(executorModule.spawn());
+    _executor = Executor();
     await _executor.initialize();
     _descriptor = tarantool_executor_descriptor();
     _nativeFactory = calloc<tarantool_factory>(sizeOf<tarantool_factory>());
@@ -132,7 +127,7 @@ class StorageExecutor {
     });
     _executor.consumer(StorageConsumer());
     _producer = _executor.producer(StorageProducer(_box));
-    _tuples = MemoryTuples(_executor.memory.pointer);
+    _tuples = context().tuples();
     _strings = StorageStrings(_nativeFactory);
     _factory = StorageFactory(_strings);
     _schema = StorageSchema(_descriptor, this, _tuples, _producer, _factory);
