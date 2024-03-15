@@ -68,6 +68,23 @@ class CoreErrors {
   static moduleDependenciesNotFound(List<String> dependencies) => "Module dependencies were not found: ${dependencies}";
 }
 
+class TupleErrors {
+  TupleErrors._();
+
+  static const maxStringLength = 'Max string length is 4294967295';
+  static const maxBinaryLength = 'Max binary length is 4294967295';
+  static const maxListLength = 'Max list length is 4294967295';
+  static const maxMapLength = 'Max map length is 4294967295';
+  static unknownType(Type type) => "Unknown type: ${type}";
+  static notBool(dynamic value) => 'Byte $value is not declare bool';
+  static notInt(dynamic value) => "Byte $value is not declare int";
+  static notDouble(dynamic value) => "Byte $value is not declare double";
+  static notString(dynamic bytes) => "Byte $bytes is not declare string";
+  static notBinary(dynamic bytes) => "Byte $bytes is not declare binary";
+  static notList(dynamic bytes) => "Byte $bytes is not declare list";
+  static notMap(dynamic bytes) => "Byte $bytes is not declare map";
+}
+
 class SourcesDirectories {
   const SourcesDirectories._();
 
