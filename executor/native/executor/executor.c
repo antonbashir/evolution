@@ -30,6 +30,7 @@ struct executor_instance* executor_create(struct executor_configuration* configu
     int32_t result = io_uring_queue_init(configuration->ring_size, executor->ring, configuration->ring_flags);
     if (result)
     {
+        print_event(executor_module_event(event_system_error(-result)));
         return NULL;
     }
 
