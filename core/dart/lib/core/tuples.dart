@@ -564,17 +564,3 @@ extension TupleIterableExtension<T> on Iterable<T> {
     return offset;
   }
 }
-
-void main() {
-  final m = {
-    "test": 1,
-    "test2": true,
-    "test3": ["test", 1, true]
-  };
-  final sw = Stopwatch();
-  final buf = Uint8List(m.computeTupleSize());
-  final view =ByteData.view(buf.buffer, buf.offsetInBytes);
-  sw.start();
-  m.serializeToTuple(buf, view, 0);
-  print(sw.elapsedMicroseconds);
-}
