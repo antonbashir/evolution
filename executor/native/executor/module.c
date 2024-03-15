@@ -7,4 +7,5 @@ struct executor_module* executor_module_create(struct executor_module_configurat
 
 void executor_module_destroy(struct executor_module* module)
 {
+  executor_module_delete(module);
 }
