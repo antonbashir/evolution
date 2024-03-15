@@ -246,7 +246,7 @@ class StorageExecutorConfiguration {
   }
 }
 
-class StorageBootConfiguration implements MemoryTuple {
+class StorageBootConfiguration implements Tuple {
   final String user;
   final String password;
 

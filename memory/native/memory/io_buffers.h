@@ -138,12 +138,16 @@ DART_INLINE_LEAF_FUNCTION uint8_t* memory_input_buffer_finalize_reserve(struct m
 
 DART_INLINE_LEAF_FUNCTION uint8_t* memory_output_buffer_reserve(struct memory_output_buffer* buffer, size_t size)
 {
-    return obuf_reserve(&buffer->buffer, size ? size : buffer->buffer.start_capacity);
+    uint8_t* reserved = obuf_reserve(&buffer->buffer, size ? size : buffer->buffer.start_capacity);
+    buffer->content_count = obuf_iovcnt(&buffer->buffer);
+    return reserved;
 }
 
 DART_INLINE_LEAF_FUNCTION uint8_t* memory_output_buffer_finalize(struct memory_output_buffer* buffer, size_t size)
 {
-    return obuf_alloc(&buffer->buffer, size);
+    uint8_t* reserved = obuf_alloc(&buffer->buffer, size);
+    buffer->content_count = obuf_iovcnt(&buffer->buffer);
+    return reserved;
 }
 
 DART_INLINE_LEAF_FUNCTION uint8_t* memory_output_buffer_finalize_reserve(struct memory_output_buffer* buffer, size_t delta, size_t size)

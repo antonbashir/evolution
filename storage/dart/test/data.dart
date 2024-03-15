@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:memory/memory.dart';
 import 'package:storage/storage/tuple.dart';
 
-class TestData implements MemoryTuple {
+class TestData implements Tuple {
   final int a;
   final String b;
   final bool c;

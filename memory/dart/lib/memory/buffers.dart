@@ -92,6 +92,22 @@ class MemoryInputOutputBuffers {
 
   MemoryInputOutputBuffers(this._buffers);
 
+  ({Uint8List buffer, ByteData data, void Function() cleaner}) prepareInput(int size) {
+    final inputBuffer = memory_io_buffers_allocate_input(_buffers, size);
+    final reserved = inputBuffer.reserve(size);
+    final buffer = reserved.cast<Uint8>().asTypedList(size);
+    final data = ByteData.view(buffer.buffer, buffer.offsetInBytes);
+    return (buffer: buffer, data: data, cleaner: () => memory_io_buffers_free_input(_buffers, inputBuffer));
+  }
+
+  ({Uint8List buffer, ByteData data, void Function() cleaner}) prepareOutput(int size) {
+    final outputBuffer = memory_io_buffers_allocate_output(_buffers, size);
+    final reserved = outputBuffer.reserve(size);
+    final buffer = reserved.cast<Uint8>().asTypedList(size);
+    final data = ByteData.view(buffer.buffer, buffer.offsetInBytes);
+    return (buffer: buffer, data: data, cleaner: () => memory_io_buffers_free_output(_buffers, outputBuffer));
+  }
+
   @inline
   Pointer<memory_input_buffer> allocateInputBuffer(int capacity) => memory_io_buffers_allocate_input(_buffers, capacity);
 

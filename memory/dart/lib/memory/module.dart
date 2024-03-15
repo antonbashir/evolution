@@ -6,7 +6,6 @@ import 'package:ffi/ffi.dart';
 
 import '../memory.dart';
 import 'constants.dart';
-import 'defaults.dart';
 
 class MemoryModuleState implements ModuleState {
   final MemoryConfiguration configuration;
@@ -29,7 +28,7 @@ class MemoryModuleState implements ModuleState {
     final nativeSmall = memory_small_allocator_create(configuration.smallAllocationFactor, instance).check(() => memory_destroy(instance));
     smallDatas = MemorySmallData(nativeSmall);
     doubles = structures.register(sizeOf<Double>());
-    tuples = MemoryTuples(nativeSmall, nativeBuffers);
+    tuples = MemoryTuples(nativeSmall, nativeBuffers, configuration.preallocationSize);
   }
 
   void destroy() {
