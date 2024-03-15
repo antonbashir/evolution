@@ -7,12 +7,16 @@ import '../../memory/bindings.dart';
 final class memory_input_buffer extends Struct {
   external Pointer<Uint8> read_position;
   external Pointer<Uint8> write_position;
+  @Size()
+  external int last_reserved_size;
 }
 
 final class memory_output_buffer extends Struct {
   external Pointer<iovec> content;
   @Size()
   external int content_count;
+  @Size()
+  external int last_reserved_size;
 }
 
 final class memory_io_buffers extends Struct {

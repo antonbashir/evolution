@@ -79,10 +79,10 @@ class MemoryTupleFixedStreams {
 class MemoryTupleDynamicInputStream {
   final Pointer<memory_io_buffers> _buffers;
   late final Pointer<memory_input_buffer> _inputBuffer;
-  Pointer<Uint8> _position = nullptr;
   Pointer<Uint8> _buffer = nullptr;
-  Pointer<Uint8> _end = nullptr;
-  var _result = 0;
+  int _position = 0;
+  int _end = 0;
+  int _result = 0;
   late Uint8List _bufferTyped;
   late ByteData _bufferData;
 
@@ -100,7 +100,7 @@ class MemoryTupleDynamicInputStream {
 
   MemoryTupleDynamicInputStream(this._buffers, int initialCapacity) {
     _inputBuffer = memory_io_buffers_allocate_input(_buffers, initialCapacity);
-    _bufferTyped = _position.asTypedList(_result);
+    _bufferTyped = Uint8List(initialCapacity);
     _bufferData = ByteData.view(_bufferTyped.buffer, _bufferTyped.offsetInBytes);
   }
 
@@ -136,16 +136,19 @@ class MemoryTupleDynamicInputStream {
 
   @inline
   ({Uint8List buffer, ByteData data}) reserve(int size) {
-    if (_position.address + size > _end.address) {
-      if (_position.address != _buffer.address) {
-        _inputBuffer.finalize(_position.address - _buffer.address);
+    if (_position + size > _end) {
+      if (_position != _buffer) {
+        _inputBuffer.finalize(_position - _buffer.address);
       }
       _buffer = _inputBuffer.reserve(size);
       _bufferTyped = _buffer.asTypedList(size);
       _bufferData = ByteData.view(_bufferTyped.buffer, _bufferTyped.offsetInBytes);
-      _position = _buffer;
-      _end = _position + size;
+      _position = _buffer.address;
+      _end = _position + _inputBuffer.ref.last_reserved_size;
+      return (buffer: _bufferTyped, data: _bufferData);
     }
+    _bufferTyped = (_buffer + _bufferTyped.length).asTypedList(size);
+    _bufferData = ByteData.view(_bufferTyped.buffer, _bufferTyped.offsetInBytes);
     return (buffer: _bufferTyped, data: _bufferData);
   }
 
@@ -156,18 +159,26 @@ class MemoryTupleDynamicInputStream {
   }
 
   @inline
+  void flush() {
+    if (_position != _buffer.address) {
+      memory_input_buffer_finalize(buffer, _position - _buffer.address);
+    }
+    _buffer = Pointer.fromAddress(_position);
+  }
+
+  @inline
   void destroy() => memory_io_buffers_free_input(_buffers, _inputBuffer);
 }
 
 class MemoryTupleDynamicOutputStream {
   final Pointer<memory_io_buffers> _buffers;
   late final Pointer<memory_output_buffer> _outputBuffer;
-  Pointer<Uint8> _position = nullptr;
   Pointer<Uint8> _buffer = nullptr;
-  Pointer<Uint8> _end = nullptr;
+  int _position = 0;
+  int _end = 0;
+  int _result = 0;
   late Uint8List _bufferTyped;
   late ByteData _bufferData;
-  var _result = 0;
 
   @inline
   int get size => _result;
@@ -183,7 +194,7 @@ class MemoryTupleDynamicOutputStream {
 
   MemoryTupleDynamicOutputStream(this._buffers, int initialCapacity) {
     _outputBuffer = memory_io_buffers_allocate_output(_buffers, initialCapacity);
-    _bufferTyped = _position.asTypedList(_result);
+    _bufferTyped = Uint8List(_result);
     _bufferData = ByteData.view(_bufferTyped.buffer, _bufferTyped.offsetInBytes);
   }
 
@@ -219,16 +230,19 @@ class MemoryTupleDynamicOutputStream {
 
   @inline
   ({Uint8List buffer, ByteData data}) reserve(int size) {
-    if (_position.address + size > _end.address) {
-      if (_position.address != _buffer.address) {
-        _outputBuffer.finalize(_position.address - _buffer.address);
+    if (_position + size > _end) {
+      if (_position != _buffer.address) {
+        _outputBuffer.finalize(_position - _buffer.address);
       }
       _buffer = _outputBuffer.reserve(size);
       _bufferTyped = _buffer.asTypedList(size);
       _bufferData = ByteData.view(_bufferTyped.buffer, _bufferTyped.offsetInBytes);
-      _position = _buffer;
-      _end = _position + size;
+      _position = _buffer.address;
+      _end = _position + _outputBuffer.ref.last_reserved_size;
+      return (buffer: _bufferTyped, data: _bufferData);
     }
+    _bufferTyped = (_buffer + _bufferTyped.length).asTypedList(size);
+    _bufferData = ByteData.view(_bufferTyped.buffer, _bufferTyped.offsetInBytes);
     return (buffer: _bufferTyped, data: _bufferData);
   }
 
@@ -236,6 +250,14 @@ class MemoryTupleDynamicOutputStream {
   void advance(int size) {
     _position += size;
     _result += size;
+  }
+
+  @inline
+  void flush() {
+    if (_position != _buffer.address) {
+      memory_output_buffer_finalize(buffer, _position - _buffer.address);
+    }
+    _buffer = Pointer.fromAddress(_position);
   }
 
   @inline
@@ -255,9 +277,10 @@ class MemoryTupleDynamicStreams {
     int Function(({Uint8List buffer, ByteData data}) Function(int size) reserve, void Function(int size) advance) writer, {
     int? initialCapacity,
   }) {
-    final inputWriter = input(initialCapacity: initialCapacity);
-    writer(inputWriter.reserve, inputWriter.advance);
-    return (tuple: inputWriter._inputBuffer.readPosition, size: inputWriter._result, cleaner: inputWriter.destroy);
+    final stream = input(initialCapacity: initialCapacity);
+    writer(stream.reserve, stream.advance);
+    stream.flush();
+    return (tuple: stream._inputBuffer.readPosition, size: stream._result, cleaner: stream.destroy);
   }
 
   ({Pointer<iovec> content, int count, int fullSize, void Function() cleaner}) toOutput(
@@ -265,13 +288,14 @@ class MemoryTupleDynamicStreams {
     int? initialCapacity,
   }) {
     initialCapacity = initialCapacity ?? this.initialCapacity;
-    final outputWriter = output(initialCapacity: initialCapacity);
-    writer(outputWriter.reserve, outputWriter.advance);
+    final stream = output(initialCapacity: initialCapacity);
+    writer(stream.reserve, stream.advance);
+    stream.flush();
     return (
-      content: outputWriter._outputBuffer.content,
-      count: outputWriter._outputBuffer.ref.content_count,
-      fullSize: outputWriter._result,
-      cleaner: outputWriter.destroy,
+      content: stream._outputBuffer.content,
+      count: stream._outputBuffer.ref.content_count,
+      fullSize: stream._result,
+      cleaner: stream.destroy,
     );
   }
 }
@@ -279,16 +303,15 @@ class MemoryTupleDynamicStreams {
 void main(List<String> args) {
   launch((creator) => creator.create(CoreModule(), CoreDefaults.module).create(MemoryModule(), MemoryDefaults.module)).activate(() {
     final data = [123];
+    final sw = Stopwatch();
     final stream = context().tuples().dynamic.output();
-
-    stream.writeList(data.length);
-    stream.writeInt(data[0]);
-
-    final resultBuffer = stream.content.collect(stream.count);
-    final resultBufferData = ByteData.view(resultBuffer.buffer, resultBuffer.offsetInBytes);
-    var listLength = tupleReadList(resultBufferData, 0);
-    print(listLength.length);
-    var result = tupleReadInt(resultBufferData, listLength.offset);
-    print(result.value);
+    sw.start();
+    for (var i = 0; i < 1000; i++) {
+      stream.writeList(data.length);
+      stream.writeInt(data[0]);
+    }
+    stream.flush();
+    print(sw.elapsedMicroseconds);
+    stream.destroy();
   });
 }

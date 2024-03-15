@@ -16,7 +16,7 @@ extern "C"
 #define module_name memory
 DART_STRUCTURE struct memory_module_configuration
 {
-  DART_FIELD uint8_t library_package_mode;
+    DART_FIELD uint8_t library_package_mode;
 };
 #define module_configuration struct memory_module_configuration
 DART_STRUCTURE struct memory_module
