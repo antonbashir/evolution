@@ -139,6 +139,7 @@ Map<String, FileDeclarations> collectNative(String nativeDirectory) {
     }
     if (!child.path.endsWith(".h")) return;
     if (child.statSync().type != FileSystemEntityType.file) return;
+    Process.runSync("clang-format", ["-i", "${child.path}"], workingDirectory: nativeDirectory);
     final fileName = child.path.replaceRange(0, child.path.lastIndexOf('native/') + 7, "").substring(0, child.path.replaceRange(0, child.path.lastIndexOf('native/') + 7, "").indexOf('.'));
     if (nativeFiles.containsKey(fileName)) return;
     final fileDeclarations = FileDeclarations();

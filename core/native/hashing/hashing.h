@@ -4,7 +4,9 @@
 #include <common/common.h>
 #include <stdint.h>
 
-#define _ASSIGN(dst, src, ...) asm("" : "=r"(dst) : "0"(src), ##__VA_ARGS__)
+#define _ASSIGN(dst, src, ...) asm(""          \
+                                   : "=r"(dst) \
+                                   : "0"(src), ##__VA_ARGS__)
 
 static FORCEINLINE uint32_t CONST
 hash_64(uint64_t a, unsigned int bits)
@@ -12,7 +14,9 @@ hash_64(uint64_t a, unsigned int bits)
     uint64_t b, c, d;
 
     if (!__builtin_constant_p(bits))
-        asm("" : "=q"(bits) : "0"(64 - bits));
+        asm(""
+            : "=q"(bits)
+            : "0"(64 - bits));
     else
         bits = 64 - bits;
 
