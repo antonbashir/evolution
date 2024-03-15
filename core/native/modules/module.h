@@ -100,13 +100,14 @@ static FORCEINLINE void _module(check_object)(void* object)
     }
 }
 
-static FORCEINLINE void _module(check_code)(int32_t code)
+static FORCEINLINE int32_t _module(check_code)(int32_t code)
 {
     trace_event(_module(event)(event_trace(event_field(MODULE_EVENT_FIELD_CALLER, stacktrace_callers(1, 3)))));
     if (unlikely(code != 0))
     {
         raise_panic(_module(event)(event_system_panic(ENOMEM)));
     }
+    return code;
 }
 
 static FORCEINLINE void _module(delete)(void* object)

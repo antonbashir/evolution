@@ -1,6 +1,7 @@
 #ifndef CORE_PANIC_PANIC_H
 #define CORE_PANIC_PANIC_H
 
+#include <events/events.h>
 #include <system/system.h>
 
 #if defined(__cplusplus)
