@@ -40,7 +40,6 @@ static void* executor_scheduler_listen(void* input)
     if (error = pthread_cond_broadcast(&scheduler->thread.initialization_condition))
     {
         io_uring_queue_exit(ring);
-        executor_module_delete(ring);
         scheduler->active = false;
         scheduler->initialization_error = strerror(error);
         return NULL;
@@ -48,7 +47,6 @@ static void* executor_scheduler_listen(void* input)
     if (error = pthread_mutex_unlock(&scheduler->thread.initialization_mutex))
     {
         io_uring_queue_exit(ring);
-        executor_module_delete(ring);
         scheduler->active = false;
         scheduler->initialization_error = strerror(error);
         return NULL;
@@ -78,7 +76,6 @@ static void* executor_scheduler_listen(void* input)
                     return NULL;
                 }
                 io_uring_queue_exit(ring);
-                executor_module_delete(ring);
                 scheduler->initialized = false;
                 if (error = pthread_cond_broadcast(&scheduler->thread.shutdown_condition))
                 {
