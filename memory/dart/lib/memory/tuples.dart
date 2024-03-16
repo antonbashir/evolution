@@ -56,7 +56,7 @@ class MemoryTuples {
   }
 
   ({Pointer<Uint8> value, int size}) _createEmptyString() {
-    final size = tupleSizeOfMap(0);
+    final size = tupleSizeOfString(0);
     final value = allocateSmall(size);
     final buffer = value.asTypedList(size);
     tupleWriteString(buffer, ByteData.view(buffer.buffer, buffer.offsetInBytes), empty, 0);
@@ -64,7 +64,7 @@ class MemoryTuples {
   }
 
   ({Pointer<Uint8> value, int size}) _createEmptyBinary() {
-    final size = tupleSizeOfMap(0);
+    final size = tupleSizeOfBinary(0);
     final value = allocateSmall(size);
     final buffer = value.asTypedList(size);
     tupleWriteBinary(buffer, ByteData.view(buffer.buffer, buffer.offsetInBytes), emptyBytes, 0);
@@ -185,10 +185,7 @@ class MemoryTupleDynamicInputWriter {
   @inline
   ({Uint8List buffer, ByteData data}) reserve(int size) {
     if (_position + size > _end) {
-      if (_position != _buffer.address) {
-        _inputBuffer.finalize(_position - _buffer.address);
-      }
-      _buffer = _inputBuffer.reserve(size);
+      _buffer = _position != _buffer.address ? _inputBuffer.finalizeReserve(_position - _buffer.address, size) : _inputBuffer.reserve(size);
       _position = _buffer.address;
       _end = _position + _inputBuffer.ref.unused;
       _bufferTyped = _buffer.asTypedList(_end);
@@ -303,10 +300,7 @@ class MemoryTupleDynamicOutputWriter {
   @inline
   ({Uint8List buffer, ByteData data}) reserve(int size) {
     if (_position + size > _end) {
-      if (_position != _buffer.address) {
-        _outputBuffer.finalize(_position - _buffer.address);
-      }
-      _buffer = _outputBuffer.reserve(size);
+      _buffer = _position != _buffer.address ? _outputBuffer.finalizeReserve(_position - _buffer.address, size) : _outputBuffer.reserve(size);
       _position = _buffer.address;
       _end = _position + _outputBuffer.ref.last_reserved_size;
       _bufferTyped = _buffer.asTypedList(_end);

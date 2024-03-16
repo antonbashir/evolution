@@ -29,3 +29,19 @@ class TestData with Tuple {
   @override
   String toString() => "$a $b";
 }
+
+void main(List<String> args) {
+  launch((creator) => creator.create(CoreModule(), CoreDefaults.module).create(MemoryModule(), MemoryDefaults.module)).activate(() {
+    final writer = context().tuples().dynamic.input();
+    writer.writeList(10000 * 3);
+    final sw = Stopwatch();
+    sw.start();
+    for (var i = 0; i < 10000; i++) {
+      writer.writeInt(123);
+      writer.writeString("test");
+      writer.writeTuple(TestData(1, "test"));
+    }
+    writer.flush();
+    print(sw.elapsedMicroseconds);
+  });
+}

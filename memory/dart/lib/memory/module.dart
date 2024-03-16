@@ -13,7 +13,7 @@ class MemoryModuleState implements ModuleState {
   late final MemoryStaticBuffers staticBuffers;
   late final MemoryInputOutputBuffers inputOutputBuffers;
   late final MemoryStructurePools structures;
-  late final MemorySmallData smallDatas;
+  late final MemorySmallData smalls;
   late final MemoryStructurePool<Double> doubles;
   late final MemoryTuples tuples;
 
@@ -26,14 +26,14 @@ class MemoryModuleState implements ModuleState {
     inputOutputBuffers = MemoryInputOutputBuffers(nativeBuffers);
     structures = MemoryStructurePools(instance);
     final nativeSmall = memory_small_allocator_create(configuration.smallAllocationFactor, instance).check(() => memory_destroy(instance));
-    smallDatas = MemorySmallData(nativeSmall);
+    smalls = MemorySmallData(nativeSmall);
     doubles = structures.register(sizeOf<Double>());
     tuples = MemoryTuples(nativeSmall, nativeBuffers, configuration.preallocationSize);
   }
 
   void destroy() {
     structures.destroy();
-    smallDatas.destroy();
+    smalls.destroy();
     inputOutputBuffers.destroy();
     staticBuffers.destroy();
     memory_destroy(instance);
@@ -74,7 +74,7 @@ extension ContextProviderMemoryExtensions on ContextProvider {
   MemoryStaticBuffers staticBuffers() => memory().state.staticBuffers;
   MemoryInputOutputBuffers inputOutputBuffers() => memory().state.inputOutputBuffers;
   MemoryStructurePools structures() => memory().state.structures;
-  MemorySmallData smallDatas() => memory().state.smallDatas;
+  MemorySmallData smalls() => memory().state.smalls;
   MemoryStructurePool<Double> doubles() => memory().state.doubles;
   MemoryTuples tuples() => memory().state.tuples;
 }
