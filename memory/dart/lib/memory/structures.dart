@@ -1,5 +1,6 @@
 import 'dart:ffi';
 
+import 'package:core/core/exceptions.dart';
 import 'package:ffi/ffi.dart';
 
 import '../memory.dart';
@@ -26,7 +27,7 @@ class MemoryStructurePools {
   Pointer<T> allocate<T extends NativeType>() {
     final pool = _pools[T.hashCode];
     if (pool == null) throw MemoryException(MemoryErrors.unknownStructurePool(T.toString()));
-    return memory_pool_allocate(pool).cast();
+    return SystemException.checkPointer(memory_pool_allocate(pool).cast());
   }
 
   @inline
@@ -57,7 +58,7 @@ class MemoryStructurePool<T extends NativeType> {
   int size() => _pool.ref.size;
 
   @inline
-  Pointer<T> allocate() => memory_pool_allocate(_pool).cast();
+  Pointer<T> allocate() => SystemException.checkPointer(memory_pool_allocate(_pool).cast());
 
   @inline
   void free(Pointer<T> payload) {
