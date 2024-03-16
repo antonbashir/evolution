@@ -8,14 +8,18 @@ class MemoryTuples {
   final MemoryTupleFixedWriters fixed;
   final MemoryTupleDynamicWriter dynamic;
 
-  late final (Pointer<Uint8>, int) emptyList;
-  late final (Pointer<Uint8>, int) emptyMap;
+  late final ({Pointer<Uint8> value, int size}) emptyList;
+  late final ({Pointer<Uint8> value, int size}) emptyMap;
+  late final ({Pointer<Uint8> value, int size}) emptyString;
+  late final ({Pointer<Uint8> value, int size}) emptyBinary;
 
   MemoryTuples(this._small, Pointer<memory_io_buffers> buffers, int dynamicWriterInitialCapacity)
       : fixed = MemoryTupleFixedWriters(buffers),
         dynamic = MemoryTupleDynamicWriter(buffers, dynamicWriterInitialCapacity) {
     emptyList = _createEmptyList();
     emptyMap = _createEmptyMap();
+    emptyString = _createEmptyString();
+    emptyBinary = _createEmptyBinary();
   }
 
   @inline
@@ -25,7 +29,7 @@ class MemoryTuples {
   Pointer<Uint8> allocateSmall(int capacity) => memory_small_allocator_allocate(_small, capacity).cast();
 
   @inline
-  ({Pointer<Uint8> tuple, Uint8List buffer, ByteData data}) prepareSmall(int size) {
+  ({Pointer<Uint8> tuple, Uint8List buffer, ByteData data}) wrapSmall(int size) {
     final pointer = memory_small_allocator_allocate(_small, size).cast<Uint8>();
     final buffer = pointer.asTypedList(size);
     final data = ByteData.view(buffer.buffer, buffer.offsetInBytes);
@@ -35,20 +39,36 @@ class MemoryTuples {
   @inline
   void freeSmall(Pointer<Uint8> tuple, int size) => memory_small_allocator_free(_small, tuple.cast(), size);
 
-  (Pointer<Uint8>, int) _createEmptyList() {
+  ({Pointer<Uint8> value, int size}) _createEmptyList() {
     final size = tupleSizeOfList(0);
-    final list = allocateSmall(size);
-    final buffer = list.asTypedList(size);
+    final value = allocateSmall(size);
+    final buffer = value.asTypedList(size);
     tupleWriteList(ByteData.view(buffer.buffer, buffer.offsetInBytes), 0, 0);
-    return (list, size);
+    return (value: value, size: size);
   }
 
-  (Pointer<Uint8>, int) _createEmptyMap() {
+  ({Pointer<Uint8> value, int size}) _createEmptyMap() {
     final size = tupleSizeOfMap(0);
-    final map = allocateSmall(size);
-    final buffer = map.asTypedList(size);
+    final value = allocateSmall(size);
+    final buffer = value.asTypedList(size);
     tupleWriteMap(ByteData.view(buffer.buffer, buffer.offsetInBytes), 0, 0);
-    return (map, size);
+    return (value: value, size: size);
+  }
+
+  ({Pointer<Uint8> value, int size}) _createEmptyString() {
+    final size = tupleSizeOfMap(0);
+    final value = allocateSmall(size);
+    final buffer = value.asTypedList(size);
+    tupleWriteString(buffer, ByteData.view(buffer.buffer, buffer.offsetInBytes), empty, 0);
+    return (value: value, size: size);
+  }
+
+  ({Pointer<Uint8> value, int size}) _createEmptyBinary() {
+    final size = tupleSizeOfMap(0);
+    final value = allocateSmall(size);
+    final buffer = value.asTypedList(size);
+    tupleWriteBinary(buffer, ByteData.view(buffer.buffer, buffer.offsetInBytes), emptyBytes, 0);
+    return (value: value, size: size);
   }
 }
 

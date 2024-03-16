@@ -153,7 +153,7 @@ class StorageExecutor {
   @inline
   Future<void> boot(StorageBootConfiguration configuration) {
     final size = configuration.tupleSize;
-    final small = _tuples.prepareSmall(size);
+    final small = _tuples.wrapSmall(size);
     configuration.serialize(small.buffer, small.data, 0);
     return call(LuaExpressions.boot, input: small.tuple, inputSize: size);
   }

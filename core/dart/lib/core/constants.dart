@@ -1,4 +1,5 @@
 import 'dart:ffi';
+import 'dart:typed_data';
 
 import 'environment.dart';
 
@@ -11,6 +12,7 @@ const corePackageName = "core";
 final coreLibraryName = SystemEnvironment.debug ? "libcore_debug_${Abi.current()}.so" : "libcore_release_${Abi.current()}.so";
 
 const empty = "";
+final emptyBytes = Uint8List(0);
 const unknown = "unknown";
 const newLine = "\n";
 const slash = "/";
