@@ -75,7 +75,7 @@ void event_field_set_any(struct event_field_structure* field, ...);
 
 #define event_field(field_name, field_value)                                                                                           \
     ({                                                                                                                                 \
-        struct event_field_structure field##__LINE__;                                                                                            \
+        struct event_field_structure field##__LINE__;                                                                                  \
         field##__LINE__.name = field_name;                                                                                             \
         choose_expression(                                                                                                             \
             types_compatible(typeof(field_value), char),                                                                               \

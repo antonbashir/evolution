@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:memory/memory.dart';
+import 'package:test/test.dart';
 
 class TestData with Tuple {
   final int a;
@@ -28,20 +29,50 @@ class TestData with Tuple {
 
   @override
   String toString() => "$a $b";
+
+  @override
+  operator ==(Object other) => other is TestData && other.a == a && other.b == b;
 }
 
 void main(List<String> args) {
-  launch((creator) => creator.create(CoreModule(), CoreDefaults.module).create(MemoryModule(), MemoryDefaults.module)).activate(() {
-    final writer = context().tuples().dynamic.input();
-    writer.writeList(10000 * 3);
-    final sw = Stopwatch();
-    sw.start();
-    for (var i = 0; i < 10000; i++) {
-      writer.writeInt(123);
-      writer.writeString("test");
-      writer.writeTuple(TestData(1, "test"));
-    }
-    writer.flush();
-    print(sw.elapsedMicroseconds);
-  });
+  test(
+    "[tuples][dynamic][input]: read-write ",
+    () => launch((creator) => creator.create(CoreModule(), CoreDefaults.module).create(MemoryModule(), MemoryDefaults.module)).activate(() {
+      final data = TestData(1, "test");
+      final writer = context().tuples().dynamic.input();
+      writer.writeList(10000);
+      for (var i = 0; i < 10000; i++) writer.writeTuple(data);
+      writer.flush();
+      final reader = writer.buffer.wrapRead();
+      var read = tupleReadList(reader.data, 0);
+      expect(read.length, equals(10000));
+      var offset = read.offset;
+      for (var i = 0; i < read.length; i++) {
+        final parsed = TestData.deserialize(reader.buffer, reader.data, offset);
+        expect(parsed.data, equals(data));
+        offset = parsed.offset;
+      }
+      writer.destroy();
+    }),
+  );
+  test(
+    "[tuples][dynamic][output]: read-write ",
+    () => launch((creator) => creator.create(CoreModule(), CoreDefaults.module).create(MemoryModule(), MemoryDefaults.module)).activate(() {
+      final data = TestData(1, "test");
+      final writer = context().tuples().dynamic.output();
+      writer.writeList(10000);
+      for (var i = 0; i < 10000; i++) writer.writeTuple(data);
+      writer.flush();
+      final reader = writer.buffer.wrap();
+      var read = tupleReadList(reader.data, 0);
+      expect(read.length, equals(10000));
+      var offset = read.offset;
+      for (var i = 0; i < read.length; i++) {
+        final parsed = TestData.deserialize(reader.buffer, reader.data, offset);
+        expect(parsed.data, equals(data));
+        offset = parsed.offset;
+      }
+      writer.destroy();
+    }),
+  );
 }

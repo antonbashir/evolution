@@ -6,7 +6,7 @@ struct context context_instance;
 
 struct context* context_get()
 {
-  return &context_instance;
+    return &context_instance;
 }
 
 void context_create()
@@ -28,5 +28,11 @@ void* context_get_module(uint32_t id)
 void context_put_module(uint32_t id, void* module)
 {
     context_instance.modules[id] = module;
+    context_instance.size++;
+}
+
+DART_LEAF_FUNCTION void context_remove_module(uint32_t id)
+{
+    context_instance.modules[id] = NULL;
     context_instance.size++;
 }

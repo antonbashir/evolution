@@ -34,7 +34,7 @@ const int32MaxValue = 2147483647;
 const soFileExtension = "so";
 const nativeDirectory = "native";
 
-const modules_maximum = 64;
+const modulesMaximum = 64;
 
 const printLevelPanic = 0;
 const printLevelError = 1;

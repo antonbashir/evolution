@@ -23,3 +23,6 @@ external Pointer<Void> context_get_module(int id);
 
 @Native<Void Function(Uint32 id, Pointer<Void> module)>(isLeaf: true)
 external void context_put_module(int id, Pointer<Void> module);
+
+@Native<Void Function(Uint32 id)>(isLeaf: true)
+external void context_remove_module(int id);

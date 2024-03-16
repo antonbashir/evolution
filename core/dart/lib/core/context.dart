@@ -78,8 +78,8 @@ mixin ContextLoader {
 }
 
 class _Context with ContextCreator, ContextLoader, ContextProvider {
-  final _modules = List<Module?>.generate(modules_maximum, (index) => null, growable: false);
-  final _native = List<Pointer<Void>>.generate(modules_maximum, (index) => nullptr, growable: false);
+  var _modules = List<Module?>.generate(modulesMaximum, (index) => null, growable: false);
+  var _native = List<Pointer<Void>>.generate(modulesMaximum, (index) => nullptr, growable: false);
 
   _Context._() {
     SystemLibrary.loadByName(coreLibraryName, corePackageName);
@@ -92,6 +92,12 @@ class _Context with ContextCreator, ContextLoader, ContextProvider {
       return;
     }
     context_create();
+  }
+
+  void _clear() {
+    _modules.where((module) => module != null).forEach((module) => context_remove_module(module!.id));
+    _modules = List<Module?>.generate(modulesMaximum, (index) => null, growable: false);
+    _native = List<Pointer<Void>>.generate(modulesMaximum, (index) => nullptr, growable: false);
   }
 
   @override
@@ -140,9 +146,12 @@ class Launcher {
             await Future.value(module?.shutdown());
           }
           for (var module in _context._modules.reversed) {
-            module?.destroy();
+            if (module != null) {
+              module.destroy();
+            }
           }
           information(CoreMessages.modulesDestroyed);
+          _context._clear();
         },
         (error, stack) {
           if (error is Error) {
