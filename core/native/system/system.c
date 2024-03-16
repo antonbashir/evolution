@@ -98,7 +98,7 @@ struct system_library* system_library_load(const char* path)
         return NULL;
     }
 #ifdef DEBUG
-    trace_message("Loading library: %s", path);
+    trace_message(LOADING_LIBRARY_MESSAGE, path);
 #endif
     struct system_library* new = calloc(1, sizeof(struct system_library));
     new->handle = handle;
@@ -109,7 +109,7 @@ struct system_library* system_library_load(const char* path)
 
 struct system_library* system_library_get(const char* path)
 {
-    struct system_library_key key = {.path = strdup(path)};
+    struct system_library_key key = {.path = path};
     simple_map_int_t slot = simple_map_system_libraries_find(system_instance.system_libraries, key, NULL);
     if (slot != simple_map_end(system_instance.system_libraries))
     {

@@ -1,6 +1,7 @@
 import 'dart:ffi';
 
 import 'package:core/core.dart';
+import 'package:ffi/ffi.dart';
 
 import 'bindings.dart';
 
@@ -9,8 +10,12 @@ class ExecutorModuleConfiguration implements ModuleConfiguration {
 
   const ExecutorModuleConfiguration(this.schedulerConfiguration);
 
-  Pointer<executor_module_configuration> toNative(Pointer<executor_module_configuration> native) => native;
-  
+  Pointer<executor_module_configuration> toNative(Arena allocator) {
+    Pointer<executor_module_configuration> native = allocator();
+    native.ref.scheduler_configuration = schedulerConfiguration.toNative(allocator);
+    return native;
+  }
+
   factory ExecutorModuleConfiguration.fromNative(Pointer<executor_module_configuration> native) => ExecutorModuleConfiguration(
         ExecutorSchedulerConfiguration.fromNative(native.ref.scheduler_configuration),
       );
@@ -83,7 +88,8 @@ class ExecutorSchedulerConfiguration {
   final Duration initializationTimeout;
   final Duration shutdownTimeout;
 
-  Pointer<executor_scheduler_configuration> toNative(Pointer<executor_scheduler_configuration> native) {
+  Pointer<executor_scheduler_configuration> toNative(Arena allocator) {
+    Pointer<executor_scheduler_configuration> native = allocator();
     native.ref.ring_flags = ringFlags;
     native.ref.ring_size = ringSize;
     native.ref.initialization_timeout_seconds = initializationTimeout.inSeconds;

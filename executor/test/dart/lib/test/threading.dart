@@ -150,6 +150,7 @@ Future<void> _callNativeIsolate(List<dynamic> input) => fork((loader) => loader.
           calls.add(producer.testThreadingCallNative(descriptor.value, message));
         }
       }
+      calloc.free(descriptors);
       (await Future.wait(calls)).forEach((result) {
         if (result.outputInt != 41) {
           throw TestFailure("outputInt != 41");

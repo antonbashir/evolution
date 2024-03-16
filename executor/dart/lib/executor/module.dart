@@ -31,7 +31,7 @@ class ExecutorModule with Module<executor_module, ExecutorModuleConfiguration, E
   @override
   Pointer<executor_module> create(ExecutorModuleConfiguration configuration) {
     SystemLibrary.loadByName(executorLibraryName, executorPackageName);
-    return using((arena) => executor_module_create(configuration.toNative(arena<executor_module_configuration>())));
+    return using((arena) => executor_module_create(configuration.toNative(arena)));
   }
 
   @override
@@ -39,7 +39,7 @@ class ExecutorModule with Module<executor_module, ExecutorModuleConfiguration, E
 
   @override
   FutureOr<void> initialize() {
-    state._scheduler = using((Arena arena) => executor_scheduler_initialize(configuration.schedulerConfiguration.toNative(arena<executor_scheduler_configuration>())));
+    state._scheduler = using((Arena arena) => executor_scheduler_initialize(configuration.schedulerConfiguration.toNative(arena)));
     if (state._scheduler == nullptr || !state._scheduler.ref.initialized) {
       final error = state._scheduler.ref.initialization_error.cast<Utf8>().toDartString();
       if (state._scheduler != nullptr) executor_scheduler_destroy(state._scheduler);

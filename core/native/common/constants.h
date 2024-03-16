@@ -71,6 +71,8 @@ extern "C"
 
 #define PANIC_CONTEXT_CREATED "Context already created"
 
+#define LOADING_LIBRARY_MESSAGE "Loading library: %s"
+
 #if defined(__cplusplus)
 }
 #endif
