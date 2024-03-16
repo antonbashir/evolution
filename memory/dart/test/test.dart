@@ -7,6 +7,9 @@ class TestData with Tuple {
   final int a;
   final String b;
 
+  @override
+  int get tupleSize => tupleSizeOfList(2) + tupleSizeOfInt(a) + tupleSizeOfString(b.length);
+
   TestData(this.a, this.b);
 
   @override
@@ -23,9 +26,6 @@ class TestData with Tuple {
     var b = tupleReadString(buffer, data, a.offset);
     return (data: TestData(a.value!, b.value!), offset: b.offset);
   }
-
-  @override
-  int get tupleSize => tupleSizeOfList(2) + tupleSizeOfInt(a) + tupleSizeOfString(b.length);
 
   @override
   String toString() => "$a $b";

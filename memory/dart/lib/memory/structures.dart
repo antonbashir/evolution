@@ -48,11 +48,10 @@ class MemoryStructurePool<T extends NativeType> {
 
   MemoryStructurePool(this._pool);
 
-  MemoryObjects<Pointer<T>> asObjectPool({MemoryObjectsConfiguration configuration = MemoryDefaults.objects}) => MemoryObjects(
-        allocate,
-        free,
-        configuration: configuration,
-      );
+  MemoryObjects<Pointer<T>> asObjectPool({
+    MemoryObjectsConfiguration configuration = MemoryDefaults.objects,
+  }) =>
+      MemoryObjects(allocate, free, configuration: configuration);
 
   @inline
   int size() => _pool.ref.size;

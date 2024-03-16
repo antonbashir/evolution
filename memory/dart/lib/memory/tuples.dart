@@ -2,6 +2,8 @@ import 'dart:ffi';
 import 'dart:typed_data';
 
 import '../memory.dart';
+import 'constants.dart';
+import 'exceptions.dart';
 
 class MemoryTuples {
   final Pointer<memory_small_allocator> _small;
@@ -21,9 +23,6 @@ class MemoryTuples {
     emptyString = _createEmptyString();
     emptyBinary = _createEmptyBinary();
   }
-
-  @inline
-  int next(Pointer<Uint8> pointer, int offset) => memory_tuple_next(pointer.cast(), offset);
 
   @inline
   Pointer<Uint8> allocateSmall(int capacity) => memory_small_allocator_allocate(_small, capacity).cast();
@@ -72,6 +71,11 @@ class MemoryTuples {
   }
 }
 
+extension MemoryTupleBufferExtensions on Pointer<Uint8> {
+  @inline
+  int tupleNext(int offset) => memory_tuple_next(this, offset);
+}
+
 class MemoryTupleFixedWriters {
   final MemoryInputOutputBuffers _buffers;
 
@@ -103,6 +107,7 @@ class MemoryTupleDynamicInputWriter {
   int _end = 0;
   int _currentOffset = 0;
   int _nextOffset = 0;
+
   late Uint8List _bufferTyped;
   late ByteData _bufferData;
 
@@ -214,6 +219,7 @@ class MemoryTupleDynamicOutputWriter {
   int _end = 0;
   int _currentOffset = 0;
   int _nextOffset = 0;
+
   late Uint8List _bufferTyped;
   late ByteData _bufferData;
 
@@ -316,6 +322,18 @@ class MemoryTupleDynamicOutputWriter {
     }
     _buffer = Pointer.fromAddress(_position);
   }
+}
+
+mixin MemoryInputTuple implements Tuple {
+  @override
+  int get tupleSize => throw MemoryException(MemoryErrors.tupleComputeSizeImpossible(runtimeType));
+  void serializeToInput(MemoryTupleDynamicInputWriter writer);
+}
+
+mixin MemoryOutputTuple implements Tuple {
+  @override
+  int get tupleSize => throw MemoryException(MemoryErrors.tupleComputeSizeImpossible(runtimeType));
+  void serializeToOutput(MemoryTupleDynamicInputWriter writer);
 }
 
 class MemoryTupleDynamicWriter {
