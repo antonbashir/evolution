@@ -14,6 +14,8 @@ class ExecutorErrors {
   static executorError(int result) => SystemErrors.of(-result);
 }
 
+const maximumExecutors = 1 << 16;
+
 const executorErrorNotifierPost = 0;
 const executorErrorRingFull = -1;
 
@@ -21,10 +23,8 @@ const executorStateStopped = 1 << 0;
 const executorStateIdle = 1 << 1;
 const executorStateWaking = 1 << 2;
 
-const executorDartCallback = 1 << 0;
-const executorNativeCallback = 1 << 1;
-const executorDartCall = 1 << 2;
-const executorNativeCall = 1 << 3;
+const executorCall = 1 << 0;
+const executorCallback = 1 << 1;
 
 const ringSetupIopoll = 1 << 0;
 const ringSetupSqpoll = 1 << 1;

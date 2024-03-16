@@ -5,7 +5,6 @@ import 'bindings.dart';
 import 'constants.dart';
 import 'exceptions.dart';
 import 'library.dart';
-import 'module.dart';
 import 'printer.dart';
 
 final _context = _Context._();
@@ -135,66 +134,42 @@ final _forker = Forker._();
 class Launcher {
   Launcher._();
 
-  Future<void> activate(FutureOr<void> Function() main) async => runZonedGuarded(
-        () async {
-          information(CoreMessages.modulesCreated);
-          for (var module in _context._modules) {
-            await Future.value(module?.initialize());
-          }
-          await main();
-          for (var module in _context._modules.reversed) {
-            await Future.value(module?.shutdown());
-          }
-          for (var module in _context._modules.reversed) {
-            if (module != null) {
-              module.destroy();
-            }
-          }
-          information(CoreMessages.modulesDestroyed);
-          _context._clear();
-        },
-        (error, stack) {
-          if (error is Error) {
-            context().core().state.errorHandler(error, stack);
-            return;
-          }
-          if (error is Exception) {
-            context().core().state.exceptionHandler(error, stack);
-            return;
-          }
-        },
-      );
+  Future<void> activate(FutureOr<void> Function() main) async {
+    information(CoreMessages.modulesCreated);
+    for (var module in _context._modules) {
+      await Future.value(module?.initialize());
+    }
+    await main();
+    for (var module in _context._modules.reversed) {
+      await Future.value(module?.shutdown());
+    }
+    for (var module in _context._modules.reversed) {
+      if (module != null) {
+        module.destroy();
+      }
+    }
+    information(CoreMessages.modulesDestroyed);
+    _context._clear();
+  }
 }
 
 class Forker {
   Forker._();
 
-  Future<void> activate(FutureOr<void> Function() main) async => runZonedGuarded(
-        () async {
-          information(CoreMessages.modulesLoaded);
-          for (var module in _context._modules) {
-            await Future.value(module?.fork());
-          }
-          await main();
-          for (var module in _context._modules.reversed) {
-            await Future.value(module?.unfork());
-          }
-          for (var module in _context._modules.reversed) {
-            module?.unload();
-          }
-          information(CoreMessages.modulesUnloaded);
-        },
-        (error, stack) {
-          if (error is Error) {
-            context().core().state.errorHandler(error, stack);
-            return;
-          }
-          if (error is Exception) {
-            context().core().state.exceptionHandler(error, stack);
-            return;
-          }
-        },
-      );
+  Future<void> activate(FutureOr<void> Function() main) async {
+    information(CoreMessages.modulesLoaded);
+    for (var module in _context._modules) {
+      await Future.value(module?.fork());
+    }
+    await main();
+    for (var module in _context._modules.reversed) {
+      await Future.value(module?.unfork());
+    }
+    for (var module in _context._modules.reversed) {
+      module?.unload();
+    }
+    information(CoreMessages.modulesUnloaded);
+  }
 }
 
 Launcher launch(ModuleCreator creator) {

@@ -5,8 +5,8 @@ import 'module.dart';
 class Printer {
   const Printer._();
 
-  static void print(String message) {
-    if (!context().core().configuration.silent) context().core().state.printer(message);
+  static void print(dynamic message) {
+    if (!context().core().configuration.silent) context().core().state.printer(message?.toString() ?? empty);
   }
 
   static void printError(Error error, StackTrace stack) {

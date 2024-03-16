@@ -19,4 +19,7 @@ include_directories(${EXECUTOR_INCLUDE_DIRECTORY})
 include_directories(${MEMORY_INCLUDE_DIRECTORY})
 
 add_library(executor_test SHARED ${sources})
+add_dependencies(executor_test executor_debug_linux_x64)
+target_link_libraries(executor_test PRIVATE ${LIBURING_LIBRARY})
+set_target_properties(executor_test PROPERTIES COMPILE_FLAGS ${COMPILER_C_FLAGS_DEBUG})
 copy_to_assets(executor_test)

@@ -17,3 +17,6 @@ external int dlclose(Pointer<Void> handle);
 
 @Native<Pointer<Void> Function(Pointer<Utf8>, Int)>()
 external Pointer<Void> dlopen(Pointer<Utf8> file, int mode);
+
+@Native<Pointer<Utf8> Function()>()
+external Pointer<Utf8> dlerror();

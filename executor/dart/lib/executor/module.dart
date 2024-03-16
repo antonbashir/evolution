@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:ffi';
 
 import 'package:core/core.dart';
-import 'package:core/core/exceptions.dart';
 import 'package:ffi/ffi.dart';
 import 'package:memory/memory/constants.dart';
 
@@ -17,7 +16,7 @@ class ExecutorModuleState implements ModuleState {
 
   (Pointer<executor_scheduler>, int) register(Executor executor) {
     _executors.add(executor);
-    return ( _scheduler, executor_next(context().executor().native));
+    return (_scheduler, executor_next(context().executor().native));
   }
 }
 
@@ -40,10 +39,10 @@ class ExecutorModule with Module<executor_module, ExecutorModuleConfiguration, E
 
   @override
   FutureOr<void> initialize() {
-    state._scheduler = using((Arena arena) => executor_scheduler_initialize(configuration.schedulerConfiguration.toNative(arena<executor_scheduler_configuration>()))).check();
-    if (!state._scheduler.ref.initialized) {
+    state._scheduler = using((Arena arena) => executor_scheduler_initialize(configuration.schedulerConfiguration.toNative(arena<executor_scheduler_configuration>())));
+    if (state._scheduler == nullptr || !state._scheduler.ref.initialized) {
       final error = state._scheduler.ref.initialization_error.cast<Utf8>().toDartString();
-      executor_scheduler_destroy(state._scheduler);
+      if (state._scheduler != nullptr) executor_scheduler_destroy(state._scheduler);
       throw ExecutorException(error);
     }
   }

@@ -36,7 +36,6 @@
       "label": "executor-native-build",
       "command": "build",
       "targets": [
-        "executor_native",
         "executor_test"
       ],
       "group": "build",

@@ -10,10 +10,10 @@ import '../executor.dart';
 import 'constants.dart';
 import 'registry.dart';
 
-final _executors = List<Executor>.empty(growable: true);
+final _executors = List<Executor?>.filled(maximumExecutors, null);
 
 @inline
-void _awakeExecutor(int id) => _executors[id]._awake();
+void _awakeExecutor(int id) => _executors[id]!._awake();
 
 typedef ExecutorProcessor = void Function(Pointer<Pointer<executor_completion_event>> completions, int count);
 
@@ -52,23 +52,22 @@ class Executor {
     _completions = instance.ref.completions;
     _consumers = ExecutorConsumerRegistry(instance);
     _producers = ExecutorProducerRegistry(instance);
-    while (instance.ref.id >= _executors.length) _executors.add(this);
-    _executors[instance.ref.id] = this;
+    _executors[_id] = this;
   }
 
   Future<void> shutdown() async {
     deactivate();
-    _executors.remove(instance.ref.id);
+    _executors[_id] = null;
     _callback.close();
     calloc.free(instance);
   }
 
   void activate() {
-    ExecutorException.checkRing(executor_register_scheduler(instance, _callback.sendPort.nativePort));
+    ExecutorException.checkRing(executor_register_on_scheduler(instance, _callback.sendPort.nativePort));
   }
 
   void deactivate() {
-    ExecutorException.checkRing(executor_unregister_scheduler(instance));
+    ExecutorException.checkRing(executor_unregister_from_scheduler(instance));
   }
 
   void consumer(ExecutorConsumer declaration) => _consumers.register(declaration);
@@ -92,12 +91,12 @@ class Executor {
       final data = completion.ref.user_data;
       final result = completion.ref.res;
       if (data > 0) {
-        if (result & executorDartCall != 0) {
+        if (result & executorCall != 0) {
           Pointer<executor_task> task = Pointer.fromAddress(data);
           _consumers.call(task);
           continue;
         }
-        if (result & executorDartCallback != 0) {
+        if (result & executorCallback != 0) {
           Pointer<executor_task> task = Pointer.fromAddress(data);
           _producers.callback(task);
           continue;

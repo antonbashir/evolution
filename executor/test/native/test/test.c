@@ -1,13 +1,12 @@
-
+#define SIMPLE_MAP_SOURCE
 
 #include "test.h"
+#include <executor/module.h>
 #include <executor/task.h>
 #include <liburing.h>
 #include <memory/memory.h>
 #include <stdlib.h>
 #include "executor/constants.h"
-
-#define SIMPLE_MAP_SOURCE
 
 struct memory_small_allocator* small;
 struct memory_pool* pool;
@@ -32,11 +31,14 @@ struct test_executor* test_executor_initialize(bool initialize_memory)
         pool = memory_pool_create(memory_instance, sizeof(struct executor_task));
         small = memory_small_allocator_create(memory_instance, 1.05);
     }
+    executor->descriptor = executor->ring->ring_fd;
+    executor->callbacks = simple_map_native_callbacks_new();
     return executor;
 }
 
 void test_executor_destroy(struct test_executor* executor, bool initialize_memory)
 {
+    executor_module_trace();
     if (initialize_memory)
     {
         memory_small_allocator_destroy(small);

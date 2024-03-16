@@ -39,7 +39,7 @@ struct executor_instance* executor_create(struct executor_configuration* configu
     return executor;
 }
 
-int8_t executor_register_scheduler(struct executor_instance* executor, int64_t callback)
+int8_t executor_register_on_scheduler(struct executor_instance* executor, int64_t callback)
 {
     executor->callback = callback;
     executor->state = EXECUTOR_STATE_IDLE;
@@ -54,7 +54,7 @@ int8_t executor_register_scheduler(struct executor_instance* executor, int64_t c
     return 0;
 }
 
-int8_t executor_unregister_scheduler(struct executor_instance* executor)
+int8_t executor_unregister_from_scheduler(struct executor_instance* executor)
 {
     executor->state = EXECUTOR_STATE_STOPPED;
     struct io_uring_sqe* sqe = io_uring_get_sqe(executor->ring);
@@ -86,7 +86,7 @@ int8_t executor_call_native(struct executor_instance* executor, int32_t target_r
     message->source = executor->descriptor;
     message->target = target_ring_fd;
     message->flags |= EXECUTOR_CALL;
-    io_uring_prep_msg_ring(sqe, target_ring_fd, EXECUTOR_CALLBACK, (uintptr_t)message, 0);
+    io_uring_prep_msg_ring(sqe, target_ring_fd, EXECUTOR_CALL, (uintptr_t)message, 0);
     sqe->flags |= IOSQE_CQE_SKIP_SUCCESS;
     if (executor->state & EXECUTOR_STATE_IDLE) io_uring_submit(ring);
     return 0;
@@ -118,10 +118,6 @@ void executor_destroy(struct executor_instance* executor)
     executor_module_delete(executor);
 }
 
-void executor_submit(struct executor_instance* executor)
-{
-    io_uring_submit(executor->ring);
-}
 
 int8_t executor_awake_begin(struct executor_instance* executor)
 {

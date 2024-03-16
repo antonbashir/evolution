@@ -1,18 +1,25 @@
 import 'dart:async';
 import 'dart:ffi';
+import 'dart:io';
 
 import 'package:memory/memory.dart';
 import 'package:test/test.dart';
+import 'package:path/path.dart' as path;
 
 import 'bindings.dart';
 import 'consumer.dart';
 import 'producer.dart';
 
-ContextCreator _initialize(ContextCreator creator) => creator.create(CoreModule(), CoreDefaults.module).create(MemoryModule(), MemoryDefaults.module).create(ExecutorModule(), ExecutorDefaults.module);
+ContextCreator _initialize(ContextCreator creator) {
+  creator.create(CoreModule(), CoreDefaults.module).create(MemoryModule(), MemoryDefaults.module).create(ExecutorModule(), ExecutorDefaults.module);
+  SystemLibrary.loadByPath("${Directory(path.dirname(Platform.script.toFilePath())).parent.path}/assets/libexecutor_test.so");
+  return creator;
+}
 
 void testCallNative() {
-  test("dart(null) <-> native(null)", () async {
-    await launch(_initialize).activate(() async {
+  test(
+    "dart(null) <-> native(null)",
+    () => launch(_initialize).activate(() async {
       final executor = Executor();
       test_call_reset();
       await executor.initialize();
@@ -24,11 +31,12 @@ void testCallNative() {
       final result = await call;
       executor.tasks.free(result);
       test_executor_destroy(native, true);
-    });
-  });
+    }),
+  );
 
-  test("dart(bool) <-> native(bool)", () async {
-    await launch(_initialize).activate(() async {
+  test(
+    "dart(bool) <-> native(bool)",
+    () => launch(_initialize).activate(() async {
       final executor = Executor();
       test_call_reset();
       await executor.initialize();
@@ -41,11 +49,12 @@ void testCallNative() {
       expect(result.outputBool, true);
       executor.tasks.free(result);
       test_executor_destroy(native, true);
-    });
-  });
+    }),
+  );
 
-  test("dart(int) <-> native(int)", () async {
-    launch(_initialize).activate(() async {
+  test(
+    "dart(int) <-> native(int)",
+    () => launch(_initialize).activate(() async {
       final executor = Executor();
       test_call_reset();
       await executor.initialize();
@@ -58,11 +67,12 @@ void testCallNative() {
       expect(result.outputInt, 123);
       executor.tasks.free(result);
       test_executor_destroy(native, true);
-    });
-  });
+    }),
+  );
 
-  test("dart(double) <-> native(double)", () async {
-    launch(_initialize).activate(() async {
+  test(
+    "dart(double) <-> native(double)",
+    () => launch(_initialize).activate(() async {
       final executor = Executor();
       test_call_reset();
       await executor.initialize();
@@ -77,15 +87,15 @@ void testCallNative() {
       expect(result.outputDouble, 123.45);
       executor.tasks.free(result);
       test_executor_destroy(native, true);
-    });
-  });
+    }),
+  );
 }
 
 void testCallDart() {
-  test("native(null) <-> dart(null)", () async {
-    launch(_initialize).activate(() async {
+  test(
+    "native(null) <-> dart(null)",
+    () => launch(_initialize).activate(() async {
       final executor = Executor();
-
       test_call_reset();
       await executor.initialize();
       final native = test_executor_initialize(true);
@@ -96,13 +106,13 @@ void testCallDart() {
       await _awaitDartCall(native);
       await completer.future;
       test_executor_destroy(native, true);
-    });
-  });
+    }),
+  );
 
-  test("native(bool) <-> dart(bool)", () async {
-    launch(_initialize).activate(() async {
+  test(
+    "native(bool) <-> dart(bool)",
+    () => launch(_initialize).activate(() async {
       final executor = Executor();
-
       test_call_reset();
       await executor.initialize();
       final native = test_executor_initialize(true);
@@ -118,13 +128,13 @@ void testCallDart() {
       await _awaitDartCall(native);
       await completer.future;
       test_executor_destroy(native, true);
-    });
-  });
+    }),
+  );
 
-  test("native(int) <-> dart(int)", () async {
-    launch(_initialize).activate(() async {
+  test(
+    "native(int) <-> dart(int)",
+    () => launch(_initialize).activate(() async {
       final executor = Executor();
-
       test_call_reset();
       await executor.initialize();
       final native = test_executor_initialize(true);
@@ -140,13 +150,13 @@ void testCallDart() {
       await _awaitDartCall(native);
       await completer.future;
       test_executor_destroy(native, true);
-    });
-  });
+    }),
+  );
 
-  test("native(double) <-> dart(double)", () async {
-    launch(_initialize).activate(() async {
+  test(
+    "native(double) <-> dart(double)",
+    () => launch(_initialize).activate(() async {
       final executor = Executor();
-
       test_call_reset();
       await executor.initialize();
       final native = test_executor_initialize(true);
@@ -162,8 +172,8 @@ void testCallDart() {
       await _awaitDartCall(native);
       await completer.future;
       test_executor_destroy(native, true);
-    });
-  });
+    }),
+  );
 }
 
 Future<void> _awaitDartCall(Pointer<test_executor> native) async {

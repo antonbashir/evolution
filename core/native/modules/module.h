@@ -24,18 +24,18 @@
 #define module_name _unknown
 #endif
 
+#ifndef module_configuration
 struct _unknown_module_configuration
 {
 };
-#ifndef module_configuration
 #define module_configuration struct _unknown_module_configuration
 #endif
 
+#ifndef module_structure
 struct _unknown_module
 {
     struct _unknown_module_configuration configuration;
 };
-#ifndef module_structure
 #define module_structure struct _unknown_module
 #endif
 
@@ -55,6 +55,11 @@ static FORCEINLINE struct event* _module(event)(struct event* event)
 {
     event_setup(event, _declare_module_id, _declare_module_name);
     return event;
+}
+
+static FORCEINLINE void _module(trace)()
+{
+    trace_event(_module(event)(event_trace(event_field(MODULE_EVENT_FIELD_CALLER, stacktrace_callers(1, 3)))));
 }
 
 static FORCEINLINE void* _module(new)(uint32_t size)
@@ -121,6 +126,8 @@ static FORCEINLINE void _module(delete)(void* object)
 #if defined(MODULE_SOURCE) || defined(MODULE_UNDEF)
 #undef MODULE_HEADER
 #undef module_name
+#undef module_configuration
+#undef module_structure
 #undef module_id
 #undef module_label
 #endif

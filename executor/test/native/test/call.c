@@ -1,4 +1,5 @@
 #include "call.h"
+#include <executor/module.h>
 #include <liburing.h>
 #include "test.h"
 

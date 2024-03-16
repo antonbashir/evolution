@@ -1,9 +1,9 @@
 #ifndef TRANSPORT_H
 #define TRANSPORT_H
 
+#include <executor/configuration.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include <executor/configuration.h>
 #include "memory/configuration.h"
 #include "transport_client.h"
 #include "transport_server.h"

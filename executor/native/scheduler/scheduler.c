@@ -130,7 +130,7 @@ struct executor_scheduler* executor_scheduler_initialize(struct executor_schedul
     if (error = pthread_create(&scheduler->thread.main_thread_id, NULL, executor_scheduler_listen, scheduler))
     {
         scheduler->initialization_error = strerror(error);
-        return false;
+        return NULL;
     }
     executor_module_check_code(pthread_mutex_lock(&scheduler->thread.initialization_mutex));
     if (error = pthread_cond_timedwait(&scheduler->thread.initialization_condition, &scheduler->thread.initialization_mutex, &timeout))
@@ -139,14 +139,14 @@ struct executor_scheduler* executor_scheduler_initialize(struct executor_schedul
         executor_module_check_code(pthread_mutex_unlock(&scheduler->thread.initialization_mutex));
         executor_module_check_code(pthread_cond_destroy(&scheduler->thread.initialization_condition));
         executor_module_check_code(pthread_mutex_destroy(&scheduler->thread.initialization_mutex));
-        return false;
+        return NULL;
     }
     if (!scheduler->active)
     {
         executor_module_check_code(pthread_mutex_unlock(&scheduler->thread.initialization_mutex));
         executor_module_check_code(pthread_cond_destroy(&scheduler->thread.initialization_condition));
         executor_module_check_code(pthread_mutex_destroy(&scheduler->thread.initialization_mutex));
-        return false;
+        return NULL;
     }
     scheduler->initialized = true;
     executor_module_check_code(pthread_mutex_unlock(&scheduler->thread.initialization_mutex));

@@ -3,8 +3,11 @@ import 'dart:io';
 
 import 'package:ffi/ffi.dart';
 
-import '../core.dart';
+import 'bindings.dart';
+import 'constants.dart';
+import 'environment.dart';
 import 'exceptions.dart';
+import 'lookup.dart';
 
 final Map<String, SystemLibrary> _loadedByName = {};
 final Map<String, SystemLibrary> _loadedByPath = {};
@@ -16,6 +19,12 @@ class SystemLibrary {
   final Pointer<Void> _handle;
 
   SystemLibrary(this.library, this.name, this.path) : _handle = using((Arena arena) => dlopen(path.toNativeUtf8(allocator: arena), rtldGlobal | rtldLazy)) {
+    if (_handle == nullptr) {
+      if (dlerror() != nullptr) {
+        throw CoreException(dlerror().toDartString());
+      }
+      throw CoreErrors.systemLibraryLoadError(path);
+    }
     if (SystemEnvironment.debug) {
       print(CoreMessages.loadingLibrary(name, path));
     }
@@ -48,7 +57,9 @@ class SystemLibrary {
         final packageNativeRoot = Directory(findPackageRoot(dotDartTool, packageName).toFilePath() + SourcesDirectories.assets);
         final libraryFile = File(packageNativeRoot.path + slash + libraryName);
         if (libraryFile.existsSync()) {
-          return SystemLibrary(DynamicLibrary.open(libraryFile.path), libraryName, libraryFile.path);
+          final library = SystemLibrary(DynamicLibrary.open(libraryFile.path), libraryName, libraryFile.path);
+          _loadedByName[libraryName] = library;
+          return library;
         }
         throw CoreException(CoreErrors.systemLibraryLoadError(libraryFile.path));
       }
@@ -59,7 +70,7 @@ class SystemLibrary {
   factory SystemLibrary.loadByPath(String libraryPath) {
     if (_loadedByPath.containsKey(libraryPath)) return _loadedByPath[libraryPath]!;
     final library = File(libraryPath).existsSync()
-        ? SystemLibrary(DynamicLibrary.open(libraryPath), libraryPath.substring(libraryPath.lastIndexOf(slash), libraryPath.length), libraryPath)
+        ? SystemLibrary(DynamicLibrary.open(libraryPath), libraryPath.substring(libraryPath.lastIndexOf(slash) + 1, libraryPath.length), libraryPath)
         : throw CoreException(CoreErrors.systemLibraryLoadError(libraryPath));
     _loadedByPath[libraryPath] = library;
     return library;
