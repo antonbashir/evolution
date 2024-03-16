@@ -3,13 +3,23 @@
 
 #include <common/common.h>
 #include <stdint.h>
+#include "murmur32.h"
 
 #define _ASSIGN(dst, src, ...) asm(""          \
                                    : "=r"(dst) \
                                    : "0"(src), ##__VA_ARGS__)
 
-static FORCEINLINE uint32_t CONST
-hash_64(uint64_t a, unsigned int bits)
+#define SIMPLE_MAP_STRING_SEED 13U
+
+static FORCEINLINE uint32_t CONST hash_string(const char* string, uint32_t length)
+{
+    uint32_t hash = SIMPLE_MAP_STRING_SEED;
+    uint32_t carry = 0;
+    murmur32_process(&hash, &carry, string, length);
+    return murmur32_result(hash, carry, length);
+}
+
+static FORCEINLINE uint32_t CONST hash_64(uint64_t a, unsigned int bits)
 {
     uint64_t b, c, d;
 

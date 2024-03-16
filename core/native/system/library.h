@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <bits/types.h>
 #include <bits/types/struct_iovec.h>
+#include <dlfcn.h>
 #include <errno.h>
 #include <limits.h>
 #include <netinet/in.h>

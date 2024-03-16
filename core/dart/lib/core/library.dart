@@ -5,35 +5,22 @@ import 'package:ffi/ffi.dart';
 
 import 'bindings.dart';
 import 'constants.dart';
-import 'environment.dart';
 import 'exceptions.dart';
 import 'lookup.dart';
 
-final Map<String, SystemLibrary> _loadedByName = {};
-final Map<String, SystemLibrary> _loadedByPath = {};
-
 class SystemLibrary {
-  final DynamicLibrary library;
-  final String name;
   final String path;
-  final Pointer<Void> _handle;
+  final Pointer<system_library> _handle;
 
-  SystemLibrary(this.library, this.name, this.path) : _handle = using((Arena arena) => dlopen(path.toNativeUtf8(allocator: arena), rtldGlobal | rtldLazy)) {
+  SystemLibrary(this.path, this._handle) {
     if (_handle == nullptr) {
-      if (dlerror() != nullptr) {
-        throw CoreException(dlerror().toDartString());
-      }
-      throw CoreErrors.systemLibraryLoadError(path);
-    }
-    if (SystemEnvironment.debug) {
-      print(CoreMessages.loadingLibrary(name, path));
+      if (dlerror() != nullptr) throw CoreException(dlerror().toDartString());
+      throw CoreException(CoreErrors.systemLibraryLoadError(path));
     }
   }
 
   void unload() {
-    dlclose(_handle);
-    _loadedByName.remove(name);
-    _loadedByPath.remove(path);
+    system_library_unload(_handle);
   }
 
   SystemLibrary reload() {
@@ -41,39 +28,52 @@ class SystemLibrary {
     return SystemLibrary.loadByPath(path);
   }
 
-  factory SystemLibrary.loadByName(String libraryName, String packageName) {
-    if (_loadedByName.containsKey(libraryName)) return _loadedByName[libraryName]!;
-    try {
-      final library = SystemLibrary(
-        Platform.isLinux ? DynamicLibrary.open(libraryName) : throw CoreException(CoreErrors.nonLinuxError),
-        libraryName,
-        Directory.current.path + slash + libraryName,
-      );
-      _loadedByName[libraryName] = library;
-      return library;
-    } on ArgumentError {
-      final dotDartTool = _findDotDartTool();
-      if (dotDartTool != null) {
-        final packageNativeRoot = Directory(findPackageRoot(dotDartTool, packageName).toFilePath() + SourcesDirectories.assets);
-        final libraryFile = File(packageNativeRoot.path + slash + libraryName);
-        if (libraryFile.existsSync()) {
-          final library = SystemLibrary(DynamicLibrary.open(libraryFile.path), libraryName, libraryFile.path);
-          _loadedByName[libraryName] = library;
-          return library;
+  factory SystemLibrary.loadByName(String libraryName, String packageName, {bool managed = false}) {
+    var native = using((arena) => system_library_load((Directory.current.path + slash + libraryName).toNativeUtf8(allocator: arena)));
+    if (native != nullptr) {
+      return SystemLibrary(native.ref.path.toDartString(), native);
+    }
+    final dotDartTool = _findDotDartTool();
+    if (dotDartTool != null) {
+      final packageNativeRoot = Directory(findPackageRoot(dotDartTool, packageName).toFilePath() + SourcesDirectories.assets);
+      final libraryFile = File(packageNativeRoot.path + slash + libraryName);
+      if (libraryFile.existsSync()) {
+        native = using((arena) => system_library_load(libraryFile.path.toNativeUtf8(allocator: arena)));
+        if (native != nullptr) {
+          return SystemLibrary(native.ref.path.toDartString(), native);
         }
+        if (dlerror() != nullptr) throw CoreException(dlerror().toDartString());
         throw CoreException(CoreErrors.systemLibraryLoadError(libraryFile.path));
       }
-      throw CoreException(CoreErrors.unableToFindProjectRoot);
+      throw CoreException(CoreErrors.systemLibraryLoadError(libraryFile.path));
     }
+    throw CoreException(CoreErrors.unableToFindProjectRoot);
   }
 
-  factory SystemLibrary.loadByPath(String libraryPath) {
-    if (_loadedByPath.containsKey(libraryPath)) return _loadedByPath[libraryPath]!;
-    final library = File(libraryPath).existsSync()
-        ? SystemLibrary(DynamicLibrary.open(libraryPath), libraryPath.substring(libraryPath.lastIndexOf(slash) + 1, libraryPath.length), libraryPath)
-        : throw CoreException(CoreErrors.systemLibraryLoadError(libraryPath));
-    _loadedByPath[libraryPath] = library;
-    return library;
+  factory SystemLibrary.loadByPath(String libraryPath) => File(libraryPath).existsSync()
+      ? SystemLibrary(libraryPath, using((arena) => system_library_load(libraryPath.toNativeUtf8(allocator: arena))))
+      : throw CoreException(CoreErrors.systemLibraryLoadError(libraryPath));
+
+  static loadCore() {
+    var native = using((arena) => dlopen((Directory.current.path + slash + coreLibraryName).toNativeUtf8(allocator: arena), rtldGlobal | rtldLazy));
+    if (native != nullptr) {
+      return;
+    }
+    final dotDartTool = _findDotDartTool();
+    if (dotDartTool != null) {
+      final packageNativeRoot = Directory(findPackageRoot(dotDartTool, corePackageName).toFilePath() + SourcesDirectories.assets);
+      final libraryFile = File(packageNativeRoot.path + slash + coreLibraryName);
+      if (libraryFile.existsSync()) {
+        native = using((arena) => dlopen(libraryFile.path.toNativeUtf8(allocator: arena), rtldGlobal | rtldLazy));
+        if (native != nullptr) {
+          return;
+        }
+        if (dlerror() != nullptr) throw CoreException(dlerror().toDartString());
+        throw CoreException(CoreErrors.systemLibraryLoadError(libraryFile.path));
+      }
+      throw CoreException(CoreErrors.systemLibraryLoadError(libraryFile.path));
+    }
+    throw CoreException(CoreErrors.unableToFindProjectRoot);
   }
 
   static Uri? _findDotDartTool() {

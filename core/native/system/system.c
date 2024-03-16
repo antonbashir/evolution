@@ -1,3 +1,4 @@
+#define SIMPLE_MAP_SOURCE
 #include "system.h"
 #include <crash/crash.h>
 #include <events/events.h>
@@ -29,7 +30,7 @@ void system_default_error_printer(const char* format, ...)
 }
 
 void system_default_event_printer(struct event* event)
-{ 
+{
     if (system_get()->print_level < event->level) return;
     const char* buffer = event_format(event);
     system_get()->on_print("%s\n", buffer);
@@ -53,6 +54,7 @@ void system_default_event_raiser(struct event* event)
 void system_initialize(struct system_configuration configuration)
 {
     if (system_instance.initialized) return;
+    system_instance.system_libraries = simple_map_system_libraries_new();
     system_instance.on_print = configuration.on_print;
     system_instance.on_print_error = configuration.on_print_error;
     system_instance.on_event_raise = configuration.on_event_raise;
@@ -81,4 +83,55 @@ void system_initialize_default()
         .print_level = SYSTEM_PRINT_LEVEL_ERROR,
     });
 #endif
+}
+
+struct system_library* system_library_load(const char* path)
+{
+    struct system_library* current = system_library_get(path);
+    if (current != NULL)
+    {
+        return current;
+    }
+    void* handle = dlopen(path, RTLD_GLOBAL | RTLD_LAZY);
+    if (handle == NULL)
+    {
+        return NULL;
+    }
+#ifdef DEBUG
+    trace_message("Loading library: %s", path);
+#endif
+    struct system_library* new = calloc(1, sizeof(struct system_library));
+    new->handle = handle;
+    new->path = strdup(path);
+    simple_map_system_libraries_put(system_instance.system_libraries, new, NULL, NULL);
+    return new;
+}
+
+struct system_library* system_library_get(const char* path)
+{
+    struct system_library_key key = {.path = strdup(path)};
+    simple_map_int_t slot = simple_map_system_libraries_find(system_instance.system_libraries, key, NULL);
+    if (slot != simple_map_end(system_instance.system_libraries))
+    {
+        return simple_map_system_libraries_node(system_instance.system_libraries, slot);
+    }
+    return NULL;
+}
+
+struct system_library* system_library_reload(struct system_library* library)
+{
+    const char* path = library->path;
+    system_library_unload(library);
+    return system_library_load(path);
+}
+
+void system_library_unload(struct system_library* library)
+{
+    if (library->handle != NULL)
+    {
+        dlclose(library->handle);
+    }
+    simple_map_system_libraries_remove(system_instance.system_libraries, library, NULL);
+    free((void*)library->path);
+    free(library);
 }

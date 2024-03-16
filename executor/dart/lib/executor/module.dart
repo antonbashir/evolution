@@ -48,6 +48,7 @@ class ExecutorModule with Module<executor_module, ExecutorModuleConfiguration, E
   }
 
   Future<void> shutdown() async {
+    await Future.wait(state._executors.map((executor) => executor.shutdown()));
     if (!executor_scheduler_shutdown(state._scheduler)) {
       final error = state._scheduler.ref.shutdown_error.cast<Utf8>().toDartString();
       executor_scheduler_destroy(state._scheduler);

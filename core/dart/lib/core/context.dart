@@ -81,7 +81,7 @@ class _Context with ContextCreator, ContextLoader, ContextProvider {
   var _native = List<Pointer<Void>>.generate(modulesMaximum, (index) => nullptr, growable: false);
 
   _Context._() {
-    SystemLibrary.loadByName(coreLibraryName, corePackageName);
+    SystemLibrary.loadCore();
     final context = context_get();
     if (context.ref.initialized) {
       final modules = context.ref.modules;
