@@ -23,12 +23,12 @@ class MemoryModuleState implements ModuleState {
     instance = memory_create(configuration.quotaSize, configuration.preallocationSize, configuration.slabSize).check();
     staticBuffers = MemoryStaticBuffers(memory_static_buffers_create(configuration.staticBuffersCapacity, configuration.staticBufferSize).check(() => memory_destroy(instance)));
     final nativeBuffers = memory_io_buffers_create(instance).check(() => memory_destroy(instance));
-    inputOutputBuffers = MemoryInputOutputBuffers(nativeBuffers);
+    inputOutputBuffers = MemoryInputOutputBuffers(nativeBuffers, configuration.preallocationSize);
     structures = MemoryStructurePools(instance);
     final nativeSmall = memory_small_allocator_create(configuration.smallAllocationFactor, instance).check(() => memory_destroy(instance));
     smalls = MemorySmallData(nativeSmall);
     doubles = structures.register(sizeOf<Double>());
-    tuples = MemoryTuples(nativeSmall, nativeBuffers, configuration.preallocationSize);
+    tuples = MemoryTuples(nativeSmall, inputOutputBuffers);
   }
 
   void destroy() {

@@ -39,7 +39,8 @@ void main(List<String> args) {
     "[tuples][dynamic][input]: read-write ",
     () => launch((creator) => creator.create(CoreModule(), CoreDefaults.module).create(MemoryModule(), MemoryDefaults.module)).activate(() {
       final data = TestData(1, "test");
-      final writer = context().tuples().dynamic.input();
+      final buffer = context().inputOutputBuffers().allocateInputBuffer();
+      final writer = context().tuples().dynamic.input(buffer);
       writer.writeList(10000);
       for (var i = 0; i < 10000; i++) writer.writeTuple(data);
       writer.flush();
@@ -52,14 +53,15 @@ void main(List<String> args) {
         expect(parsed.data, equals(data));
         offset = parsed.offset;
       }
-      writer.destroy();
+      context().inputOutputBuffers().freeInputBuffer(buffer);
     }),
   );
   test(
     "[tuples][dynamic][output]: read-write ",
     () => launch((creator) => creator.create(CoreModule(), CoreDefaults.module).create(MemoryModule(), MemoryDefaults.module)).activate(() {
       final data = TestData(1, "test");
-      final writer = context().tuples().dynamic.output();
+      final buffer = context().inputOutputBuffers().allocateOutputBuffer();
+      final writer = context().tuples().dynamic.output(buffer);
       writer.writeList(10000);
       for (var i = 0; i < 10000; i++) writer.writeTuple(data);
       writer.flush();
@@ -72,7 +74,7 @@ void main(List<String> args) {
         expect(parsed.data, equals(data));
         offset = parsed.offset;
       }
-      writer.destroy();
+      context().inputOutputBuffers().freeOutputBuffer(buffer);
     }),
   );
 }
