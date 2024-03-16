@@ -66,13 +66,13 @@ class MemoryTupleFixedWriters {
     return (tuple: inputBuffer.readPosition, size: size, cleaner: () => memory_io_buffers_free_input(_buffers, inputBuffer));
   }
 
-  ({Pointer<iovec> content, int count, int fullSize, void Function() cleaner}) toOutput(int size, int Function(Uint8List buffer, ByteData data, int offset) writer) {
+  ({Pointer<iovec> content, int count, int size, void Function() cleaner}) toOutput(int size, int Function(Uint8List buffer, ByteData data, int offset) writer) {
     final outputBuffer = memory_io_buffers_allocate_output(_buffers, size);
     final reserved = outputBuffer.reserve(size);
     final buffer = reserved.cast<Uint8>().asTypedList(size);
     final data = ByteData.view(buffer.buffer, buffer.offsetInBytes);
     writer(buffer, data, 0);
-    return (content: outputBuffer.content, count: outputBuffer.ref.vectors, fullSize: size, cleaner: () => memory_io_buffers_free_output(_buffers, outputBuffer));
+    return (content: outputBuffer.content, count: outputBuffer.ref.vectors, size: size, cleaner: () => memory_io_buffers_free_output(_buffers, outputBuffer));
   }
 }
 
@@ -331,7 +331,7 @@ class MemoryTupleDynamicWriter {
     return (tuple: writer.buffer.readPosition, size: writer.buffer.used, cleaner: writer.destroy);
   }
 
-  ({Pointer<iovec> content, int count, int fullSize, void Function() cleaner}) toOutput(
+  ({Pointer<iovec> content, int count, int size, void Function() cleaner}) toOutput(
     int Function(({Uint8List buffer, ByteData data}) Function(int size) reserve, void Function(int size) advance) serializer, {
     int? initialCapacity,
   }) {
@@ -339,6 +339,6 @@ class MemoryTupleDynamicWriter {
     final writer = output(initialCapacity: initialCapacity);
     serializer(writer.reserve, writer.advance);
     writer.flush();
-    return (content: writer.buffer.content, count: writer.buffer.vectors, fullSize: writer.buffer.size, cleaner: writer.destroy);
+    return (content: writer.buffer.content, count: writer.buffer.vectors, size: writer.buffer.size, cleaner: writer.destroy);
   }
 }
