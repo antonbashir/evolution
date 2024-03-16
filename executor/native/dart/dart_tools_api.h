@@ -127,13 +127,14 @@ DART_EXPORT void Dart_RegisterRootServiceRequestCallback(
  * The pointers in this structure are not going to be cached or freed by the VM.
  */
 
- #define DART_EMBEDDER_INFORMATION_CURRENT_VERSION (0x00000001)
+#define DART_EMBEDDER_INFORMATION_CURRENT_VERSION (0x00000001)
 
-typedef struct {
-  int32_t version;
-  const char* name;  // [optional] The name of the embedder
-  int64_t current_rss;  // [optional] the current RSS of the embedder
-  int64_t max_rss;  // [optional] the maximum RSS of the embedder
+typedef struct
+{
+    int32_t version;
+    const char* name;     // [optional] The name of the embedder
+    int64_t current_rss;  // [optional] the current RSS of the embedder
+    int64_t max_rss;      // [optional] the maximum RSS of the embedder
 } Dart_EmbedderInformation;
 
 /**
@@ -339,18 +340,19 @@ DART_EXPORT int64_t Dart_TimelineGetTicks();
  */
 DART_EXPORT int64_t Dart_TimelineGetTicksFrequency();
 
-typedef enum {
-  Dart_Timeline_Event_Begin,          // Phase = 'B'.
-  Dart_Timeline_Event_End,            // Phase = 'E'.
-  Dart_Timeline_Event_Instant,        // Phase = 'i'.
-  Dart_Timeline_Event_Duration,       // Phase = 'X'.
-  Dart_Timeline_Event_Async_Begin,    // Phase = 'b'.
-  Dart_Timeline_Event_Async_End,      // Phase = 'e'.
-  Dart_Timeline_Event_Async_Instant,  // Phase = 'n'.
-  Dart_Timeline_Event_Counter,        // Phase = 'C'.
-  Dart_Timeline_Event_Flow_Begin,     // Phase = 's'.
-  Dart_Timeline_Event_Flow_Step,      // Phase = 't'.
-  Dart_Timeline_Event_Flow_End,       // Phase = 'f'.
+typedef enum
+{
+    Dart_Timeline_Event_Begin,          // Phase = 'B'.
+    Dart_Timeline_Event_End,            // Phase = 'E'.
+    Dart_Timeline_Event_Instant,        // Phase = 'i'.
+    Dart_Timeline_Event_Duration,       // Phase = 'X'.
+    Dart_Timeline_Event_Async_Begin,    // Phase = 'b'.
+    Dart_Timeline_Event_Async_End,      // Phase = 'e'.
+    Dart_Timeline_Event_Async_Instant,  // Phase = 'n'.
+    Dart_Timeline_Event_Counter,        // Phase = 'C'.
+    Dart_Timeline_Event_Flow_Begin,     // Phase = 's'.
+    Dart_Timeline_Event_Flow_Step,      // Phase = 't'.
+    Dart_Timeline_Event_Flow_End,       // Phase = 'f'.
 } Dart_Timeline_Event_Type;
 
 /**
@@ -451,55 +453,57 @@ DART_EXPORT void Dart_RecordTimelineEvent(const char* label,
  */
 DART_EXPORT void Dart_SetThreadName(const char* name);
 
-typedef struct {
-  const char* name;
-  const char* value;
+typedef struct
+{
+    const char* name;
+    const char* value;
 } Dart_TimelineRecorderEvent_Argument;
 
 #define DART_TIMELINE_RECORDER_CURRENT_VERSION (0x00000002)
 
-typedef struct {
-  /* Set to DART_TIMELINE_RECORDER_CURRENT_VERSION */
-  int32_t version;
+typedef struct
+{
+    /* Set to DART_TIMELINE_RECORDER_CURRENT_VERSION */
+    int32_t version;
 
-  /* The event's type / phase. */
-  Dart_Timeline_Event_Type type;
+    /* The event's type / phase. */
+    Dart_Timeline_Event_Type type;
 
-  /* The event's timestamp according to the same clock as
-   * Dart_TimelineGetMicros. For a duration event, this is the beginning time.
-   */
-  int64_t timestamp0;
+    /* The event's timestamp according to the same clock as
+     * Dart_TimelineGetMicros. For a duration event, this is the beginning time.
+     */
+    int64_t timestamp0;
 
-  /**
-   * For a duration event, this is the end time. For an async event, this is the
-   * async ID. For a flow event, this is the flow ID. For a begin or end event,
-   * this is the event ID (which is only referenced by the MacOS recorder).
-   */
-  int64_t timestamp1_or_id;
+    /**
+     * For a duration event, this is the end time. For an async event, this is the
+     * async ID. For a flow event, this is the flow ID. For a begin or end event,
+     * this is the event ID (which is only referenced by the MacOS recorder).
+     */
+    int64_t timestamp1_or_id;
 
-  /* The current isolate of the event, as if by Dart_GetMainPortId, or
-   * ILLEGAL_PORT if the event had no current isolate. */
-  Dart_Port isolate;
+    /* The current isolate of the event, as if by Dart_GetMainPortId, or
+     * ILLEGAL_PORT if the event had no current isolate. */
+    Dart_Port isolate;
 
-  /* The current isolate group of the event, as if by
-   * Dart_CurrentIsolateGroupId, or ILLEGAL_PORT if the event had no current
-   * isolate group. */
-  Dart_IsolateGroupId isolate_group;
+    /* The current isolate group of the event, as if by
+     * Dart_CurrentIsolateGroupId, or ILLEGAL_PORT if the event had no current
+     * isolate group. */
+    Dart_IsolateGroupId isolate_group;
 
-  /* The callback data associated with the isolate if any. */
-  void* isolate_data;
+    /* The callback data associated with the isolate if any. */
+    void* isolate_data;
 
-  /* The callback data associated with the isolate group if any. */
-  void* isolate_group_data;
+    /* The callback data associated with the isolate group if any. */
+    void* isolate_group_data;
 
-  /* The name / label of the event. */
-  const char* label;
+    /* The name / label of the event. */
+    const char* label;
 
-  /* The stream / category of the event. */
-  const char* stream;
+    /* The stream / category of the event. */
+    const char* stream;
 
-  intptr_t argument_count;
-  Dart_TimelineRecorderEvent_Argument* arguments;
+    intptr_t argument_count;
+    Dart_TimelineRecorderEvent_Argument* arguments;
 } Dart_TimelineRecorderEvent;
 
 /**

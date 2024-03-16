@@ -221,6 +221,12 @@ extern "C"
 
 #define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 
+
+#define atomic_uint32_t _Atomic uint32_t
+#define atomic_int32_t _Atomic int32_t
+#define atomic_uint64_t _Atomic uint64_t
+#define atomic_int64_t _Atomic int64_t
+
 #ifdef DART_EXPORT_INLINES
 #define DART_INLINE_FUNCTION extern FORCEINLINE
 #define DART_INLINE_LEAF_FUNCTION extern FORCEINLINE

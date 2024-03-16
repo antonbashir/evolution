@@ -21,3 +21,6 @@ external Pointer<executor_scheduler> executor_scheduler_initialize(Pointer<execu
 
 @Native<Bool Function(Pointer<executor_scheduler> scheduler)>(isLeaf: true)
 external bool executor_scheduler_shutdown(Pointer<executor_scheduler> scheduler);
+
+@Native<Void Function(Pointer<executor_scheduler> scheduler)>(isLeaf: true)
+external void executor_scheduler_destroy(Pointer<executor_scheduler> scheduler);

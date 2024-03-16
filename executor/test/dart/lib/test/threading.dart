@@ -3,9 +3,8 @@ import 'dart:ffi';
 import 'dart:isolate';
 
 import 'package:collection/collection.dart';
-import 'package:executor/executor.dart';
-import 'package:executor_test/consumer.dart';
-import 'package:executor_test/producer.dart';
+import 'package:executor_test/test/consumer.dart';
+import 'package:executor_test/test/producer.dart';
 import 'package:ffi/ffi.dart';
 import 'package:memory/memory.dart';
 import 'package:test/test.dart';

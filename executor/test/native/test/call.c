@@ -1,9 +1,5 @@
-#include "test_call.h"
-#include <executor_native.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "executor_task.h"
+#include "call.h"
+#include <liburing.h>
 #include "test.h"
 
 static struct executor_task* current_message = NULL;
@@ -13,10 +9,10 @@ void test_call_reset()
     current_message = NULL;
 }
 
-bool test_call_native_check(struct executor_native* executor)
+bool test_call_native_check(struct test_executor* executor)
 {
-    executor_native_process_timeout(executor);
-    executor_native_submit(executor);
+    test_executor_process(executor);
+    io_uring_submit(executor->ring);
     return current_message != NULL;
 }
 
@@ -27,18 +23,18 @@ void test_call_native(struct executor_task* message)
     current_message = message;
 }
 
-void test_call_dart_null(struct executor_native* executor, int32_t target, uintptr_t method)
+void test_call_dart_null(struct test_executor* executor, int32_t target, uintptr_t method)
 {
     struct executor_task* message = test_allocate_message();
     message->id = 0;
     message->source = executor->descriptor;
     message->owner = 0;
     message->method = method;
-    executor_native_call_dart(executor, target, message);
-    executor_native_submit(executor);
+    test_executor_call_dart(executor, target, message);
+    io_uring_submit(executor->ring);
 }
 
-void test_call_dart_bool(struct executor_native* executor, int32_t target, uintptr_t method, bool value)
+void test_call_dart_bool(struct test_executor* executor, int32_t target, uintptr_t method, bool value)
 {
     struct executor_task* message = test_allocate_message();
     message->id = 0;
@@ -47,11 +43,11 @@ void test_call_dart_bool(struct executor_native* executor, int32_t target, uintp
     message->source = executor->descriptor;
     message->owner = 0;
     message->method = method;
-    executor_native_call_dart(executor, target, message);
-    executor_native_submit(executor);
+    test_executor_call_dart(executor, target, message);
+    io_uring_submit(executor->ring);
 }
 
-void test_call_dart_int(struct executor_native* executor, int32_t target, uintptr_t method, int32_t value)
+void test_call_dart_int(struct test_executor* executor, int32_t target, uintptr_t method, int32_t value)
 {
     struct executor_task* message = test_allocate_message();
     message->id = 0;
@@ -60,11 +56,11 @@ void test_call_dart_int(struct executor_native* executor, int32_t target, uintpt
     message->source = executor->descriptor;
     message->owner = 0;
     message->method = method;
-    executor_native_call_dart(executor, target, message);
-    executor_native_submit(executor);
+    test_executor_call_dart(executor, target, message);
+    io_uring_submit(executor->ring);
 }
 
-void test_call_dart_double(struct executor_native* executor, int32_t target, uintptr_t method, double value)
+void test_call_dart_double(struct test_executor* executor, int32_t target, uintptr_t method, double value)
 {
     struct executor_task* message = test_allocate_message();
     message->id = 0;
@@ -74,8 +70,8 @@ void test_call_dart_double(struct executor_native* executor, int32_t target, uin
     message->source = executor->descriptor;
     message->owner = 0;
     message->method = method;
-    executor_native_call_dart(executor, target, message);
-    executor_native_submit(executor);
+    test_executor_call_dart(executor, target, message);
+    io_uring_submit(executor->ring);
 }
 
 void test_call_dart_callback(struct executor_task* message)
@@ -85,14 +81,15 @@ void test_call_dart_callback(struct executor_task* message)
     current_message = message;
 }
 
-struct executor_task* test_call_dart_check(struct executor_native* executor)
+struct executor_task* test_call_dart_check(struct test_executor* executor)
 {
-    executor_native_register_callback(executor, 0, 0, test_call_dart_callback);
-    executor_native_process_timeout(executor);
-    executor_native_submit(executor);
+    test_executor_register_callback(executor, test_call_dart_callback);
+    test_executor_process(executor);
+    io_uring_submit(executor->ring);
     return current_message;
 }
 
-intptr_t test_call_native_address_lookup() {
-  return (uintptr_t)&test_call_native;
+intptr_t test_call_native_address_lookup()
+{
+    return (uintptr_t)&test_call_native;
 }

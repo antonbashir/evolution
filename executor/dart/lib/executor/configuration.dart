@@ -10,6 +10,7 @@ class ExecutorModuleConfiguration implements ModuleConfiguration {
   const ExecutorModuleConfiguration(this.schedulerConfiguration);
 
   Pointer<executor_module_configuration> toNative(Pointer<executor_module_configuration> native) => native;
+  
   factory ExecutorModuleConfiguration.fromNative(Pointer<executor_module_configuration> native) => ExecutorModuleConfiguration(
         ExecutorSchedulerConfiguration.fromNative(native.ref.scheduler_configuration),
       );

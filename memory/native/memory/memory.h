@@ -87,7 +87,7 @@ DART_INLINE_LEAF_FUNCTION void memory_pool_free(struct memory_pool* pool, void* 
     mempool_free(&pool->pool, ptr);
 }
 
-DART_INLINE_LEAF_FUNCTION struct memory_small_allocator* memory_small_allocator_create(float allocation_factor, struct memory_instance* memory)
+DART_INLINE_LEAF_FUNCTION struct memory_small_allocator* memory_small_allocator_create(struct memory_instance* memory, float allocation_factor)
 {
     struct memory_small_allocator* allocator = memory_module_new(sizeof(struct memory_small_allocator));
     float actual_allocation_factor;

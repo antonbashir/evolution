@@ -15,9 +15,9 @@ class ExecutorModuleState implements ModuleState {
 
   ExecutorModuleState();
 
-  Pointer<executor_scheduler> register(Executor executor) {
+  (Pointer<executor_scheduler>, int) register(Executor executor) {
     _executors.add(executor);
-    return _scheduler;
+    return ( _scheduler, executor_next(context().executor().native));
   }
 }
 
@@ -43,7 +43,7 @@ class ExecutorModule with Module<executor_module, ExecutorModuleConfiguration, E
     state._scheduler = using((Arena arena) => executor_scheduler_initialize(configuration.schedulerConfiguration.toNative(arena<executor_scheduler_configuration>()))).check();
     if (!state._scheduler.ref.initialized) {
       final error = state._scheduler.ref.initialization_error.cast<Utf8>().toDartString();
-      calloc.free(state._scheduler);
+      executor_scheduler_destroy(state._scheduler);
       throw ExecutorException(error);
     }
   }
@@ -51,9 +51,10 @@ class ExecutorModule with Module<executor_module, ExecutorModuleConfiguration, E
   Future<void> shutdown() async {
     if (!executor_scheduler_shutdown(state._scheduler)) {
       final error = state._scheduler.ref.shutdown_error.cast<Utf8>().toDartString();
-      calloc.free(state._scheduler);
+      executor_scheduler_destroy(state._scheduler);
       throw ExecutorException(error);
     }
+    executor_scheduler_destroy(state._scheduler);
   }
 
   @override

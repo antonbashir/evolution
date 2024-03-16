@@ -10,13 +10,16 @@
 #include <stdint.h>
 #include <optional>
 
-namespace dart {
-namespace snapshot_analyzer {
-typedef struct {
-  const uint8_t* vm_snapshot_data;
-  const uint8_t* vm_snapshot_instructions;
-  const uint8_t* vm_isolate_data;
-  const uint8_t* vm_isolate_instructions;
+namespace dart
+{
+namespace snapshot_analyzer
+{
+typedef struct
+{
+    const uint8_t* vm_snapshot_data;
+    const uint8_t* vm_snapshot_instructions;
+    const uint8_t* vm_isolate_data;
+    const uint8_t* vm_isolate_instructions;
 } Dart_SnapshotAnalyzerInformation;
 
 void Dart_DumpSnapshotInformationAsJson(

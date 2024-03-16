@@ -6,7 +6,6 @@ environment:
   sdk: ">=3.3.0 <4.0.0"
 
 dev_dependencies:
-  ffigen: ^11.0.0
   test: ^1.22.0
 
 dependencies:
@@ -18,46 +17,3 @@ dependencies:
     path: ../../core/dart
   executor:
     path: ../../executor/dart
-
-ffigen:
-  name: "TarantoolBindings"
-  ffi-native:
-    assetId: "tarantool-bindings"
-  description: "Bindings for Tarantool"
-  output: "lib/storage/bindings.dart"
-  headers:
-    entry-points:
-      - "../native/src/tarantool.h"
-      - "../native/src/tarantool_executor.h"
-      - "../native/src/tarantool_box.h"
-      - "../native/src/tarantool_factory.h"
-      - "../native/src/tarantool_tuple.h"
-  globals:
-    exclude:
-      - "(.*)"
-  macros:
-    exclude:
-      - "(.*)"
-  typedefs:
-    exclude:
-      - "_(.*)"
-  functions:
-    leaf:
-      include:
-        - "tarantool_(.*)"
-  structs:
-    exclude:
-      - "_(.*)"
-      - "max_align_t"
-  type-map:
-    "structs":
-      "executor_task":
-        "lib": "executor"
-        "c-type": "executor_task"
-        "dart-type": "executor_task"
-      "executor_completion_event":
-        "lib": "executor"
-        "c-type": "executor_completion_event"
-        "dart-type": "executor_completion_event"
-  library-imports:
-    executor: "package:executor/executor.dart"

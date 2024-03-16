@@ -15,6 +15,8 @@ final class executor_module extends Struct {
   external Pointer<Utf8> name;
   external Pointer<executor_module_configuration> configuration;
   external Pointer<executor_scheduler> scheduler;
+  @Uint32()
+  external int executors;
 }
 
 final class executor_module_state extends Opaque {}
@@ -24,3 +26,6 @@ external Pointer<executor_module> executor_module_create(Pointer<executor_module
 
 @Native<Void Function(Pointer<executor_module> module)>(isLeaf: true)
 external void executor_module_destroy(Pointer<executor_module> module);
+
+@Native<Uint32 Function(Pointer<executor_module> module)>(isLeaf: true)
+external int executor_next(Pointer<executor_module> module);

@@ -46,8 +46,8 @@
 #else
 #if __GNUC__ >= 4
 #if defined(DART_SHARED_LIB)
-#define DART_EXPORT                                                            \
-  DART_EXTERN_C __attribute__((visibility("default"))) __attribute((used))
+#define DART_EXPORT \
+    DART_EXTERN_C __attribute__((visibility("default"))) __attribute((used))
 #else
 #define DART_EXPORT DART_EXTERN_C
 #endif
@@ -326,7 +326,7 @@ DART_EXPORT bool Dart_IsFatalError(Dart_Handle handle);
  *   error. An empty C string ("") if the handle is valid. This C
  *   String is scope allocated and is only valid until the next call
  *   to Dart_ExitScope.
-*/
+ */
 DART_EXPORT const char* Dart_GetError(Dart_Handle handle);
 
 /**
@@ -556,7 +556,6 @@ Dart_NewFinalizableHandle(Dart_Handle object,
 DART_EXPORT void Dart_DeleteFinalizableHandle(Dart_FinalizableHandle object,
                                               Dart_Handle strong_ref_to_object);
 
-
 /*
  * ==========================
  * Initialization and Globals
@@ -582,18 +581,19 @@ DART_EXPORT const char* Dart_VersionString(void);
 
 #define DART_FLAGS_CURRENT_VERSION (0x0000000c)
 
-typedef struct {
-  int32_t version;
-  bool enable_asserts;
-  bool use_field_guards;
-  bool use_osr;
-  bool obfuscate;
-  bool load_vmservice_library;
-  bool copy_parent_code;
-  bool null_safety;
-  bool is_system_isolate;
-  bool snapshot_is_dontneed_safe;
-  bool branch_coverage;
+typedef struct
+{
+    int32_t version;
+    bool enable_asserts;
+    bool use_field_guards;
+    bool use_osr;
+    bool obfuscate;
+    bool load_vmservice_library;
+    bool copy_parent_code;
+    bool null_safety;
+    bool is_system_isolate;
+    bool snapshot_is_dontneed_safe;
+    bool branch_coverage;
 } Dart_IsolateFlags;
 
 /**
@@ -856,10 +856,11 @@ typedef void (*Dart_OnNewCodeCallback)(struct Dart_CodeObserver* observer,
                                        uintptr_t base,
                                        uintptr_t size);
 
-typedef struct Dart_CodeObserver {
-  void* data;
+typedef struct Dart_CodeObserver
+{
+    void* data;
 
-  Dart_OnNewCodeCallback on_new_code;
+    Dart_OnNewCodeCallback on_new_code;
 } Dart_CodeObserver;
 
 /**
@@ -867,7 +868,7 @@ typedef struct Dart_CodeObserver {
  * implement registration of kernel blobs for the subsequent Isolate.spawnUri
  * If no callback is provided, the registration of kernel blobs will throw
  * an error.
- * 
+ *
  * \param kernel_buffer A buffer which contains a kernel program. Callback
  *                      should copy the contents of `kernel_buffer` as
  *                      it may be freed immediately after registration.
@@ -887,7 +888,7 @@ typedef const char* (*Dart_RegisterKernelBlobCallback)(
  * unregister kernel blobs.
  * If no callback is provided, the unregistration of kernel blobs will throw
  * an error.
- * 
+ *
  * \param kernel_blob_uri URI of the kernel blob to unregister.
  */
 typedef void (*Dart_UnregisterKernelBlobCallback)(const char* kernel_blob_uri);
@@ -895,98 +896,99 @@ typedef void (*Dart_UnregisterKernelBlobCallback)(const char* kernel_blob_uri);
 /**
  * Describes how to initialize the VM. Used with Dart_Initialize.
  */
-typedef struct {
-  /**
-   * Identifies the version of the struct used by the client.
-   * should be initialized to DART_INITIALIZE_PARAMS_CURRENT_VERSION.
-   */
-  int32_t version;
+typedef struct
+{
+    /**
+     * Identifies the version of the struct used by the client.
+     * should be initialized to DART_INITIALIZE_PARAMS_CURRENT_VERSION.
+     */
+    int32_t version;
 
-  /**
-   * A buffer containing snapshot data, or NULL if no snapshot is provided.
-   *
-   * If provided, the buffer must remain valid until Dart_Cleanup returns.
-   */
-  const uint8_t* vm_snapshot_data;
+    /**
+     * A buffer containing snapshot data, or NULL if no snapshot is provided.
+     *
+     * If provided, the buffer must remain valid until Dart_Cleanup returns.
+     */
+    const uint8_t* vm_snapshot_data;
 
-  /**
-   * A buffer containing a snapshot of precompiled instructions, or NULL if
-   * no snapshot is provided.
-   *
-   * If provided, the buffer must remain valid until Dart_Cleanup returns.
-   */
-  const uint8_t* vm_snapshot_instructions;
+    /**
+     * A buffer containing a snapshot of precompiled instructions, or NULL if
+     * no snapshot is provided.
+     *
+     * If provided, the buffer must remain valid until Dart_Cleanup returns.
+     */
+    const uint8_t* vm_snapshot_instructions;
 
-  /**
-   * A function to be called during isolate group creation.
-   * See Dart_IsolateGroupCreateCallback.
-   */
-  Dart_IsolateGroupCreateCallback create_group;
+    /**
+     * A function to be called during isolate group creation.
+     * See Dart_IsolateGroupCreateCallback.
+     */
+    Dart_IsolateGroupCreateCallback create_group;
 
-  /**
-   * A function to be called during isolate
-   * initialization inside an existing isolate group.
-   * See Dart_InitializeIsolateCallback.
-   */
-  Dart_InitializeIsolateCallback initialize_isolate;
+    /**
+     * A function to be called during isolate
+     * initialization inside an existing isolate group.
+     * See Dart_InitializeIsolateCallback.
+     */
+    Dart_InitializeIsolateCallback initialize_isolate;
 
-  /**
-   * A function to be called right before an isolate is shutdown.
-   * See Dart_IsolateShutdownCallback.
-   */
-  Dart_IsolateShutdownCallback shutdown_isolate;
+    /**
+     * A function to be called right before an isolate is shutdown.
+     * See Dart_IsolateShutdownCallback.
+     */
+    Dart_IsolateShutdownCallback shutdown_isolate;
 
-  /**
-   * A function to be called after an isolate was shutdown.
-   * See Dart_IsolateCleanupCallback.
-   */
-  Dart_IsolateCleanupCallback cleanup_isolate;
+    /**
+     * A function to be called after an isolate was shutdown.
+     * See Dart_IsolateCleanupCallback.
+     */
+    Dart_IsolateCleanupCallback cleanup_isolate;
 
-  /**
-   * A function to be called after an isolate group is
-   * shutdown. See Dart_IsolateGroupCleanupCallback.
-   */
-  Dart_IsolateGroupCleanupCallback cleanup_group;
+    /**
+     * A function to be called after an isolate group is
+     * shutdown. See Dart_IsolateGroupCleanupCallback.
+     */
+    Dart_IsolateGroupCleanupCallback cleanup_group;
 
-  Dart_ThreadStartCallback thread_start;
-  Dart_ThreadExitCallback thread_exit;
-  Dart_FileOpenCallback file_open;
-  Dart_FileReadCallback file_read;
-  Dart_FileWriteCallback file_write;
-  Dart_FileCloseCallback file_close;
-  Dart_EntropySource entropy_source;
+    Dart_ThreadStartCallback thread_start;
+    Dart_ThreadExitCallback thread_exit;
+    Dart_FileOpenCallback file_open;
+    Dart_FileReadCallback file_read;
+    Dart_FileWriteCallback file_write;
+    Dart_FileCloseCallback file_close;
+    Dart_EntropySource entropy_source;
 
-  /**
-   * A function to be called by the service isolate when it requires the
-   * vmservice assets archive. See Dart_GetVMServiceAssetsArchive.
-   */
-  Dart_GetVMServiceAssetsArchive get_service_assets;
+    /**
+     * A function to be called by the service isolate when it requires the
+     * vmservice assets archive. See Dart_GetVMServiceAssetsArchive.
+     */
+    Dart_GetVMServiceAssetsArchive get_service_assets;
 
-  bool start_kernel_isolate;
+    bool start_kernel_isolate;
 
-  /**
-   * An external code observer callback function. The observer can be invoked
-   * as early as during the Dart_Initialize() call.
-   */
-  Dart_CodeObserver* code_observer;
+    /**
+     * An external code observer callback function. The observer can be invoked
+     * as early as during the Dart_Initialize() call.
+     */
+    Dart_CodeObserver* code_observer;
 
-  /**
-   * Kernel blob registration callback function. See Dart_RegisterKernelBlobCallback.
-   */
-  Dart_RegisterKernelBlobCallback register_kernel_blob;
+    /**
+     * Kernel blob registration callback function. See Dart_RegisterKernelBlobCallback.
+     */
+    Dart_RegisterKernelBlobCallback register_kernel_blob;
 
-  /**
-   * Kernel blob unregistration callback function. See Dart_UnregisterKernelBlobCallback.
-   */
-  Dart_UnregisterKernelBlobCallback unregister_kernel_blob;
+    /**
+     * Kernel blob unregistration callback function. See Dart_UnregisterKernelBlobCallback.
+     */
+    Dart_UnregisterKernelBlobCallback unregister_kernel_blob;
 
 #if defined(__Fuchsia__)
-  /**
-   * The resource needed to use zx_vmo_replace_as_executable. Can be
-   * ZX_HANDLE_INVALID if the process has ambient-replace-as-executable or if
-   * executable memory is not needed (e.g., this is an AOT runtime).
-   */
-  zx_handle_t vmex_resource;
+    /**
+     * The resource needed to use zx_vmo_replace_as_executable. Can be
+     * ZX_HANDLE_INVALID if the process has ambient-replace-as-executable or if
+     * executable memory is not needed (e.g., this is an AOT runtime).
+     */
+    zx_handle_t vmex_resource;
 #endif
 } Dart_InitializeParams;
 
@@ -1366,28 +1368,29 @@ DART_EXPORT void Dart_NotifyDestroyed(void);
  */
 DART_EXPORT void Dart_NotifyLowMemory(void);
 
-typedef enum {
-  /**
-   * Balanced
-   */
-  Dart_PerformanceMode_Default,
-  /**
-   * Optimize for low latency, at the expense of throughput and memory overhead
-   * by performing work in smaller batches (requiring more overhead) or by
-   * delaying work (requiring more memory). An embedder should not remain in
-   * this mode indefinitely.
-   */
-  Dart_PerformanceMode_Latency,
-  /**
-   * Optimize for high throughput, at the expense of latency and memory overhead
-   * by performing work in larger batches with more intervening growth.
-   */
-  Dart_PerformanceMode_Throughput,
-  /**
-   * Optimize for low memory, at the expensive of throughput and latency by more
-   * frequently performing work.
-   */
-  Dart_PerformanceMode_Memory,
+typedef enum
+{
+    /**
+     * Balanced
+     */
+    Dart_PerformanceMode_Default,
+    /**
+     * Optimize for low latency, at the expense of throughput and memory overhead
+     * by performing work in smaller batches (requiring more overhead) or by
+     * delaying work (requiring more memory). An embedder should not remain in
+     * this mode indefinitely.
+     */
+    Dart_PerformanceMode_Latency,
+    /**
+     * Optimize for high throughput, at the expense of latency and memory overhead
+     * by performing work in larger batches with more intervening growth.
+     */
+    Dart_PerformanceMode_Throughput,
+    /**
+     * Optimize for low memory, at the expensive of throughput and latency by more
+     * frequently performing work.
+     */
+    Dart_PerformanceMode_Memory,
 } Dart_PerformanceMode;
 
 /**
@@ -2475,10 +2478,11 @@ DART_EXPORT Dart_Handle Dart_StringGetProperties(Dart_Handle str,
  */
 DART_EXPORT Dart_Handle Dart_NewList(intptr_t length);
 
-typedef enum {
-  Dart_CoreType_Dynamic,
-  Dart_CoreType_Int,
-  Dart_CoreType_String,
+typedef enum
+{
+    Dart_CoreType_Dynamic,
+    Dart_CoreType_Int,
+    Dart_CoreType_String,
 } Dart_CoreType_Id;
 
 // TODO(bkonyi): convert this to use nullable types once NNBD is enabled.
@@ -2555,19 +2559,19 @@ DART_EXPORT Dart_Handle Dart_ListLength(Dart_Handle list, intptr_t* length);
 DART_EXPORT Dart_Handle Dart_ListGetAt(Dart_Handle list, intptr_t index);
 
 /**
-* Gets a range of Objects from a List.
-*
-* If any of the requested index values are out of bounds, an error occurs.
-*
-* May generate an unhandled exception error.
-*
-* \param list A List.
-* \param offset The offset of the first item to get.
-* \param length The number of items to get.
-* \param result A pointer to fill with the objects.
-*
-* \return Success if no error occurs during the operation.
-*/
+ * Gets a range of Objects from a List.
+ *
+ * If any of the requested index values are out of bounds, an error occurs.
+ *
+ * May generate an unhandled exception error.
+ *
+ * \param list A List.
+ * \param offset The offset of the first item to get.
+ * \param length The number of items to get.
+ * \param result A pointer to fill with the objects.
+ *
+ * \return Success if no error occurs during the operation.
+ */
 DART_EXPORT Dart_Handle Dart_ListGetRange(Dart_Handle list,
                                           intptr_t offset,
                                           intptr_t length,
@@ -2655,23 +2659,24 @@ DART_EXPORT Dart_Handle Dart_MapKeys(Dart_Handle map);
  * ==========
  */
 
-typedef enum {
-  Dart_TypedData_kByteData = 0,
-  Dart_TypedData_kInt8,
-  Dart_TypedData_kUint8,
-  Dart_TypedData_kUint8Clamped,
-  Dart_TypedData_kInt16,
-  Dart_TypedData_kUint16,
-  Dart_TypedData_kInt32,
-  Dart_TypedData_kUint32,
-  Dart_TypedData_kInt64,
-  Dart_TypedData_kUint64,
-  Dart_TypedData_kFloat32,
-  Dart_TypedData_kFloat64,
-  Dart_TypedData_kInt32x4,
-  Dart_TypedData_kFloat32x4,
-  Dart_TypedData_kFloat64x2,
-  Dart_TypedData_kInvalid
+typedef enum
+{
+    Dart_TypedData_kByteData = 0,
+    Dart_TypedData_kInt8,
+    Dart_TypedData_kUint8,
+    Dart_TypedData_kUint8Clamped,
+    Dart_TypedData_kInt16,
+    Dart_TypedData_kUint16,
+    Dart_TypedData_kInt32,
+    Dart_TypedData_kUint32,
+    Dart_TypedData_kInt64,
+    Dart_TypedData_kUint64,
+    Dart_TypedData_kFloat32,
+    Dart_TypedData_kFloat64,
+    Dart_TypedData_kInt32x4,
+    Dart_TypedData_kFloat32x4,
+    Dart_TypedData_kFloat64x2,
+    Dart_TypedData_kInvalid
 } Dart_TypedData_Type;
 
 /**
@@ -3069,52 +3074,58 @@ typedef struct _Dart_NativeArguments* Dart_NativeArguments;
  */
 DART_EXPORT void* Dart_GetNativeIsolateGroupData(Dart_NativeArguments args);
 
-typedef enum {
-  Dart_NativeArgument_kBool = 0,
-  Dart_NativeArgument_kInt32,
-  Dart_NativeArgument_kUint32,
-  Dart_NativeArgument_kInt64,
-  Dart_NativeArgument_kUint64,
-  Dart_NativeArgument_kDouble,
-  Dart_NativeArgument_kString,
-  Dart_NativeArgument_kInstance,
-  Dart_NativeArgument_kNativeFields,
+typedef enum
+{
+    Dart_NativeArgument_kBool = 0,
+    Dart_NativeArgument_kInt32,
+    Dart_NativeArgument_kUint32,
+    Dart_NativeArgument_kInt64,
+    Dart_NativeArgument_kUint64,
+    Dart_NativeArgument_kDouble,
+    Dart_NativeArgument_kString,
+    Dart_NativeArgument_kInstance,
+    Dart_NativeArgument_kNativeFields,
 } Dart_NativeArgument_Type;
 
-typedef struct _Dart_NativeArgument_Descriptor {
-  uint8_t type;
-  uint8_t index;
+typedef struct _Dart_NativeArgument_Descriptor
+{
+    uint8_t type;
+    uint8_t index;
 } Dart_NativeArgument_Descriptor;
 
-typedef union _Dart_NativeArgument_Value {
-  bool as_bool;
-  int32_t as_int32;
-  uint32_t as_uint32;
-  int64_t as_int64;
-  uint64_t as_uint64;
-  double as_double;
-  struct {
-    Dart_Handle dart_str;
-    void* peer;
-  } as_string;
-  struct {
-    intptr_t num_fields;
-    intptr_t* values;
-  } as_native_fields;
-  Dart_Handle as_instance;
+typedef union _Dart_NativeArgument_Value
+{
+    bool as_bool;
+    int32_t as_int32;
+    uint32_t as_uint32;
+    int64_t as_int64;
+    uint64_t as_uint64;
+    double as_double;
+    struct
+    {
+        Dart_Handle dart_str;
+        void* peer;
+    } as_string;
+    struct
+    {
+        intptr_t num_fields;
+        intptr_t* values;
+    } as_native_fields;
+    Dart_Handle as_instance;
 } Dart_NativeArgument_Value;
 
-enum {
-  kNativeArgNumberPos = 0,
-  kNativeArgNumberSize = 8,
-  kNativeArgTypePos = kNativeArgNumberPos + kNativeArgNumberSize,
-  kNativeArgTypeSize = 8,
+enum
+{
+    kNativeArgNumberPos = 0,
+    kNativeArgNumberSize = 8,
+    kNativeArgTypePos = kNativeArgNumberPos + kNativeArgNumberSize,
+    kNativeArgTypeSize = 8,
 };
 
 #define BITMASK(size) ((1 << size) - 1)
-#define DART_NATIVE_ARG_DESCRIPTOR(type, position)                             \
-  (((type & BITMASK(kNativeArgTypeSize)) << kNativeArgTypePos) |               \
-   (position & BITMASK(kNativeArgNumberSize)))
+#define DART_NATIVE_ARG_DESCRIPTOR(type, position)                 \
+    (((type & BITMASK(kNativeArgTypeSize)) << kNativeArgTypePos) | \
+     (position & BITMASK(kNativeArgNumberSize)))
 
 /**
  * Gets the native arguments based on the types passed in and populates
@@ -3391,10 +3402,11 @@ Dart_SetFfiNativeResolver(Dart_Handle library, Dart_FfiNativeResolver resolver);
  * =====================
  */
 
-typedef enum {
-  Dart_kCanonicalizeUrl = 0,
-  Dart_kImportTag,
-  Dart_kKernelTag,
+typedef enum
+{
+    Dart_kCanonicalizeUrl = 0,
+    Dart_kImportTag,
+    Dart_kKernelTag,
 } Dart_LibraryTag;
 
 /**
@@ -3778,26 +3790,29 @@ DART_EXPORT Dart_Handle Dart_SetPeer(Dart_Handle object, void* peer);
 
 // TODO(33433): Remove kernel service from the embedding API.
 
-typedef enum {
-  Dart_KernelCompilationStatus_Unknown = -1,
-  Dart_KernelCompilationStatus_Ok = 0,
-  Dart_KernelCompilationStatus_Error = 1,
-  Dart_KernelCompilationStatus_Crash = 2,
-  Dart_KernelCompilationStatus_MsgFailed = 3,
+typedef enum
+{
+    Dart_KernelCompilationStatus_Unknown = -1,
+    Dart_KernelCompilationStatus_Ok = 0,
+    Dart_KernelCompilationStatus_Error = 1,
+    Dart_KernelCompilationStatus_Crash = 2,
+    Dart_KernelCompilationStatus_MsgFailed = 3,
 } Dart_KernelCompilationStatus;
 
-typedef struct {
-  Dart_KernelCompilationStatus status;
-  char* error;
-  uint8_t* kernel;
-  intptr_t kernel_size;
+typedef struct
+{
+    Dart_KernelCompilationStatus status;
+    char* error;
+    uint8_t* kernel;
+    intptr_t kernel_size;
 } Dart_KernelCompilationResult;
 
-typedef enum {
-  Dart_KernelCompilationVerbosityLevel_Error = 0,
-  Dart_KernelCompilationVerbosityLevel_Warning,
-  Dart_KernelCompilationVerbosityLevel_Info,
-  Dart_KernelCompilationVerbosityLevel_All,
+typedef enum
+{
+    Dart_KernelCompilationVerbosityLevel_Error = 0,
+    Dart_KernelCompilationVerbosityLevel_Warning,
+    Dart_KernelCompilationVerbosityLevel_Info,
+    Dart_KernelCompilationVerbosityLevel_All,
 } Dart_KernelCompilationVerbosityLevel;
 
 DART_EXPORT bool Dart_IsKernelIsolate(Dart_Isolate isolate);
@@ -3844,9 +3859,10 @@ Dart_CompileToKernel(const char* script_uri,
                      const char* package_config,
                      Dart_KernelCompilationVerbosityLevel verbosity);
 
-typedef struct {
-  const char* uri;
-  const char* source;
+typedef struct
+{
+    const char* uri;
+    const char* source;
 } Dart_SourceFile;
 
 DART_EXPORT Dart_KernelCompilationResult Dart_KernelListDependencies(void);
@@ -3997,8 +4013,8 @@ DART_EXPORT Dart_Handle Dart_LoadingUnitLibraryUris(intptr_t loading_unit_id);
 #define kVmSnapshotInstructionsAsmSymbol "_kDartVmSnapshotInstructions"
 #define kVmSnapshotBssAsmSymbol "_kDartVmSnapshotBss"
 #define kIsolateSnapshotDataAsmSymbol "_kDartIsolateSnapshotData"
-#define kIsolateSnapshotInstructionsAsmSymbol                                  \
-  "_kDartIsolateSnapshotInstructions"
+#define kIsolateSnapshotInstructionsAsmSymbol \
+    "_kDartIsolateSnapshotInstructions"
 #define kIsolateSnapshotBssAsmSymbol "_kDartIsolateSnapshotBss"
 
 /**

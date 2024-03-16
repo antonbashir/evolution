@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ffi';
 import 'dart:isolate';
 
+import 'package:core/core/exceptions.dart';
 import 'package:ffi/ffi.dart';
 import 'package:memory/memory.dart';
 
@@ -24,6 +25,7 @@ class Executor {
   late final int descriptor;
   late final ExecutorTasks tasks;
 
+  late int _id = -1;
   late ExecutorProcessor _processor = _process;
   late final ExecutorConsumerRegistry _consumers;
   late final ExecutorProducerRegistry _producers;
@@ -31,18 +33,20 @@ class Executor {
   late final Pointer<executor_scheduler> _scheduler;
 
   @inline
-  int get id => instance.ref.id;
+  int get id => _id;
 
   @inline
   bool get active => instance.ref.state & executorStateStopped == 0;
 
   Executor({this.configuration = ExecutorDefaults.executor}) {
-    _scheduler = context().executor().state.register(this);
+    final (scheduler, id) = context().executor().state.register(this);
+    _scheduler = scheduler;
+    _id = id;
   }
 
   Future<void> initialize({ExecutorProcessor? processor}) async {
     _processor = processor ?? _processor;
-    instance = using((arena) => executor_create(configuration.toNative(arena<executor_configuration>()), _scheduler, id));
+    instance = using((arena) => executor_create(configuration.toNative(arena<executor_configuration>()), _scheduler, _id)).check();
     descriptor = instance.ref.descriptor;
     tasks = ExecutorTasks();
     _completions = instance.ref.completions;
@@ -60,15 +64,11 @@ class Executor {
   }
 
   void activate() {
-    if (executor_register_scheduler(instance, _callback.sendPort.nativePort) == executorErrorRingFull) {
-      throw ExecutorException(ExecutorErrors.executorRingFullError);
-    }
+    ExecutorException.checkRing(executor_register_scheduler(instance, _callback.sendPort.nativePort));
   }
 
   void deactivate() {
-    if (executor_unregister_scheduler(instance) == executorErrorRingFull) {
-      throw ExecutorException(ExecutorErrors.executorRingFullError);
-    }
+    ExecutorException.checkRing(executor_unregister_scheduler(instance));
   }
 
   void consumer(ExecutorConsumer declaration) => _consumers.register(declaration);
@@ -78,10 +78,7 @@ class Executor {
   @inline
   void _awake() {
     if (instance.ref.state & executorStateStopped == 0) {
-      if (executor_awake_begin(instance) == executorErrorRingFull) {
-        executor_awake_complete(instance, 0);
-        throw ExecutorException(ExecutorErrors.executorRingFullError);
-      }
+      ExecutorException.checkRing(executor_awake_begin(instance), () => executor_awake_complete(instance, 0));
       final count = executor_peek(instance);
       if (count == 0) return;
       _processor(_completions, count);
@@ -89,7 +86,6 @@ class Executor {
     }
   }
 
-  @inline
   void _process(Pointer<Pointer<executor_completion_event>> completions, int count) {
     for (var index = 0; index < count; index++) {
       Pointer<executor_completion_event> completion = (completions + index).value.cast();
@@ -97,13 +93,13 @@ class Executor {
       final result = completion.ref.res;
       if (data > 0) {
         if (result & executorDartCall != 0) {
-          Pointer<executor_task> message = Pointer.fromAddress(data);
-          _consumers.call(message);
+          Pointer<executor_task> task = Pointer.fromAddress(data);
+          _consumers.call(task);
           continue;
         }
         if (result & executorDartCallback != 0) {
-          Pointer<executor_task> message = Pointer.fromAddress(data);
-          _producers.callback(message);
+          Pointer<executor_task> task = Pointer.fromAddress(data);
+          _producers.callback(task);
           continue;
         }
         continue;

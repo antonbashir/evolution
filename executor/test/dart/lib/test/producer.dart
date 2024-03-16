@@ -1,7 +1,5 @@
 import 'dart:ffi';
 
-import 'package:executor/executor.dart';
-
 import 'bindings.dart';
 
 class TestNativeProducer implements ExecutorProducer {

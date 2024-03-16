@@ -72,7 +72,10 @@ static void* executor_scheduler_listen(void* input)
                     bool result = Dart_PostInteger(executor->callback, executor->id);
                     if (!result)
                     {
-                        print_event(executor_module_event(event_error(event_scope(EXECUTOR_SCOPE_SCHEDULER), executor_format_cqe(cqe))));
+                        print_event(executor_module_event(event_error(event_scope(EXECUTOR_SCOPE_SCHEDULER),
+                                                                      event_field(EXECUTOR_CQE_FIELD_RESULT, cqe->res),
+                                                                      event_field(EXECUTOR_CQE_FIELD_USER_DATA, cqe->user_data),
+                                                                      event_field(EXECUTOR_CQE_FIELD_FLAGS, cqe->flags))));
                     }
                 }
                 continue;
@@ -185,4 +188,9 @@ bool executor_scheduler_shutdown(struct executor_scheduler* scheduler)
     executor_module_check_code(pthread_cond_destroy(&scheduler->thread.shutdown_condition));
     executor_module_check_code(pthread_mutex_destroy(&scheduler->thread.shutdown_mutex));
     return true;
+}
+
+void executor_scheduler_destroy(struct executor_scheduler* scheduler)
+{
+  executor_module_delete(scheduler);
 }

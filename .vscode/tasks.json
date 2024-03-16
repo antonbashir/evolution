@@ -24,10 +24,9 @@
     {
       "type": "cmake",
       "label": "storage-native-build",
-      "command": "cleanRebuild",
+      "command": "build",
       "targets": [
         "storage_native",
-        "storage_test"
       ],
       "group": "build",
       "problemMatcher": [],
@@ -35,7 +34,7 @@
     {
       "type": "cmake",
       "label": "executor-native-build",
-      "command": "cleanRebuild",
+      "command": "build",
       "targets": [
         "executor_native",
         "executor_test"

@@ -4,7 +4,6 @@ import 'dart:ffi';
 import 'package:core/core.dart';
 
 import 'bindings.dart';
-import 'constants.dart';
 import 'declaration.dart';
 import 'exception.dart';
 
@@ -45,10 +44,7 @@ class ExecutorMethodExecutor implements ExecutorMethod {
     message.ref.owner = _executorId;
     message.ref.method = _methodId;
     _calls[message.address] = completer;
-    if (executor_call_native(_executor, target, message) == executorErrorRingFull) {
-      _calls.remove(message.address);
-      throw ExecutorException(ExecutorErrors.executorRingFullError);
-    }
+    ExecutorException.checkRing(executor_call_native(_executor, target, message), () => _calls.remove(message.address));
     return completer.future.then(_onComplete);
   }
 

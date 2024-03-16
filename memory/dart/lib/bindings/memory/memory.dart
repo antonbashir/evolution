@@ -31,8 +31,8 @@ external Pointer<Void> memory_pool_allocate(Pointer<memory_pool> pool);
 @Native<Void Function(Pointer<memory_pool> pool, Pointer<Void> ptr)>(isLeaf: true)
 external void memory_pool_free(Pointer<memory_pool> pool, Pointer<Void> ptr);
 
-@Native<Pointer<memory_small_allocator> Function(Float allocation_factor, Pointer<memory_instance> memory)>(isLeaf: true)
-external Pointer<memory_small_allocator> memory_small_allocator_create(double allocation_factor, Pointer<memory_instance> memory);
+@Native<Pointer<memory_small_allocator> Function(Pointer<memory_instance> memory, Float allocation_factor)>(isLeaf: true)
+external Pointer<memory_small_allocator> memory_small_allocator_create(Pointer<memory_instance> memory, double allocation_factor);
 
 @Native<Pointer<Void> Function(Pointer<memory_small_allocator> pool, Size size)>(isLeaf: true)
 external Pointer<Void> memory_small_allocator_allocate(Pointer<memory_small_allocator> pool, int size);

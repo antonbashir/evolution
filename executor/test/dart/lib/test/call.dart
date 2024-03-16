@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:ffi';
 
-import 'package:executor/executor.dart';
 import 'package:memory/memory.dart';
 import 'package:test/test.dart';
 
@@ -13,14 +12,14 @@ ContextCreator _initialize(ContextCreator creator) => creator.create(CoreModule(
 
 void testCallNative() {
   test("dart(null) <-> native(null)", () async {
-    launch(_initialize).activate(() async {
+    await launch(_initialize).activate(() async {
       final executor = Executor();
       test_call_reset();
       await executor.initialize();
       final native = test_executor_initialize(true);
       final producer = executor.producer(TestNativeProducer());
       executor.activate();
-      final call = producer.testCallNative(test_executor_descriptor(native), executor.tasks.allocate());
+      final call = producer.testCallNative(native.ref.descriptor, executor.tasks.allocate());
       await _awaitNativeCall(native);
       final result = await call;
       executor.tasks.free(result);
@@ -29,14 +28,14 @@ void testCallNative() {
   });
 
   test("dart(bool) <-> native(bool)", () async {
-    launch(_initialize).activate(() async {
+    await launch(_initialize).activate(() async {
       final executor = Executor();
       test_call_reset();
       await executor.initialize();
       final native = test_executor_initialize(true);
       final producer = executor.producer(TestNativeProducer());
       executor.activate();
-      final call = producer.testCallNative(test_executor_descriptor(native), executor.tasks.allocate()..inputBool = true);
+      final call = producer.testCallNative(native.ref.descriptor, executor.tasks.allocate()..inputBool = true);
       await _awaitNativeCall(native);
       final result = await call;
       expect(result.outputBool, true);
@@ -53,7 +52,7 @@ void testCallNative() {
       final native = test_executor_initialize(true);
       final producer = executor.producer(TestNativeProducer());
       executor.activate();
-      final call = producer.testCallNative(test_executor_descriptor(native), executor.tasks.allocate()..inputInt = 123);
+      final call = producer.testCallNative(native.ref.descriptor, executor.tasks.allocate()..inputInt = 123);
       await _awaitNativeCall(native);
       final result = await call;
       expect(result.outputInt, 123);
@@ -72,7 +71,7 @@ void testCallNative() {
       executor.activate();
       final value = context().doubles().allocate();
       value.value = 123.45;
-      final call = producer.testCallNative(test_executor_descriptor(native), executor.tasks.allocate()..setInputDouble(value));
+      final call = producer.testCallNative(native.ref.descriptor, executor.tasks.allocate()..setInputDouble(value));
       await _awaitNativeCall(native);
       final result = await call;
       expect(result.outputDouble, 123.45);
@@ -167,7 +166,7 @@ void testCallDart() {
   });
 }
 
-Future<void> _awaitDartCall(Pointer<executor_native> native) async {
+Future<void> _awaitDartCall(Pointer<test_executor> native) async {
   while (true) {
     final result = test_call_dart_check(native);
     if (result == nullptr) {
@@ -178,6 +177,6 @@ Future<void> _awaitDartCall(Pointer<executor_native> native) async {
   }
 }
 
-Future<void> _awaitNativeCall(Pointer<executor_native> native) async {
+Future<void> _awaitNativeCall(Pointer<test_executor> native) async {
   while (!test_call_native_check(native)) await Future.delayed(Duration(milliseconds: 10));
 }

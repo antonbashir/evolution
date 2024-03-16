@@ -25,5 +25,6 @@
 #include <sys/un.h>
 #include <time.h>
 #include <unistd.h>
+#include <stdatomic.h>
 
 #endif

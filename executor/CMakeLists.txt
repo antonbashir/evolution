@@ -11,7 +11,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(executor_liburing)
 
 add_custom_command(
-  OUTPUT ${executor_liburing_SOURCE_DIR}/Makefile
+  OUTPUT ${executor_liburing_SOURCE_DIR}/config.log
   WORKING_DIRECTORY ${executor_liburing_SOURCE_DIR}
   COMMAND AR=${CMAKE_AR} CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER} CFLAGS=${LIBURING_CFLAGS} CXXFLAGS=${LIBURING_CXXFLAGS}
   ./configure --prefix=${executor_liburing_BINARY_DIR}
@@ -19,9 +19,9 @@ add_custom_command(
 
 add_custom_target(executor_liburing_build
   COMMAND AR=${CMAKE_AR} CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER} CFLAGS=${LIBURING_CFLAGS} CXXFLAGS=${LIBURING_CXXFLAGS}
-  make &> /dev/null && make install DESTDIR=${executor_liburing_BINARY_DIR} &> /dev/null
+  make && make install DESTDIR=${executor_liburing_BINARY_DIR}
   WORKING_DIRECTORY ${executor_liburing_SOURCE_DIR}
-  DEPENDS ${executor_liburing_SOURCE_DIR}/Makefile
+  DEPENDS ${executor_liburing_SOURCE_DIR}/config.log
   BYPRODUCTS ${executor_liburing_BINARY_DIR}/usr/lib/liburing.a
 )
 

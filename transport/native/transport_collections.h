@@ -8,7 +8,9 @@ extern "C"
 {
 #endif
 
-#define SIMPLE_MAP_SOURCE
+#ifndef SIMPLE_MAP_SOURCE
+#define SIMPLE_MAP_UNDEF
+#endif
 
 struct simple_map_events_node_t
 {

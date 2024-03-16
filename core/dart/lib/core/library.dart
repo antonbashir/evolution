@@ -15,7 +15,7 @@ class SystemLibrary {
   final String path;
   final Pointer<Void> _handle;
 
-  SystemLibrary(this.library, this.name, this.path) : _handle = using((Arena arena) => dlopen(path.toNativeUtf8(allocator: arena).cast(), rtldGlobal | rtldLazy)) {
+  SystemLibrary(this.library, this.name, this.path) : _handle = using((Arena arena) => dlopen(path.toNativeUtf8(allocator: arena), rtldGlobal | rtldLazy)) {
     if (SystemEnvironment.debug) {
       print(CoreMessages.loadingLibrary(name, path));
     }

@@ -40,9 +40,11 @@ class SystemException implements Exception {
 }
 
 extension SystemExceptionPointerExtensions<T extends NativeType> on Pointer<T> {
+  @inline
   Pointer<T> check([void Function()? finalizer]) => SystemException.checkPointer(this, finalizer);
 }
 
 extension SystemExceptionIntExtensions on int {
+  @inline
   int check([void Function()? finalizer]) => SystemException.checkResult(this, finalizer);
 }

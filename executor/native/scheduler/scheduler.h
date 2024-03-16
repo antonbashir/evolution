@@ -39,6 +39,7 @@ DART_STRUCTURE struct executor_scheduler
 
 DART_LEAF_FUNCTION struct executor_scheduler* executor_scheduler_initialize(struct executor_scheduler_configuration* configuration);
 DART_LEAF_FUNCTION bool executor_scheduler_shutdown(struct executor_scheduler* scheduler);
+DART_LEAF_FUNCTION void executor_scheduler_destroy(struct executor_scheduler* scheduler);
 
 #if defined(__cplusplus)
 }

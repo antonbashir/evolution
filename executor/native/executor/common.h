@@ -12,12 +12,9 @@ extern "C"
 
 #define EXECUTOR_CQE_FORMAT_BUFFER 1024
 
-#define executor_format_cqe(cqe)                                                                                                                                  \
-    ({                                                                                                                                                            \
-        char buffer##__LINE__[EXECUTOR_CQE_FORMAT_BUFFER];                                                                                                        \
-        snprintf(buffer##__LINE__, EXECUTOR_CQE_FORMAT_BUFFER, "cqe.res = [%d], cqe.user_data = [%lld], cqe.flags = [%d]", cqe->res, cqe->user_data, cqe->flags); \
-        buffer##__LINE__;                                                                                                                                         \
-    })
+#define EXECUTOR_CQE_FIELD_RESULT "cqe.result"
+#define EXECUTOR_CQE_FIELD_USER_DATA "cqe.user_data"
+#define EXECUTOR_CQE_FIELD_FLAGS "cqe.flags"
 
 #if defined(__cplusplus)
 }

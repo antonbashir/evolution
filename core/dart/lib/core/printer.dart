@@ -12,14 +12,14 @@ class Printer {
   static void printError(Error error, StackTrace stack) {
     final configuration = context().core().configuration;
     if (!configuration.silent && configuration.printLevel >= printLevelError) {
-      print("[${DateTime.now()}] $printLevelErrorLabel: ${error.toString()}$newLine$printErrorStackPart$newLine${error.stackTrace}$printCatchStackPart$newLine$stack");
+      print("[${DateTime.now()}] $printLevelErrorLabel: ${error.toString()}$newLine$printErrorStackPart$newLine${error.stackTrace}$newLine$printCatchStackPart$newLine$stack");
     }
   }
 
   static void printException(Exception exception, StackTrace stack) {
     final configuration = context().core().configuration;
     if (!configuration.silent && configuration.printLevel >= printLevelError) {
-      print("[${DateTime.now()}] $printExceptionLabel: ${exception.toString()}$newLine$stack");
+      print("[${DateTime.now()}] $printExceptionLabel: ${exception.toString()}$newLine$stack\n");
     }
   }
 }

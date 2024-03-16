@@ -8,8 +8,10 @@
 #include "include/dart_api.h"
 #include "include/dart_tools_api.h"
 
-namespace dart {
-namespace embedder {
+namespace dart
+{
+namespace embedder
+{
 
 // Initialize all subsystems of the embedder.
 //
@@ -28,22 +30,23 @@ void Cleanup();
 
 // Common arguments that are passed to isolate creation callback and to
 // API methods that create isolates.
-struct IsolateCreationData {
-  // URI for the main script that will be running in the isolate.
-  const char* script_uri;
+struct IsolateCreationData
+{
+    // URI for the main script that will be running in the isolate.
+    const char* script_uri;
 
-  // Advisory name of the main method that will be run by isolate.
-  // Only used for error messages.
-  const char* main;
+    // Advisory name of the main method that will be run by isolate.
+    // Only used for error messages.
+    const char* main;
 
-  // Isolate creation flags. Might be absent.
-  Dart_IsolateFlags* flags;
+    // Isolate creation flags. Might be absent.
+    Dart_IsolateFlags* flags;
 
-  // Isolate group callback data.
-  void* isolate_group_data;
+    // Isolate group callback data.
+    void* isolate_group_data;
 
-  // Isolate callback data.
-  void* isolate_data;
+    // Isolate callback data.
+    void* isolate_data;
 };
 
 // Create and initialize kernel-service isolate. This method should be used
@@ -58,26 +61,28 @@ CreateKernelServiceIsolate(const IsolateCreationData& data,
                            char** error);
 
 // Service isolate configuration.
-struct VmServiceConfiguration {
-  enum {
-    kBindHttpServerToAFreePort = 0,
-    kDoNotAutoStartHttpServer = -1
-  };
+struct VmServiceConfiguration
+{
+    enum
+    {
+        kBindHttpServerToAFreePort = 0,
+        kDoNotAutoStartHttpServer = -1
+    };
 
-  // Address to which HTTP server will be bound.
-  const char* ip;
+    // Address to which HTTP server will be bound.
+    const char* ip;
 
-  // Default port. See enum above for special values.
-  int port;
+    // Default port. See enum above for special values.
+    int port;
 
-  // If non-null, connection information for the VM service will be output to a
-  // file in JSON format at the location specified.
-  const char* write_service_info_filename;
+    // If non-null, connection information for the VM service will be output to a
+    // file in JSON format at the location specified.
+    const char* write_service_info_filename;
 
-  // TODO(vegorov) document these ones.
-  bool dev_mode;
-  bool deterministic;
-  bool disable_auth_codes;
+    // TODO(vegorov) document these ones.
+    bool dev_mode;
+    bool deterministic;
+    bool disable_auth_codes;
 };
 
 // Create and initialize vm-service isolate from the given AOT snapshot, which

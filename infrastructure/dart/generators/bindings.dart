@@ -109,15 +109,24 @@ Future<void> main(List<String> args) async {
 }
 
 extension ArgumentsExtension on List<String> {
-  Iterable<MapEntry<String, String>> toArguments() => map((element) => element.trim())
-      .map((element) {
-        if (element.contains(dartSubstitute)) {
-          final type = dartSubstituteRegexp.allMatches(element).first.group(1)!;
-          final name = element.replaceAll(dartSubstituteRegexp, "").clear().split(" ")[1];
+  Iterable<MapEntry<String, String>> toArguments(FileDeclarations fileDeclarations) => map((element) => element.trim())
+      .map((line) {
+        if (line.contains(dartSubstitute)) {
+          final type = dartSubstituteRegexp.allMatches(line).first.group(1)!;
+          final name = line.replaceAll(dartSubstituteRegexp, "").clear().split(" ")[1];
           return MapEntry(name, type);
         }
-        if (element.isNotEmpty && element.contains(" ")) {
-          return MapEntry(element.substring(element.lastIndexOf(' ')), element.substring(0, element.lastIndexOf(' ')));
+        if (line.contains(dartType)) {
+          line = line.replaceAll(dartType, "");
+          if (line.isEmpty || !line.contains(" ")) null;
+          if (!(line.contains(structWord))) null;
+          final name = line.substring(line.lastIndexOf(' '));
+          final type = line.substring(0, line.lastIndexOf(' '));
+          fileDeclarations.types.add(type.clear().replaceAll("*", ""));
+          return MapEntry(name, type);
+        }
+        if (line.isNotEmpty && line.contains(" ")) {
+          return MapEntry(line.substring(line.lastIndexOf(' ')), line.substring(0, line.lastIndexOf(' ')));
         }
         return null;
       })
@@ -171,6 +180,17 @@ Map<String, FileDeclarations> collectNative(String nativeDirectory) {
             currentStructureDeclaration!.fields[name] = type;
             return;
           }
+          if (line.contains(dartType)) {
+            line = line.replaceAll(dartType, "");
+            if (line.isEmpty) return;
+            if (!(line.contains(structWord))) return;
+            line = line.replaceAll(dartField, "").clear();
+            final name = line.split(" ")[1];
+            final type = line.split(" ")[0];
+            currentStructureDeclaration!.fields[name] = type;
+            fileDeclarations.types.add(type.replaceAll("*", ""));
+            return;
+          }
           line = line.replaceAll(dartField, "").clear();
           currentStructureDeclaration!.fields[line.split(" ")[1]] = line.split(" ")[0];
           return;
@@ -179,7 +199,7 @@ Map<String, FileDeclarations> collectNative(String nativeDirectory) {
       if (currentFunctionDeclaration != null) {
         final end = line.endsWith(");");
         line = line.replaceAll(");", "");
-        currentFunctionDeclaration!.arguments.addAll(Map.fromEntries(line.split(",").toArguments()));
+        currentFunctionDeclaration!.arguments.addAll(Map.fromEntries(line.split(",").toArguments(fileDeclarations)));
         if (end) currentFunctionDeclaration = null;
         return;
       }
@@ -193,7 +213,7 @@ Map<String, FileDeclarations> collectNative(String nativeDirectory) {
         currentStructureDeclaration!.fields = {};
         return;
       }
-      if (line.contains(dartType)) {
+      if (line.contains(dartType) && line.trimLeft().startsWith(dartType)) {
         line = line.replaceAll(dartType, "");
         if (line.isEmpty) return;
         if (!(line.contains(structWord))) return;
@@ -213,7 +233,7 @@ Map<String, FileDeclarations> collectNative(String nativeDirectory) {
           final closeBraceIndex = line.lastIndexOf(')');
           final functionName = line.substring(0, openBraceIndex).split(" ").last;
           final returnType = line.substring(0, line.indexOf(functionName)).trim();
-          final arguments = Map.fromEntries(line.substring(openBraceIndex + 1, closeBraceIndex).split(",").toArguments());
+          final arguments = Map.fromEntries(line.substring(openBraceIndex + 1, closeBraceIndex).split(",").toArguments(fileDeclarations));
           currentFunctionDeclaration!.functionName = functionName;
           currentFunctionDeclaration!.returnType = returnType;
           currentFunctionDeclaration!.arguments = arguments;
@@ -225,7 +245,7 @@ Map<String, FileDeclarations> collectNative(String nativeDirectory) {
           final openBraceIndex = line.indexOf('(');
           final functionName = line.substring(0, openBraceIndex).split(" ").last;
           final returnType = line.substring(0, line.indexOf(functionName)).trim();
-          final arguments = Map.fromEntries(line.substring(openBraceIndex + 1).split(",").toArguments());
+          final arguments = Map.fromEntries(line.substring(openBraceIndex + 1).split(",").toArguments(fileDeclarations));
           currentFunctionDeclaration!.functionName = functionName;
           currentFunctionDeclaration!.returnType = returnType;
           currentFunctionDeclaration!.arguments = arguments;

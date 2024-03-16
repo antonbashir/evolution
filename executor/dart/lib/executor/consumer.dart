@@ -4,7 +4,6 @@ import 'dart:ffi';
 import 'package:core/core.dart';
 
 import 'bindings.dart';
-import 'constants.dart';
 import 'exception.dart';
 
 class ExecutorConsumerExecutor {
@@ -26,9 +25,5 @@ class ExecutorCallbackExecutor {
   void call(Pointer<executor_task> message) => Future.value(_callback(message)).then((_) => _respond(message));
 
   @inline
-  void _respond(Pointer<executor_task> message) {
-    if (executor_callback_to_native(_executor, message) == executorErrorRingFull) {
-      throw ExecutorException(ExecutorErrors.executorRingFullError);
-    }
-  }
+  void _respond(Pointer<executor_task> message) => ExecutorException.checkRing(executor_callback_to_native(_executor, message));
 }

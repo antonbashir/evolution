@@ -140,6 +140,10 @@
     "transport_constants.h": "c",
     "constants.h": "c",
     "coro.h": "c",
-    "config.h": "c"
+    "config.h": "c",
+    "task.h": "c",
+    "call.h": "c",
+    "stdatomic.h": "c",
+    "cstring": "c"
   },
 }

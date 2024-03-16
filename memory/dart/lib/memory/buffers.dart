@@ -94,7 +94,7 @@ class MemoryInputOutputBuffers {
   MemoryInputOutputBuffers(this._buffers, this.initialCapacity);
 
   ({Uint8List buffer, ByteData data, void Function() cleaner}) wrapInput(int size) {
-    final inputBuffer = SystemException.checkPointer(memory_io_buffers_allocate_input(_buffers, size));
+    final inputBuffer = memory_io_buffers_allocate_input(_buffers, size).check();
     final reserved = inputBuffer.reserve(size);
     final buffer = reserved.cast<Uint8>().asTypedList(size);
     final data = ByteData.view(buffer.buffer, buffer.offsetInBytes);
@@ -102,7 +102,7 @@ class MemoryInputOutputBuffers {
   }
 
   ({Uint8List buffer, ByteData data, void Function() cleaner}) wrapOutput(int size) {
-    final outputBuffer = SystemException.checkPointer(memory_io_buffers_allocate_output(_buffers, size));
+    final outputBuffer = memory_io_buffers_allocate_output(_buffers, size).check();
     final reserved = outputBuffer.reserve(size);
     final buffer = reserved.cast<Uint8>().asTypedList(size);
     final data = ByteData.view(buffer.buffer, buffer.offsetInBytes);
@@ -110,10 +110,10 @@ class MemoryInputOutputBuffers {
   }
 
   @inline
-  Pointer<memory_input_buffer> allocateInputBuffer({int? initialCapacity}) => SystemException.checkPointer(memory_io_buffers_allocate_input(_buffers, initialCapacity ?? this.initialCapacity));
+  Pointer<memory_input_buffer> allocateInputBuffer({int? initialCapacity}) => memory_io_buffers_allocate_input(_buffers, initialCapacity ?? this.initialCapacity).check();
 
   @inline
-  Pointer<memory_output_buffer> allocateOutputBuffer({int? initialCapacity}) => SystemException.checkPointer(memory_io_buffers_allocate_output(_buffers, initialCapacity ?? this.initialCapacity));
+  Pointer<memory_output_buffer> allocateOutputBuffer({int? initialCapacity}) => memory_io_buffers_allocate_output(_buffers, initialCapacity ?? this.initialCapacity).check();
 
   @inline
   void freeInputBuffer(Pointer<memory_input_buffer> buffer) => memory_io_buffers_free_input(_buffers, buffer);
@@ -153,13 +153,13 @@ extension MemoryInputBufferExtensions on Pointer<memory_input_buffer> {
   }
 
   @inline
-  Pointer<Uint8> finalize(int delta) => SystemException.checkPointer(memory_input_buffer_finalize(this, delta));
+  Pointer<Uint8> finalize(int delta) => memory_input_buffer_finalize(this, delta).check();
 
   @inline
-  Pointer<Uint8> reserve(int size) => SystemException.checkPointer(memory_input_buffer_reserve(this, size));
+  Pointer<Uint8> reserve(int size) => memory_input_buffer_reserve(this, size).check();
 
   @inline
-  Pointer<Uint8> finalizeReserve(int delta, int size) => SystemException.checkPointer(memory_input_buffer_finalize_reserve(this, delta, size));
+  Pointer<Uint8> finalizeReserve(int delta, int size) => memory_input_buffer_finalize_reserve(this, delta, size).check();
 }
 
 extension MemoryOutputBufferExtensions on Pointer<memory_output_buffer> {
@@ -180,11 +180,11 @@ extension MemoryOutputBufferExtensions on Pointer<memory_output_buffer> {
   }
 
   @inline
-  Pointer<Uint8> finalize(int delta) => SystemException.checkPointer(memory_output_buffer_finalize(this, delta));
+  Pointer<Uint8> finalize(int delta) => memory_output_buffer_finalize(this, delta).check();
 
   @inline
-  Pointer<Uint8> reserve(int size) => SystemException.checkPointer(memory_output_buffer_reserve(this, size));
+  Pointer<Uint8> reserve(int size) => memory_output_buffer_reserve(this, size).check();
 
   @inline
-  Pointer<Uint8> finalizeReserve(int delta, int size) => SystemException.checkPointer(memory_output_buffer_finalize_reserve(this, delta, size));
+  Pointer<Uint8> finalizeReserve(int delta, int size) => memory_output_buffer_finalize_reserve(this, delta, size).check();
 }
