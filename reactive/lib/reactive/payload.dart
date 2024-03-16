@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'constants.dart';
+import 'package:core/core.dart';
 
 class ReactivePayload {
   final Uint8List metadata;

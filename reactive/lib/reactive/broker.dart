@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:core/core.dart';
+
 import 'channel.dart';
 import 'codec.dart';
 import 'configuration.dart';

@@ -1,9 +1,6 @@
-import 'dart:typed_data';
-
 const octetStreamMimeType = 'application/octet-stream';
 const textMimeType = 'application/text';
 const applicationJsonMimeType = 'application/json';
-final emptyBytes = Uint8List.fromList([]);
 
 const reactiveFrameReserved = 0x00;
 const reactiveFrameSetup = 0x01;
