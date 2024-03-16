@@ -90,7 +90,7 @@
       ],
       "cwd": "${workspaceFolder}/executor",
       "program": "${workspaceFolder}/executor/test/dart/lib/test.dart",
-      "preLaunchTask": "storage-native-build"
+      "preLaunchTask": "executor-native-build"
     },
     {
       "name": "executor-test-gdb",
@@ -112,6 +112,38 @@
         }
       ],
       "preLaunchTask": "executor-native-build"
+    },
+    {
+      "name": "memory-test",
+      "type": "dart",
+      "request": "launch",
+      "toolArgs": [
+        "--define=DEBUG=true"
+      ],
+      "cwd": "${workspaceFolder}/memory",
+      "program": "${workspaceFolder}/memory/dart/test/test.dart",
+      "preLaunchTask": "memory-native-build"
+    },
+    {
+      "name": "memory-test-gdb",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "/usr/bin/dart",
+      "args": [
+        "-DDEBUG=true",
+        "${workspaceFolder}/memory/dart/test/test.dart"
+      ],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}/memory",
+      "MIMode": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ],
+      "preLaunchTask": "memory-native-build"
     },
     {
       "name": "reactive-test",

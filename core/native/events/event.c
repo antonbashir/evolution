@@ -16,30 +16,30 @@
     exit(-1);                                                                                                                      \
     unreachable();
 
-#define event_set_field(event, name, type, value)                                    \
+#define event_set_field(set_event, set_name, set_type, set_value)                    \
     do                                                                               \
     {                                                                                \
-        struct event_field* field = event_find_field(event, name);                   \
+        struct event_field_structure* field = event_find_field(set_event, set_name); \
         if (field != NULL)                                                           \
         {                                                                            \
-            event_field_set_##type(field, value);                                    \
+            event_field_set_##set_type(field, set_value);                            \
             break;                                                                   \
         }                                                                            \
         if (event->fields_count == MODULE_EVENT_FIELDS_MAXIMUM)                      \
         {                                                                            \
             raise("event fields limit is reached: %d", MODULE_EVENT_FIELDS_MAXIMUM); \
         }                                                                            \
-        field = calloc(1, sizeof(struct event_field));                               \
-        field->name = name;                                                          \
-        event_field_set_##type(field, value);                                        \
+        field = calloc(1, sizeof(struct event_field_structure));                     \
+        field->name = set_name;                                                      \
+        event_field_set_##set_type(field, set_value);                                \
         event->fields[event->fields_count] = field;                                  \
         ++(event->fields_count);                                                     \
     }                                                                                \
     while (0);
 
-static FORCEINLINE struct event_field* event_find_field(struct event* event, const char* name)
+static FORCEINLINE struct event_field_structure* event_find_field(struct event* event, const char* name)
 {
-    struct event_field* field = NULL;
+    struct event_field_structure* field = NULL;
     for (int i = 0; i < event->fields_count; ++i)
     {
         field = event->fields[i];
@@ -57,7 +57,7 @@ struct event* event_create(uint8_t level, const char* function, const char* file
     {
         raise_system(ENOMEM);
     }
-    created->fields = calloc(MODULE_EVENT_FIELDS_MAXIMUM, sizeof(struct event_field));
+    created->fields = calloc(MODULE_EVENT_FIELDS_MAXIMUM, sizeof(struct event_field_structure));
     if (created->fields == NULL)
     {
         raise_system(ENOMEM);
@@ -79,8 +79,8 @@ struct event* event_build(uint8_t level, const char* function, const char* file,
     va_start(args, fields);
     for (int i = 0; i < fields; ++i)
     {
-        struct event_field field = va_arg(args, struct event_field);
-        struct event_field* new_field = calloc(1, sizeof(struct event_field));
+        struct event_field_structure field = va_arg(args, struct event_field_structure);
+        struct event_field_structure* new_field = calloc(1, sizeof(struct event_field_structure));
         new_field->name = field.name;
         new_field->type = field.type;
         new_field->signed_number = field.signed_number;
@@ -149,7 +149,7 @@ void event_set_character(struct event* event, const char* name, char value)
 
 char event_get_character(struct event* event, const char* name)
 {
-    struct event_field* field = event_find_field(event, name);
+    struct event_field_structure* field = event_find_field(event, name);
     if (field == NULL)
     {
         raise("event field %s is not found", name);
@@ -159,7 +159,7 @@ char event_get_character(struct event* event, const char* name)
 
 void* event_get_address(struct event* event, const char* name)
 {
-    struct event_field* field = event_find_field(event, name);
+    struct event_field_structure* field = event_find_field(event, name);
     if (field == NULL)
     {
         raise("event field %s is not found", name);
@@ -169,7 +169,7 @@ void* event_get_address(struct event* event, const char* name)
 
 bool event_get_boolean(struct event* event, const char* name)
 {
-    struct event_field* field = event_find_field(event, name);
+    struct event_field_structure* field = event_find_field(event, name);
     if (field == NULL)
     {
         raise("event field %s is not found", name);
@@ -179,7 +179,7 @@ bool event_get_boolean(struct event* event, const char* name)
 
 int64_t event_get_signed(struct event* event, const char* name)
 {
-    struct event_field* field = event_find_field(event, name);
+    struct event_field_structure* field = event_find_field(event, name);
     if (field == NULL)
     {
         raise("event field %s is not found", name);
@@ -189,7 +189,7 @@ int64_t event_get_signed(struct event* event, const char* name)
 
 uint64_t event_get_unsigned(struct event* event, const char* name)
 {
-    struct event_field* field = event_find_field(event, name);
+    struct event_field_structure* field = event_find_field(event, name);
     if (field == NULL)
     {
         raise("event field %s is not found", name);
@@ -199,7 +199,7 @@ uint64_t event_get_unsigned(struct event* event, const char* name)
 
 double event_get_double(struct event* event, const char* name)
 {
-    struct event_field* field = event_find_field(event, name);
+    struct event_field_structure* field = event_find_field(event, name);
     if (field == NULL)
     {
         raise("event field %s is not found", name);
@@ -209,7 +209,7 @@ double event_get_double(struct event* event, const char* name)
 
 const char* event_get_string(struct event* event, const char* name)
 {
-    struct event_field* field = event_find_field(event, name);
+    struct event_field_structure* field = event_find_field(event, name);
     if (field == NULL)
     {
         raise("event field %s is not found", name);
@@ -260,7 +260,7 @@ const char* event_format(struct event* event)
         }
         size += written;
     }
-    struct event_field* field;
+    struct event_field_structure* field;
     for (int i = 0; i < event->fields_count; ++i)
     {
         field = event->fields[i];

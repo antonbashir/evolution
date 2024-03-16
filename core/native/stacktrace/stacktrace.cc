@@ -81,6 +81,9 @@ int stacktrace_format(struct stacktrace* trace, char* buffer, size_t buffer_size
         }
         total += written;
         if (free) delete procedure;
+        if (total >= buffer_size) {
+          return total;
+        }
     }
     return total;
 }

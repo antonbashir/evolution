@@ -6,6 +6,7 @@ import 'constants.dart';
 import 'exceptions.dart';
 import 'library.dart';
 import 'module.dart';
+import 'printer.dart';
 
 final _context = _Context._();
 ContextProvider context() => _context;
@@ -128,6 +129,7 @@ class Launcher {
 
   Future<void> activate(FutureOr<void> Function() main) async => runZonedGuarded(
         () async {
+          information("Modules created. Activating.");
           for (var module in _context._modules) {
             await Future.value(module?.initialize());
           }
@@ -138,6 +140,7 @@ class Launcher {
           for (var module in _context._modules.reversed) {
             module?.destroy();
           }
+          information("Modules destroyed. Exiting.");
         },
         (error, stack) {
           if (error is Error) {
@@ -157,6 +160,7 @@ class Forker {
 
   Future<void> activate(FutureOr<void> Function() main) async => runZonedGuarded(
         () async {
+          information("Modules loaded. Activating.");
           for (var module in _context._modules) {
             await Future.value(module?.fork());
           }
@@ -167,6 +171,7 @@ class Forker {
           for (var module in _context._modules.reversed) {
             module?.unload();
           }
+          information("Modules unloaded. Exiting.");
         },
         (error, stack) {
           if (error is Error) {

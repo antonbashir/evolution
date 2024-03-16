@@ -41,7 +41,7 @@ void stacktrace_print(int skip);
             }                                                                                                                                                     \
             if (result_size != 0 && size > 0) result_size += snprintf(result + result_size, (STACKTRACE_PROCEDURE_SIZE * count) - result_size, " <- %s", buffer); \
         }                                                                                                                                                         \
-        result;                                                                                                                                                   \
+        result_size == 0 ? "" : result;                                                                                                                           \
     })
 
 #if defined(__cplusplus)

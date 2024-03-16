@@ -10,7 +10,7 @@ extern "C"
 {
 #endif
 
-struct event_field
+struct event_field_structure
 {
     const char* name;
     union
@@ -26,56 +26,56 @@ struct event_field
     uint8_t type;
 };
 
-FORCEINLINE void event_field_set_boolean(struct event_field* field, bool value)
+FORCEINLINE void event_field_set_boolean(struct event_field_structure* field, bool value)
 {
     field->type = MODULE_EVENT_TYPE_BOOLEAN;
     field->boolean = value;
 }
 
-FORCEINLINE void event_field_set_double(struct event_field* field, double value)
+FORCEINLINE void event_field_set_double(struct event_field_structure* field, double value)
 {
     field->type = MODULE_EVENT_TYPE_DOUBLE;
     field->double_number = value;
 }
 
-FORCEINLINE void event_field_set_unsigned(struct event_field* field, uint64_t value)
+FORCEINLINE void event_field_set_unsigned(struct event_field_structure* field, uint64_t value)
 {
     field->type = MODULE_EVENT_TYPE_UNSIGNED;
     field->unsigned_number = value;
 }
 
-FORCEINLINE void event_field_set_signed(struct event_field* field, int64_t value)
+FORCEINLINE void event_field_set_signed(struct event_field_structure* field, int64_t value)
 {
     field->type = MODULE_EVENT_TYPE_SIGNED;
     field->signed_number = value;
 }
 
-FORCEINLINE void event_field_set_string(struct event_field* field, const char* value)
+FORCEINLINE void event_field_set_string(struct event_field_structure* field, const char* value)
 {
     field->type = MODULE_EVENT_TYPE_STRING;
     field->string = value;
 }
 
-FORCEINLINE void event_field_set_character(struct event_field* field, char value)
+FORCEINLINE void event_field_set_character(struct event_field_structure* field, char value)
 {
     field->type = MODULE_EVENT_TYPE_CHARACTER;
     field->character = value;
 }
 
-FORCEINLINE void event_field_set_address(struct event_field* field, void* value)
+FORCEINLINE void event_field_set_address(struct event_field_structure* field, void* value)
 {
     field->type = MODULE_EVENT_TYPE_ADDRESS;
     field->address = value;
 }
 
-void event_field_set_any(struct event_field* field, ...);
+void event_field_set_any(struct event_field_structure* field, ...);
 
 #define event_message(message) event_field(MODULE_EVENT_FIELD_MESSAGE, message)
 #define event_scope(scope) event_field(MODULE_EVENT_FIELD_SCOPE, scope)
 
 #define event_field(field_name, field_value)                                                                                           \
     ({                                                                                                                                 \
-        struct event_field field##__LINE__;                                                                                            \
+        struct event_field_structure field##__LINE__;                                                                                            \
         field##__LINE__.name = field_name;                                                                                             \
         choose_expression(                                                                                                             \
             types_compatible(typeof(field_value), char),                                                                               \

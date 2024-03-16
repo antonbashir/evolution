@@ -3,10 +3,8 @@ import 'dart:io';
 
 import 'package:ffi/ffi.dart';
 
-import '../bindings/system/library.dart';
-import 'constants.dart';
+import '../core.dart';
 import 'exceptions.dart';
-import 'lookup.dart';
 
 final Map<String, SystemLibrary> _loadedByName = {};
 final Map<String, SystemLibrary> _loadedByPath = {};
@@ -17,7 +15,11 @@ class SystemLibrary {
   final String path;
   final Pointer<Void> _handle;
 
-  SystemLibrary(this.library, this.name, this.path) : _handle = using((Arena arena) => dlopen(path.toNativeUtf8(allocator: arena).cast(), rtldGlobal | rtldLazy));
+  SystemLibrary(this.library, this.name, this.path) : _handle = using((Arena arena) => dlopen(path.toNativeUtf8(allocator: arena).cast(), rtldGlobal | rtldLazy)) {
+    if (SystemEnvironment.debug) {
+      print(CoreMessages.loadingLibrary(name, path));
+    }
+  }
 
   void unload() {
     dlclose(_handle);

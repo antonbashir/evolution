@@ -51,7 +51,6 @@ class MemoryModule with Module<memory_module, MemoryModuleConfiguration, MemoryM
   @override
   Pointer<memory_module> create(MemoryModuleConfiguration configuration) {
     SystemLibrary.loadByName(configuration.libraryPackageMode == LibraryPackageMode.shared ? memorySharedLibraryName : memoryLibraryName, memoryPackageName);
-    print(memoryLibraryName);
     return using((arena) => memory_module_create(configuration.toNative(arena<memory_module_configuration>())));
   }
 

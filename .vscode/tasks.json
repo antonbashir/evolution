@@ -13,6 +13,16 @@
     },
     {
       "type": "cmake",
+      "label": "memory-native-build",
+      "command": "build",
+      "targets": [
+        "memory_native"
+      ],
+      "group": "build",
+      "problemMatcher": [],
+    },
+    {
+      "type": "cmake",
       "label": "storage-native-build",
       "command": "cleanRebuild",
       "targets": [

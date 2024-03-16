@@ -12,7 +12,7 @@ extern "C"
 struct event
 {
     const char* raised_module_name;
-    struct event_field** fields;
+    struct event_field_structure** fields;
     const char* function;
     const char* file;
     size_t fields_count;

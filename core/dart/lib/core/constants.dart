@@ -70,6 +70,12 @@ class CoreErrors {
   static moduleDependenciesNotFound(List<String> dependencies) => "Module dependencies were not found: ${dependencies}";
 }
 
+class CoreMessages {
+  CoreMessages._();
+
+  static String loadingLibrary(name, path) => "Loading: $name from $path";
+}
+
 class TupleErrors {
   TupleErrors._();
 

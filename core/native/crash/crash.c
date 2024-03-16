@@ -20,16 +20,16 @@ static void crash_signal_callback(int signal, siginfo_t* information, void* cont
         switch (signal)
         {
             case SIGILL:
-                crash_event = event_panic(CRASH_ILLEGAL_INSTRUCTION);
+                crash_event = event_panic(event_message(CRASH_ILLEGAL_INSTRUCTION));
                 break;
             case SIGBUS:
-                crash_event = event_panic(CRASH_BUS_ERROR);
+                crash_event = event_panic(event_message(CRASH_BUS_ERROR));
                 break;
             case SIGFPE:
-                crash_event = event_panic(CRASH_FLOATING_POINT_ERROR);
+                crash_event = event_panic(event_message(CRASH_FLOATING_POINT_ERROR));
                 break;
             case SIGSEGV:
-                crash_event = event_panic(CRASH_SEGMENTATION_FAULT);
+                crash_event = event_panic(event_message(CRASH_SEGMENTATION_FAULT));
                 switch (information->si_code)
                 {
                     case SEGV_MAPERR:
@@ -44,11 +44,14 @@ static void crash_signal_callback(int signal, siginfo_t* information, void* cont
                 print_error(ERROR_UNEXPECTED_SIGNAL, signal);
                 break;
         }
-
         if (signal_code != NULL)
+        {
             event_set_string(crash_event, MODULE_EVENT_FIELD_CODE, signal_code);
+        }
         else
+        {
             event_set_signed(crash_event, MODULE_EVENT_FIELD_CODE, information->si_code);
+        }
         if (information->si_addr != NULL)
         {
             event_set_address(crash_event, MODULE_EVENT_FIELD_ADDRESS, information->si_addr);

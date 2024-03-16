@@ -27,14 +27,14 @@ class Printer {
 void trace(String message) {
   final configuration = context().core().configuration;
   if (!configuration.silent && configuration.printLevel >= printLevelTrace) {
-    Printer.print("[${DateTime.now()}] $printLevelTrace: $message");
+    Printer.print("[${DateTime.now()}] $printLevelTraceLabel: $message");
   }
 }
 
 void information(String message) {
   final configuration = context().core().configuration;
   if (!configuration.silent && configuration.printLevel >= printLevelInformation) {
-    Printer.print("[${DateTime.now()}] $printLevelInformation: $message");
+    Printer.print("[${DateTime.now()}] $printLevelInformationLabel: $message");
   }
 }
 
