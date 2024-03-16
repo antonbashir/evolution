@@ -333,6 +333,7 @@ mixin MemoryInputTuple implements Tuple {
 mixin MemoryOutputTuple implements Tuple {
   @override
   int get tupleSize => throw MemoryException(MemoryErrors.tupleComputeSizeImpossible(runtimeType));
+
   void serializeToOutput(MemoryTupleDynamicInputWriter writer);
 }
 
