@@ -15,14 +15,16 @@ DART_STRUCTURE struct memory_input_buffer
 {
     DART_FIELD uint8_t* read_position;
     DART_FIELD uint8_t* write_position;
-    DART_FIELD size_t last_reserved_size;
+    DART_FIELD size_t used;
+    DART_FIELD size_t unused;
     struct ibuf buffer;
 };
 
 DART_STRUCTURE struct memory_output_buffer
 {
     DART_FIELD struct iovec* content;
-    DART_FIELD size_t content_count;
+    DART_FIELD size_t vectors;
+    DART_FIELD size_t size;
     DART_FIELD size_t last_reserved_size;
     struct obuf buffer;
 };
@@ -110,7 +112,8 @@ DART_INLINE_LEAF_FUNCTION uint8_t* memory_input_buffer_reserve(struct memory_inp
     }
     buffer->read_position = (uint8_t*)buffer->buffer.rpos;
     buffer->write_position = (uint8_t*)buffer->buffer.wpos;
-    buffer->last_reserved_size = ibuf_unused(&buffer->buffer);
+    buffer->used = ibuf_used(&buffer->buffer);
+    buffer->unused = ibuf_unused(&buffer->buffer);
     return reserved;
 }
 
@@ -123,6 +126,8 @@ DART_INLINE_LEAF_FUNCTION uint8_t* memory_input_buffer_finalize(struct memory_in
     }
     buffer->read_position = (uint8_t*)buffer->buffer.rpos;
     buffer->write_position = (uint8_t*)buffer->buffer.wpos;
+    buffer->used = ibuf_used(&buffer->buffer);
+    buffer->unused = ibuf_unused(&buffer->buffer);
     return allocated;
 }
 
@@ -136,14 +141,16 @@ DART_INLINE_LEAF_FUNCTION uint8_t* memory_input_buffer_finalize_reserve(struct m
     }
     buffer->read_position = (uint8_t*)buffer->buffer.rpos;
     buffer->write_position = (uint8_t*)buffer->buffer.wpos;
-    buffer->last_reserved_size = ibuf_unused(&buffer->buffer);
+    buffer->used = ibuf_used(&buffer->buffer);
+    buffer->unused = ibuf_unused(&buffer->buffer);
     return reserved;
 }
 
 DART_INLINE_LEAF_FUNCTION uint8_t* memory_output_buffer_reserve(struct memory_output_buffer* buffer, size_t size)
 {
     uint8_t* reserved = obuf_reserve(&buffer->buffer, size ? size : buffer->buffer.start_capacity);
-    buffer->content_count = buffer->buffer.n_iov;
+    buffer->size = obuf_size(&buffer->buffer);
+    buffer->vectors = buffer->buffer.n_iov;
     buffer->last_reserved_size = buffer->buffer.capacity[buffer->buffer.pos] - buffer->buffer.iov[buffer->buffer.pos].iov_len;
     return reserved;
 }
@@ -151,7 +158,8 @@ DART_INLINE_LEAF_FUNCTION uint8_t* memory_output_buffer_reserve(struct memory_ou
 DART_INLINE_LEAF_FUNCTION uint8_t* memory_output_buffer_finalize(struct memory_output_buffer* buffer, size_t size)
 {
     uint8_t* reserved = obuf_alloc(&buffer->buffer, size);
-    buffer->content_count = buffer->buffer.n_iov;
+    buffer->size = obuf_size(&buffer->buffer);
+    buffer->vectors = buffer->buffer.n_iov;
     return reserved;
 }
 
@@ -159,7 +167,8 @@ DART_INLINE_LEAF_FUNCTION uint8_t* memory_output_buffer_finalize_reserve(struct 
 {
     obuf_alloc(&buffer->buffer, size);
     uint8_t* reserved = obuf_reserve(&buffer->buffer, size ? size : buffer->buffer.start_capacity);
-    buffer->content_count = buffer->buffer.n_iov;
+    buffer->size = obuf_size(&buffer->buffer);
+    buffer->vectors = buffer->buffer.n_iov;
     buffer->last_reserved_size = buffer->buffer.capacity[buffer->buffer.pos] - buffer->buffer.iov[buffer->buffer.pos].iov_len;
     return reserved;
 }

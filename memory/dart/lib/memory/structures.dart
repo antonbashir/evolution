@@ -4,7 +4,6 @@ import 'package:ffi/ffi.dart';
 
 import '../memory.dart';
 import 'constants.dart';
-import 'defaults.dart';
 import 'exceptions.dart';
 
 class MemoryStructurePools {

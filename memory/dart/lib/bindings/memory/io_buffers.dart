@@ -8,13 +8,17 @@ final class memory_input_buffer extends Struct {
   external Pointer<Uint8> read_position;
   external Pointer<Uint8> write_position;
   @Size()
-  external int last_reserved_size;
+  external int used;
+  @Size()
+  external int unused;
 }
 
 final class memory_output_buffer extends Struct {
   external Pointer<iovec> content;
   @Size()
-  external int content_count;
+  external int vectors;
+  @Size()
+  external int size;
   @Size()
   external int last_reserved_size;
 }

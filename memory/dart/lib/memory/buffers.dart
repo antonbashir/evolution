@@ -92,7 +92,7 @@ class MemoryInputOutputBuffers {
 
   MemoryInputOutputBuffers(this._buffers);
 
-  ({Uint8List buffer, ByteData data, void Function() cleaner}) prepareInput(int size) {
+  ({Uint8List buffer, ByteData data, void Function() cleaner}) wrapInput(int size) {
     final inputBuffer = memory_io_buffers_allocate_input(_buffers, size);
     final reserved = inputBuffer.reserve(size);
     final buffer = reserved.cast<Uint8>().asTypedList(size);
@@ -100,7 +100,7 @@ class MemoryInputOutputBuffers {
     return (buffer: buffer, data: data, cleaner: () => memory_io_buffers_free_input(_buffers, inputBuffer));
   }
 
-  ({Uint8List buffer, ByteData data, void Function() cleaner}) prepareOutput(int size) {
+  ({Uint8List buffer, ByteData data, void Function() cleaner}) wrapOutput(int size) {
     final outputBuffer = memory_io_buffers_allocate_output(_buffers, size);
     final reserved = outputBuffer.reserve(size);
     final buffer = reserved.cast<Uint8>().asTypedList(size);
@@ -121,12 +121,36 @@ class MemoryInputOutputBuffers {
   void freeOutputBuffer(Pointer<memory_output_buffer> buffer) => memory_io_buffers_free_output(_buffers, buffer);
 
   @inline
-  void destroy() {
-    memory_io_buffers_destroy(_buffers);
-  }
+  void destroy() => memory_io_buffers_destroy(_buffers);
 }
 
 extension MemoryInputBufferExtensions on Pointer<memory_input_buffer> {
+  @inline
+  Pointer<Uint8> get readPosition => ref.read_position;
+
+  @inline
+  Pointer<Uint8> get writePosition => ref.write_position;
+
+  @inline
+  int get used => ref.used;
+
+  @inline
+  int get unused => ref.unused;
+
+  @inline
+  ({Uint8List buffer, ByteData data}) wrapRead() {
+    final buffer = readPosition.asTypedList(used);
+    final data = ByteData.view(buffer.buffer, buffer.offsetInBytes);
+    return (buffer: buffer, data: data);
+  }
+
+  @inline
+  ({Uint8List buffer, ByteData data}) wrapWrite() {
+    final buffer = writePosition.asTypedList(unused);
+    final data = ByteData.view(buffer.buffer, buffer.offsetInBytes);
+    return (buffer: buffer, data: data);
+  }
+
   @inline
   Pointer<Uint8> finalize(int delta) => memory_input_buffer_finalize(this, delta);
 
@@ -135,15 +159,25 @@ extension MemoryInputBufferExtensions on Pointer<memory_input_buffer> {
 
   @inline
   Pointer<Uint8> finalizeReserve(int delta, int size) => memory_input_buffer_finalize_reserve(this, delta, size);
-
-  @inline
-  Pointer<Uint8> get readPosition => ref.read_position;
-
-  @inline
-  Pointer<Uint8> get writePosition => ref.write_position;
 }
 
 extension MemoryOutputBufferExtensions on Pointer<memory_output_buffer> {
+  @inline
+  Pointer<iovec> get content => ref.content;
+
+  @inline
+  int get vectors => ref.vectors;
+
+  @inline
+  int get size => ref.size;
+
+  @inline
+  ({Uint8List buffer, ByteData data}) wrap() {
+    final buffer = content.collect(vectors);
+    final data = ByteData.view(buffer.buffer, buffer.offsetInBytes);
+    return (buffer: buffer, data: data);
+  }
+
   @inline
   Pointer<Uint8> finalize(int delta) => memory_output_buffer_finalize(this, delta);
 
@@ -152,7 +186,4 @@ extension MemoryOutputBufferExtensions on Pointer<memory_output_buffer> {
 
   @inline
   Pointer<Uint8> finalizeReserve(int delta, int size) => memory_output_buffer_finalize_reserve(this, delta, size);
-
-  @inline
-  Pointer<iovec> get content => ref.content;
 }

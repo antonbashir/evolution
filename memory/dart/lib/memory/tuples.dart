@@ -5,15 +5,15 @@ import '../memory.dart';
 
 class MemoryTuples {
   final Pointer<memory_small_allocator> _small;
-  final MemoryTupleFixedStreams fixed;
-  final MemoryTupleDynamicStreams dynamic;
+  final MemoryTupleFixedWriters fixed;
+  final MemoryTupleDynamicWriter dynamic;
 
   late final (Pointer<Uint8>, int) emptyList;
   late final (Pointer<Uint8>, int) emptyMap;
 
   MemoryTuples(this._small, Pointer<memory_io_buffers> buffers, int dynamicWriterInitialCapacity)
-      : fixed = MemoryTupleFixedStreams(buffers),
-        dynamic = MemoryTupleDynamicStreams(buffers, dynamicWriterInitialCapacity) {
+      : fixed = MemoryTupleFixedWriters(buffers),
+        dynamic = MemoryTupleDynamicWriter(buffers, dynamicWriterInitialCapacity) {
     emptyList = _createEmptyList();
     emptyMap = _createEmptyMap();
   }
@@ -52,10 +52,10 @@ class MemoryTuples {
   }
 }
 
-class MemoryTupleFixedStreams {
+class MemoryTupleFixedWriters {
   final Pointer<memory_io_buffers> _buffers;
 
-  MemoryTupleFixedStreams(this._buffers);
+  MemoryTupleFixedWriters(this._buffers);
 
   ({Pointer<Uint8> tuple, int size, void Function() cleaner}) toInput(int size, int Function(Uint8List buffer, ByteData data, int offset) writer) {
     final inputBuffer = memory_io_buffers_allocate_input(_buffers, size);
@@ -72,67 +72,95 @@ class MemoryTupleFixedStreams {
     final buffer = reserved.cast<Uint8>().asTypedList(size);
     final data = ByteData.view(buffer.buffer, buffer.offsetInBytes);
     writer(buffer, data, 0);
-    return (content: outputBuffer.content, count: outputBuffer.ref.content_count, fullSize: size, cleaner: () => memory_io_buffers_free_output(_buffers, outputBuffer));
+    return (content: outputBuffer.content, count: outputBuffer.ref.vectors, fullSize: size, cleaner: () => memory_io_buffers_free_output(_buffers, outputBuffer));
   }
 }
 
-class MemoryTupleDynamicInputStream {
+class MemoryTupleDynamicInputWriter {
   final Pointer<memory_io_buffers> _buffers;
   late final Pointer<memory_input_buffer> _inputBuffer;
   Pointer<Uint8> _buffer = nullptr;
   int _position = 0;
   int _end = 0;
-  int _result = 0;
+  int _currentOffset = 0;
+  int _nextOffset = 0;
   late Uint8List _bufferTyped;
   late ByteData _bufferData;
 
   @inline
-  int get size => _result;
-
-  @inline
   Pointer<memory_input_buffer> get buffer => _inputBuffer;
 
-  @inline
-  Pointer<Uint8> get readPosition => _inputBuffer.ref.read_position;
-
-  @inline
-  Pointer<Uint8> get writePosition => _inputBuffer.ref.write_position;
-
-  MemoryTupleDynamicInputStream(this._buffers, int initialCapacity) {
+  MemoryTupleDynamicInputWriter(this._buffers, int initialCapacity) {
     _inputBuffer = memory_io_buffers_allocate_input(_buffers, initialCapacity);
     _bufferTyped = Uint8List(initialCapacity);
     _bufferData = ByteData.view(_bufferTyped.buffer, _bufferTyped.offsetInBytes);
   }
 
   @inline
-  void writeNull() => advance(tupleWriteNull(reserve(tupleSizeOfNull).data, 0));
+  void writeNull() {
+    _nextOffset = tupleWriteNull(reserve(tupleSizeOfNull).data, _currentOffset);
+    advance(_nextOffset - _currentOffset);
+    _currentOffset = _nextOffset;
+  }
 
   @inline
-  void writeBool(bool value) => advance(tupleWriteBool(reserve(tupleSizeOfBool).data, value, 0));
+  void writeBool(bool value) {
+    _nextOffset = tupleWriteBool(reserve(tupleSizeOfBool).data, value, _currentOffset);
+    advance(_nextOffset - _currentOffset);
+    _currentOffset = _nextOffset;
+  }
 
   @inline
-  void writeInt(int value) => advance(tupleWriteInt(reserve(tupleSizeOfInt(value)).data, value, 0));
+  void writeInt(int value) {
+    _nextOffset = tupleWriteInt(reserve(tupleSizeOfInt(value)).data, value, _currentOffset);
+    advance(_nextOffset - _currentOffset);
+    _currentOffset = _nextOffset;
+  }
 
   @inline
-  void writeDouble(double value) => advance(tupleWriteDouble(reserve(tupleSizeOfDouble).data, value, 0));
+  void writeDouble(double value) {
+    _nextOffset = tupleWriteDouble(reserve(tupleSizeOfDouble).data, value, _currentOffset);
+    advance(_nextOffset - _currentOffset);
+    _currentOffset = _nextOffset;
+  }
 
   @inline
   void writeString(String value) {
     final reserved = reserve(tupleSizeOfString(value.length));
-    advance(tupleWriteString(reserved.buffer, reserved.data, value, 0));
+    _nextOffset = tupleWriteString(reserved.buffer, reserved.data, value, _currentOffset);
+    advance(_nextOffset - _currentOffset);
+    _currentOffset = _nextOffset;
   }
 
   @inline
   void writeBinary(Uint8List value) {
     final reserved = reserve(tupleSizeOfBinary(value.length));
-    advance(tupleWriteBinary(reserved.buffer, reserved.data, value, 0));
+    _nextOffset = tupleWriteBinary(reserved.buffer, reserved.data, value, _currentOffset);
+    advance(_nextOffset - _currentOffset);
+    _currentOffset = _nextOffset;
   }
 
   @inline
-  void writeList(int length) => advance(tupleWriteList(reserve(tupleSizeOfList(length)).data, length, 0));
+  void writeIterable(int length) {
+    _nextOffset = tupleWriteList(reserve(tupleSizeOfList(length)).data, length, _currentOffset);
+    advance(_nextOffset - _currentOffset);
+    _currentOffset = _nextOffset;
+  }
 
   @inline
-  void writeMap(int length) => advance(tupleWriteMap(reserve(tupleSizeOfMap(length)).data, length, 0));
+  void writeMap(int length) {
+    _nextOffset = tupleWriteMap(reserve(tupleSizeOfMap(length)).data, length, _currentOffset);
+    advance(_nextOffset - _currentOffset);
+    _currentOffset = _nextOffset;
+  }
+
+  @inline
+  void writeTuple(Tuple tuple) {
+    final reserved = reserve(tuple.tupleSize);
+    _nextOffset = tuple.serialize(reserved.buffer, reserved.data, _currentOffset);
+    advance(_nextOffset - _currentOffset);
+    _currentOffset = _nextOffset;
+  }
 
   @inline
   ({Uint8List buffer, ByteData data}) reserve(int size) {
@@ -144,19 +172,15 @@ class MemoryTupleDynamicInputStream {
       _bufferTyped = _buffer.asTypedList(size);
       _bufferData = ByteData.view(_bufferTyped.buffer, _bufferTyped.offsetInBytes);
       _position = _buffer.address;
-      _end = _position + _inputBuffer.ref.last_reserved_size;
+      _end = _position + _inputBuffer.ref.unused;
+      _currentOffset = 0;
       return (buffer: _bufferTyped, data: _bufferData);
     }
-    _bufferTyped = (_buffer + _bufferTyped.length).asTypedList(size);
-    _bufferData = ByteData.view(_bufferTyped.buffer, _bufferTyped.offsetInBytes);
     return (buffer: _bufferTyped, data: _bufferData);
   }
 
   @inline
-  void advance(int size) {
-    _position += size;
-    _result += size;
-  }
+  void advance(int size) => _position += size;
 
   @inline
   void flush() {
@@ -170,63 +194,91 @@ class MemoryTupleDynamicInputStream {
   void destroy() => memory_io_buffers_free_input(_buffers, _inputBuffer);
 }
 
-class MemoryTupleDynamicOutputStream {
+class MemoryTupleDynamicOutputWriter {
   final Pointer<memory_io_buffers> _buffers;
   late final Pointer<memory_output_buffer> _outputBuffer;
   Pointer<Uint8> _buffer = nullptr;
   int _position = 0;
   int _end = 0;
-  int _result = 0;
+  int _currentOffset = 0;
+  int _nextOffset = 0;
   late Uint8List _bufferTyped;
   late ByteData _bufferData;
 
   @inline
-  int get size => _result;
-
-  @inline
-  int get count => _outputBuffer.ref.content_count;
-
-  @inline
-  Pointer<iovec> get content => _outputBuffer.ref.content;
-
-  @inline
   Pointer<memory_output_buffer> get buffer => _outputBuffer;
 
-  MemoryTupleDynamicOutputStream(this._buffers, int initialCapacity) {
+  MemoryTupleDynamicOutputWriter(this._buffers, int initialCapacity) {
     _outputBuffer = memory_io_buffers_allocate_output(_buffers, initialCapacity);
-    _bufferTyped = Uint8List(_result);
+    _bufferTyped = Uint8List(initialCapacity);
     _bufferData = ByteData.view(_bufferTyped.buffer, _bufferTyped.offsetInBytes);
   }
 
   @inline
-  void writeNull() => advance(tupleWriteNull(reserve(tupleSizeOfNull).data, 0));
+  void writeNull() {
+    _nextOffset = tupleWriteNull(reserve(tupleSizeOfNull).data, _currentOffset);
+    advance(_nextOffset - _currentOffset);
+    _currentOffset = _nextOffset;
+  }
 
   @inline
-  void writeBool(bool value) => advance(tupleWriteBool(reserve(tupleSizeOfBool).data, value, 0));
+  void writeBool(bool value) {
+    _nextOffset = tupleWriteBool(reserve(tupleSizeOfBool).data, value, _currentOffset);
+    advance(_nextOffset - _currentOffset);
+    _currentOffset = _nextOffset;
+  }
 
   @inline
-  void writeInt(int value) => advance(tupleWriteInt(reserve(tupleSizeOfInt(value)).data, value, 0));
+  void writeInt(int value) {
+    _nextOffset = tupleWriteInt(reserve(tupleSizeOfInt(value)).data, value, _currentOffset);
+    advance(_nextOffset - _currentOffset);
+    _currentOffset = _nextOffset;
+  }
 
   @inline
-  void writeDouble(double value) => advance(tupleWriteDouble(reserve(tupleSizeOfDouble).data, value, 0));
+  void writeDouble(double value) {
+    _nextOffset = tupleWriteDouble(reserve(tupleSizeOfDouble).data, value, _currentOffset);
+    advance(_nextOffset - _currentOffset);
+    _currentOffset = _nextOffset;
+  }
 
   @inline
   void writeString(String value) {
     final reserved = reserve(tupleSizeOfString(value.length));
-    advance(tupleWriteString(reserved.buffer, reserved.data, value, 0));
+    _nextOffset = tupleWriteString(reserved.buffer, reserved.data, value, _currentOffset);
+    advance(_nextOffset - _currentOffset);
+    _currentOffset = _nextOffset;
   }
 
   @inline
   void writeBinary(Uint8List value) {
     final reserved = reserve(tupleSizeOfBinary(value.length));
-    advance(tupleWriteBinary(reserved.buffer, reserved.data, value, 0));
+    _nextOffset = tupleWriteBinary(reserved.buffer, reserved.data, value, _currentOffset);
+    advance(_nextOffset - _currentOffset);
+    _currentOffset = _nextOffset;
   }
 
   @inline
-  void writeList(int length) => advance(tupleWriteList(reserve(tupleSizeOfList(length)).data, length, 0));
+  void writeIterable(int length) {
+    _nextOffset = tupleWriteList(reserve(tupleSizeOfList(length)).data, length, _currentOffset);
+    advance(_nextOffset - _currentOffset);
+    _currentOffset = _nextOffset;
+  }
 
   @inline
-  void writeMap(int length) => advance(tupleWriteMap(reserve(tupleSizeOfMap(length)).data, length, 0));
+  void writeMap(int length) {
+    _nextOffset = tupleWriteMap(reserve(tupleSizeOfMap(length)).data, length, _currentOffset);
+    advance(_nextOffset - _currentOffset);
+    _currentOffset = _nextOffset;
+  }
+
+  @inline
+  void writeTuple(Tuple tuple) {
+    final reserved = reserve(tuple.tupleSize);
+    _nextOffset = tuple.serialize(reserved.buffer, reserved.data, _currentOffset);
+    advance(_nextOffset - _currentOffset);
+    _currentOffset = _nextOffset;
+  }
 
   @inline
   ({Uint8List buffer, ByteData data}) reserve(int size) {
@@ -247,10 +299,7 @@ class MemoryTupleDynamicOutputStream {
   }
 
   @inline
-  void advance(int size) {
-    _position += size;
-    _result += size;
-  }
+  void advance(int size) => _position += size;
 
   @inline
   void flush() {
@@ -264,38 +313,33 @@ class MemoryTupleDynamicOutputStream {
   void destroy() => memory_io_buffers_free_output(_buffers, _outputBuffer);
 }
 
-class MemoryTupleDynamicStreams {
+class MemoryTupleDynamicWriter {
   final Pointer<memory_io_buffers> _buffers;
   final int initialCapacity;
 
-  MemoryTupleDynamicInputStream input({int? initialCapacity}) => MemoryTupleDynamicInputStream(_buffers, initialCapacity ?? this.initialCapacity);
-  MemoryTupleDynamicOutputStream output({int? initialCapacity}) => MemoryTupleDynamicOutputStream(_buffers, initialCapacity ?? this.initialCapacity);
+  MemoryTupleDynamicInputWriter input({int? initialCapacity}) => MemoryTupleDynamicInputWriter(_buffers, initialCapacity ?? this.initialCapacity);
+  MemoryTupleDynamicOutputWriter output({int? initialCapacity}) => MemoryTupleDynamicOutputWriter(_buffers, initialCapacity ?? this.initialCapacity);
 
-  MemoryTupleDynamicStreams(this._buffers, this.initialCapacity);
+  MemoryTupleDynamicWriter(this._buffers, this.initialCapacity);
 
   ({Pointer<Uint8> tuple, int size, void Function() cleaner}) toInput(
-    int Function(({Uint8List buffer, ByteData data}) Function(int size) reserve, void Function(int size) advance) writer, {
+    int Function(({Uint8List buffer, ByteData data}) Function(int size) reserve, void Function(int size) advance) serializer, {
     int? initialCapacity,
   }) {
-    final stream = input(initialCapacity: initialCapacity);
-    writer(stream.reserve, stream.advance);
-    stream.flush();
-    return (tuple: stream._inputBuffer.readPosition, size: stream._result, cleaner: stream.destroy);
+    final writer = input(initialCapacity: initialCapacity);
+    serializer(writer.reserve, writer.advance);
+    writer.flush();
+    return (tuple: writer.buffer.readPosition, size: writer.buffer.used, cleaner: writer.destroy);
   }
 
   ({Pointer<iovec> content, int count, int fullSize, void Function() cleaner}) toOutput(
-    int Function(({Uint8List buffer, ByteData data}) Function(int size) reserve, void Function(int size) advance) writer, {
+    int Function(({Uint8List buffer, ByteData data}) Function(int size) reserve, void Function(int size) advance) serializer, {
     int? initialCapacity,
   }) {
     initialCapacity = initialCapacity ?? this.initialCapacity;
-    final stream = output(initialCapacity: initialCapacity);
-    writer(stream.reserve, stream.advance);
-    stream.flush();
-    return (
-      content: stream._outputBuffer.content,
-      count: stream._outputBuffer.ref.content_count,
-      fullSize: stream._result,
-      cleaner: stream.destroy,
-    );
+    final writer = output(initialCapacity: initialCapacity);
+    serializer(writer.reserve, writer.advance);
+    writer.flush();
+    return (content: writer.buffer.content, count: writer.buffer.vectors, fullSize: writer.buffer.size, cleaner: writer.destroy);
   }
 }

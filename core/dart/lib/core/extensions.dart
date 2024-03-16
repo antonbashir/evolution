@@ -13,12 +13,12 @@ extension SystemIovecExtensions on Pointer<iovec> {
     return builder.takeBytes();
   }
 
-  int collectTo(Uint8List data, int count) {
+  int collectTo(Uint8List output, int count) {
     var written = 0;
     for (var i = 0; i < count; i++) {
       final current = this[i];
-      data.setRange(written, current.iov_len, current.iov_base.asTypedList(current.iov_len));
-      written += data.length;
+      output.setRange(written, current.iov_len, current.iov_base.asTypedList(current.iov_len));
+      written += output.length;
     }
     return written;
   }
