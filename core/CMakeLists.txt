@@ -19,7 +19,7 @@ file(GLOB_RECURSE config_files_in CONFIGURE_DEPENDS RELATIVE "${PROJECT_SOURCE_D
 add_custom_command(
   OUTPUT ${core_libunwind_SOURCE_DIR}/configure
   WORKING_DIRECTORY ${core_libunwind_SOURCE_DIR}
-  COMMAND AR=${CMAKE_AR} CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER} CFLAGS=${LIBunwind_CFLAGS} CXXFLAGS=${LIBunwind_CXXFLAGS} autoreconf -i
+  COMMAND AR=${CMAKE_AR} CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER} CFLAGS=${LIBUNWIND_CFLAGS} CXXFLAGS=${LIBUNWIND_CXXFLAGS} autoreconf -i
   COMMAND touch configure
   DEPENDS ${autotool_files}
 )
@@ -56,7 +56,6 @@ add_custom_command(
   ${config_files_in}
   ${core_libunwind_SOURCE_DIR}/Makefile
 )
-
 
 add_custom_target(core_libunwind_build
   COMMAND AR=${CMAKE_AR} CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER} CFLAGS=${LIBUNWIND_CFLAGS} CXXFLAGS=${LIBUNWIND_CXXFLAGS}

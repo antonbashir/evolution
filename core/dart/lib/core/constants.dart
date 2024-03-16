@@ -1,12 +1,14 @@
 import 'dart:ffi';
 
+import 'environment.dart';
+
 const inline = pragma("vm:prefer-inline");
 const neverInline = pragma("vm:never-inline");
 
 const coreModuleId = 0;
 const coreModuleName = "core";
 const corePackageName = "core";
-final coreLibraryName = false ? "libcore_debug_${Abi.current()}.so" : "libcore_release_${Abi.current()}.so";
+final coreLibraryName = SystemEnvironment.debug ? "libcore_debug_${Abi.current()}.so" : "libcore_release_${Abi.current()}.so";
 
 const empty = "";
 const unknown = "unknown";

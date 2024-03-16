@@ -4,6 +4,7 @@ project(memory C ASM)
 set(MSGPUCK_PROJECT memory_msgpuck)
 set(SMALL_PROJECT memory_small)
 
+set(CMAKE_C_FLAGS ${COMPILER_C_FLAGS_RELEASE})
 FetchContent_Declare(
   memory_small
   GIT_REPOSITORY ${DEPENDENCY_SMALL_REPOSITORY}
@@ -13,7 +14,9 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(memory_small)
 add_subdirectory(${memory_small_SOURCE_DIR})
+set(CMAKE_C_FLAGS "")
 
+set(CMAKE_C_FLAGS ${COMPILER_C_FLAGS_RELEASE})
 FetchContent_Declare(
   memory_msgpuck
   GIT_REPOSITORY ${DEPENDENCY_MSGPUCK_REPOSITORY}
@@ -23,6 +26,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(memory_msgpuck)
 add_subdirectory(${memory_msgpuck_SOURCE_DIR})
+set(CMAKE_C_FLAGS "")
 
 add_subdirectory(native)
 

@@ -138,6 +138,8 @@
     "descriptors.h": "c",
     "io_buffers.h": "c",
     "transport_constants.h": "c",
-    "constants.h": "c"
+    "constants.h": "c",
+    "coro.h": "c",
+    "config.h": "c"
   },
 }

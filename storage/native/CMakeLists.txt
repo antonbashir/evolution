@@ -33,10 +33,10 @@ set(STORAGE_INCLUDES
 )
 
 add_library(storage_debug_linux_x64 SHARED ${sources})
-add_dependencies(storage_debug_linux_x64 storage_tarantool executor_debug_linux_x64)
+add_dependencies(storage_debug_linux_x64 tarantool-library-bundle executor_debug_linux_x64)
 target_include_directories(storage_debug_linux_x64 PRIVATE ${STORAGE_INCLUDES})
 target_link_libraries(storage_debug_linux_x64 PRIVATE -Wl,--whole-archive ${TARANTOOL_LIBRARY} -Wl,--no-whole-archive)
-set_target_properties(storage_debug_linux_x64 PROPERTIES COMPILE_FLAGS ${CMAKE_C_FLAGS_DEBUG})
+set_target_properties(storage_debug_linux_x64 PROPERTIES COMPILE_FLAGS ${COMPILER_C_FLAGS_DEBUG})
 add_custom_command(TARGET storage_debug_linux_x64 POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:storage_debug_linux_x64> ${CMAKE_CURRENT_SOURCE_DIR}/../dart/assets/libstorage_debug_linux_x64.so)
 add_custom_command(TARGET storage_debug_linux_x64 POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${TARANTOOL_INSTALL_DIR}/include/tarantool/module.h ${CMAKE_CURRENT_SOURCE_DIR}/../dart/assets/library.h)
 add_custom_command(TARGET storage_debug_linux_x64 POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${storage_tarantool_SOURCE_DIR}/third_party/luajit/src/lua.h ${CMAKE_CURRENT_SOURCE_DIR}/../dart/assets/lua.h)
@@ -45,10 +45,10 @@ add_custom_command(TARGET storage_debug_linux_x64 POST_BUILD COMMAND ${CMAKE_COM
 add_custom_command(TARGET storage_debug_linux_x64 POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/src/storage_extension.h ${CMAKE_CURRENT_SOURCE_DIR}/../dart/assets/module.h)
 
 add_library(storage_release_linux_x64 SHARED ${sources})
-add_dependencies(storage_release_linux_x64 storage_tarantool executor_release_linux_x64)
+add_dependencies(storage_release_linux_x64 tarantool-library-bundle executor_release_linux_x64)
 target_link_libraries(storage_release_linux_x64 PRIVATE -Wl,--whole-archive ${TARANTOOL_LIBRARY} -Wl,--no-whole-archive)
 target_include_directories(storage_release_linux_x64 PRIVATE ${STORAGE_INCLUDES})
-set_target_properties(storage_release_linux_x64 PROPERTIES COMPILE_FLAGS ${CMAKE_C_FLAGS})
+set_target_properties(storage_release_linux_x64 PROPERTIES COMPILE_FLAGS ${COMPILER_C_FLAGS_RELEASE})
 add_custom_command(TARGET storage_release_linux_x64 POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:storage_release_linux_x64> ${CMAKE_CURRENT_SOURCE_DIR}/../dart/assets/libstorage_release_linux_x64.so)
 add_custom_command(TARGET storage_release_linux_x64 POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${TARANTOOL_INSTALL_DIR}/include/tarantool/module.h ${CMAKE_CURRENT_SOURCE_DIR}/../dart/assets/library.h)
 add_custom_command(TARGET storage_release_linux_x64 POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${storage_tarantool_SOURCE_DIR}/third_party/luajit/src/lua.h ${CMAKE_CURRENT_SOURCE_DIR}/../dart/assets/lua.h)
@@ -61,7 +61,7 @@ add_custom_target(storage_native DEPENDS "storage_release_linux_x64;storage_debu
 add_executable(storage_test ${tests})
 add_dependencies(storage_test storage_debug_linux_x64 executor_debug_linux_x64)
 target_include_directories(storage_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/test ${STORAGE_INCLUDES})
-set_target_properties(storage_test PROPERTIES COMPILE_FLAGS ${CMAKE_C_FLAGS_DEBUG})
+set_target_properties(storage_test PROPERTIES COMPILE_FLAGS ${COMPILER_C_FLAGS_DEBUG})
 target_link_libraries(storage_test PRIVATE storage_debug_linux_x64 executor_debug_linux_x64 -lstdc++ -lm)
 set_target_properties(storage_test PROPERTIES
   ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin/test"

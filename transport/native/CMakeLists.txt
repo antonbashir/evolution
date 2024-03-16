@@ -16,12 +16,12 @@ file(GLOB sources
 
 add_library(transport_debug_linux_x64 SHARED ${sources})
 target_link_libraries(transport_debug_linux_x64 PRIVATE ${EXECUTOR_LIBRARY})
-set_target_properties(transport_debug_linux_x64 PROPERTIES COMPILE_FLAGS ${CMAKE_C_FLAGS_DEBUG})
+set_target_properties(transport_debug_linux_x64 PROPERTIES COMPILE_FLAGS ${COMPILER_C_FLAGS_DEBUG})
 copy_to_assets(transport_debug_linux_x64)
 
 add_library(transport_release_linux_x64 SHARED ${sources})
 target_link_libraries(transport_release_linux_x64 PRIVATE ${EXECUTOR_LIBRARY})
-set_target_properties(transport_release_linux_x64 PROPERTIES COMPILE_FLAGS ${CMAKE_C_FLAGS})
+set_target_properties(transport_release_linux_x64 PROPERTIES COMPILE_FLAGS ${COMPILER_C_FLAGS_RELEASE})
 copy_to_assets(transport_release_linux_x64)
 
 add_custom_target(transport_native DEPENDS "transport_release_linux_x64;transport_debug_linux_x64")
