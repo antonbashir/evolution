@@ -73,6 +73,10 @@ class CoreErrors {
 class CoreMessages {
   CoreMessages._();
 
+  static const modulesCreated = "Modules created. Activating.";
+  static const modulesDestroyed = "Modules destroyed. Exiting.";
+  static const modulesLoaded = "Modules loaded. Activating.";
+  static const modulesUnloaded = "Modules unloaded. Exiting.";
   static String loadingLibrary(name, path) => "Loading: $name from $path";
 }
 

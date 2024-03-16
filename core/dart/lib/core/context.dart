@@ -47,6 +47,8 @@ mixin Module<NativeType extends Struct, ConfigurationType extends ModuleConfigur
 
   FutureOr<void> unfork() {}
 
+  bool validate() => true;
+
   void destroy() {}
 
   void unload() {}
@@ -129,7 +131,7 @@ class Launcher {
 
   Future<void> activate(FutureOr<void> Function() main) async => runZonedGuarded(
         () async {
-          information("Modules created. Activating.");
+          information(CoreMessages.modulesCreated);
           for (var module in _context._modules) {
             await Future.value(module?.initialize());
           }
@@ -140,7 +142,7 @@ class Launcher {
           for (var module in _context._modules.reversed) {
             module?.destroy();
           }
-          information("Modules destroyed. Exiting.");
+          information(CoreMessages.modulesDestroyed);
         },
         (error, stack) {
           if (error is Error) {
@@ -160,7 +162,7 @@ class Forker {
 
   Future<void> activate(FutureOr<void> Function() main) async => runZonedGuarded(
         () async {
-          information("Modules loaded. Activating.");
+          information(CoreMessages.modulesLoaded);
           for (var module in _context._modules) {
             await Future.value(module?.fork());
           }
@@ -171,7 +173,7 @@ class Forker {
           for (var module in _context._modules.reversed) {
             module?.unload();
           }
-          information("Modules unloaded. Exiting.");
+          information(CoreMessages.modulesUnloaded);
         },
         (error, stack) {
           if (error is Error) {
@@ -188,6 +190,7 @@ class Forker {
 
 Launcher launch(ModuleCreator creator) {
   creator(_context);
+  for (var module in _context._modules) module?.validate();
   return _launcher;
 }
 
