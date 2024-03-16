@@ -16,12 +16,11 @@ class TestData with Tuple {
     return offset;
   }
 
-  @override
-  factory TestData.deserialize(Uint8List buffer, ByteData data, int offset) {
+  static ({TestData data, int offset}) deserialize(Uint8List buffer, ByteData data, int offset) {
     var read = tupleReadList(data, offset);
     var a = tupleReadInt(data, read.offset);
     var b = tupleReadString(buffer, data, a.offset);
-    return TestData(a.value!, b.value!);
+    return (data: TestData(a.value!, b.value!), offset: b.offset);
   }
 
   @override
@@ -29,14 +28,4 @@ class TestData with Tuple {
 
   @override
   String toString() => "$a $b";
-}
-
-void main(List<String> args) {
-  launch((creator) => creator.create(CoreModule(), CoreDefaults.module).create(MemoryModule(), MemoryDefaults.module)).activate(() {
-    final writer = context().tuples().dynamic.output();
-    writer.writeTuple(TestData(1, "test"));
-    writer.flush();
-    final (:Uint8List buffer, :ByteData data) = writer.buffer.wrap();
-    print(TestData.deserialize(buffer, data, 0));
-  });
 }

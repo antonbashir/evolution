@@ -141,7 +141,7 @@ class MemoryTupleDynamicInputWriter {
   }
 
   @inline
-  void writeIterable(int length) {
+  void writeList(int length) {
     _nextOffset = tupleWriteList(reserve(tupleSizeOfList(length)).data, length, _currentOffset);
     advance(_nextOffset - _currentOffset);
     _currentOffset = _nextOffset;
@@ -165,14 +165,14 @@ class MemoryTupleDynamicInputWriter {
   @inline
   ({Uint8List buffer, ByteData data}) reserve(int size) {
     if (_position + size > _end) {
-      if (_position != _buffer) {
+      if (_position != _buffer.address) {
         _inputBuffer.finalize(_position - _buffer.address);
       }
       _buffer = _inputBuffer.reserve(size);
-      _bufferTyped = _buffer.asTypedList(size);
-      _bufferData = ByteData.view(_bufferTyped.buffer, _bufferTyped.offsetInBytes);
       _position = _buffer.address;
       _end = _position + _inputBuffer.ref.unused;
+      _bufferTyped = _buffer.asTypedList(_end);
+      _bufferData = ByteData.view(_bufferTyped.buffer, _bufferTyped.offsetInBytes);
       _currentOffset = 0;
       return (buffer: _bufferTyped, data: _bufferData);
     }
@@ -259,7 +259,7 @@ class MemoryTupleDynamicOutputWriter {
   }
 
   @inline
-  void writeIterable(int length) {
+  void writeList(int length) {
     _nextOffset = tupleWriteList(reserve(tupleSizeOfList(length)).data, length, _currentOffset);
     advance(_nextOffset - _currentOffset);
     _currentOffset = _nextOffset;
@@ -287,14 +287,13 @@ class MemoryTupleDynamicOutputWriter {
         _outputBuffer.finalize(_position - _buffer.address);
       }
       _buffer = _outputBuffer.reserve(size);
-      _bufferTyped = _buffer.asTypedList(size);
-      _bufferData = ByteData.view(_bufferTyped.buffer, _bufferTyped.offsetInBytes);
       _position = _buffer.address;
       _end = _position + _outputBuffer.ref.last_reserved_size;
+      _bufferTyped = _buffer.asTypedList(_end);
+      _bufferData = ByteData.view(_bufferTyped.buffer, _bufferTyped.offsetInBytes);
+      _currentOffset = 0;
       return (buffer: _bufferTyped, data: _bufferData);
     }
-    _bufferTyped = (_buffer + _bufferTyped.length).asTypedList(size);
-    _bufferData = ByteData.view(_bufferTyped.buffer, _bufferTyped.offsetInBytes);
     return (buffer: _bufferTyped, data: _bufferData);
   }
 
