@@ -24,7 +24,7 @@ class Executor {
   final Pointer<executor_instance> native;
   final int descriptor;
   final int id;
-  final Completer<void> _closer = Completer();
+  final Completer<void> _stopper = Completer();
 
   late final ExecutorProcessor _processor;
   late final ExecutorPending _pending;
@@ -49,7 +49,7 @@ class Executor {
 
   Future<void> shutdown() async {
     native.ref.state = executorStateStopping;
-    if (_pending() != 0) await _closer.future;
+    if (_pending() != 0) await _stopper.future;
     _registry[id] = null;
     _callback.close();
     executor_destroy(native);
@@ -62,8 +62,8 @@ class Executor {
   @inline
   void _awake() {
     if (native.ref.state & executorStateStopped != 0) {
-      if (_closer.isCompleted) return;
-      _closer.complete();
+      if (_stopper.isCompleted) return;
+      _stopper.complete();
       return;
     }
     if (native.ref.state & executorStatePaused == 0) {
