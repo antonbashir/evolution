@@ -31,7 +31,10 @@ class Executor {
   late final Pointer<Pointer<executor_completion_event>> _completions;
 
   @inline
-  bool get active => native.ref.state & executorStateStopped == 0;
+  bool get active => native.ref.state & (executorStateIdle | executorStateWaking) != 0;
+
+  @inline
+  bool get needSubmit => native.ref.state & executorStateIdle != 0;
 
   Executor(this.native, {this.configuration = ExecutorDefaults.executor})
       : descriptor = native.ref.descriptor,

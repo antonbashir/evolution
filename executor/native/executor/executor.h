@@ -34,6 +34,11 @@ DART_LEAF_FUNCTION void executor_awake_complete(struct executor_instance* execut
 DART_LEAF_FUNCTION int8_t executor_call_native(struct executor_instance* executor, int32_t target_ring_fd, struct executor_task* message);
 DART_LEAF_FUNCTION int8_t executor_callback_to_native(struct executor_instance* executor, struct executor_task* message);
 
+static FORCEINLINE bool executor_need_submit(struct executor_instance* executor)
+{
+    return executor->state & EXECUTOR_STATE_IDLE;
+}
+
 DART_INLINE_LEAF_FUNCTION void executor_submit(struct executor_instance* executor)
 {
     io_uring_submit(executor->ring);
