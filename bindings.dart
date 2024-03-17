@@ -1,11 +1,9 @@
 import 'dart:io';
-import 'dart:mirrors';
-
 
 void main(List<String> args) {
   final current = Platform.script.path.substring(0, Platform.script.path.lastIndexOf('/'));
   if (args.isNotEmpty) {
-    final process = Process.runSync("dart", ["run", "$current/infrastructure/dart/generators/bindings.dart"], workingDirectory:  '$current/${args.first}');
+    final process = Process.runSync("dart", ["run", "$current/infrastructure/dart/generators/bindings.dart"], workingDirectory: '$current/${args.first}');
     if ((process.stdout.toString()).isNotEmpty) print(process.stdout);
     if ((process.stderr.toString()).isNotEmpty) print(process.stderr);
     return;

@@ -10,9 +10,10 @@ class TransportConfiguration {
   final Duration timeoutCheckerPeriod;
   final bool trace;
 
-  Pointer<transport_configuration> toNative(Pointer<transport_configuration> native, Arena arena) {
-    native.ref.memory_instance_configuration = memoryConfiguration.toNative(arena<memory_configuration>());
-    native.ref.executor_instance_configuration = executorConfiguration.toNative(arena<executor_configuration>());
+  Pointer<transport_configuration> toNative(Arena arena) {
+    final native = arena<transport_configuration>();
+    native.ref.memory_instance_configuration = memoryConfiguration.toNative(arena).ref;
+    native.ref.executor_instance_configuration = executorConfiguration.toNative(arena).ref;
     native.ref.timeout_checker_period_milliseconds = timeoutCheckerPeriod.inMilliseconds;
     native.ref.trace = trace;
     return native;

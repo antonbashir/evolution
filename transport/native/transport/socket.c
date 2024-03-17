@@ -1,13 +1,5 @@
-#include "transport_socket.h"
-#include <arpa/inet.h>
-#include <fcntl.h>
-#include <net/if.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
-#include <stdint.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include "transport_constants.h"
+#include "socket.h"
+#include "constants.h"
 
 int64_t transport_socket_create_tcp(uint64_t flags,
                                     uint32_t socket_receive_buffer_size,
@@ -42,16 +34,16 @@ int64_t transport_socket_create_tcp(uint64_t flags,
             return -TRANSPORT_SOCKET_OPTION_SOCKET_NONBLOCK;
         }
     }
-    if (flags & TRANSPORT_SOCKET_OPTION_SOCKET_CLOCEXEC)
+    if (flags & TRANSPORT_SOCKET_OPTION_SOCKET_CLOEXEC)
     {
         int32_t fcntl_flags = fcntl(fd, F_GETFL);
         if (fcntl_flags < 0)
         {
-            return -TRANSPORT_SOCKET_OPTION_SOCKET_CLOCEXEC;
+            return -TRANSPORT_SOCKET_OPTION_SOCKET_CLOEXEC;
         }
         if (fcntl(fd, F_SETFL, fcntl_flags | O_CLOEXEC) < 0)
         {
-            return -TRANSPORT_SOCKET_OPTION_SOCKET_CLOCEXEC;
+            return -TRANSPORT_SOCKET_OPTION_SOCKET_CLOEXEC;
         }
     }
     if (flags & TRANSPORT_SOCKET_OPTION_SOCKET_REUSEADDR)
@@ -215,16 +207,16 @@ int64_t transport_socket_create_udp(uint64_t flags,
             return -TRANSPORT_SOCKET_OPTION_SOCKET_NONBLOCK;
         }
     }
-    if (flags & TRANSPORT_SOCKET_OPTION_SOCKET_CLOCEXEC)
+    if (flags & TRANSPORT_SOCKET_OPTION_SOCKET_CLOEXEC)
     {
         int32_t fcntl_flags = fcntl(fd, F_GETFL);
         if (fcntl_flags < 0)
         {
-            return -TRANSPORT_SOCKET_OPTION_SOCKET_CLOCEXEC;
+            return -TRANSPORT_SOCKET_OPTION_SOCKET_CLOEXEC;
         }
         if (fcntl(fd, F_SETFL, fcntl_flags | O_CLOEXEC) < 0)
         {
-            return -TRANSPORT_SOCKET_OPTION_SOCKET_CLOCEXEC;
+            return -TRANSPORT_SOCKET_OPTION_SOCKET_CLOEXEC;
         }
     }
     {
@@ -348,16 +340,16 @@ int64_t transport_socket_create_unix_stream(uint64_t flags,
             return -TRANSPORT_SOCKET_OPTION_SOCKET_NONBLOCK;
         }
     }
-    if (flags & TRANSPORT_SOCKET_OPTION_SOCKET_CLOCEXEC)
+    if (flags & TRANSPORT_SOCKET_OPTION_SOCKET_CLOEXEC)
     {
         int32_t fcntl_flags = fcntl(fd, F_GETFL);
         if (fcntl_flags < 0)
         {
-            return -TRANSPORT_SOCKET_OPTION_SOCKET_CLOCEXEC;
+            return -TRANSPORT_SOCKET_OPTION_SOCKET_CLOEXEC;
         }
         if (fcntl(fd, F_SETFL, fcntl_flags | O_CLOEXEC) < 0)
         {
-            return -TRANSPORT_SOCKET_OPTION_SOCKET_CLOCEXEC;
+            return -TRANSPORT_SOCKET_OPTION_SOCKET_CLOEXEC;
         }
     }
     if (flags & TRANSPORT_SOCKET_OPTION_SOCKET_RCVBUF)

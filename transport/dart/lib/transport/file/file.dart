@@ -2,8 +2,6 @@ import 'dart:async';
 import 'dart:ffi';
 import 'dart:typed_data';
 
-import 'package:memory/memory.dart';
-
 import '../bindings.dart';
 import '../channel.dart';
 import '../constants.dart';
@@ -73,7 +71,7 @@ class TransportFileChannel {
       _channel.read(
         bufferId,
         transportEventRead | transportEventFile,
-        sqeFlags: transportIosqeIoLink,
+        sqeFlags: ringIosqeIoLink,
         offset: offset,
       );
       offset += buffers.size;
@@ -101,7 +99,7 @@ class TransportFileChannel {
         bytes[index],
         bufferId,
         transportEventWrite | transportEventFile,
-        sqeFlags: transportIosqeIoLink,
+        sqeFlags: ringIosqeIoLink,
         offset: offset,
       );
       offset += buffers.size;

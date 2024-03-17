@@ -1,14 +1,6 @@
-#include "transport_server.h"
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/time.h>
-#include <sys/un.h>
-#include <unistd.h>
-#include "transport_constants.h"
-#include "transport_socket.h"
+#include "server.h"
+#include "constants.h"
+#include "socket.h"
 
 int32_t transport_server_initialize_tcp(struct transport_server* server, struct transport_server_configuration* configuration, const char* ip, int32_t port)
 {

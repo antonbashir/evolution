@@ -1,9 +1,8 @@
 #ifndef TRANSPORT_FILE_H
 #define TRANSPORT_FILE_H
 
-#include <stdbool.h>
-#include <stdint.h>
-#include "common/common.h"
+#include <common/common.h>
+#include <system/library.h>
 
 #if defined(__cplusplus)
 extern "C"

@@ -1,32 +1,16 @@
 #ifndef TRANSPORT_H
 #define TRANSPORT_H
 
-#include <executor/configuration.h>
-#include <stdbool.h>
-#include <stdint.h>
-#include "memory/configuration.h"
-#include "transport_client.h"
-#include "transport_server.h"
+#include <executor/executor.h>
+#include <memory/configuration.h>
+#include "client.h"
+#include "configuration.h"
+#include "server.h"
 
 #if defined(__cplusplus)
 extern "C"
 {
 #endif
-
-DART_TYPE struct simple_map_events_t;
-DART_TYPE struct ip_mreqn;
-DART_TYPE struct sockaddr;
-DART_TYPE struct sockaddr_in;
-DART_TYPE struct sockaddr_un;
-DART_TYPE struct msghdr;
-
-DART_STRUCTURE struct transport_configuration
-{
-    DART_FIELD struct memory_configuration* memory_instance_configuration;
-    DART_FIELD struct executor_configuration* executor_instance_configuration;
-    DART_FIELD uint64_t timeout_checker_period_milliseconds;
-    DART_FIELD bool trace;
-};
 
 DART_STRUCTURE struct transport
 {
@@ -34,9 +18,9 @@ DART_STRUCTURE struct transport
     DART_FIELD struct iovec* buffers;
     DART_FIELD struct executor_instance* transport_executor;
     DART_FIELD struct transport_configuration configuration;
-    DART_FIELD struct msghdr* inet_used_messages;
-    DART_FIELD struct msghdr* unix_used_messages;
-    DART_FIELD struct simple_map_events_t* events;
+    struct msghdr* inet_used_messages;
+    struct msghdr* unix_used_messages;
+    struct simple_map_events_t* events;
 };
 
 DART_LEAF_FUNCTION int32_t transport_initialize(struct transport* transport,

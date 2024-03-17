@@ -22,64 +22,33 @@ class ExecutorModuleConfiguration implements ModuleConfiguration {
 }
 
 class ExecutorConfiguration {
-  final int staticBuffersCapacity;
-  final int staticBufferSize;
   final int ringSize;
   final int ringFlags;
-  final int memorySlabSize;
-  final int memoryPreallocationSize;
-  final int memoryQuotaSize;
 
   Pointer<executor_configuration> toNative(Arena arena) {
     final native = arena<executor_configuration>();
     native.ref.ring_flags = ringFlags;
     native.ref.ring_size = ringSize;
-    native.ref.static_buffer_size = staticBufferSize;
-    native.ref.static_buffers_capacity = staticBuffersCapacity;
-    native.ref.slab_size = memorySlabSize;
-    native.ref.preallocation_size = memoryPreallocationSize;
-    native.ref.quota_size = memoryQuotaSize;
     return native;
   }
 
   factory ExecutorConfiguration.fromNative(executor_configuration native) => ExecutorConfiguration(
         ringFlags: native.ring_flags,
         ringSize: native.ring_size,
-        staticBufferSize: native.static_buffer_size,
-        staticBuffersCapacity: native.static_buffers_capacity,
-        memorySlabSize: native.slab_size,
-        memoryPreallocationSize: native.preallocation_size,
-        memoryQuotaSize: native.quota_size,
       );
 
   const ExecutorConfiguration({
-    required this.staticBuffersCapacity,
-    required this.staticBufferSize,
     required this.ringSize,
     required this.ringFlags,
-    required this.memorySlabSize,
-    required this.memoryPreallocationSize,
-    required this.memoryQuotaSize,
   });
 
   ExecutorConfiguration copyWith({
-    int? staticBuffersCapacity,
-    int? staticBufferSize,
     int? ringSize,
     int? ringFlags,
-    Duration? timeoutCheckerPeriod,
-    int? memorySlabSize,
-    int? memoryPreallocationSize,
-    int? memoryQuotaSize,
   }) =>
       ExecutorConfiguration(
-        staticBuffersCapacity: staticBuffersCapacity ?? this.staticBuffersCapacity,
-        staticBufferSize: staticBufferSize ?? this.staticBufferSize,
         ringSize: ringSize ?? this.ringSize,
         ringFlags: ringFlags ?? this.ringFlags,
-        memorySlabSize: memorySlabSize ?? this.memorySlabSize,
-        memoryPreallocationSize: memoryPreallocationSize ?? this.memoryPreallocationSize,
-        memoryQuotaSize: memoryQuotaSize ?? this.memoryQuotaSize,
       );
 }
 

@@ -78,7 +78,7 @@ class TransportClientChannel {
         bytes[index],
         bufferId,
         transportEventWrite | transportEventClient,
-        sqeFlags: linked ? transportIosqeIoLink : 0,
+        sqeFlags: linked ? ringIosqeIoLink : 0,
         timeout: _writeTimeout,
       );
       if (onError != null) _outboundErrorHandlers[bufferId] = onError;
@@ -152,7 +152,7 @@ class TransportClientChannel {
         _destination,
         flags,
         transportEventSendMessage | transportEventClient,
-        sqeFlags: linked ? transportIosqeIoLink : 0,
+        sqeFlags: linked ? ringIosqeIoLink : 0,
         timeout: _writeTimeout,
       );
       if (onError != null) _outboundErrorHandlers[bufferId] = onError;
@@ -165,7 +165,7 @@ class TransportClientChannel {
       _destination,
       flags,
       transportEventSendMessage | transportEventClient,
-      sqeFlags: linked ? transportIosqeIoLink : 0,
+      sqeFlags: linked ? ringIosqeIoLink : 0,
       timeout: _writeTimeout,
     );
     if (onError != null) _outboundErrorHandlers[lastBufferId] = onError;

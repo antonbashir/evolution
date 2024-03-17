@@ -10,8 +10,8 @@ include_directories(${CORE_INCLUDE_DIRECTORY})
 include_directories(${MEMORY_INCLUDE_DIRECTORY})
 
 file(GLOB sources
-  *.c
-  *.h
+  **/*.c
+  **/*.h
 )
 
 add_library(transport_debug_linux_x64 SHARED ${sources})

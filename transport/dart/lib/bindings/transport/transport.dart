@@ -5,36 +5,12 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import '../../transport/bindings.dart';
 
-final class simple_map_events_t extends Opaque {}
-
-final class ip_mreqn extends Opaque {}
-
-final class sockaddr extends Opaque {}
-
-final class sockaddr_in extends Opaque {}
-
-final class sockaddr_un extends Opaque {}
-
-final class msghdr extends Opaque {}
-
-final class transport_configuration extends Struct {
-  external Pointer<memory_configuration> memory_instance_configuration;
-  external Pointer<executor_configuration> executor_instance_configuration;
-  @Uint64()
-  external int timeout_checker_period_milliseconds;
-  @Bool()
-  external bool trace;
-}
-
 final class transport extends Struct {
   @Uint8()
   external int id;
   external Pointer<iovec> buffers;
   external Pointer<executor_instance> transport_executor;
   external transport_configuration configuration;
-  external Pointer<msghdr> inet_used_messages;
-  external Pointer<msghdr> unix_used_messages;
-  external Pointer<simple_map_events_t> events;
 }
 
 @Native<Int32 Function(Pointer<transport> transport, Pointer<transport_configuration> configuration, Uint8 id)>(isLeaf: true)

@@ -1,14 +1,6 @@
-#include "transport_client.h"
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/time.h>
-#include <sys/un.h>
-#include <unistd.h>
-#include "transport_constants.h"
-#include "transport_socket.h"
+#include "client.h"
+#include "constants.h"
+#include "socket.h"
 
 int32_t transport_client_initialize_tcp(struct transport_client* client, struct transport_client_configuration* configuration, const char* ip, int32_t port)
 {

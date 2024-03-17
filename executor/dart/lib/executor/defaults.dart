@@ -6,13 +6,8 @@ class ExecutorDefaults {
   static const ExecutorModuleConfiguration module = ExecutorModuleConfiguration(scheduler);
 
   static const ExecutorConfiguration executor = ExecutorConfiguration(
-    staticBuffersCapacity: 4096,
-    staticBufferSize: 4096,
     ringSize: 16384,
     ringFlags: 0,
-    memorySlabSize: 64 * 1024,
-    memoryPreallocationSize: 64 * 1024,
-    memoryQuotaSize: 16 * 1024 * 1024,
   );
 
   static const ExecutorSchedulerConfiguration scheduler = ExecutorSchedulerConfiguration(

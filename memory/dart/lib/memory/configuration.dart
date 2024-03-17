@@ -28,16 +28,17 @@ class MemoryConfiguration {
   final int quotaSize;
   final double smallAllocationFactor;
 
-  factory MemoryConfiguration.fromNative(Pointer<memory_configuration> native) => MemoryConfiguration(
-        staticBuffersCapacity: native.ref.static_buffers_capacity,
-        staticBufferSize: native.ref.static_buffer_size,
-        slabSize: native.ref.slab_size,
-        preallocationSize: native.ref.preallocation_size,
-        quotaSize: native.ref.quota_size,
-        smallAllocationFactor: native.ref.small_allocation_factor,
+  factory MemoryConfiguration.fromNative(memory_configuration native) => MemoryConfiguration(
+        staticBuffersCapacity: native.static_buffers_capacity,
+        staticBufferSize: native.static_buffer_size,
+        slabSize: native.slab_size,
+        preallocationSize: native.preallocation_size,
+        quotaSize: native.quota_size,
+        smallAllocationFactor: native.small_allocation_factor,
       );
 
-  Pointer<memory_configuration> toNative(Pointer<memory_configuration> native) {
+  Pointer<memory_configuration> toNative(Arena arena) {
+    final native = arena<memory_configuration>();
     native.ref.static_buffer_size = staticBufferSize;
     native.ref.static_buffers_capacity = staticBuffersCapacity;
     native.ref.slab_size = slabSize;

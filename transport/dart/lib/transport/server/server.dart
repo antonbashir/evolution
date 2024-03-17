@@ -77,7 +77,7 @@ class TransportServerConnectionChannel {
         bytes[index],
         bufferId,
         transportEventWrite | transportEventServer,
-        sqeFlags: linked ? transportIosqeIoLink : 0,
+        sqeFlags: linked ? ringIosqeIoLink : 0,
         timeout: _writeTimeout,
       );
       if (onError != null) _outboundErrorHandlers[bufferId] = onError;
@@ -271,7 +271,7 @@ class TransportServerChannel implements TransportServer {
         destination,
         flags,
         transportEventSendMessage | transportEventServer,
-        sqeFlags: linked ? transportIosqeIoLink : 0,
+        sqeFlags: linked ? ringIosqeIoLink : 0,
         timeout: _writeTimeout,
       );
       if (onError != null) _outboundErrorHandlers[bufferId] = onError;
@@ -284,7 +284,7 @@ class TransportServerChannel implements TransportServer {
       destination,
       flags,
       transportEventSendMessage | transportEventServer,
-      sqeFlags: linked ? transportIosqeIoLink : 0,
+      sqeFlags: linked ? ringIosqeIoLink : 0,
       timeout: _writeTimeout,
     );
     if (onError != null) _outboundErrorHandlers[lastBufferId] = onError;

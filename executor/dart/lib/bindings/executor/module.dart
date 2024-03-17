@@ -17,8 +17,6 @@ final class executor_module extends Struct {
   external int executors;
 }
 
-final class executor_module_state extends Opaque {}
-
 @Native<Pointer<executor_module> Function(Pointer<executor_module_configuration> configuration)>(isLeaf: true)
 external Pointer<executor_module> executor_module_create(Pointer<executor_module_configuration> configuration);
 

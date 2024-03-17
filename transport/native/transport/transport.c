@@ -1,18 +1,8 @@
 #include "transport.h"
 #include <liburing.h>
-#include <liburing/io_uring.h>
-#include <pthread.h>
-#include <stdio.h>
-#include <sys/time.h>
-#include <sys/un.h>
-#include <unistd.h>
-#include <executor/constants.h>
-#include "executor.h"
-#include "memory_configuration.h"
-#include "transport.h"
-#include "transport_collections.h"
-#include "transport_common.h"
-#include "transport_constants.h"
+#include "collections.h"
+#include "common.h"
+#include "constants.h"
 
 int32_t transport_initialize(struct transport* transport,
                              struct transport_configuration* configuration,
@@ -26,17 +16,17 @@ int32_t transport_initialize(struct transport* transport,
     {
         return -ENOMEM;
     }
-    simple_map_events_reserve(transport->events, configuration->memory_configuration.static_buffers_capacity, 0);
+    simple_map_events_reserve(transport->events, configuration->memory_instance_configuration.static_buffers_capacity, 0);
 
-    transport->inet_used_messages = malloc(sizeof(struct msghdr) * configuration->memory_configuration.static_buffers_capacity);
-    transport->unix_used_messages = malloc(sizeof(struct msghdr) * configuration->memory_configuration.static_buffers_capacity);
+    transport->inet_used_messages = malloc(sizeof(struct msghdr) * configuration->memory_instance_configuration.static_buffers_capacity);
+    transport->unix_used_messages = malloc(sizeof(struct msghdr) * configuration->memory_instance_configuration.static_buffers_capacity);
 
     if (!transport->inet_used_messages || !transport->unix_used_messages)
     {
         return -ENOMEM;
     }
 
-    for (size_t index = 0; index < configuration->memory_configuration.static_buffers_capacity; index++)
+    for (size_t index = 0; index < configuration->memory_instance_configuration.static_buffers_capacity; index++)
     {
         memset(&transport->inet_used_messages[index], 0, sizeof(struct msghdr));
         transport->inet_used_messages[index].msg_name = malloc(sizeof(struct sockaddr_in));
@@ -62,7 +52,7 @@ int32_t transport_setup(struct transport* transport, struct executor_instance* t
 {
     transport->transport_executor = transport_executor;
     struct io_uring* ring = transport_executor->ring;
-    int32_t result = io_uring_register_buffers(transport->transport_executor->ring, transport->buffers, transport->configuration.memory_configuration.static_buffers_capacity);
+    int32_t result = io_uring_register_buffers(transport->transport_executor->ring, transport->buffers, transport->configuration.memory_instance_configuration.static_buffers_capacity);
     if (result)
     {
         return result;
@@ -71,15 +61,15 @@ int32_t transport_setup(struct transport* transport, struct executor_instance* t
     return 0;
 }
 
-static inline void transport_add_event(struct transport* transport, int32_t fd, uint64_t data, int64_t timeout)
+static FORCEINLINE void transport_add_event(struct transport* transport, int32_t fd, uint64_t data, int64_t timeout)
 {
-    struct simple_map_events_node_t node = {
+    struct simple_map_transport_event node = {
         .data = data,
         .timeout = timeout,
         .timestamp = time(NULL),
         .fd = fd,
     };
-    simple_map_events_put(transport->events, &node, NULL, 0);
+    simple_map_events_put_copy(transport->events, &node, NULL, 0);
 }
 
 void transport_write(struct transport* transport,
@@ -228,7 +218,7 @@ void transport_cancel_by_fd(struct transport* transport, int32_t fd)
     int32_t to_delete_count = 0;
     simple_map_foreach(transport->events, index)
     {
-        struct simple_map_events_node_t* node = simple_map_events_node(transport->events, index);
+        struct simple_map_transport_event* node = simple_map_events_node(transport->events, index);
         if (node->fd == fd)
         {
             struct io_uring* ring = transport->transport_executor->ring;
@@ -252,7 +242,7 @@ void transport_check_event_timeouts(struct transport* transport)
     int32_t to_delete_count = 0;
     simple_map_foreach(transport->events, index)
     {
-        struct simple_map_events_node_t* node = simple_map_events_node(transport->events, index);
+        struct simple_map_transport_event* node = simple_map_events_node(transport->events, index);
         int64_t timeout = node->timeout;
         if (timeout == TRANSPORT_TIMEOUT_INFINITY)
         {
@@ -294,7 +284,7 @@ struct sockaddr* transport_get_datagram_address(struct transport* transport, tra
 
 void transport_destroy(struct transport* transport)
 {
-    for (size_t index = 0; index < transport->configuration.memory_configuration.static_buffers_capacity; index++)
+    for (size_t index = 0; index < transport->configuration.memory_instance_configuration.static_buffers_capacity; index++)
     {
         free(transport->inet_used_messages[index].msg_name);
         free(transport->unix_used_messages[index].msg_name);

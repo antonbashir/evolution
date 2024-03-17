@@ -34,9 +34,6 @@ DART_INLINE_LEAF_FUNCTION uint32_t executor_next_id(struct executor_module* modu
     atomic_fetch_add(&module->executors, 1);
     return module->executors;
 }
-DART_STRUCTURE struct executor_module_state
-{
-};
 
 #if defined(__cplusplus)
 }

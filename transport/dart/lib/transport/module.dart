@@ -5,11 +5,14 @@ import 'dart:isolate';
 import 'package:ffi/ffi.dart';
 import 'package:transport/transport/defaults.dart';
 
-import 'bindings.dart' as bindings;
 import 'bindings.dart';
 import 'configuration.dart';
 import 'constants.dart';
 import 'exception.dart';
+
+class TransportModuleState implements ModuleState {
+
+}
 
 class TransportModule {
   final _transportClosers = <SendPort>[];
@@ -33,17 +36,17 @@ class TransportModule {
     final port = RawReceivePort((ports) async {
       SendPort toTransport = ports[0];
       _transportClosers.add(ports[1]);
-      final transportPointer = calloc<bindings.transport>(sizeOf<bindings.transport>());
+      final transportPointer = calloc<transport>(sizeOf<transport>());
       if (transportPointer == nullptr) throw TransportInitializationException(TransportMessages.workerMemoryError);
       final result = using(
-        (arena) => bindings.transport_initialize(
+        (arena) => transport_initialize(
           transportPointer,
-          configuration.toNative(arena<transport_configuration>(), arena),
+          configuration.toNative(arena),
           _transportClosers.length,
         ),
       );
       if (result < 0) {
-        bindings.transport_destroy(transportPointer);
+        transport_destroy(transportPointer);
         throw TransportInitializationException(TransportMessages.workerError(result));
       }
       final workerInput = [transportPointer.address, _transportDestroyer.sendPort, _executor.spawn()];

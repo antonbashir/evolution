@@ -146,6 +146,10 @@
     "stdatomic.h": "c",
     "cstring": "c",
     "hashing.h": "c",
-    "maps.h": "c"
+    "maps.h": "c",
+    "client.h": "c",
+    "file.h": "c",
+    "server.h": "c",
+    "transport.h": "c"
   },
 }

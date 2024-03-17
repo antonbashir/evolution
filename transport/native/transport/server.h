@@ -1,19 +1,14 @@
 #ifndef TRANSPORT_SERVER_H
 #define TRANSPORT_SERVER_H
 
-#include <stdbool.h>
-#include <stdint.h>
-#include "common/common.h"
-#include "transport_constants.h"
+#include <common/common.h>
+#include <system/library.h>
+#include "constants.h"
 
 #if defined(__cplusplus)
 extern "C"
 {
 #endif
-
-struct ip_mreqn;
-struct sockaddr_in;
-struct sockaddr_un;
 
 DART_STRUCTURE struct transport_server_configuration
 {

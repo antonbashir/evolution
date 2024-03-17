@@ -1,15 +1,13 @@
 #ifndef TRANSPORT_SOCKET_H
 #define TRANSPORT_SOCKET_H
 
-#include <stdbool.h>
-#include <stdint.h>
-#include "common/common.h"
+#include <common/common.h>
+#include <system/library.h>
 
 #if defined(__cplusplus)
 extern "C"
 {
 #endif
-struct ip_mreqn;
 
 DART_LEAF_FUNCTION int64_t transport_socket_create_tcp(uint64_t flags,
                                                        uint32_t socket_receive_buffer_size,

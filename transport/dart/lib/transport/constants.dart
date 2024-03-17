@@ -2,46 +2,9 @@ import 'dart:ffi';
 
 import 'package:core/core.dart';
 
-const empty = "";
-const unknown = "unknown";
-const newLine = "\n";
-const slash = "/";
-const dot = ".";
-const star = "*";
-const equalSpaced = " = ";
-const openingBracket = "{";
-const closingBracket = "}";
-const comma = ",";
-const parentDirectorySymbol = '..';
-const currentDirectorySymbol = './';
-
-final transportLibraryName = bool.fromEnvironment("DEBUG") ? "libtransport_debug_${Abi.current()}.so" : "libtransport_release_${Abi.current()}.so";
+final transportLibraryName = SystemEnvironment.debug ? "libtransport_debug_${Abi.current()}.so" : "libtransport_release_${Abi.current()}.so";
+const transportModuleName = "transport";
 const transportPackageName = "transport";
-
-const packageConfigJsonFile = "package_config.json";
-
-String loadError(path) => "Unable to load library ${path}";
-
-const unableToFindProjectRoot = "Unable to find project root";
-
-const pubspecYamlFile = 'pubspec.yaml';
-const pubspecYmlFile = 'pubspec.yml';
-
-class TransportDirectories {
-  const TransportDirectories._();
-
-  static const native = "/native";
-  static const package = "/package";
-  static const dotDartTool = ".dart_tool";
-}
-
-class TransportPackageConfigFields {
-  TransportPackageConfigFields._();
-
-  static const rootUri = 'rootUri';
-  static const name = 'name';
-  static const packages = 'packages';
-}
 
 const transportBufferUsed = -1;
 
@@ -96,15 +59,6 @@ const transportSocketOptionTcpNoDelay = 1 << 28;
 const transportSocketOptionTcpSyncnt = 1 << 29;
 
 const transportTimeoutInfinity = -1;
-const transportParentRingNone = -1;
-
-const transportIosqeFixedFile = 1 << 0;
-const transportIosqeIoDrain = 1 << 1;
-const transportIosqeIoLink = 1 << 2;
-const transportIosqeIoHardlink = 1 << 3;
-const transportIosqeAsync = 1 << 4;
-const transportIosqeBufferSelect = 1 << 5;
-const transportIosqeCqeSkipSuccess = 1 << 6;
 
 enum TransportDatagramMessageFlag {
   oob(0x01),

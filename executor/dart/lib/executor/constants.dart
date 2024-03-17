@@ -41,3 +41,11 @@ const ringSetupSqe128 = 1 << 10;
 const ringSetupCqe32 = 1 << 11;
 const ringSetupSingleIssuer = 1 << 12;
 const ringSetupDeferTaskrun = 1 << 13;
+
+const ringIosqeFixedFile = 1 << 0;
+const ringIosqeIoDrain = 1 << 1;
+const ringIosqeIoLink = 1 << 2;
+const ringIosqeIoHardlink = 1 << 3;
+const ringIosqeAsync = 1 << 4;
+const ringIosqeBufferSelect = 1 << 5;
+const ringIosqeCqeSkipSuccess = 1 << 6;
