@@ -25,10 +25,6 @@ DART_STRUCTURE struct module_container
 
 #include <maps/simple.h>
 
-#ifndef SIMPLE_MAP_SOURCE
-#define SIMPLE_MAP_UNDEF
-#endif
-
 #define simple_map_name _system_libraries
 #define simple_map_key_t const char*
 DART_STRUCTURE struct system_library

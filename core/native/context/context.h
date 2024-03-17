@@ -6,7 +6,6 @@
 #include <common/constants.h>
 #include <hashing/hashing.h>
 #include <system/library.h>
-#include <collections/maps.h>
 
 #if defined(__cplusplus)
 extern "C"

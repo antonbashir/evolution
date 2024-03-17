@@ -108,7 +108,7 @@ class _Context with ContextCreator, ContextLoader, ContextProvider {
 
   @override
   ContextCreator create(Module module, ModuleConfiguration configuration) {
-    if (_native[module.name] != nullptr) throw CoreException(CoreErrors.moduleAlreadyLoaded(module.name));
+    if (_native[module.name] != null) throw CoreException(CoreErrors.moduleAlreadyLoaded(module.name));
     final failedDependencies = module.dependencies.where((dependency) => !_modules.containsKey(dependency)).toList();
     if (failedDependencies.isNotEmpty) throw CoreException(CoreErrors.moduleDependenciesNotFound(failedDependencies));
     _modules[module.name] = module.._spawn(configuration);
@@ -119,7 +119,7 @@ class _Context with ContextCreator, ContextLoader, ContextProvider {
 
   @override
   ContextLoader load(Module module) {
-    if (_native[module.name] == nullptr) throw CoreException(CoreErrors.moduleNotLoaded(module.name));
+    if (_native[module.name] == null) throw CoreException(CoreErrors.moduleNotLoaded(module.name));
     _modules[module.name] = module.._fetch(_native[module.name]!.cast());
     return this;
   }

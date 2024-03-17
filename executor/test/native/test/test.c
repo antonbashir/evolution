@@ -1,5 +1,3 @@
-#define SIMPLE_MAP_SOURCE
-
 #include "test.h"
 #include <executor/module.h>
 #include <executor/task.h>
