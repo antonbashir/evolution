@@ -76,5 +76,3 @@ add_subdirectory(executor)
 add_subdirectory(transport)
 add_subdirectory(storage)
 add_subdirectory(laboratory)
-
-add_custom_target(bundle_native ALL DEPENDS core_native memory_native executor_native transport_native storage_native)
