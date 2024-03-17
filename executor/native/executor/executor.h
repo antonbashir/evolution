@@ -41,7 +41,7 @@ static FORCEINLINE bool executor_need_submit(struct executor_instance* executor)
 
 DART_INLINE_LEAF_FUNCTION void executor_submit(struct executor_instance* executor)
 {
-    io_uring_submit(executor->ring);
+    if (executor->state & EXECUTOR_STATE_IDLE) io_uring_submit(executor->ring);
 }
 
 DART_INLINE_LEAF_FUNCTION int8_t executor_call_dart(struct io_uring* ring, int32_t source_ring_fd, int32_t target_ring_fd, struct executor_task* message)

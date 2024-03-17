@@ -1,6 +1,5 @@
 #define DART_EXPORT_INLINES
 #include "module.h"
-#undef DART_EXPORT_INLINES
 
 struct memory_module* memory_module_create(struct memory_module_configuration* configuration)
 {

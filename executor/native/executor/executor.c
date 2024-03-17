@@ -88,7 +88,7 @@ int8_t executor_call_native(struct executor_instance* executor, int32_t target_r
     message->flags |= EXECUTOR_CALL;
     io_uring_prep_msg_ring(sqe, target_ring_fd, EXECUTOR_CALL, (uintptr_t)message, 0);
     sqe->flags |= IOSQE_CQE_SKIP_SUCCESS;
-    if (executor_need_submit(executor)) io_uring_submit(ring);
+    executor_submit(executor);
     return 0;
 }
 
@@ -106,7 +106,7 @@ int8_t executor_callback_to_native(struct executor_instance* executor, struct ex
     message->flags |= EXECUTOR_CALLBACK;
     io_uring_prep_msg_ring(sqe, target, EXECUTOR_CALLBACK, (uintptr_t)message, 0);
     sqe->flags |= IOSQE_CQE_SKIP_SUCCESS;
-    if (executor_need_submit(executor)) io_uring_submit(ring);
+    executor_submit(executor);
     return 0;
 }
 

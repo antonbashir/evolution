@@ -3,4 +3,3 @@
 #include "static_buffers.h"
 #include "memory.h"
 #include "tuple.h"
-#undef DART_EXPORT_INLINES

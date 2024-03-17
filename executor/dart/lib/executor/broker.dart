@@ -13,9 +13,9 @@ class ExecutorBroker {
   late final ExecutorProducerRegistry _producers;
   late final ExecutorTasks tasks;
 
-  ExecutorBroker(this._executor);
-
   int get descriptor => _executor.descriptor;
+
+  ExecutorBroker(this._executor);
 
   Future<void> initialize() async {
     await _executor.initialize(_process, _pending);
@@ -53,7 +53,6 @@ class ExecutorBroker {
           _producers.callback(task);
           continue;
         }
-        continue;
       }
     }
   }
