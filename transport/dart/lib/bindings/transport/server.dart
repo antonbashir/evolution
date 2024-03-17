@@ -44,16 +44,18 @@ final class transport_server extends Struct {
   external Pointer<sockaddr_un> unix_server_address;
   @Int32()
   external int server_address_length;
+  @Int8()
+  external int initialization_error;
 }
 
-@Native<Int32 Function(Pointer<transport_server> server, Pointer<transport_server_configuration> configuration, Pointer<Utf8> ip, Int32 port)>(isLeaf: true)
-external int transport_server_initialize_tcp(Pointer<transport_server> server, Pointer<transport_server_configuration> configuration, Pointer<Utf8> ip, int port);
+@Native<Pointer<transport_server> Function(Pointer<transport_server_configuration> configuration, Pointer<Utf8> ip, Int32 port)>(isLeaf: true)
+external Pointer<transport_server> transport_server_initialize_tcp(Pointer<transport_server_configuration> configuration, Pointer<Utf8> ip, int port);
 
-@Native<Int32 Function(Pointer<transport_server> server, Pointer<transport_server_configuration> configuration, Pointer<Utf8> ip, Int32 port)>(isLeaf: true)
-external int transport_server_initialize_udp(Pointer<transport_server> server, Pointer<transport_server_configuration> configuration, Pointer<Utf8> ip, int port);
+@Native<Pointer<transport_server> Function(Pointer<transport_server_configuration> configuration, Pointer<Utf8> ip, Int32 port)>(isLeaf: true)
+external Pointer<transport_server> transport_server_initialize_udp(Pointer<transport_server_configuration> configuration, Pointer<Utf8> ip, int port);
 
-@Native<Int32 Function(Pointer<transport_server> server, Pointer<transport_server_configuration> configuration, Pointer<Utf8> path)>(isLeaf: true)
-external int transport_server_initialize_unix_stream(Pointer<transport_server> server, Pointer<transport_server_configuration> configuration, Pointer<Utf8> path);
+@Native<Pointer<transport_server> Function(Pointer<transport_server_configuration> configuration, Pointer<Utf8> path)>(isLeaf: true)
+external Pointer<transport_server> transport_server_initialize_unix_stream(Pointer<transport_server_configuration> configuration, Pointer<Utf8> path);
 
 @Native<Void Function(Pointer<transport_server> server)>(isLeaf: true)
 external void transport_server_destroy(Pointer<transport_server> server);

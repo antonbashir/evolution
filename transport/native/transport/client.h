@@ -35,25 +35,26 @@ DART_STRUCTURE struct transport_client
     DART_FIELD struct sockaddr_un* unix_destination_address;
     DART_FIELD DART_SUBSTITUTE(uint32_t) __socklen_t client_address_length;
     DART_FIELD DART_SUBSTITUTE(uint8_t) transport_socket_family_t family;
+    DART_FIELD int8_t initialization_error;
 };
 
-DART_LEAF_FUNCTION int32_t transport_client_initialize_tcp(struct transport_client* client,
-                                                           struct transport_client_configuration* configuration,
-                                                           const char* ip,
-                                                           int32_t port);
+DART_LEAF_FUNCTION struct transport_client* transport_client_initialize_tcp(struct transport_client_configuration* configuration,
+                                                                            const char* ip,
+                                                                            int32_t port);
 
-DART_LEAF_FUNCTION int32_t transport_client_initialize_udp(struct transport_client* client,
-                                                           struct transport_client_configuration* configuration,
-                                                           const char* destination_ip,
-                                                           int32_t destination_port,
-                                                           const char* source_ip,
-                                                           int32_t source_port);
+DART_LEAF_FUNCTION struct transport_client* transport_client_initialize_udp(struct transport_client_configuration* configuration,
+                                                                            const char* destination_ip,
+                                                                            int32_t destination_port,
+                                                                            const char* source_ip,
+                                                                            int32_t source_port);
 
-DART_LEAF_FUNCTION int32_t transport_client_initialize_unix_stream(struct transport_client* client,
-                                                                   struct transport_client_configuration* configuration,
-                                                                   const char* path);
+DART_LEAF_FUNCTION struct transport_client* transport_client_initialize_unix_stream(struct transport_client_configuration* configuration,
+                                                                                    const char* path);
 
-DART_LEAF_FUNCTION struct sockaddr* transport_client_get_destination_address(struct transport_client* client);
+DART_INLINE_LEAF_FUNCTION struct sockaddr* transport_client_get_destination_address(struct transport_client* client)
+{
+    return client->family == INET ? (struct sockaddr*)client->inet_destination_address : (struct sockaddr*)client->unix_destination_address;
+}
 
 DART_LEAF_FUNCTION void transport_client_destroy(struct transport_client* client);
 #if defined(__cplusplus)

@@ -5,7 +5,9 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import '../../transport/bindings.dart';
 
-final class transport_module_configuration extends Opaque {}
+final class transport_module_configuration extends Struct {
+  external executor_configuration default_executor_configuration;
+}
 
 final class transport_module extends Struct {
   external Pointer<Utf8> name;

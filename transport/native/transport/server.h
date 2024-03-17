@@ -35,16 +35,12 @@ DART_STRUCTURE struct transport_server
     DART_FIELD struct sockaddr_in* inet_server_address;
     DART_FIELD struct sockaddr_un* unix_server_address;
     DART_FIELD DART_SUBSTITUTE(int32_t) __socklen_t server_address_length;
+    DART_FIELD int8_t initialization_error;
 };
 
-DART_LEAF_FUNCTION int32_t transport_server_initialize_tcp(struct transport_server* server,
-                                                           struct transport_server_configuration* configuration,
-                                                           const char* ip,
-                                                           int32_t port);
-DART_LEAF_FUNCTION int32_t transport_server_initialize_udp(struct transport_server* server, struct transport_server_configuration* configuration, const char* ip, int32_t port);
-DART_LEAF_FUNCTION int32_t transport_server_initialize_unix_stream(struct transport_server* server,
-                                                                   struct transport_server_configuration* configuration,
-                                                                   const char* path);
+DART_LEAF_FUNCTION struct transport_server* transport_server_initialize_tcp(struct transport_server_configuration* configuration, const char* ip, int32_t port);
+DART_LEAF_FUNCTION struct transport_server* transport_server_initialize_udp(struct transport_server_configuration* configuration, const char* ip, int32_t port);
+DART_LEAF_FUNCTION struct transport_server* transport_server_initialize_unix_stream(struct transport_server_configuration* configuration, const char* path);
 DART_LEAF_FUNCTION void transport_server_destroy(struct transport_server* server);
 
 #if defined(__cplusplus)

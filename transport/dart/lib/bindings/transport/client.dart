@@ -43,16 +43,18 @@ final class transport_client extends Struct {
   external int client_address_length;
   @Uint8()
   external int family;
+  @Int8()
+  external int initialization_error;
 }
 
-@Native<Int32 Function(Pointer<transport_client> client, Pointer<transport_client_configuration> configuration, Pointer<Utf8> ip, Int32 port)>(isLeaf: true)
-external int transport_client_initialize_tcp(Pointer<transport_client> client, Pointer<transport_client_configuration> configuration, Pointer<Utf8> ip, int port);
+@Native<Pointer<transport_client> Function(Pointer<transport_client_configuration> configuration, Pointer<Utf8> ip, Int32 port)>(isLeaf: true)
+external Pointer<transport_client> transport_client_initialize_tcp(Pointer<transport_client_configuration> configuration, Pointer<Utf8> ip, int port);
 
-@Native<Int32 Function(Pointer<transport_client> client, Pointer<transport_client_configuration> configuration, Pointer<Utf8> destination_ip, Int32 destination_port, Pointer<Utf8> source_ip, Int32 source_port)>(isLeaf: true)
-external int transport_client_initialize_udp(Pointer<transport_client> client, Pointer<transport_client_configuration> configuration, Pointer<Utf8> destination_ip, int destination_port, Pointer<Utf8> source_ip, int source_port);
+@Native<Pointer<transport_client> Function(Pointer<transport_client_configuration> configuration, Pointer<Utf8> destination_ip, Int32 destination_port, Pointer<Utf8> source_ip, Int32 source_port)>(isLeaf: true)
+external Pointer<transport_client> transport_client_initialize_udp(Pointer<transport_client_configuration> configuration, Pointer<Utf8> destination_ip, int destination_port, Pointer<Utf8> source_ip, int source_port);
 
-@Native<Int32 Function(Pointer<transport_client> client, Pointer<transport_client_configuration> configuration, Pointer<Utf8> path)>(isLeaf: true)
-external int transport_client_initialize_unix_stream(Pointer<transport_client> client, Pointer<transport_client_configuration> configuration, Pointer<Utf8> path);
+@Native<Pointer<transport_client> Function(Pointer<transport_client_configuration> configuration, Pointer<Utf8> path)>(isLeaf: true)
+external Pointer<transport_client> transport_client_initialize_unix_stream(Pointer<transport_client_configuration> configuration, Pointer<Utf8> path);
 
 @Native<Pointer<sockaddr> Function(Pointer<transport_client> client)>(isLeaf: true)
 external Pointer<sockaddr> transport_client_get_destination_address(Pointer<transport_client> client);

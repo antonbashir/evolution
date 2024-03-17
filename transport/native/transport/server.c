@@ -1,11 +1,13 @@
 #include "server.h"
 #include "constants.h"
+#include "module.h"
 #include "socket.h"
 
-int32_t transport_server_initialize_tcp(struct transport_server* server, struct transport_server_configuration* configuration, const char* ip, int32_t port)
+struct transport_server* transport_server_initialize_tcp(struct transport_server_configuration* configuration, const char* ip, int32_t port)
 {
+    struct transport_server* server = transport_module_new(sizeof(struct transport_server));
     server->family = INET;
-    server->inet_server_address = calloc(1, sizeof(struct sockaddr_in));
+    server->inet_server_address = transport_module_new(sizeof(struct sockaddr_in));
     server->inet_server_address->sin_addr.s_addr = inet_addr(ip);
     server->inet_server_address->sin_port = htons(port);
     server->inet_server_address->sin_family = AF_INET;
@@ -24,26 +26,30 @@ int32_t transport_server_initialize_tcp(struct transport_server* server, struct 
         configuration->tcp_syn_count);
     if (result < 0)
     {
-        return result;
+        server->initialization_error = result;
+        return server;
     }
     server->fd = result;
     result = bind(server->fd, (struct sockaddr*)server->inet_server_address, server->server_address_length);
     if (result < 0)
     {
-        return result;
+        server->initialization_error = result;
+        return server;
     }
     result = listen(server->fd, configuration->socket_max_connections);
     if (result < 0)
     {
-        return result;
+        server->initialization_error = result;
+        return server;
     }
-    return 0;
+    return server;
 }
 
-int32_t transport_server_initialize_udp(struct transport_server* server, struct transport_server_configuration* configuration, const char* ip, int32_t port)
+struct transport_server* transport_server_initialize_udp(struct transport_server_configuration* configuration, const char* ip, int32_t port)
 {
+    struct transport_server* server = transport_module_new(sizeof(struct transport_server));
     server->family = INET;
-    server->inet_server_address = calloc(1, sizeof(struct sockaddr_in));
+    server->inet_server_address = transport_module_new(sizeof(struct sockaddr_in));
     server->inet_server_address->sin_addr.s_addr = inet_addr(ip);
     server->inet_server_address->sin_port = htons(port);
     server->inet_server_address->sin_family = AF_INET;
@@ -59,21 +65,24 @@ int32_t transport_server_initialize_udp(struct transport_server* server, struct 
         configuration->ip_multicast_ttl);
     if (result < 0)
     {
-        return result;
+        server->initialization_error = result;
+        return server;
     }
     server->fd = result;
     result = bind(server->fd, (struct sockaddr*)server->inet_server_address, server->server_address_length);
     if (result < 0)
     {
-        return result;
+        server->initialization_error = result;
+        return server;
     }
-    return 0;
+    return server;
 }
 
-int32_t transport_server_initialize_unix_stream(struct transport_server* server, struct transport_server_configuration* configuration, const char* path)
+struct transport_server* transport_server_initialize_unix_stream(struct transport_server_configuration* configuration, const char* path)
 {
+    struct transport_server* server = transport_module_new(sizeof(struct transport_server));
     server->family = UNIX;
-    server->unix_server_address = calloc(1, sizeof(struct sockaddr_un));
+    server->unix_server_address = transport_module_new(sizeof(struct sockaddr_un));
     server->unix_server_address->sun_family = AF_UNIX;
     strcpy(server->unix_server_address->sun_path, path);
     server->server_address_length = sizeof(*server->unix_server_address);
@@ -85,32 +94,35 @@ int32_t transport_server_initialize_unix_stream(struct transport_server* server,
         configuration->socket_send_low_at);
     if (result < 0)
     {
-        return result;
+        server->initialization_error = result;
+        return server;
     }
     server->fd = result;
     result = bind(server->fd, (struct sockaddr*)server->unix_server_address, server->server_address_length);
     if (result < 0)
     {
-        return result;
+        server->initialization_error = result;
+        return server;
     }
     result = listen(server->fd, configuration->socket_max_connections);
     if (result < 0)
     {
-        return result;
+        server->initialization_error = result;
+        return server;
     }
-    return 0;
+    return server;
 }
 
 void transport_server_destroy(struct transport_server* server)
 {
     if (server->family == INET)
     {
-        free(server->inet_server_address);
+        transport_module_delete(server->inet_server_address);
     }
     if (server->family == UNIX)
     {
         unlink(server->unix_server_address->sun_path);
-        free(server->unix_server_address);
+        transport_module_delete(server->unix_server_address);
     }
-    free(server);
+    transport_module_delete(server);
 }

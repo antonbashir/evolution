@@ -197,8 +197,12 @@ Map<String, FileDeclarations> collectNative(String nativeDirectory) {
         }
       }
       if (currentFunctionDeclaration != null) {
-        final end = line.endsWith(");");
-        line = line.replaceAll(");", "");
+        final end = line.endsWith(")") || line.endsWith(");");
+        line = line.endsWith(")")
+            ? line.substring(0, line.lastIndexOf(")"))
+            : line.endsWith(");")
+                ? line.replaceAll(");", "")
+                : line;
         currentFunctionDeclaration!.arguments.addAll(Map.fromEntries(line.split(",").toArguments(fileDeclarations)));
         if (end) currentFunctionDeclaration = null;
         return;

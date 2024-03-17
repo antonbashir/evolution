@@ -15,7 +15,7 @@ extern "C"
 #define module_name transport
 DART_STRUCTURE struct transport_module_configuration
 {
-  
+    DART_FIELD struct executor_configuration default_executor_configuration;
 };
 #define module_configuration struct transport_module_configuration
 DART_STRUCTURE struct transport_module
