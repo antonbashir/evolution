@@ -24,7 +24,10 @@ class TransportModule with Module<transport_module, TransportModuleConfiguration
   TransportModule({TransportModuleState? state}) : state = state ?? TransportModuleState();
 
   @override
-  Pointer<transport_module> create(TransportModuleConfiguration configuration) => using((arena) => transport_module_create(configuration.toNative(arena)));
+  Pointer<transport_module> create(TransportModuleConfiguration configuration) {
+    SystemLibrary.loadByName(transportLibraryName, transportPackageName);
+    return using((arena) => transport_module_create(configuration.toNative(arena)));
+  }
 
   @override
   TransportModuleConfiguration load(Pointer<transport_module> native) => TransportModuleConfiguration.fromNative(native.ref.configuration);

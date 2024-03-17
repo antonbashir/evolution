@@ -11,11 +11,13 @@ Future<void> main(List<String> args) async {
   await _benchDartTcp();
 }
 
-Future<void> _benchMyTcp() => launch((creator) => creator
-        .create(CoreModule(), CoreDefaults.module)
-        .create(MemoryModule(), MemoryDefaults.module)
-        .create(ExecutorModule(), ExecutorDefaults.module)
-        .create(TransportModule(), TransportDefaults.module)).activate(
+Future<void> _benchMyTcp() => launch(
+      (creator) => creator
+          .create(CoreModule(), CoreDefaults.module)
+          .create(MemoryModule(), MemoryDefaults.module)
+          .create(ExecutorModule(), ExecutorDefaults.module)
+          .create(TransportModule(), TransportDefaults.module),
+    ).activate(
       () async {
         final transport = context().transport();
         await transport.initialize();
