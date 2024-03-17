@@ -11,9 +11,8 @@ import 'constants.dart';
 
 class ExecutorModuleState implements ModuleState {
   final List<ExecutorBroker> _brokers = [];
-  late final Pointer<executor_module> _module;
 
-  ExecutorModuleState();
+  late final Pointer<executor_module> _module;
 
   void create(Pointer<executor_module> module) => _module = module;
 

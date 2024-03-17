@@ -14,4 +14,6 @@ class ExecutorTasks {
 
   @inline
   void free(Pointer<executor_task> message) => _tasks.free(message);
+
+  void destroy() => context().structures().unregister(_tasks);
 }

@@ -16,7 +16,12 @@ class MemoryStructurePools {
   MemoryStructurePool<T> register<T extends NativeType>(int size) {
     final pool = memory_pool_create(_memory, size).check();
     _pools[T.hashCode] = pool;
-    return MemoryStructurePool<T>(pool);
+    return MemoryStructurePool<T>(T.hashCode, pool);
+  }
+
+  void unregister(MemoryStructurePool pool) {
+    memory_pool_destroy(pool._pool);
+    _pools.remove(pool._id);
   }
 
   @inline
@@ -44,9 +49,10 @@ class MemoryStructurePools {
 }
 
 class MemoryStructurePool<T extends NativeType> {
+  final int _id;
   final Pointer<memory_pool> _pool;
 
-  MemoryStructurePool(this._pool);
+  MemoryStructurePool(this._id, this._pool);
 
   MemoryObjects<Pointer<T>> asObjectPool({
     MemoryObjectsConfiguration configuration = MemoryDefaults.objects,

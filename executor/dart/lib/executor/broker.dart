@@ -24,7 +24,10 @@ class ExecutorBroker {
     tasks = ExecutorTasks();
   }
 
-  Future<void> shutdown() => _executor.shutdown();
+  Future<void> shutdown() async {
+    await _executor.shutdown();
+    tasks.destroy();
+  }
 
   void activate() => _executor.activate();
 
