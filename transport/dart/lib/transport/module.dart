@@ -1,58 +1,42 @@
 import 'dart:async';
 import 'dart:ffi';
-import 'dart:isolate';
 
 import 'package:ffi/ffi.dart';
-import 'package:transport/transport/defaults.dart';
 
 import 'bindings.dart';
 import 'configuration.dart';
 import 'constants.dart';
-import 'exception.dart';
+import 'defaults.dart';
+import 'transport.dart';
 
 class TransportModuleState implements ModuleState {
-
+  Transport transport({TransportConfiguration configuration = TransportDefaults.transport}) {
+    final nativeTransport = using((arena) => transport_initialize(configuration.toNative(arena))).check();
+    return Transport(nativeTransport, context().executor());
+  }
 }
 
-class TransportModule {
-  final _transportClosers = <SendPort>[];
-  final _transportPorts = <RawReceivePort>[];
-  final _transportDestroyer = ReceivePort();
-  final _executor = ExecutorModule();
+class TransportModule with Module<transport_module, TransportModuleConfiguration, TransportModuleState> {
+  final String name = transportModuleName;
+  final TransportModuleState state;
 
-  void initialize() {
-    _executor.initialize();
-  }
+  TransportModule(this.state);
 
-  Future<void> shutdown({Duration? gracefulTimeout}) async {
-    _transportClosers.forEach((worker) => worker.send(gracefulTimeout));
-    await _transportDestroyer.take(_transportClosers.length).toList();
-    _transportDestroyer.close();
-    _transportPorts.forEach((port) => port.close());
-    await _executor.shutdown();
-  }
+  @override
+  Pointer<transport_module> create(TransportModuleConfiguration configuration) => using((arena) => transport_module_create(configuration.toNative(arena)));
 
-  SendPort transport({TransportConfiguration configuration = TransportDefaults.transport}) {
-    final port = RawReceivePort((ports) async {
-      SendPort toTransport = ports[0];
-      _transportClosers.add(ports[1]);
-      final transportPointer = calloc<transport>(sizeOf<transport>());
-      if (transportPointer == nullptr) throw TransportInitializationException(TransportMessages.workerMemoryError);
-      final result = using(
-        (arena) => transport_initialize(
-          transportPointer,
-          configuration.toNative(arena),
-          _transportClosers.length,
-        ),
-      );
-      if (result < 0) {
-        transport_destroy(transportPointer);
-        throw TransportInitializationException(TransportMessages.workerError(result));
-      }
-      final workerInput = [transportPointer.address, _transportDestroyer.sendPort, _executor.spawn()];
-      toTransport.send(workerInput);
-    });
-    _transportPorts.add(port);
-    return port.sendPort;
-  }
+  @override
+  void initialize() {}
+
+  @override
+  Future<void> shutdown({Duration? gracefulTimeout}) async {}
+
+  @override
+  TransportModuleConfiguration load(Pointer<transport_module> native) => TransportModuleConfiguration.fromNative(native.ref.configuration);
+}
+
+extension ContextProviderTransportExtensions on ContextProvider {
+  ModuleProvider<transport_module, TransportModuleConfiguration, TransportModuleState> transportModule() => get(transportModuleName);
+
+  Transport transport({TransportConfiguration configuration = TransportDefaults.transport}) => transportModule().state.transport(configuration: configuration);
 }

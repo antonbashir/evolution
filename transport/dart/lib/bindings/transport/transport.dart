@@ -6,15 +6,13 @@ import 'package:ffi/ffi.dart';
 import '../../transport/bindings.dart';
 
 final class transport extends Struct {
-  @Uint8()
-  external int id;
   external Pointer<iovec> buffers;
   external Pointer<executor_instance> transport_executor;
   external transport_configuration configuration;
 }
 
-@Native<Pointer<transport> Function(Pointer<transport_configuration> configuration, Uint8 id)>(isLeaf: true)
-external Pointer<transport> transport_initialize(Pointer<transport_configuration> configuration, int id);
+@Native<Pointer<transport> Function(Pointer<transport_configuration> configuration)>(isLeaf: true)
+external Pointer<transport> transport_initialize(Pointer<transport_configuration> configuration);
 
 @Native<Int32 Function(Pointer<transport> transport, Pointer<executor_instance> executor)>(isLeaf: true)
 external int transport_setup(Pointer<transport> transport, Pointer<executor_instance> executor);

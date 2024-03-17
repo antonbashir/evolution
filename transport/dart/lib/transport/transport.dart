@@ -20,10 +20,8 @@ import 'timeout.dart';
 class Transport {
   final _fromTransport = ReceivePort();
 
-  late final Pointer<transport> _pointer;
+  late final Pointer<transport> _native;
   late final Executor _executor;
-  late final RawReceivePort _closer;
-  late final SendPort _destroyer;
   late final TransportClientRegistry _clientRegistry;
   late final TransportServerRegistry _serverRegistry;
   late final TransportClientsFactory _clientsFactory;
@@ -31,7 +29,7 @@ class Transport {
   late final TransportFileRegistry _filesRegistry;
   late final TransportFilesFactory _filesFactory;
   late final MemoryModule _memory;
-  late final MemoryStaticBuffers _buffers;
+  late final MemoryStaticBuffers _staticBuffers;
   late final TransportTimeoutChecker _timeoutChecker;
   late final TransportPayloadPool _payloadPool;
   late final TransportServerDatagramResponderPool _datagramResponderPool;
@@ -39,85 +37,77 @@ class Transport {
   var _active = true;
 
   bool get active => _active;
-  int get id => _pointer.ref.id;
   int get descriptor => _executor.descriptor;
   TransportServersFactory get servers => _serversFactory;
   TransportClientsFactory get clients => _clientsFactory;
   TransportFilesFactory get files => _filesFactory;
 
-  Transport(SendPort toModule) {
-    _closer = RawReceivePort((gracefulTimeout) async {
-      _timeoutChecker.stop();
-      await _filesRegistry.close(gracefulTimeout: gracefulTimeout);
-      await _clientRegistry.close(gracefulTimeout: gracefulTimeout);
-      await _serverRegistry.close(gracefulTimeout: gracefulTimeout);
-      _active = false;
-      await _executor.shutdown();
-      transport_destroy(_pointer);
-      _closer.close();
-      _destroyer.send(null);
-      _memory.destroy();
-    });
-    toModule.send([_fromTransport.sendPort, _closer.sendPort]);
-  }
+  Transport(this._native, this._executor);
 
   Future<void> initialize() async {
     final configuration = await _fromTransport.first as List;
-    _pointer = Pointer.fromAddress(configuration[0] as int).cast<transport>();
-    _destroyer = configuration[1] as SendPort;
-    _executor = Executor(configuration[2] as SendPort);
+    _native = Pointer.fromAddress(configuration[0] as int).cast<transport>();
     _fromTransport.close();
-    await _executor.initialize(processor: _process);
-    // _memory = MemoryModule(load: false);
-    // _memory.initialize(configuration: MemoryConfiguration.fromNativeValue(_pointer.ref.configuration.memory_configuration));
-    // _buffers = _memory.staticBuffers;
-    // _pointer.ref.buffers = _buffers.buffers;
-    final result = transport_setup(_pointer, _executor.native);
+    await _executor.initialize(processor: _process, pending: () => 0);
+    _staticBuffers = context().staticBuffers();
+    _native.ref.buffers = _staticBuffers.native.ref.buffers;
+    final result = transport_setup(_native, _executor.native);
     if (result != 0) {
       throw TransportInitializationException(TransportMessages.workerError(result));
     }
-    _payloadPool = TransportPayloadPool(_buffers);
-    _datagramResponderPool = TransportServerDatagramResponderPool(_buffers);
+    _payloadPool = TransportPayloadPool(_staticBuffers);
+    _datagramResponderPool = TransportServerDatagramResponderPool(_staticBuffers);
     _clientRegistry = TransportClientRegistry();
     _serverRegistry = TransportServerRegistry();
     _serversFactory = TransportServersFactory(
       _serverRegistry,
-      _pointer,
-      _buffers,
+      _native,
+      _staticBuffers,
       _payloadPool,
       _datagramResponderPool,
     );
     _clientsFactory = TransportClientsFactory(
       _clientRegistry,
-      _pointer,
-      _buffers,
+      _native,
+      _staticBuffers,
       _payloadPool,
     );
     _filesRegistry = TransportFileRegistry();
     _filesFactory = TransportFilesFactory(
       _filesRegistry,
-      _pointer,
-      _buffers,
+      _native,
+      _staticBuffers,
       _payloadPool,
     );
     _timeoutChecker = TransportTimeoutChecker(
-      _pointer,
-      Duration(milliseconds: _pointer.ref.configuration.timeout_checker_period_milliseconds),
+      _native,
+      Duration(milliseconds: _native.ref.configuration.timeout_checker_period_milliseconds),
     );
     _timeoutChecker.start();
     _executor.activate();
+  }
+
+  Future<void> shutdown({Duration? gracefulTimeout}) async {
+    _timeoutChecker.stop();
+    await _filesRegistry.close(gracefulTimeout: gracefulTimeout);
+    await _clientRegistry.close(gracefulTimeout: gracefulTimeout);
+    await _serverRegistry.close(gracefulTimeout: gracefulTimeout);
+    _active = false;
+    await _executor.shutdown();
+    transport_destroy(_native);
+    _memory.destroy();
   }
 
   void _process(Pointer<Pointer<executor_completion_event>> completions, int count) {
     for (var index = 0; index < count; index++) {
       Pointer<executor_completion_event> completion = (completions + index).value.cast();
       final data = completion.ref.user_data;
-      transport_remove_event(_pointer, data);
+      transport_remove_event(_native, data);
       final result = completion.ref.res;
       var event = data & 0xffff;
       final fd = (data >> 32) & 0xffffffff;
       final bufferId = (data >> 16) & 0xffff;
-      if (_pointer.ref.configuration.trace) {
+      if (_native.ref.configuration.trace) {
         final server = event & transportEventServer != 0;
         final client = event & transportEventClient != 0;
         final parsed = server
@@ -125,7 +115,7 @@ class Transport {
             : client
                 ? TransportEvent.clientEvent(event & ~transportEventClient)
                 : TransportEvent.fileEvent(event & ~transportEventFile);
-        print(TransportMessages.workerTrace(parsed, id, result, data, fd));
+        print(TransportMessages.workerTrace(parsed, result, data, fd));
       }
 
       if (event & transportEventClient != 0) {
@@ -160,5 +150,5 @@ class Transport {
   }
 
   @visibleForTesting
-  MemoryStaticBuffers get buffers => _buffers;
+  MemoryStaticBuffers get buffers => _staticBuffers;
 }

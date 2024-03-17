@@ -14,7 +14,6 @@ extern "C"
 
 DART_STRUCTURE struct transport
 {
-    DART_FIELD uint8_t id;
     DART_FIELD struct iovec* buffers;
     DART_FIELD struct executor_instance* transport_executor;
     DART_FIELD struct transport_configuration configuration;
@@ -23,7 +22,7 @@ DART_STRUCTURE struct transport
     struct simple_map_events_t* events;
 };
 
-DART_LEAF_FUNCTION struct transport* transport_initialize(struct transport_configuration* configuration, uint8_t id);
+DART_LEAF_FUNCTION struct transport* transport_initialize(struct transport_configuration* configuration);
 
 DART_LEAF_FUNCTION int32_t transport_setup(struct transport* transport, struct executor_instance* executor);
 

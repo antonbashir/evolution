@@ -149,7 +149,7 @@ class TransportMessages {
 
   static final workerMemoryError = "[worker] out of memory";
   static workerError(int result) => "[worker] code = $result, message = ${SystemErrors.of(result)}";
-  static workerTrace(TransportEvent event, int id, int result, int data, int fd) => "event = $event, worker = $id, result = $result,  bid = ${((data >> 16) & 0xffff)}, fd = $fd";
+  static workerTrace(TransportEvent event, int result, int data, int fd) => "event = $event, result = $result,  bid = ${((data >> 16) & 0xffff)}, fd = $fd";
 
   static final serverMemoryError = "[server] out of memory";
   static final serverClosedError = "[server] closed";

@@ -4,10 +4,9 @@
 #include "maps.h"
 #include "module.h"
 
-struct transport* transport_initialize(struct transport_configuration* configuration, uint8_t id)
+struct transport* transport_initialize(struct transport_configuration* configuration)
 {
     struct transport* transport = transport_module_new(sizeof(struct transport));
-    transport->id = id;
     transport->configuration = *configuration;
 
     transport->events = simple_map_events_new();
@@ -44,7 +43,7 @@ struct transport* transport_initialize(struct transport_configuration* configura
         transport->unix_used_messages[index].msg_namelen = sizeof(struct sockaddr_un);
     }
 
-    return 0;
+    return transport;
 }
 
 int32_t transport_setup(struct transport* transport, struct executor_instance* transport_executor)

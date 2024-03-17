@@ -18,7 +18,7 @@ class ExecutorBroker {
   ExecutorBroker(this._executor);
 
   Future<void> initialize() async {
-    await _executor.initialize(_process, _pending);
+    await _executor.initialize(processor: _process, pending: _pending);
     _consumers = ExecutorConsumerRegistry(_executor.native);
     _producers = ExecutorProducerRegistry(_executor.native);
     tasks = ExecutorTasks();

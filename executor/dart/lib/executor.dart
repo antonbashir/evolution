@@ -6,5 +6,5 @@ export 'executor/bindings.dart';
 export 'executor/module.dart';
 export 'executor/exception.dart';
 export 'executor/message.dart';
-export 'executor/executor.dart';
 export 'executor/constants.dart';
+export 'executor/executor.dart';

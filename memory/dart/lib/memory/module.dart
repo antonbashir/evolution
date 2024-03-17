@@ -86,11 +86,11 @@ class MemoryModule with Module<memory_module, MemoryModuleConfiguration, MemoryM
 }
 
 extension ContextProviderMemoryExtensions on ContextProvider {
-  ModuleProvider<memory_module, MemoryModuleConfiguration, MemoryModuleState> memory() => get(memoryModuleName);
-  MemoryStaticBuffers staticBuffers() => memory().state.staticBuffers;
-  MemoryInputOutputBuffers inputOutputBuffers() => memory().state.inputOutputBuffers;
-  MemoryStructurePools structures() => memory().state.structures;
-  MemorySmallData smalls() => memory().state.smalls;
-  MemoryStructurePool<Double> doubles() => memory().state.doubles;
-  MemoryTuples tuples() => memory().state.tuples;
+  ModuleProvider<memory_module, MemoryModuleConfiguration, MemoryModuleState> memoryModule() => get(memoryModuleName);
+  MemoryStaticBuffers staticBuffers() => memoryModule().state.staticBuffers;
+  MemoryInputOutputBuffers inputOutputBuffers() => memoryModule().state.inputOutputBuffers;
+  MemoryStructurePools structures() => memoryModule().state.structures;
+  MemorySmallData smalls() => memoryModule().state.smalls;
+  MemoryStructurePool<Double> doubles() => memoryModule().state.doubles;
+  MemoryTuples tuples() => memoryModule().state.tuples;
 }

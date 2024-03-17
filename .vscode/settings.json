@@ -150,6 +150,9 @@
     "client.h": "c",
     "file.h": "c",
     "server.h": "c",
-    "transport.h": "c"
+    "transport.h": "c",
+    "mutex": "c",
+    "stop_token": "c",
+    "*.def": "c"
   },
 }

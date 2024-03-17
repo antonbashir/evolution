@@ -3,27 +3,25 @@ import 'dart:collection';
 import 'dart:ffi';
 import 'dart:typed_data';
 
-import 'package:core/core/exceptions.dart';
-
 import 'bindings.dart';
 
 class MemoryStaticBuffers {
-  final Pointer<memory_static_buffers> buffers;
+  final Pointer<memory_static_buffers> native;
   final Pointer<Int32> ids;
   final Pointer<iovec> contents;
   final Queue<Completer<void>> _finalizers = Queue();
   final int size;
   final int capacity;
 
-  MemoryStaticBuffers(this.buffers)
-      : ids = buffers.ref.ids,
-        contents = buffers.ref.buffers,
-        size = buffers.ref.size,
-        capacity = buffers.ref.capacity;
+  MemoryStaticBuffers(this.native)
+      : ids = native.ref.ids,
+        contents = native.ref.buffers,
+        size = native.ref.size,
+        capacity = native.ref.capacity;
 
   @inline
   void release(int bufferId) {
-    memory_static_buffers_push(buffers, bufferId);
+    memory_static_buffers_push(native, bufferId);
     if (_finalizers.isNotEmpty) _finalizers.removeLast().complete();
   }
 
@@ -46,8 +44,8 @@ class MemoryStaticBuffers {
 
   @inline
   int? get() {
-    if (buffers.ref.available == 0) return null;
-    return ids[--buffers.ref.available];
+    if (native.ref.available == 0) return null;
+    return ids[--native.ref.available];
   }
 
   Future<int> allocate() async {
@@ -73,10 +71,10 @@ class MemoryStaticBuffers {
   }
 
   @inline
-  int available() => buffers.ref.available;
+  int available() => native.ref.available;
 
   @inline
-  int used() => buffers.ref.capacity - buffers.ref.available;
+  int used() => native.ref.capacity - native.ref.available;
 
   @inline
   void releaseArray(List<int> buffers) {
@@ -84,7 +82,7 @@ class MemoryStaticBuffers {
   }
 
   @inline
-  void destroy() => memory_static_buffers_destroy(buffers);
+  void destroy() => memory_static_buffers_destroy(native);
 }
 
 class MemoryInputOutputBuffers {

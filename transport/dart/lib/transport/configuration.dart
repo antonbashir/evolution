@@ -4,6 +4,22 @@ import 'package:ffi/ffi.dart';
 
 import 'bindings.dart';
 
+class TransportModuleConfiguration implements ModuleConfiguration {
+  final ExecutorConfiguration defaultExecutorConfiguration;
+
+  Pointer<transport_module_configuration> toNative(Arena arena) {
+    final native = arena<transport_module_configuration>();
+    native.ref.default_executor_configuration = defaultExecutorConfiguration.toNative(arena).ref;
+    return native;
+  }
+
+  factory TransportModuleConfiguration.fromNative(transport_module_configuration native) => TransportModuleConfiguration(
+        defaultExecutorConfiguration: ExecutorConfiguration.fromNative(native.default_executor_configuration),
+      );
+
+  TransportModuleConfiguration({required this.defaultExecutorConfiguration});
+}
+
 class TransportConfiguration {
   final MemoryConfiguration memoryConfiguration;
   final ExecutorConfiguration executorConfiguration;

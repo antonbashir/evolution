@@ -40,7 +40,7 @@ class Executor {
       : descriptor = native.ref.descriptor,
         id = native.ref.id;
 
-  Future<void> initialize(ExecutorProcessor processor, ExecutorPending pending) async {
+  Future<void> initialize({required ExecutorProcessor processor, required ExecutorPending pending}) async {
     _processor = processor;
     _pending = pending;
     _completions = native.ref.completions;
@@ -48,6 +48,7 @@ class Executor {
   }
 
   Future<void> shutdown() async {
+    if (native.ref.state & (executorStateStopping | executorStateStopped) != 0) return;
     native.ref.state = executorStateStopping;
     if (_pending() != 0) await _stopper.future;
     _registry[id] = null;

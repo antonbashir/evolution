@@ -15,6 +15,7 @@ import 'executor.dart';
 
 class ExecutorModuleState implements ModuleState {
   final List<ExecutorBroker> _brokers = [];
+  final List<Executor> _customs = [];
 
   late final Pointer<executor_module> _module;
 
@@ -22,6 +23,13 @@ class ExecutorModuleState implements ModuleState {
 
   Future<void> destroy() async {
     await Future.wait(_brokers.map((broker) => broker.shutdown()));
+    await Future.wait(_customs.map((executor) => executor.shutdown()));
+  }
+
+  Executor executor({ExecutorConfiguration configuration = ExecutorDefaults.executor}) {
+    final executor = Executor(using((arena) => executor_create(configuration.toNative(arena), _module.ref.scheduler, executor_next_id(_module))).check());
+    _customs.add(executor);
+    return executor;
   }
 
   ExecutorBroker broker({ExecutorConfiguration configuration = ExecutorDefaults.executor}) {
@@ -89,6 +97,7 @@ class ExecutorModule with Module<executor_module, ExecutorModuleConfiguration, E
 }
 
 extension ContextProviderExecutorExtensions on ContextProvider {
-  ModuleProvider<executor_module, ExecutorModuleConfiguration, ExecutorModuleState> executor() => get(executorModuleName);
-  ExecutorBroker broker({ExecutorConfiguration configuration = ExecutorDefaults.executor}) => executor().state.broker(configuration: configuration);
+  ModuleProvider<executor_module, ExecutorModuleConfiguration, ExecutorModuleState> executorModule() => get(executorModuleName);
+  Executor executor({ExecutorConfiguration configuration = ExecutorDefaults.executor}) => executorModule().state.executor(configuration: configuration);
+  ExecutorBroker broker({ExecutorConfiguration configuration = ExecutorDefaults.executor}) => executorModule().state.broker(configuration: configuration);
 }
