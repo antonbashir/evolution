@@ -21,7 +21,7 @@ class TransportModule with Module<transport_module, TransportModuleConfiguration
   final TransportModuleState state;
   final dependencies = {coreModuleName, memoryModuleName, executorModuleName};
 
-  TransportModule(this.state);
+  TransportModule({TransportModuleState? state}) : state = state ?? TransportModuleState();
 
   @override
   Pointer<transport_module> create(TransportModuleConfiguration configuration) => using((arena) => transport_module_create(configuration.toNative(arena)));

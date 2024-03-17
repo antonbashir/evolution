@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:ffi';
+import 'dart:isolate';
 
 import 'package:ffi/ffi.dart';
 
@@ -176,4 +177,11 @@ Launcher launch(ModuleCreator creator) {
 Forker fork(ModuleLoader loader) {
   loader(_context);
   return _forker;
+}
+
+RawReceivePort? _killer = null;
+SendPort join() {
+  if (_killer != null) return _killer!.sendPort;
+  _killer = RawReceivePort(() => _killer?.close());
+  return _killer!.sendPort;
 }

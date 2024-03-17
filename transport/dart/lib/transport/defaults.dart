@@ -8,6 +8,8 @@ import 'server/configuration.dart';
 class TransportDefaults {
   TransportDefaults._();
 
+  static const module = TransportModuleConfiguration(defaultExecutorConfiguration: ExecutorDefaults.executor);
+
   static const transport = TransportConfiguration(
     memoryConfiguration: MemoryDefaults.memory,
     executorConfiguration: ExecutorDefaults.executor,

@@ -17,7 +17,7 @@ class TransportModuleConfiguration implements ModuleConfiguration {
         defaultExecutorConfiguration: ExecutorConfiguration.fromNative(native.default_executor_configuration),
       );
 
-  TransportModuleConfiguration({required this.defaultExecutorConfiguration});
+  const TransportModuleConfiguration({required this.defaultExecutorConfiguration});
 }
 
 class TransportConfiguration {
