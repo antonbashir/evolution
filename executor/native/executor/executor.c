@@ -120,11 +120,6 @@ void executor_destroy(struct executor_instance* executor)
 
 int8_t executor_awake_begin(struct executor_instance* executor)
 {
-    if (executor->state & EXECUTOR_STATE_STOPPING)
-    {
-        return 0;
-    }
-
     executor->state = EXECUTOR_STATE_WAKING;
     struct io_uring_sqe* sqe = io_uring_get_sqe(executor->ring);
     if (unlikely(sqe == NULL))
