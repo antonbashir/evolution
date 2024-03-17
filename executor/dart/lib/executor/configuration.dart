@@ -30,7 +30,8 @@ class ExecutorConfiguration {
   final int memoryPreallocationSize;
   final int memoryQuotaSize;
 
-  Pointer<executor_configuration> toNative(Pointer<executor_configuration> native) {
+  Pointer<executor_configuration> toNative(Arena arena) {
+    final native = arena<executor_configuration>();
     native.ref.ring_flags = ringFlags;
     native.ref.ring_size = ringSize;
     native.ref.static_buffer_size = staticBufferSize;
@@ -41,14 +42,14 @@ class ExecutorConfiguration {
     return native;
   }
 
-  factory ExecutorConfiguration.fromNative(Pointer<executor_configuration> native) => ExecutorConfiguration(
-        ringFlags: native.ref.ring_flags,
-        ringSize: native.ref.ring_size,
-        staticBufferSize: native.ref.static_buffer_size,
-        staticBuffersCapacity: native.ref.static_buffers_capacity,
-        memorySlabSize: native.ref.slab_size,
-        memoryPreallocationSize: native.ref.preallocation_size,
-        memoryQuotaSize: native.ref.quota_size,
+  factory ExecutorConfiguration.fromNative(executor_configuration native) => ExecutorConfiguration(
+        ringFlags: native.ring_flags,
+        ringSize: native.ring_size,
+        staticBufferSize: native.static_buffer_size,
+        staticBuffersCapacity: native.static_buffers_capacity,
+        memorySlabSize: native.slab_size,
+        memoryPreallocationSize: native.preallocation_size,
+        memoryQuotaSize: native.quota_size,
       );
 
   const ExecutorConfiguration({

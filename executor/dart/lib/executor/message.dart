@@ -32,7 +32,7 @@ extension ExecutorMessageExtensions on Pointer<executor_task> {
   Uint8List get inputBytes => ref.input.cast<Uint8>().asTypedList(ref.input_size);
 
   @inline
-  (Pointer<Uint8>, int) get inputTuple => (ref.input.cast<Uint8>(), ref.input_size);
+  ({Pointer<Uint8> tuple, int size}) get inputTuple => (tuple: ref.input.cast<Uint8>(), size: ref.input_size);
 
   @inline
   String getInputString({int? length}) => ref.input.cast<Utf8>().toDartString(length: length);
@@ -68,9 +68,9 @@ extension ExecutorMessageExtensions on Pointer<executor_task> {
   }
 
   @inline
-  void setInputTuple((Pointer<Uint8>, int) tuple) {
-    ref.input = tuple.$1.cast();
-    ref.input_size = tuple.$2;
+  void setInputTuple(({Pointer<Uint8> tuple, int size}) tuple) {
+    ref.input = tuple.tuple.cast();
+    ref.input_size = tuple.size;
   }
 
   @inline

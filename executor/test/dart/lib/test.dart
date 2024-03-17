@@ -7,5 +7,5 @@ void main() {
   group("[call native]", testCallNative);
   group("[call dart]", testCallDart);
   group("[threading native]", testThreadingNative);
-  // group("[threading dart]", testThreadingDart);
+  group("[threading dart]", testThreadingDart);
 }

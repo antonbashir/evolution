@@ -50,14 +50,12 @@ static void* test_threading_run(void* thread)
     while (casted->alive)
     {
         test_executor_process((struct test_executor*)casted->test_executor_instance);
+        io_uring_submit(casted->test_executor_instance->ring);
     }
     test_executor_destroy((struct test_executor*)casted->test_executor_instance, false);
     memory_small_allocator_destroy(casted->thread_small_data);
     memory_pool_destroy(casted->thread_memory_pool);
     memory_destroy(casted->thread_memory);
-    free(casted->thread_small_data);
-    free(casted->thread_memory_pool);
-    free(casted->thread_memory);
     free(casted->messages);
     return NULL;
 }

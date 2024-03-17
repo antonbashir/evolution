@@ -22,8 +22,8 @@ class ExecutorCallbackExecutor {
   ExecutorCallbackExecutor(this._executor, this._callback);
 
   @inline
-  void call(Pointer<executor_task> message) => Future.value(_callback(message)).then((_) => _respond(message));
+  void call(Pointer<executor_task> task) => Future.value(_callback(task)).then((_) => _respond(task));
 
   @inline
-  void _respond(Pointer<executor_task> message) => ExecutorException.checkRing(executor_callback_to_native(_executor, message));
+  void _respond(Pointer<executor_task> task) => ExecutorException.checkRing(executor_callback_to_native(_executor, task));
 }
