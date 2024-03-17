@@ -67,8 +67,7 @@ struct event* event_create(uint8_t level, const char* function, const char* file
     created->line = line;
     created->level = level;
     created->timestamp = time_now_real();
-    created->raised_module_id = MODULE_UNKNOWN;
-    created->raised_module_name = MODULE_UNKNOWN_NAME;
+    created->raised_module_name = NULL;
     return created;
 }
 
@@ -94,9 +93,8 @@ struct event* event_build(uint8_t level, const char* function, const char* file,
     return event;
 }
 
-void event_setup(struct event* event, uint32_t raised_module_id, const char* raised_module_name)
+void event_setup(struct event* event, const char* raised_module_name)
 {
-    event->raised_module_id = raised_module_id;
     event->raised_module_name = raised_module_name;
 }
 
@@ -251,9 +249,9 @@ const char* event_format(struct event* event)
         return buffer;
     }
     size += written;
-    if (event->raised_module_id != MODULE_UNKNOWN)
+    if (event->raised_module_name != NULL)
     {
-        written = snprintf(buffer + size, MODULE_EVENT_BUFFER - size, "module(%d) = %s\n", event->raised_module_id, event->raised_module_name);
+        written = snprintf(buffer + size, MODULE_EVENT_BUFFER - size, "module = %s\n", event->raised_module_name);
         if (written < 0)
         {
             return buffer;

@@ -6,14 +6,14 @@ import 'package:ffi/ffi.dart';
 import '../../executor/bindings.dart';
 
 final class executor_module_configuration extends Struct {
-  external Pointer<executor_scheduler_configuration> scheduler_configuration;
+  external executor_scheduler_configuration scheduler_configuration;
 }
 
 final class executor_module extends Struct {
   @Uint32()
   external int id;
   external Pointer<Utf8> name;
-  external Pointer<executor_module_configuration> configuration;
+  external executor_module_configuration configuration;
   external Pointer<executor_scheduler> scheduler;
   @Uint32()
   external int executors;
@@ -28,4 +28,4 @@ external Pointer<executor_module> executor_module_create(Pointer<executor_module
 external void executor_module_destroy(Pointer<executor_module> module);
 
 @Native<Uint32 Function(Pointer<executor_module> module)>(isLeaf: true)
-external int executor_next(Pointer<executor_module> module);
+external int executor_next_id(Pointer<executor_module> module);

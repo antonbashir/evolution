@@ -1,5 +1,7 @@
 import 'dart:ffi';
 
+import 'package:ffi/ffi.dart';
+
 import 'bindings.dart';
 
 class MemoryModuleConfiguration implements ModuleConfiguration {
@@ -7,11 +9,12 @@ class MemoryModuleConfiguration implements ModuleConfiguration {
 
   const MemoryModuleConfiguration({required this.libraryPackageMode});
 
-  factory MemoryModuleConfiguration.fromNative(Pointer<memory_module_configuration> native) => MemoryModuleConfiguration(
-        libraryPackageMode: LibraryPackageMode.values[native.ref.library_package_mode],
+  factory MemoryModuleConfiguration.fromNative(memory_module_configuration native) => MemoryModuleConfiguration(
+        libraryPackageMode: LibraryPackageMode.values[native.library_package_mode],
       );
 
-  Pointer<memory_module_configuration> toNative(Pointer<memory_module_configuration> native) {
+  Pointer<memory_module_configuration> toNative(Arena arena) {
+    final native = arena<memory_module_configuration>();
     native.ref.library_package_mode = libraryPackageMode.index;
     return native;
   }

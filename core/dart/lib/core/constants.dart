@@ -6,7 +6,6 @@ import 'environment.dart';
 const inline = pragma("vm:prefer-inline");
 const neverInline = pragma("vm:never-inline");
 
-const coreModuleId = 0;
 const coreModuleName = "core";
 const corePackageName = "core";
 final coreLibraryName = SystemEnvironment.debug ? "libcore_debug_${Abi.current()}.so" : "libcore_release_${Abi.current()}.so";
@@ -66,9 +65,9 @@ class CoreErrors {
   static String systemLibraryLoadError(path) => "Unable to load library ${path}";
   static const nonLinuxError = "You should use Linux";
   static const unableToFindProjectRoot = "Unable to find project root";
-  static moduleAlreadyLoaded(int id) => "Module was already loaded: $id";
-  static moduleNotLoaded(int id) => "Module was not loaded: $id";
-  static moduleNotFound(int id) => "Module was not found: $id";
+  static moduleAlreadyLoaded(String name) => "Module was already loaded: $name";
+  static moduleNotLoaded(String name) => "Module was not loaded: $name";
+  static moduleNotFound(String name) => "Module was not found: $name";
   static moduleDependenciesNotFound(List<String> dependencies) => "Module dependencies were not found: ${dependencies}";
 }
 

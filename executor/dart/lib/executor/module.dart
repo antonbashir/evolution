@@ -6,22 +6,31 @@ import 'package:ffi/ffi.dart';
 import 'package:memory/memory/constants.dart';
 
 import '../executor.dart';
+import 'broker.dart';
 import 'constants.dart';
 
 class ExecutorModuleState implements ModuleState {
-  final List<Executor> _executors = [];
+  final List<ExecutorBroker> _brokers = [];
   late final Pointer<executor_scheduler> _scheduler;
+  late final Pointer<executor_module> _module;
 
   ExecutorModuleState();
 
-  (Pointer<executor_scheduler>, int) register(Executor executor) {
-    _executors.add(executor);
-    return (_scheduler, executor_next(context().executor().native));
+  void create(Pointer<executor_scheduler> scheduler, Pointer<executor_module> module) {
+    _scheduler = scheduler;
+    _module = module;
+  }
+
+  void destroy() {}
+
+  ExecutorBroker broker({ExecutorConfiguration configuration = ExecutorDefaults.executor}) {
+    final broker = ExecutorBroker(Executor(_scheduler, executor_next_id(_module), configuration: configuration));
+    _brokers.add(broker);
+    return broker;
   }
 }
 
 class ExecutorModule with Module<executor_module, ExecutorModuleConfiguration, ExecutorModuleState> {
-  final id = executorModuleId;
   final name = executorModuleName;
   final dependencies = {coreModuleName, memoryModuleName};
   final ExecutorModuleState state;
@@ -39,27 +48,35 @@ class ExecutorModule with Module<executor_module, ExecutorModuleConfiguration, E
 
   @override
   FutureOr<void> initialize() {
-    state._scheduler = using((Arena arena) => executor_scheduler_initialize(configuration.schedulerConfiguration.toNative(arena)));
-    if (state._scheduler == nullptr || !state._scheduler.ref.initialized) {
-      final error = state._scheduler.ref.initialization_error.cast<Utf8>().toDartString();
-      if (state._scheduler != nullptr) executor_scheduler_destroy(state._scheduler);
+    final scheduler = using((Arena arena) => executor_scheduler_initialize(configuration.schedulerConfiguration.toNative(arena)));
+    if (scheduler == nullptr || !scheduler.ref.initialized) {
+      final error = scheduler.ref.initialization_error.cast<Utf8>().toDartString();
+      if (scheduler != nullptr) executor_scheduler_destroy(scheduler);
       throw ExecutorException(error);
     }
-  }
-
-  Future<void> shutdown() async {
-    await Future.wait(state._executors.map((executor) => executor.shutdown()));
-    if (!executor_scheduler_shutdown(state._scheduler)) {
-      final error = state._scheduler.ref.shutdown_error.cast<Utf8>().toDartString();
-      executor_scheduler_destroy(state._scheduler);
-      throw ExecutorException(error);
-    }
-    executor_scheduler_destroy(state._scheduler);
+    state.create(scheduler, native);
   }
 
   @override
   FutureOr<void> fork() {
-    state._scheduler = native.ref.scheduler;
+    state.create(native.ref.scheduler, native);
+  }
+
+  @override
+  FutureOr<void> unfork() {
+    state.destroy();
+  }
+
+  Future<void> shutdown() async {
+    await Future.wait(state._brokers.map((executor) => executor.shutdown()));
+    final scheduler = state._scheduler;
+    if (!executor_scheduler_shutdown(scheduler)) {
+      final error = scheduler.ref.shutdown_error.cast<Utf8>().toDartString();
+      executor_scheduler_destroy(scheduler);
+      throw ExecutorException(error);
+    }
+    executor_scheduler_destroy(scheduler);
+    state.destroy();
   }
 
   @override
@@ -69,5 +86,6 @@ class ExecutorModule with Module<executor_module, ExecutorModuleConfiguration, E
 }
 
 extension ContextProviderExecutorExtensions on ContextProvider {
-  ModuleProvider<executor_module, ExecutorModuleConfiguration, ExecutorModuleState> executor() => get(executorModuleId);
+  ModuleProvider<executor_module, ExecutorModuleConfiguration, ExecutorModuleState> executor() => get(executorModuleName);
+  ExecutorBroker broker({ExecutorConfiguration configuration = ExecutorDefaults.executor}) => executor().state.broker(configuration: configuration);
 }

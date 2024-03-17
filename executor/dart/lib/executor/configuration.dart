@@ -10,14 +10,14 @@ class ExecutorModuleConfiguration implements ModuleConfiguration {
 
   const ExecutorModuleConfiguration(this.schedulerConfiguration);
 
-  Pointer<executor_module_configuration> toNative(Arena allocator) {
-    Pointer<executor_module_configuration> native = allocator();
-    native.ref.scheduler_configuration = schedulerConfiguration.toNative(allocator);
+  Pointer<executor_module_configuration> toNative(Arena arena) {
+    Pointer<executor_module_configuration> native = arena();
+    native.ref.scheduler_configuration = schedulerConfiguration.toNative(arena).ref;
     return native;
   }
 
-  factory ExecutorModuleConfiguration.fromNative(Pointer<executor_module_configuration> native) => ExecutorModuleConfiguration(
-        ExecutorSchedulerConfiguration.fromNative(native.ref.scheduler_configuration),
+  factory ExecutorModuleConfiguration.fromNative(executor_module_configuration native) => ExecutorModuleConfiguration(
+        ExecutorSchedulerConfiguration.fromNative(native.scheduler_configuration),
       );
 }
 
@@ -88,8 +88,8 @@ class ExecutorSchedulerConfiguration {
   final Duration initializationTimeout;
   final Duration shutdownTimeout;
 
-  Pointer<executor_scheduler_configuration> toNative(Arena allocator) {
-    Pointer<executor_scheduler_configuration> native = allocator();
+  Pointer<executor_scheduler_configuration> toNative(Arena arena) {
+    Pointer<executor_scheduler_configuration> native = arena();
     native.ref.ring_flags = ringFlags;
     native.ref.ring_size = ringSize;
     native.ref.initialization_timeout_seconds = initializationTimeout.inSeconds;
@@ -97,11 +97,11 @@ class ExecutorSchedulerConfiguration {
     return native;
   }
 
-  factory ExecutorSchedulerConfiguration.fromNative(Pointer<executor_scheduler_configuration> native) => ExecutorSchedulerConfiguration(
-        ringFlags: native.ref.ring_flags,
-        ringSize: native.ref.ring_size,
-        initializationTimeout: Duration(seconds: native.ref.initialization_timeout_seconds),
-        shutdownTimeout: Duration(seconds: native.ref.shutdown_timeout_seconds),
+  factory ExecutorSchedulerConfiguration.fromNative(executor_scheduler_configuration native) => ExecutorSchedulerConfiguration(
+        ringFlags: native.ring_flags,
+        ringSize: native.ring_size,
+        initializationTimeout: Duration(seconds: native.initialization_timeout_seconds),
+        shutdownTimeout: Duration(seconds: native.shutdown_timeout_seconds),
       );
 
   const ExecutorSchedulerConfiguration({

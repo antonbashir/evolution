@@ -13,7 +13,6 @@
 #define module_evaluate_append(a, b) module_append(a, b)
 #define module_evaluate_to_string(x) module_to_string(x)
 #define _module(x) module_evaluate_combine(module_name, x)
-#define _declare_module_id module_evaluate_append(module_name, _module_id)
 #define _declare_module_name module_evaluate_append(module_name, _module_name)
 #define _declare_module_label module_evaluate_to_string(module_name)
 
@@ -34,26 +33,22 @@ struct _unknown_module_configuration
 #ifndef module_structure
 struct _unknown_module
 {
+    const char* name;
     struct _unknown_module_configuration configuration;
 };
 #define module_structure struct _unknown_module
 #endif
 
-#ifndef module_id
-#define module_id 0
-#endif
-
-static const uint32_t _declare_module_id = module_id;
 static const char* _declare_module_name = _declare_module_label;
 
 static FORCEINLINE module_structure* module_name()
 {
-    return context_get_module(_declare_module_id);
+    return context_get_module(_declare_module_name);
 }
 
 static FORCEINLINE struct event* _module(event)(struct event* event)
 {
-    event_setup(event, _declare_module_id, _declare_module_name);
+    event_setup(event, _declare_module_name);
     return event;
 }
 
@@ -96,6 +91,14 @@ static FORCEINLINE void* _module(allocate_checked)(uint32_t count, uint32_t size
     return object;
 }
 
+static FORCEINLINE void* _module(construct)(module_configuration* configuration)
+{
+    module_structure* created = _module(new_checked)(sizeof(module_structure));
+    created->name = _declare_module_name;
+    created->configuration = *configuration;
+    return created;
+}
+
 static FORCEINLINE void _module(check_object)(void* object)
 {
     trace_event(_module(event)(event_trace(event_field(MODULE_EVENT_FIELD_CALLER, stacktrace_callers(1, 3)))));
@@ -128,7 +131,6 @@ static FORCEINLINE void _module(delete)(void* object)
 #undef module_name
 #undef module_configuration
 #undef module_structure
-#undef module_id
 #undef module_label
 #endif
 
@@ -141,7 +143,6 @@ static FORCEINLINE void _module(delete)(void* object)
 #undef module_to_string
 #undef _module
 #undef _declare_module_getter
-#undef _declare_module_id
 #undef _declare_module_name
 #undef _declare_module_label
 #undef _module_new

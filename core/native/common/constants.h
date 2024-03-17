@@ -6,7 +6,6 @@ extern "C"
 {
 #endif
 
-#define MODULE_UNKNOWN -1
 #define MODULE_UNKNOWN_NAME "unknown"
 
 #define MODULES_MAXIMUM 64

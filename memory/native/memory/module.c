@@ -4,14 +4,10 @@
 
 struct memory_module* memory_module_create(struct memory_module_configuration* configuration)
 {
-    struct memory_module* module = memory_module_new_checked(sizeof(struct memory_module));
-    module->configuration = memory_module_new_checked(sizeof(struct memory_module_configuration));
-    *module->configuration = *configuration;
-    return module;
+    return memory_module_construct(configuration);
 }
 
 void memory_module_destroy(struct memory_module* module)
 {
-    memory_module_delete(module->configuration);
     memory_module_delete(module);
 }

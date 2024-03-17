@@ -3,7 +3,6 @@ import 'dart:ffi';
 import 'package:core/core.dart';
 
 final executorLibraryName = SystemEnvironment.debug ? "libexecutor_debug_${Abi.current()}.so" : "libexecutor_release_${Abi.current()}.so";
-const executorModuleId = 2;
 const executorModuleName = "executor";
 const executorPackageName = "executor";
 

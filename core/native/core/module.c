@@ -22,16 +22,10 @@ struct core_module* core_module_create(struct core_module_configuration* configu
         .on_event_raise = system_default_event_raiser,
         .print_level = configuration->print_level,
     });
-    struct core_module* module = core_module_new_checked(sizeof(struct core_module));
-    module->id = core_module_id;
-    module->name = core_module_name;
-    module->configuration = core_module_new_checked(sizeof(struct core_module_configuration));
-    *module->configuration = *configuration;
-    return module;
+    return core_module_construct(configuration);
 }
 
 void core_module_destroy(struct core_module* module)
 {
-    core_module_delete(module->configuration);
     core_module_delete(module);
 }

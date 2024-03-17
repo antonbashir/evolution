@@ -12,7 +12,6 @@ extern "C"
 
 #define MODULE_SOURCE
 
-#define module_id 1
 #define module_name memory
 DART_STRUCTURE struct memory_module_configuration
 {
@@ -21,9 +20,8 @@ DART_STRUCTURE struct memory_module_configuration
 #define module_configuration struct memory_module_configuration
 DART_STRUCTURE struct memory_module
 {
-    DART_FIELD uint32_t id;
     DART_FIELD const char* name;
-    DART_FIELD struct memory_module_configuration* configuration;
+    DART_FIELD struct memory_module_configuration configuration;
 };
 #define module_structure struct memory_module
 #include <modules/module.h>

@@ -20,7 +20,7 @@ void testCallNative() {
   test(
     "dart(null) <-> native(null)",
     () => launch(_initialize).activate(() async {
-      final executor = Executor();
+      final executor = context().broker();
       test_call_reset();
       await executor.initialize();
       final native = test_executor_initialize(true);
@@ -37,7 +37,7 @@ void testCallNative() {
   test(
     "dart(bool) <-> native(bool)",
     () => launch(_initialize).activate(() async {
-      final executor = Executor();
+      final executor = context().broker();
       test_call_reset();
       await executor.initialize();
       final native = test_executor_initialize(true);
@@ -55,7 +55,7 @@ void testCallNative() {
   test(
     "dart(int) <-> native(int)",
     () => launch(_initialize).activate(() async {
-      final executor = Executor();
+      final executor = context().broker();
       test_call_reset();
       await executor.initialize();
       final native = test_executor_initialize(true);
@@ -73,7 +73,7 @@ void testCallNative() {
   test(
     "dart(double) <-> native(double)",
     () => launch(_initialize).activate(() async {
-      final executor = Executor();
+      final executor = context().broker();
       test_call_reset();
       await executor.initialize();
       final native = test_executor_initialize(true);
@@ -95,7 +95,7 @@ void testCallDart() {
   test(
     "native(null) <-> dart(null)",
     () => launch(_initialize).activate(() async {
-      final executor = Executor();
+      final executor = context().broker();
       test_call_reset();
       await executor.initialize();
       final native = test_executor_initialize(true);
@@ -112,7 +112,7 @@ void testCallDart() {
   test(
     "native(bool) <-> dart(bool)",
     () => launch(_initialize).activate(() async {
-      final executor = Executor();
+      final executor = context().broker();
       test_call_reset();
       await executor.initialize();
       final native = test_executor_initialize(true);
@@ -134,7 +134,7 @@ void testCallDart() {
   test(
     "native(int) <-> dart(int)",
     () => launch(_initialize).activate(() async {
-      final executor = Executor();
+      final executor = context().broker();
       test_call_reset();
       await executor.initialize();
       final native = test_executor_initialize(true);
@@ -156,7 +156,7 @@ void testCallDart() {
   test(
     "native(double) <-> dart(double)",
     () => launch(_initialize).activate(() async {
-      final executor = Executor();
+      final executor = context().broker();
       test_call_reset();
       await executor.initialize();
       final native = test_executor_initialize(true);

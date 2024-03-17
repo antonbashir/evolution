@@ -1,5 +1,5 @@
-#ifndef EXECUTOR_CONFIGURATION_H
-#define EXECUTOR_CONFIGURATION_H
+#ifndef executor_configuration_H
+#define executor_configuration_H
 
 #include <common/common.h>
 #include <system/library.h>

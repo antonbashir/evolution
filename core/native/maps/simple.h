@@ -322,16 +322,8 @@ _simple_map(put_slot)(struct _simple_map(t) * h, const simple_map_node_t* node, 
     return save_i;
 }
 
-/**
- * Find a node in the hash and replace it with a new value.
- * Save the old node in ret pointer, if it is provided.
- * If the old node didn't exist, just insert the new node.
- *
- * @retval != simple_map_end()   pos of the new node, ret is either NULL
- *                       or copy of the old node
- */
 static inline simple_map_int_t
-_simple_map(put)(struct _simple_map(t) * h, const simple_map_node_t* node, simple_map_node_t** ret, simple_map_arg_t arg)
+_simple_map(put)(struct _simple_map(t) * h, const simple_map_node_t node, simple_map_node_t* replaced, simple_map_arg_t arg)
 {
     simple_map_int_t x = simple_map_end(h);
     int exist;
@@ -347,6 +339,41 @@ _simple_map(put)(struct _simple_map(t) * h, const simple_map_node_t* node, simpl
     }
     if (h->resize_position)
         _simple_map(put)(h->shadow, node, NULL, arg);
+#else
+    if (simple_map_unlikely(h->n_dirty >= h->upper_bound))
+    {
+        _simple_map(start_resize)(h, h->n_buckets + 1, h->size, arg);
+    }
+#endif
+
+    x = put_slot(h, &node, &exist, arg);
+
+    if (replaced)
+    {
+        if (exist) *replaced = h->p[x];
+    }
+
+    h->p[x] = (simple_map_node_t)node;
+    return x;
+}
+
+static inline simple_map_int_t
+_simple_map(put_copy)(struct _simple_map(t) * h, const simple_map_node_t* node, simple_map_node_t** ret, simple_map_arg_t arg)
+{
+    simple_map_int_t x = simple_map_end(h);
+    int exist;
+
+    assert(h->size < h->n_buckets);
+
+#if SIMPLE_MAP_INCREMENTAL_RESIZE
+    if (simple_map_unlikely(h->resize_position > 0))
+        _simple_map(resize)(h, arg);
+    else if (simple_map_unlikely(h->n_dirty >= h->upper_bound))
+    {
+        _simple_map(start_resize)(h, h->n_buckets + 1, 0, arg);
+    }
+    if (h->resize_position)
+        _simple_map(put_copy)(h->shadow, node, NULL, arg);
 #else
     if (simple_map_unlikely(h->n_dirty >= h->upper_bound))
     {

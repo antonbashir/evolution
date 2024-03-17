@@ -70,7 +70,6 @@ void testThreadingDart() {
   test(
     "[threads]native(bytes) <-> [isolates]dart(bytes)",
     () => launch(_initialize).activate(() async {
-      final executor = ExecutorModule()..initialize();
       final messages = 16;
       final isolates = 4;
       final threads = 8;
@@ -125,7 +124,6 @@ void testThreadingDart() {
       errorPorts.forEach((port) => port.close());
 
       test_threading_destroy();
-      await executor.shutdown();
     }),
   );
 }
@@ -134,7 +132,7 @@ Future<void> _callNativeIsolate(List<dynamic> input) => fork((loader) => loader.
       final messages = input[0];
       final threads = input[1];
       final calls = <Future<Pointer<executor_task>>>[];
-      final executor = Executor();
+      final executor = context().broker();
       await executor.initialize();
       final producer = executor.producer(TestNativeProducer());
       executor.activate();
@@ -162,7 +160,7 @@ Future<void> _callNativeIsolate(List<dynamic> input) => fork((loader) => loader.
 
 Future<void> _callDartIsolate(List<dynamic> input) => fork((loader) => loader.load(CoreModule()).load(MemoryModule()).load(ExecutorModule())).activate(() async {
       final messages = input[0];
-      final executor = Executor();
+      final executor = context().broker();
       await executor.initialize();
       var count = 0;
       final completer = Completer();

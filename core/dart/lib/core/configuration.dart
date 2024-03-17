@@ -12,15 +12,15 @@ class CoreModuleConfiguration with ModuleConfiguration {
   const CoreModuleConfiguration({required this.printLevel, required this.silent});
 
   Pointer<core_module_configuration> toNative(Arena arena) {
-    Pointer<core_module_configuration> native = arena();
+    final native = arena<core_module_configuration>();
     native.ref.print_level = printLevel;
     native.ref.silent = native.ref.silent;
     return native;
   }
 
-  factory CoreModuleConfiguration.fromNative(Pointer<core_module_configuration> native) => CoreModuleConfiguration(
-        printLevel: native.ref.print_level,
-        silent: native.ref.silent,
+  factory CoreModuleConfiguration.fromNative(core_module_configuration native) => CoreModuleConfiguration(
+        printLevel: native.print_level,
+        silent: native.silent,
       );
 
   CoreModuleConfiguration copyWith({bool? silent, int? printLevel, String? component}) => CoreModuleConfiguration(

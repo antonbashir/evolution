@@ -1,11 +1,16 @@
 import 'dart:async';
 import 'dart:ffi';
 
-import 'package:core/core/exceptions.dart';
 import 'package:ffi/ffi.dart';
 
-import '../memory.dart';
+import 'bindings.dart';
+import 'buffers.dart';
+import 'configuration.dart';
 import 'constants.dart';
+import 'data.dart';
+import 'defaults.dart';
+import 'structures.dart';
+import 'tuples.dart';
 
 class MemoryModuleState implements ModuleState {
   final MemoryConfiguration configuration;
@@ -41,7 +46,6 @@ class MemoryModuleState implements ModuleState {
 }
 
 class MemoryModule with Module<memory_module, MemoryModuleConfiguration, MemoryModuleState> {
-  final id = memoryModuleId;
   final name = memoryModuleName;
   final dependencies = {coreModuleName};
   final MemoryModuleState state;
@@ -51,7 +55,7 @@ class MemoryModule with Module<memory_module, MemoryModuleConfiguration, MemoryM
   @override
   Pointer<memory_module> create(MemoryModuleConfiguration configuration) {
     SystemLibrary.loadByName(configuration.libraryPackageMode == LibraryPackageMode.shared ? memorySharedLibraryName : memoryLibraryName, memoryPackageName);
-    return using((arena) => memory_module_create(configuration.toNative(arena<memory_module_configuration>())));
+    return using((arena) => memory_module_create(configuration.toNative(arena)));
   }
 
   @override
@@ -63,14 +67,26 @@ class MemoryModule with Module<memory_module, MemoryModuleConfiguration, MemoryM
   }
 
   @override
-  void destroy() {
+  FutureOr<void> fork() {
+    state.create();
+  }
+
+  @override
+  void unfork() => state.destroy();
+
+  @override
+  FutureOr<void> shutdown() {
     state.destroy();
+  }
+
+  @override
+  void destroy() {
     memory_module_destroy(native);
   }
 }
 
 extension ContextProviderMemoryExtensions on ContextProvider {
-  ModuleProvider<memory_module, MemoryModuleConfiguration, MemoryModuleState> memory() => get(memoryModuleId);
+  ModuleProvider<memory_module, MemoryModuleConfiguration, MemoryModuleState> memory() => get(memoryModuleName);
   MemoryStaticBuffers staticBuffers() => memory().state.staticBuffers;
   MemoryInputOutputBuffers inputOutputBuffers() => memory().state.inputOutputBuffers;
   MemoryStructurePools structures() => memory().state.structures;

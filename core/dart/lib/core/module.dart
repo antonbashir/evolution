@@ -29,7 +29,6 @@ void _defaultExceptionHandler(Exception exception, StackTrace stack) {
 }
 
 class CoreModule with Module<core_module, CoreModuleConfiguration, CoreModuleState> {
-  final id = coreModuleId;
   final name = coreModuleName;
   final CoreModuleState state;
 
@@ -52,5 +51,5 @@ class CoreModule with Module<core_module, CoreModuleConfiguration, CoreModuleSta
 }
 
 extension ContextProviderCoreExtensions on ContextProvider {
-  ModuleProvider<core_module, CoreModuleConfiguration, CoreModuleState> core() => get(coreModuleId);
+  ModuleProvider<core_module, CoreModuleConfiguration, CoreModuleState> core() => get(coreModuleName);
 }

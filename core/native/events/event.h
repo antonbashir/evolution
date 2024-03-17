@@ -17,14 +17,13 @@ struct event
     const char* file;
     size_t fields_count;
     uint32_t line;
-    uint32_t raised_module_id;
     uint8_t level;
     struct timespec timestamp;
 };
 
 struct event* event_create(uint8_t level, const char* function, const char* file, uint32_t line);
 struct event* event_build(uint8_t level, const char* function, const char* file, uint32_t line, size_t fields, ...);
-void event_setup(struct event* event, uint32_t raised_module_id, const char* raised_module_name);
+void event_setup(struct event* event, const char* raised_module_name);
 void event_destroy(struct event* event);
 
 bool event_has_field(struct event* event, const char* name);

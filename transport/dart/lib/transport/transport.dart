@@ -72,7 +72,7 @@ class Transport {
     // _memory.initialize(configuration: MemoryConfiguration.fromNativeValue(_pointer.ref.configuration.memory_configuration));
     // _buffers = _memory.staticBuffers;
     // _pointer.ref.buffers = _buffers.buffers;
-    final result = transport_setup(_pointer, _executor.instance);
+    final result = transport_setup(_pointer, _executor.native);
     if (result != 0) {
       throw TransportInitializationException(TransportMessages.workerError(result));
     }

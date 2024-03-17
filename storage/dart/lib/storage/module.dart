@@ -3,7 +3,6 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:ffi/ffi.dart';
-import 'package:executor/executor.dart';
 
 import 'bindings.dart';
 import 'configuration.dart';
@@ -11,7 +10,6 @@ import 'constants.dart';
 import 'exception.dart';
 import 'executor.dart';
 import 'script.dart';
-import 'package:core/core.dart';
 
 class StorageModule {
   final Map<String, SystemLibrary> _loadedModulesByName = {};

@@ -12,10 +12,8 @@ final class core_module_configuration extends Struct {
 }
 
 final class core_module extends Struct {
-  @Uint32()
-  external int id;
   external Pointer<Utf8> name;
-  external Pointer<core_module_configuration> configuration;
+  external core_module_configuration configuration;
 }
 
 @Native<Pointer<core_module> Function(Pointer<core_module_configuration> configuration)>(isLeaf: true)

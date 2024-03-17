@@ -120,5 +120,5 @@ void test_executor_register_callback(struct test_executor* executor, test_execut
             .owner = 0,
         },
     };
-    simple_map_native_callbacks_put(executor->callbacks, &node, NULL, 0);
+    simple_map_native_callbacks_put_copy(executor->callbacks, &node, NULL, 0);
 }

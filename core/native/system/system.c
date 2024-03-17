@@ -1,4 +1,3 @@
-#define SIMPLE_MAP_SOURCE
 #include "system.h"
 #include <crash/crash.h>
 #include <events/events.h>
@@ -109,29 +108,28 @@ struct system_library* system_library_load(const char* path)
 
 struct system_library* system_library_get(const char* path)
 {
-    struct system_library_key key = {.path = path};
-    simple_map_int_t slot = simple_map_system_libraries_find(system_instance.system_libraries, key, NULL);
+    simple_map_int_t slot = simple_map_system_libraries_find(system_instance.system_libraries, path, NULL);
     if (slot != simple_map_end(system_instance.system_libraries))
     {
-        return simple_map_system_libraries_node(system_instance.system_libraries, slot);
+        return *simple_map_system_libraries_node(system_instance.system_libraries, slot);
     }
     return NULL;
 }
 
-struct system_library* system_library_reload(struct system_library* library)
+struct system_library* system_library_reload(const struct system_library* library)
 {
     const char* path = library->path;
     system_library_unload(library);
     return system_library_load(path);
 }
 
-void system_library_unload(struct system_library* library)
+void system_library_unload(const struct system_library* library)
 {
     if (library->handle != NULL)
     {
         dlclose(library->handle);
     }
-    simple_map_system_libraries_remove(system_instance.system_libraries, library, NULL);
+    simple_map_system_libraries_remove(system_instance.system_libraries, &library, NULL);
     free((void*)library->path);
-    free(library);
+    free((void*)library);
 }

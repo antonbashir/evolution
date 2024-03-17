@@ -14,7 +14,7 @@ final class memory_module extends Struct {
   @Uint32()
   external int id;
   external Pointer<Utf8> name;
-  external Pointer<memory_module_configuration> configuration;
+  external memory_module_configuration configuration;
 }
 
 @Native<Pointer<memory_module> Function(Pointer<memory_module_configuration> configuration)>(isLeaf: true)

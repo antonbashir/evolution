@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:ffi';
 
+import 'package:ffi/ffi.dart';
+
 import 'bindings.dart';
 import 'constants.dart';
 import 'exceptions.dart';
@@ -14,7 +16,6 @@ typedef ModuleLoader = ContextLoader Function(ContextLoader loader);
 typedef ModuleCreator = ContextCreator Function(ContextCreator creator);
 
 mixin ModuleProvider<NativeType extends Struct, ConfigurationType extends ModuleConfiguration, StateType extends ModuleState> {
-  int get id;
   String get name;
   ConfigurationType get configuration;
   StateType get state;
@@ -22,13 +23,9 @@ mixin ModuleProvider<NativeType extends Struct, ConfigurationType extends Module
 }
 
 mixin ModuleState {}
-
 mixin ModuleConfiguration {}
 
 mixin Module<NativeType extends Struct, ConfigurationType extends ModuleConfiguration, StateType extends ModuleState> implements ModuleProvider<NativeType, ConfigurationType, StateType> {
-  int get id;
-  String get name;
-  StateType get state;
   Set<String> get dependencies => {};
 
   late final Pointer<NativeType> native;
@@ -64,8 +61,8 @@ mixin Module<NativeType extends Struct, ConfigurationType extends ModuleConfigur
 }
 
 mixin ContextProvider {
-  dynamic get(int id);
-  bool has(int id);
+  dynamic get(String id);
+  bool has(String id);
 }
 
 mixin ContextCreator {
@@ -77,16 +74,16 @@ mixin ContextLoader {
 }
 
 class _Context with ContextCreator, ContextLoader, ContextProvider {
-  var _modules = List<Module?>.generate(modulesMaximum, (index) => null, growable: false);
-  var _native = List<Pointer<Void>>.generate(modulesMaximum, (index) => nullptr, growable: false);
+  var _modules = <String, Module>{};
+  var _native = <String, Pointer<Void>>{};
 
   _Context._() {
     SystemLibrary.loadCore();
     final context = context_get();
     if (context.ref.initialized) {
-      final modules = context.ref.modules;
+      final modules = context.ref.containers;
       for (var i = 0; i < context.ref.size; i++) {
-        _native[i] = modules[i];
+        _native[modules[i].name.toDartString()] = modules[i].module;
       }
       return;
     }
@@ -94,16 +91,16 @@ class _Context with ContextCreator, ContextLoader, ContextProvider {
   }
 
   void _clear() {
-    _modules.where((module) => module != null).forEach((module) => context_remove_module(module!.id));
-    _modules = List<Module?>.generate(modulesMaximum, (index) => null, growable: false);
-    _native = List<Pointer<Void>>.generate(modulesMaximum, (index) => nullptr, growable: false);
+    _modules.keys.forEach((module) => using((arena) => context_remove_module(module.toNativeUtf8(allocator: arena))));
+    _modules = {};
+    _native = {};
   }
 
   @override
-  bool has(int id) => _modules[id] != null;
+  bool has(String id) => _modules[id] != null;
 
   @override
-  Module get(int id) {
+  Module get(String id) {
     final module = _modules[id];
     if (module == null) throw CoreException(CoreErrors.moduleNotFound(id));
     return module;
@@ -111,19 +108,19 @@ class _Context with ContextCreator, ContextLoader, ContextProvider {
 
   @override
   ContextCreator create(Module module, ModuleConfiguration configuration) {
-    if (_native[module.id] != nullptr) throw CoreException(CoreErrors.moduleAlreadyLoaded(module.id));
-    final failedDependencies = module.dependencies.where((dependency) => !_modules.any((existing) => existing?.name == dependency)).toList();
+    if (_native[module.name] != nullptr) throw CoreException(CoreErrors.moduleAlreadyLoaded(module.name));
+    final failedDependencies = module.dependencies.where((dependency) => !_modules.containsKey(dependency)).toList();
     if (failedDependencies.isNotEmpty) throw CoreException(CoreErrors.moduleDependenciesNotFound(failedDependencies));
-    _modules[module.id] = module.._spawn(configuration);
-    context_put_module(module.id, module.native.cast());
-    _native[module.id] = module.native.cast();
+    _modules[module.name] = module.._spawn(configuration);
+    using((arena) => context_put_module(module.name.toNativeUtf8(allocator: arena), module.native.cast()));
+    _native[module.name] = module.native.cast();
     return this;
   }
 
   @override
   ContextLoader load(Module module) {
-    if (_native[module.id] == nullptr) throw CoreException(CoreErrors.moduleNotLoaded(module.id));
-    _modules[module.id] = module.._fetch(_native[module.id].cast());
+    if (_native[module.name] == nullptr) throw CoreException(CoreErrors.moduleNotLoaded(module.name));
+    _modules[module.name] = module.._fetch(_native[module.name]!.cast());
     return this;
   }
 }
@@ -136,17 +133,15 @@ class Launcher {
 
   Future<void> activate(FutureOr<void> Function() main) async {
     information(CoreMessages.modulesCreated);
-    for (var module in _context._modules) {
-      await Future.value(module?.initialize());
+    for (var module in _context._modules.values) {
+      await Future.value(module.initialize());
     }
     await main();
-    for (var module in _context._modules.reversed) {
-      await Future.value(module?.shutdown());
+    for (var module in _context._modules.values.toList().reversed) {
+      await Future.value(module.shutdown());
     }
-    for (var module in _context._modules.reversed) {
-      if (module != null) {
-        module.destroy();
-      }
+    for (var module in _context._modules.values.toList().reversed) {
+      module.destroy();
     }
     information(CoreMessages.modulesDestroyed);
     _context._clear();
@@ -158,15 +153,15 @@ class Forker {
 
   Future<void> activate(FutureOr<void> Function() main) async {
     information(CoreMessages.modulesLoaded);
-    for (var module in _context._modules) {
-      await Future.value(module?.fork());
+    for (var module in _context._modules.values) {
+      await Future.value(module.fork());
     }
     await main();
-    for (var module in _context._modules.reversed) {
-      await Future.value(module?.unfork());
+    for (var module in _context._modules.values.toList().reversed) {
+      await Future.value(module.unfork());
     }
-    for (var module in _context._modules.reversed) {
-      module?.unload();
+    for (var module in _context._modules.values.toList().reversed) {
+      module.unload();
     }
     information(CoreMessages.modulesUnloaded);
   }
@@ -174,7 +169,7 @@ class Forker {
 
 Launcher launch(ModuleCreator creator) {
   creator(_context);
-  for (var module in _context._modules) module?.validate();
+  for (var module in _context._modules.values) module.validate();
   return _launcher;
 }
 
