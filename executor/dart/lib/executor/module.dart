@@ -67,6 +67,7 @@ class ExecutorModule with Module<executor_module, ExecutorModuleConfiguration, E
     await state.destroy();
   }
 
+  @override
   Future<void> shutdown() async {
     await state.destroy();
     final scheduler = native.ref.scheduler;

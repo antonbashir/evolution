@@ -27,7 +27,7 @@ DART_STRUCTURE struct executor_instance
 
 DART_LEAF_FUNCTION struct executor_instance* executor_create(struct executor_configuration* configuration, struct executor_scheduler* scheduler, uint32_t id);
 DART_LEAF_FUNCTION int8_t executor_register_on_scheduler(struct executor_instance* executor, int64_t callback);
-DART_LEAF_FUNCTION int8_t executor_unregister_from_scheduler(struct executor_instance* executor);
+DART_LEAF_FUNCTION int8_t executor_unregister_from_scheduler(struct executor_instance* executor, bool stop);
 DART_LEAF_FUNCTION int32_t executor_peek(struct executor_instance* executor);
 DART_LEAF_FUNCTION int8_t executor_awake_begin(struct executor_instance* executor);
 DART_LEAF_FUNCTION void executor_awake_complete(struct executor_instance* executor, uint32_t completions);

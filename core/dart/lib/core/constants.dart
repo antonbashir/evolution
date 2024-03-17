@@ -74,10 +74,10 @@ class CoreErrors {
 class CoreMessages {
   CoreMessages._();
 
-  static const modulesCreated = "Modules created. Activating.";
-  static const modulesDestroyed = "Modules destroyed. Exiting.";
-  static const modulesLoaded = "Modules loaded. Activating.";
-  static const modulesUnloaded = "Modules unloaded. Exiting.";
+  static const modulesCreated = "Modules created,activating...";
+  static const modulesDestroyed = "Modules destroyed,exiting...";
+  static const modulesLoaded = "Modules loaded,activating...";
+  static const modulesUnloaded = "Modules unloaded,exiting...";
   static String loadingLibrary(path) => "Loading: $path";
 }
 

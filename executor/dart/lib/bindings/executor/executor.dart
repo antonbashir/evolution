@@ -28,8 +28,8 @@ external Pointer<executor_instance> executor_create(Pointer<executor_configurati
 @Native<Int8 Function(Pointer<executor_instance> executor, Int64 callback)>(isLeaf: true)
 external int executor_register_on_scheduler(Pointer<executor_instance> executor, int callback);
 
-@Native<Int8 Function(Pointer<executor_instance> executor)>(isLeaf: true)
-external int executor_unregister_from_scheduler(Pointer<executor_instance> executor);
+@Native<Int8 Function(Pointer<executor_instance> executor, Bool stop)>(isLeaf: true)
+external int executor_unregister_from_scheduler(Pointer<executor_instance> executor, bool stop);
 
 @Native<Int32 Function(Pointer<executor_instance> executor)>(isLeaf: true)
 external int executor_peek(Pointer<executor_instance> executor);

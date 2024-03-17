@@ -7,16 +7,17 @@ import 'bindings.dart';
 import 'declaration.dart';
 import 'exception.dart';
 
-class ExecutorProducerExecutor implements ExecutorProducerRegistrat {
-  final Map<int, ExecutorMethodExecutor> _methods = {};
-
+class ExecutorProducerImplementation implements ExecutorProducerRegistrat {
+  final Map<int, ExecutorMethodImplementation> _methods = {};
   final int _id;
   final Pointer<executor_instance> _executor;
 
-  ExecutorProducerExecutor(this._id, this._executor);
+  int get pending => _methods.values.map((method) => method.pending).fold(0, (value, element) => value + element);
+
+  ExecutorProducerImplementation(this._id, this._executor);
 
   ExecutorMethod register(Pointer<NativeFunction<Void Function(Pointer<executor_task>)>> pointer) {
-    final executor = ExecutorMethodExecutor(pointer.address, _id, _executor);
+    final executor = ExecutorMethodImplementation(pointer.address, _id, _executor);
     _methods[pointer.address] = executor;
     return executor;
   }
@@ -25,13 +26,14 @@ class ExecutorProducerExecutor implements ExecutorProducerRegistrat {
   void callback(Pointer<executor_task> message) => _methods[message.ref.method]?.callback(message);
 }
 
-class ExecutorMethodExecutor implements ExecutorMethod {
+class ExecutorMethodImplementation implements ExecutorMethod {
   final Map<int, Completer<Pointer<executor_task>>> _calls = {};
   final int _methodId;
   final int _executorId;
   final Pointer<executor_instance> _executor;
+  int get pending => _calls.length;
 
-  ExecutorMethodExecutor(
+  ExecutorMethodImplementation(
     this._methodId,
     this._executorId,
     this._executor,
@@ -52,8 +54,8 @@ class ExecutorMethodExecutor implements ExecutorMethod {
   void callback(Pointer<executor_task> message) => _calls[message.ref.id]?.complete(message);
 
   @inline
-  Pointer<executor_task> _onComplete(Pointer<executor_task> message) {
-    _calls.remove(message.address);
-    return message;
+  Pointer<executor_task> _onComplete(Pointer<executor_task> task) {
+    _calls.remove(task.address);
+    return task;
   }
 }

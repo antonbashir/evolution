@@ -13,7 +13,7 @@ struct executor_instance* executor_create(struct executor_configuration* configu
     executor->id = id;
     executor->configuration = *configuration;
     executor->scheduler = scheduler;
-    executor->state = EXECUTOR_STATE_STOPPED;
+    executor->state = EXECUTOR_STATE_PAUSED;
 
     executor->completions = executor_module_allocate(configuration->ring_size, sizeof(struct io_uring_cqe*));
     if (!executor->completions)
@@ -54,9 +54,9 @@ int8_t executor_register_on_scheduler(struct executor_instance* executor, int64_
     return 0;
 }
 
-int8_t executor_unregister_from_scheduler(struct executor_instance* executor)
+int8_t executor_unregister_from_scheduler(struct executor_instance* executor, bool stop)
 {
-    executor->state = EXECUTOR_STATE_STOPPED;
+    executor->state = stop ? EXECUTOR_STATE_STOPPED : EXECUTOR_STATE_PAUSED;
     struct io_uring_sqe* sqe = io_uring_get_sqe(executor->ring);
     if (unlikely(sqe == NULL))
     {
@@ -118,9 +118,13 @@ void executor_destroy(struct executor_instance* executor)
     executor_module_delete(executor);
 }
 
-
 int8_t executor_awake_begin(struct executor_instance* executor)
 {
+    if (executor->state & EXECUTOR_STATE_STOPPING)
+    {
+        return 0;
+    }
+
     executor->state = EXECUTOR_STATE_WAKING;
     struct io_uring_sqe* sqe = io_uring_get_sqe(executor->ring);
     if (unlikely(sqe == NULL))

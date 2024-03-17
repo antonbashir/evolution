@@ -18,7 +18,7 @@ class ExecutorBroker {
   int get descriptor => _executor.descriptor;
 
   Future<void> initialize() async {
-    await _executor.initialize(process);
+    await _executor.initialize(_process, _pending);
     _consumers = ExecutorConsumerRegistry(_executor.native);
     _producers = ExecutorProducerRegistry(_executor.native);
     tasks = ExecutorTasks();
@@ -34,7 +34,7 @@ class ExecutorBroker {
 
   T producer<T extends ExecutorProducer>(T provider) => _producers.register(provider);
 
-  void process(Pointer<Pointer<executor_completion_event>> completions, int count) {
+  void _process(Pointer<Pointer<executor_completion_event>> completions, int count) {
     for (var index = 0; index < count; index++) {
       Pointer<executor_completion_event> completion = (completions + index).value.cast();
       final data = completion.ref.user_data;
@@ -54,4 +54,6 @@ class ExecutorBroker {
       }
     }
   }
+
+  int _pending() => _producers.pending + _consumers.pending;
 }

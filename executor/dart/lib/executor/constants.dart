@@ -18,9 +18,11 @@ const maximumExecutors = 1 << 16;
 const executorErrorNotifierPost = 0;
 const executorErrorRingFull = -1;
 
-const executorStateStopped = 1 << 0;
+const executorStatePaused = 1 << 0;
 const executorStateIdle = 1 << 1;
 const executorStateWaking = 1 << 2;
+const executorStateStopping = 1 << 3;
+const executorStateStopped = 1 << 4;
 
 const executorCall = 1 << 0;
 const executorCallback = 1 << 1;

@@ -9,6 +9,8 @@ import 'producer.dart';
 
 class ExecutorConsumerRegistry {
   final _consumers = <ExecutorConsumerExecutor>[];
+  
+  int get pending => _consumers.map((consumer) => consumer.pending).fold(0, (value, element) => value + element);
 
   final Pointer<executor_instance> _executor;
 
@@ -27,7 +29,9 @@ class ExecutorConsumerRegistry {
 }
 
 class ExecutorProducerRegistry {
-  final _producers = <ExecutorProducerExecutor>[];
+  final _producers = <ExecutorProducerImplementation>[];
+
+  int get pending => _producers.map((producer) => producer.pending).fold(0, (value, element) => value + element);
 
   final Pointer<executor_instance> _pointer;
 
@@ -35,7 +39,7 @@ class ExecutorProducerRegistry {
 
   T register<T extends ExecutorProducer>(T provider) {
     final id = _producers.length;
-    final executor = ExecutorProducerExecutor(id, _pointer);
+    final executor = ExecutorProducerImplementation(id, _pointer);
     _producers.add(executor);
     return provider..initialize(executor);
   }
