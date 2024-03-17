@@ -17,7 +17,9 @@ class ExecutorModuleState implements ModuleState {
 
   void create(Pointer<executor_module> module) => _module = module;
 
-  void destroy() {}
+  Future<void> destroy() async {
+    await Future.wait(_brokers.map((broker) => broker.shutdown()));
+  }
 
   ExecutorBroker broker({ExecutorConfiguration configuration = ExecutorDefaults.executor}) {
     final executor = using((arena) => executor_create(configuration.toNative(arena<executor_configuration>()), _module.ref.scheduler, executor_next_id(_module))).check();
@@ -61,12 +63,12 @@ class ExecutorModule with Module<executor_module, ExecutorModuleConfiguration, E
   }
 
   @override
-  FutureOr<void> unfork() {
-    state.destroy();
+  FutureOr<void> unfork() async {
+    await state.destroy();
   }
 
   Future<void> shutdown() async {
-    await Future.wait(state._brokers.map((executor) => executor.shutdown()));
+    await state.destroy();
     final scheduler = native.ref.scheduler;
     if (!executor_scheduler_shutdown(scheduler)) {
       final error = scheduler.ref.shutdown_error.cast<Utf8>().toDartString();
@@ -74,7 +76,6 @@ class ExecutorModule with Module<executor_module, ExecutorModuleConfiguration, E
       throw ExecutorException(error);
     }
     executor_scheduler_destroy(scheduler);
-    state.destroy();
   }
 
   @override
