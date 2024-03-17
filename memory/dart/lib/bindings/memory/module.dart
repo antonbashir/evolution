@@ -11,8 +11,6 @@ final class memory_module_configuration extends Struct {
 }
 
 final class memory_module extends Struct {
-  @Uint32()
-  external int id;
   external Pointer<Utf8> name;
   external memory_module_configuration configuration;
 }

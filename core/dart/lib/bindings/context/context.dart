@@ -3,13 +3,7 @@
 
 import 'dart:ffi';
 import 'package:ffi/ffi.dart';
-
-final class module_container extends Struct {
-  @Uint32()
-  external int id;
-  external Pointer<Utf8> name;
-  external Pointer<Void> module;
-}
+import '../../core/bindings.dart';
 
 final class context extends Struct {
   @Bool()

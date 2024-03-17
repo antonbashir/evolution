@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:ffi';
 import 'dart:isolate';
 
-import 'package:ffi/ffi.dart';
 import 'package:memory/memory.dart';
 
 import 'bindings.dart';
@@ -21,34 +20,29 @@ typedef ExecutorProcessor = void Function(Pointer<Pointer<executor_completion_ev
 class Executor {
   final _callback = RawReceivePort(Zone.current.bindUnaryCallbackGuarded(_awakeExecutor));
   final ExecutorConfiguration configuration;
+  final Pointer<executor_instance> native;
+  final int descriptor;
+  final int id;
 
-  late final Pointer<executor_instance> native;
-  late final int descriptor;
-
-  late int _id = -1;
   late final ExecutorProcessor _processor;
   late final Pointer<Pointer<executor_completion_event>> _completions;
-  late final Pointer<executor_scheduler> _scheduler;
-
-  @inline
-  int get id => _id;
 
   @inline
   bool get active => native.ref.state & executorStateStopped == 0;
 
-  Executor(this._scheduler, this._id, {this.configuration = ExecutorDefaults.executor});
+  Executor(this.native, {this.configuration = ExecutorDefaults.executor})
+      : descriptor = native.ref.descriptor,
+        id = native.ref.id;
 
   Future<void> initialize(ExecutorProcessor processor) async {
-    native = using((arena) => executor_create(configuration.toNative(arena<executor_configuration>()), _scheduler, _id)).check();
-    descriptor = native.ref.descriptor;
     _processor = processor;
     _completions = native.ref.completions;
-    _executors[_id] = this;
+    _executors[id] = this;
   }
 
   Future<void> shutdown() async {
     deactivate();
-    _executors[_id] = null;
+    _executors[id] = null;
     _callback.close();
     executor_destroy(native);
   }

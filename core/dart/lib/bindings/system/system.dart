@@ -5,11 +5,6 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import '../../core/bindings.dart';
 
-final class system_library extends Struct {
-  external Pointer<Utf8> path;
-  external Pointer<Void> handle;
-}
-
 @Native<Pointer<system_library> Function(Pointer<Utf8> path)>(isLeaf: true)
 external Pointer<system_library> system_library_load(Pointer<Utf8> path);
 

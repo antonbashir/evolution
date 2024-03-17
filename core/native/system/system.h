@@ -1,10 +1,10 @@
 #ifndef CORE_SYSTEM_SYSTEM_H
 #define CORE_SYSTEM_SYSTEM_H
 
+#include <collections/maps.h>
 #include <events/events.h>
 #include <hashing/hashing.h>
 #include <system/library.h>
-#include <collections/maps.h>
 
 #if defined(__cplusplus)
 extern "C"

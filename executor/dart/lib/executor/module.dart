@@ -11,20 +11,17 @@ import 'constants.dart';
 
 class ExecutorModuleState implements ModuleState {
   final List<ExecutorBroker> _brokers = [];
-  late final Pointer<executor_scheduler> _scheduler;
   late final Pointer<executor_module> _module;
 
   ExecutorModuleState();
 
-  void create(Pointer<executor_scheduler> scheduler, Pointer<executor_module> module) {
-    _scheduler = scheduler;
-    _module = module;
-  }
+  void create(Pointer<executor_module> module) => _module = module;
 
   void destroy() {}
 
   ExecutorBroker broker({ExecutorConfiguration configuration = ExecutorDefaults.executor}) {
-    final broker = ExecutorBroker(Executor(_scheduler, executor_next_id(_module), configuration: configuration));
+    final executor = using((arena) => executor_create(configuration.toNative(arena<executor_configuration>()), _module.ref.scheduler, executor_next_id(_module))).check();
+    final broker = ExecutorBroker(Executor(executor, configuration: configuration));
     _brokers.add(broker);
     return broker;
   }
@@ -54,12 +51,13 @@ class ExecutorModule with Module<executor_module, ExecutorModuleConfiguration, E
       if (scheduler != nullptr) executor_scheduler_destroy(scheduler);
       throw ExecutorException(error);
     }
-    state.create(scheduler, native);
+    native.ref.scheduler = scheduler;
+    state.create(native);
   }
 
   @override
   FutureOr<void> fork() {
-    state.create(native.ref.scheduler, native);
+    state.create(native);
   }
 
   @override
@@ -69,7 +67,7 @@ class ExecutorModule with Module<executor_module, ExecutorModuleConfiguration, E
 
   Future<void> shutdown() async {
     await Future.wait(state._brokers.map((executor) => executor.shutdown()));
-    final scheduler = state._scheduler;
+    final scheduler = native.ref.scheduler;
     if (!executor_scheduler_shutdown(scheduler)) {
       final error = scheduler.ref.shutdown_error.cast<Utf8>().toDartString();
       executor_scheduler_destroy(scheduler);

@@ -10,8 +10,6 @@ final class executor_module_configuration extends Struct {
 }
 
 final class executor_module extends Struct {
-  @Uint32()
-  external int id;
   external Pointer<Utf8> name;
   external executor_module_configuration configuration;
   external Pointer<executor_scheduler> scheduler;

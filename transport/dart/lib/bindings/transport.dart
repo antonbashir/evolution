@@ -49,8 +49,7 @@ external void transport_write(Pointer<transport> transport, int fd, int buffer_i
 @Native<Void Function(Pointer<transport> transport, Uint32 fd, Uint16 buffer_id, Uint32 offset, Int64 timeout, Uint16 event, Uint8 sqe_flags)>(isLeaf: true)
 external void transport_read(Pointer<transport> transport, int fd, int buffer_id, int offset, int timeout, int event, int sqe_flags);
 
-@Native<Void Function(Pointer<transport> transport, Uint32 fd, Uint16 buffer_id, Pointer<sockaddr> address, Uint8 socket_family, Int32 message_flags, Int64 timeout, Uint16 event, Uint8 sqe_flags)>(
-    isLeaf: true)
+@Native<Void Function(Pointer<transport> transport, Uint32 fd, Uint16 buffer_id, Pointer<sockaddr> address, Uint8 socket_family, Int32 message_flags, Int64 timeout, Uint16 event, Uint8 sqe_flags)>(isLeaf: true)
 external void transport_send_message(Pointer<transport> transport, int fd, int buffer_id, Pointer<sockaddr> address, int socket_family, int message_flags, int timeout, int event, int sqe_flags);
 
 @Native<Void Function(Pointer<transport> transport, Uint32 fd, Uint16 buffer_id, Uint8 socket_family, Int32 message_flags, Int64 timeout, Uint16 event, Uint8 sqe_flags)>(isLeaf: true)
