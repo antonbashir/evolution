@@ -85,7 +85,7 @@ class StorageFactory {
     request.ref.space_id = spaceId;
     request.ref.tuple = tuple;
     request.ref.tuple_size = tupleSize;
-    request.ref.message.input = request.cast();
+    request.ref.task.input = request.cast();
     return Pointer.fromAddress(request.address + _spaceMessageOffset);
   }
 
@@ -99,7 +99,7 @@ class StorageFactory {
     request.ref.key = key;
     request.ref.key_size = keySize;
     request.ref.iterator_type = iteratorType;
-    request.ref.message.input = request.cast();
+    request.ref.task.input = request.cast();
     return Pointer.fromAddress(request.address + _spaceCountMessageOffset);
   }
 
@@ -115,7 +115,7 @@ class StorageFactory {
     request.ref.iterator_type = iteratorType;
     request.ref.offset = offset;
     request.ref.limit = limit;
-    request.ref.message.input = request.cast();
+    request.ref.task.input = request.cast();
     return Pointer.fromAddress(request.address + _spaceSelectMessageOffset);
   }
 
@@ -130,7 +130,7 @@ class StorageFactory {
     request.ref.key_size = keySize;
     request.ref.operations = operations;
     request.ref.operations_size = operationsSize;
-    request.ref.message.input = request.cast();
+    request.ref.task.input = request.cast();
     return Pointer.fromAddress(request.address + _spaceUpdateMessageOffset);
   }
 
@@ -145,7 +145,7 @@ class StorageFactory {
     request.ref.tuple_size = tupleSize;
     request.ref.operations = operations;
     request.ref.operations_size = operationsSize;
-    request.ref.message.input = request.cast();
+    request.ref.task.input = request.cast();
     return Pointer.fromAddress(request.address + _spaceUpsertMessageOffset);
   }
 
@@ -159,7 +159,7 @@ class StorageFactory {
     request.ref.key = key;
     request.ref.key_size = keySize;
     request.ref.type = type;
-    request.ref.message.input = request.cast();
+    request.ref.task.input = request.cast();
     return Pointer.fromAddress(request.address + _spaceIteratorMessageOffset);
   }
 
@@ -173,7 +173,7 @@ class StorageFactory {
     request.ref.index_id = indexId;
     request.ref.tuple = tuple;
     request.ref.tuple_size = tupleSize;
-    request.ref.message.input = request.cast();
+    request.ref.task.input = request.cast();
     return Pointer.fromAddress(request.address + _indexMessageOffset);
   }
 
@@ -188,7 +188,7 @@ class StorageFactory {
     request.ref.key = key;
     request.ref.key_size = keySize;
     request.ref.iterator_type = iteratorType;
-    request.ref.message.input = request.cast();
+    request.ref.task.input = request.cast();
     return Pointer.fromAddress(request.address + _indexCountMessageOffset);
   }
 
@@ -202,7 +202,7 @@ class StorageFactory {
     request.ref.space_id = spaceId;
     request.ref.name = nameString;
     request.ref.name_length = nameLength;
-    request.ref.message.input = request.cast();
+    request.ref.task.input = request.cast();
     return Pointer.fromAddress(request.address + _indexIdByNameMessageOffset);
   }
 
@@ -230,7 +230,7 @@ class StorageFactory {
     request.ref.index_id = indexId;
     request.ref.key = key;
     request.ref.key_size = keySize;
-    request.ref.message.input = request.cast();
+    request.ref.task.input = request.cast();
     return Pointer.fromAddress(request.address + _indexUpdateMessageOffset);
   }
 
@@ -245,7 +245,7 @@ class StorageFactory {
     request.ref.function_length = functionLength;
     request.ref.input = input;
     request.ref.input_size = inputSize;
-    request.ref.message.input = request.cast();
+    request.ref.task.input = request.cast();
     return Pointer.fromAddress(request.address + _callMessageOffset);
   }
 
@@ -263,7 +263,7 @@ class StorageFactory {
     request.ref.expression_length = expressionLength;
     request.ref.input = input;
     request.ref.input_size = inputSize;
-    request.ref.message.input = request.cast();
+    request.ref.task.input = request.cast();
     return Pointer.fromAddress(request.address + _evaluateMessageOffset);
   }
 
@@ -281,7 +281,7 @@ class StorageFactory {
     request.ref.type = type;
     request.ref.key = key;
     request.ref.key_size = keySize;
-    request.ref.message.input = request.cast();
+    request.ref.task.input = request.cast();
     return Pointer.fromAddress(request.address + _indexIteratorMessageOffset);
   }
 
@@ -298,7 +298,7 @@ class StorageFactory {
     request.ref.key_size = keySize;
     request.ref.offset = offset;
     request.ref.limit = limit;
-    request.ref.message.input = request.cast();
+    request.ref.task.input = request.cast();
     return Pointer.fromAddress(request.address + _indexSelectMessageOffset);
   }
 

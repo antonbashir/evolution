@@ -1,7 +1,7 @@
-import 'dart:async';
 import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
+import 'package:memory/memory/constants.dart';
 
 import 'bindings.dart';
 import 'configuration.dart';
@@ -19,17 +19,12 @@ class TransportModuleState implements ModuleState {
 class TransportModule with Module<transport_module, TransportModuleConfiguration, TransportModuleState> {
   final String name = transportModuleName;
   final TransportModuleState state;
+  final dependencies = {coreModuleName, memoryModuleName, executorModuleName};
 
   TransportModule(this.state);
 
   @override
   Pointer<transport_module> create(TransportModuleConfiguration configuration) => using((arena) => transport_module_create(configuration.toNative(arena)));
-
-  @override
-  void initialize() {}
-
-  @override
-  Future<void> shutdown({Duration? gracefulTimeout}) async {}
 
   @override
   TransportModuleConfiguration load(Pointer<transport_module> native) => TransportModuleConfiguration.fromNative(native.ref.configuration);

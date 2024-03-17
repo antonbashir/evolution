@@ -80,6 +80,7 @@ final class tarantool_space_request extends Struct {
   external Pointer<Uint8> tuple;
   @Uint32()
   external int space_id;
+  external executor_task task;
 }
 
 final class tarantool_space_count_request extends Struct {
@@ -90,6 +91,7 @@ final class tarantool_space_count_request extends Struct {
   external int space_id;
   @Int32()
   external int iterator_type;
+  external executor_task task;
 }
 
 final class tarantool_space_select_request extends Struct {
@@ -104,6 +106,7 @@ final class tarantool_space_select_request extends Struct {
   external int limit;
   @Int32()
   external int iterator_type;
+  external executor_task task;
 }
 
 final class tarantool_space_update_request extends Struct {
@@ -115,6 +118,7 @@ final class tarantool_space_update_request extends Struct {
   external Pointer<Uint8> operations;
   @Uint32()
   external int space_id;
+  external executor_task task;
 }
 
 final class tarantool_space_upsert_request extends Struct {
@@ -126,6 +130,7 @@ final class tarantool_space_upsert_request extends Struct {
   external int operations_size;
   @Uint32()
   external int space_id;
+  external executor_task task;
 }
 
 final class tarantool_space_iterator_request extends Struct {
@@ -136,6 +141,7 @@ final class tarantool_space_iterator_request extends Struct {
   external int space_id;
   @Int32()
   external int type;
+  external executor_task task;
 }
 
 final class tarantool_index_request extends Struct {
@@ -146,6 +152,7 @@ final class tarantool_index_request extends Struct {
   external int space_id;
   @Uint32()
   external int index_id;
+  external executor_task task;
 }
 
 final class tarantool_index_count_request extends Struct {
@@ -158,6 +165,7 @@ final class tarantool_index_count_request extends Struct {
   external int index_id;
   @Int32()
   external int iterator_type;
+  external executor_task task;
 }
 
 final class tarantool_index_id_by_name_request extends Struct {
@@ -166,6 +174,7 @@ final class tarantool_index_id_by_name_request extends Struct {
   external int name_length;
   @Uint32()
   external int space_id;
+  external executor_task task;
 }
 
 final class tarantool_index_update_request extends Struct {
@@ -179,6 +188,7 @@ final class tarantool_index_update_request extends Struct {
   external int space_id;
   @Uint32()
   external int index_id;
+  external executor_task task;
 }
 
 final class tarantool_call_request extends Struct {
@@ -188,6 +198,7 @@ final class tarantool_call_request extends Struct {
   external int input_size;
   @Uint32()
   external int function_length;
+  external executor_task task;
 }
 
 final class tarantool_evaluate_request extends Struct {
@@ -197,6 +208,7 @@ final class tarantool_evaluate_request extends Struct {
   external int input_size;
   @Uint32()
   external int expression_length;
+  external executor_task task;
 }
 
 final class tarantool_index_iterator_request extends Struct {
@@ -209,6 +221,7 @@ final class tarantool_index_iterator_request extends Struct {
   external int index_id;
   @Int32()
   external int type;
+  external executor_task task;
 }
 
 final class tarantool_index_select_request extends Struct {
@@ -225,6 +238,7 @@ final class tarantool_index_select_request extends Struct {
   external int limit;
   @Int32()
   external int iterator_type;
+  external executor_task task;
 }
 
 final class tarantool_index_id_request extends Struct {

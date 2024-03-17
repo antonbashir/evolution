@@ -195,8 +195,8 @@ class StorageSpace {
 
   @inline
   Future<StorageTuple> max() {
-    final (key, keySize) = _tuples.emptyList;
-    return maxBy(key, keySize);
+    final key = _tuples.emptyList;
+    return maxBy(key.value, key.size);
   }
 
   @inline

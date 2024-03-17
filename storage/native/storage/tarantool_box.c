@@ -61,9 +61,9 @@ void tarantool_initialize_box(struct tarantool_box* box)
     box->tarantool_index_id_by_name_address = &tarantool_index_id_by_name;
 }
 
-void tarantool_evaluate(struct executor_task* message)
+void tarantool_evaluate(struct executor_task* task)
 {
-    struct tarantool_evaluate_request* request = (struct tarantool_evaluate_request*)message->input;
+    struct tarantool_evaluate_request* request = (struct tarantool_evaluate_request*)task->input;
     struct port out_port, in_port;
     struct obuf out_buffer;
     obuf_create(&out_buffer, cord_slab_cache(), 1);
@@ -82,13 +82,13 @@ void tarantool_evaluate(struct executor_task* message)
         memcpy(result, vec->iov_base, vec->iov_len);
         result += vec->iov_len;
     }
-    message->output = output;
-    message->output_size = size;
+    task->output = output;
+    task->output_size = size;
 }
 
-void tarantool_call(struct executor_task* message)
+void tarantool_call(struct executor_task* task)
 {
-    struct tarantool_call_request* request = (struct tarantool_call_request*)message->input;
+    struct tarantool_call_request* request = (struct tarantool_call_request*)task->input;
     struct port out_port, in_port;
     struct obuf out_buffer;
     obuf_create(&out_buffer, cord_slab_cache(), 1);
@@ -107,38 +107,38 @@ void tarantool_call(struct executor_task* message)
         memcpy(result, vec->iov_base, vec->iov_len);
         result += vec->iov_len;
     }
-    message->output = output;
-    message->output_size = size;
+    task->output = output;
+    task->output_size = size;
 }
 
-void tarantool_space_iterator(struct executor_task* message)
+void tarantool_space_iterator(struct executor_task* task)
 {
-    struct tarantool_space_iterator_request* request = (struct tarantool_space_iterator_request*)message->input;
-    message->output = (void*)box_index_iterator(request->space_id,
+    struct tarantool_space_iterator_request* request = (struct tarantool_space_iterator_request*)task->input;
+    task->output = (void*)box_index_iterator(request->space_id,
                                                 TARANTOOL_PRIMARY_INDEX_ID,
                                                 request->type,
                                                 (const char*)request->key,
                                                 (const char*)(request->key + request->key_size));
 }
 
-void tarantool_space_count(struct executor_task* message)
+void tarantool_space_count(struct executor_task* task)
 {
-    struct tarantool_space_count_request* request = (struct tarantool_space_count_request*)message->input;
-    message->output = (void*)box_index_count(request->space_id,
+    struct tarantool_space_count_request* request = (struct tarantool_space_count_request*)task->input;
+    task->output = (void*)box_index_count(request->space_id,
                                              TARANTOOL_PRIMARY_INDEX_ID,
                                              request->iterator_type,
                                              (const char*)request->key,
                                              (const char*)(request->key + request->key_size));
 }
 
-void tarantool_space_length(struct executor_task* message)
+void tarantool_space_length(struct executor_task* task)
 {
-    message->output = (void*)box_index_len((uint32_t)(uintptr_t)message->input, TARANTOOL_PRIMARY_INDEX_ID);
+    task->output = (void*)box_index_len((uint32_t)(uintptr_t)task->input, TARANTOOL_PRIMARY_INDEX_ID);
 }
 
-void tarantool_space_put_single(struct executor_task* message)
+void tarantool_space_put_single(struct executor_task* task)
 {
-    struct tarantool_space_request* request = (struct tarantool_space_request*)message->input;
+    struct tarantool_space_request* request = (struct tarantool_space_request*)task->input;
     box_tuple_t* result;
     if (unlikely(box_replace(request->space_id,
                              (const char*)request->tuple,
@@ -148,12 +148,12 @@ void tarantool_space_put_single(struct executor_task* message)
         return;
     }
     tuple_ref(result);
-    message->output = result;
+    task->output = result;
 }
 
-void tarantool_space_insert_single(struct executor_task* message)
+void tarantool_space_insert_single(struct executor_task* task)
 {
-    struct tarantool_space_request* request = (struct tarantool_space_request*)message->input;
+    struct tarantool_space_request* request = (struct tarantool_space_request*)task->input;
     box_tuple_t* result;
     if (unlikely(box_insert(request->space_id,
                             (const char*)request->tuple,
@@ -164,12 +164,12 @@ void tarantool_space_insert_single(struct executor_task* message)
         return;
     }
     tuple_ref(result);
-    message->output = result;
+    task->output = result;
 }
 
-void tarantool_space_delete_single(struct executor_task* message)
+void tarantool_space_delete_single(struct executor_task* task)
 {
-    struct tarantool_space_request* request = (struct tarantool_space_request*)message->input;
+    struct tarantool_space_request* request = (struct tarantool_space_request*)task->input;
     box_tuple_t* result;
     if (unlikely(box_delete(request->space_id,
                             TARANTOOL_PRIMARY_INDEX_ID,
@@ -180,12 +180,12 @@ void tarantool_space_delete_single(struct executor_task* message)
         return;
     }
     tuple_ref(result);
-    message->output = result;
+    task->output = result;
 }
 
-void tarantool_space_update_single(struct executor_task* message)
+void tarantool_space_update_single(struct executor_task* task)
 {
-    struct tarantool_space_update_request* request = (struct tarantool_space_update_request*)message->input;
+    struct tarantool_space_update_request* request = (struct tarantool_space_update_request*)task->input;
     box_tuple_t* result;
     if (unlikely(box_update(request->space_id,
                             TARANTOOL_PRIMARY_INDEX_ID,
@@ -199,12 +199,12 @@ void tarantool_space_update_single(struct executor_task* message)
         return;
     }
     tuple_ref(result);
-    message->output = result;
+    task->output = result;
 }
 
-void tarantool_space_put_many(struct executor_task* message)
+void tarantool_space_put_many(struct executor_task* task)
 {
-    struct tarantool_space_request* request = (struct tarantool_space_request*)message->input;
+    struct tarantool_space_request* request = (struct tarantool_space_request*)task->input;
     struct port* port = mempool_alloc(&tarantool_tuple_ports);
     port_c_create(port);
     const char* batch = (const char*)request->tuple;
@@ -242,12 +242,12 @@ void tarantool_space_put_many(struct executor_task* message)
         port_destroy(port);
         return;
     }
-    message->output = port;
+    task->output = port;
 }
 
-void tarantool_space_insert_many(struct executor_task* message)
+void tarantool_space_insert_many(struct executor_task* task)
 {
-    struct tarantool_space_request* request = (struct tarantool_space_request*)message->input;
+    struct tarantool_space_request* request = (struct tarantool_space_request*)task->input;
     struct port* port = mempool_alloc(&tarantool_tuple_ports);
     port_c_create(port);
     const char* batch = (const char*)request->tuple;
@@ -285,12 +285,12 @@ void tarantool_space_insert_many(struct executor_task* message)
         port_destroy(port);
         return;
     }
-    message->output = port;
+    task->output = port;
 }
 
-void tarantool_space_update_many(struct executor_task* message)
+void tarantool_space_update_many(struct executor_task* task)
 {
-    struct tarantool_space_update_request* request = (struct tarantool_space_update_request*)message->input;
+    struct tarantool_space_update_request* request = (struct tarantool_space_update_request*)task->input;
     struct port* port = mempool_alloc(&tarantool_tuple_ports);
     port_c_create(port);
 
@@ -344,12 +344,12 @@ void tarantool_space_update_many(struct executor_task* message)
         port_destroy(port);
         return;
     }
-    message->output = port;
+    task->output = port;
 }
 
-void tarantool_space_delete_many(struct executor_task* message)
+void tarantool_space_delete_many(struct executor_task* task)
 {
-    struct tarantool_space_request* request = (struct tarantool_space_request*)message->input;
+    struct tarantool_space_request* request = (struct tarantool_space_request*)task->input;
     struct port* port = mempool_alloc(&tarantool_tuple_ports);
     port_c_create(port);
     const char* batch = (const char*)request->tuple;
@@ -388,12 +388,12 @@ void tarantool_space_delete_many(struct executor_task* message)
         port_destroy(port);
         return;
     }
-    message->output = port;
+    task->output = port;
 }
 
-void tarantool_space_upsert(struct executor_task* message)
+void tarantool_space_upsert(struct executor_task* task)
 {
-    struct tarantool_space_upsert_request* request = (struct tarantool_space_upsert_request*)message->input;
+    struct tarantool_space_upsert_request* request = (struct tarantool_space_upsert_request*)task->input;
     box_tuple_t* result;
     if (unlikely(box_upsert(request->space_id,
                             TARANTOOL_PRIMARY_INDEX_ID,
@@ -407,12 +407,12 @@ void tarantool_space_upsert(struct executor_task* message)
         return;
     }
     tuple_ref(result);
-    message->output = result;
+    task->output = result;
 }
 
-void tarantool_space_get(struct executor_task* message)
+void tarantool_space_get(struct executor_task* task)
 {
-    struct tarantool_space_request* request = (struct tarantool_space_request*)message->input;
+    struct tarantool_space_request* request = (struct tarantool_space_request*)task->input;
     box_tuple_t* result;
     if (unlikely(box_index_get(request->space_id,
                                TARANTOOL_PRIMARY_INDEX_ID,
@@ -424,12 +424,12 @@ void tarantool_space_get(struct executor_task* message)
         return;
     }
     tuple_ref(result);
-    message->output = result;
+    task->output = result;
 }
 
-void tarantool_space_min(struct executor_task* message)
+void tarantool_space_min(struct executor_task* task)
 {
-    struct tarantool_space_request* request = (struct tarantool_space_request*)message->input;
+    struct tarantool_space_request* request = (struct tarantool_space_request*)task->input;
     box_tuple_t* result;
     if (unlikely(box_index_min(request->space_id,
                                TARANTOOL_PRIMARY_INDEX_ID,
@@ -440,12 +440,12 @@ void tarantool_space_min(struct executor_task* message)
         return;
     }
     tuple_ref(result);
-    message->output = result;
+    task->output = result;
 }
 
-void tarantool_space_max(struct executor_task* message)
+void tarantool_space_max(struct executor_task* task)
 {
-    struct tarantool_space_request* request = (struct tarantool_space_request*)message->input;
+    struct tarantool_space_request* request = (struct tarantool_space_request*)task->input;
     box_tuple_t* result;
     if (unlikely(box_index_max(request->space_id,
                                TARANTOOL_PRIMARY_INDEX_ID,
@@ -456,12 +456,12 @@ void tarantool_space_max(struct executor_task* message)
         return;
     }
     tuple_ref(result);
-    message->output = result;
+    task->output = result;
 }
 
-void tarantool_space_select(struct executor_task* message)
+void tarantool_space_select(struct executor_task* task)
 {
-    struct tarantool_space_select_request* request = (struct tarantool_space_select_request*)message->input;
+    struct tarantool_space_select_request* request = (struct tarantool_space_select_request*)task->input;
     struct port* port = mempool_alloc(&tarantool_tuple_ports);
     if (unlikely(box_select(request->space_id,
                             TARANTOOL_PRIMARY_INDEX_ID,
@@ -476,53 +476,53 @@ void tarantool_space_select(struct executor_task* message)
         return;
     }
 
-    message->output = port;
+    task->output = port;
 }
 
-void tarantool_space_truncate(struct executor_task* message)
+void tarantool_space_truncate(struct executor_task* task)
 {
-    box_truncate((uint32_t)(uintptr_t)message->input);
+    box_truncate((uint32_t)(uintptr_t)task->input);
 }
 
-void tarantool_space_id_by_name(struct executor_task* message)
+void tarantool_space_id_by_name(struct executor_task* task)
 {
-    message->output = (void*)(uintptr_t)box_space_id_by_name(message->input, message->input_size);
+    task->output = (void*)(uintptr_t)box_space_id_by_name(task->input, task->input_size);
 }
 
-void tarantool_index_iterator(struct executor_task* message)
+void tarantool_index_iterator(struct executor_task* task)
 {
-    struct tarantool_index_iterator_request* request = (struct tarantool_index_iterator_request*)message->input;
-    message->output = (void*)box_index_iterator(request->space_id,
+    struct tarantool_index_iterator_request* request = (struct tarantool_index_iterator_request*)task->input;
+    task->output = (void*)box_index_iterator(request->space_id,
                                                 request->index_id,
                                                 request->type,
                                                 (const char*)request->key, (const char*)(request->key + request->key_size));
 }
 
-void tarantool_index_count(struct executor_task* message)
+void tarantool_index_count(struct executor_task* task)
 {
-    struct tarantool_index_count_request* request = (struct tarantool_index_count_request*)message->input;
-    message->output = (void*)box_index_count(request->space_id,
+    struct tarantool_index_count_request* request = (struct tarantool_index_count_request*)task->input;
+    task->output = (void*)box_index_count(request->space_id,
                                              request->index_id,
                                              request->iterator_type,
                                              (const char*)request->key,
                                              (const char*)(request->key + request->key_size));
 }
 
-void tarantool_index_length(struct executor_task* message)
+void tarantool_index_length(struct executor_task* task)
 {
-    struct tarantool_index_id_request* id = (struct tarantool_index_id_request*)message->input;
-    message->output = (void*)box_index_len(id->space_id, id->index_id);
+    struct tarantool_index_id_request* id = (struct tarantool_index_id_request*)task->input;
+    task->output = (void*)box_index_len(id->space_id, id->index_id);
 }
 
-void tarantool_index_id_by_name(struct executor_task* message)
+void tarantool_index_id_by_name(struct executor_task* task)
 {
-    struct tarantool_index_id_by_name_request* request = (struct tarantool_index_id_by_name_request*)message->input;
-    message->output = (void*)(uintptr_t)box_index_id_by_name(request->space_id, request->name, request->name_length);
+    struct tarantool_index_id_by_name_request* request = (struct tarantool_index_id_by_name_request*)task->input;
+    task->output = (void*)(uintptr_t)box_index_id_by_name(request->space_id, request->name, request->name_length);
 }
 
-void tarantool_index_get(struct executor_task* message)
+void tarantool_index_get(struct executor_task* task)
 {
-    struct tarantool_index_request* request = (struct tarantool_index_request*)message->input;
+    struct tarantool_index_request* request = (struct tarantool_index_request*)task->input;
     box_tuple_t* result;
     if (unlikely(box_index_get(request->space_id,
                                request->index_id,
@@ -533,12 +533,12 @@ void tarantool_index_get(struct executor_task* message)
         return;
     }
     tuple_ref(result);
-    message->output = result;
+    task->output = result;
 }
 
-void tarantool_index_min(struct executor_task* message)
+void tarantool_index_min(struct executor_task* task)
 {
-    struct tarantool_index_request* request = (struct tarantool_index_request*)message->input;
+    struct tarantool_index_request* request = (struct tarantool_index_request*)task->input;
     box_tuple_t* result;
     if (unlikely(box_index_min(request->space_id,
                                request->index_id,
@@ -549,12 +549,12 @@ void tarantool_index_min(struct executor_task* message)
         return;
     }
     tuple_ref(result);
-    message->output = result;
+    task->output = result;
 }
 
-void tarantool_index_max(struct executor_task* message)
+void tarantool_index_max(struct executor_task* task)
 {
-    struct tarantool_index_request* request = (struct tarantool_index_request*)message->input;
+    struct tarantool_index_request* request = (struct tarantool_index_request*)task->input;
     box_tuple_t* result;
     if (unlikely(box_index_max(request->space_id,
                                request->index_id,
@@ -565,12 +565,12 @@ void tarantool_index_max(struct executor_task* message)
         return;
     }
     tuple_ref(result);
-    message->output = result;
+    task->output = result;
 }
 
-void tarantool_index_select(struct executor_task* message)
+void tarantool_index_select(struct executor_task* task)
 {
-    struct tarantool_index_select_request* request = (struct tarantool_index_select_request*)message->input;
+    struct tarantool_index_select_request* request = (struct tarantool_index_select_request*)task->input;
     struct port* port = mempool_alloc(&tarantool_tuple_ports);
     if (unlikely(box_select(request->space_id,
                             request->index_id,
@@ -584,12 +584,12 @@ void tarantool_index_select(struct executor_task* message)
     {
         return;
     }
-    message->output = port;
+    task->output = port;
 }
 
-void tarantool_index_update_single(struct executor_task* message)
+void tarantool_index_update_single(struct executor_task* task)
 {
-    struct tarantool_index_update_request* request = (struct tarantool_index_update_request*)message->input;
+    struct tarantool_index_update_request* request = (struct tarantool_index_update_request*)task->input;
     box_tuple_t* result;
     if (unlikely(box_update(request->space_id,
                             request->index_id,
@@ -603,23 +603,23 @@ void tarantool_index_update_single(struct executor_task* message)
         return;
     }
     tuple_ref(result);
-    message->output = result;
+    task->output = result;
 }
 
-void tarantool_iterator_next_single(struct executor_task* message)
+void tarantool_iterator_next_single(struct executor_task* task)
 {
     box_tuple_t* tuple;
-    if (unlikely(box_iterator_next((box_iterator_t*)message->input, &tuple) < 0 || !tuple))
+    if (unlikely(box_iterator_next((box_iterator_t*)task->input, &tuple) < 0 || !tuple))
     {
         return;
     }
     tuple_ref(tuple);
-    message->output = tuple;
+    task->output = tuple;
 }
 
-void tarantool_index_update_many(struct executor_task* message)
+void tarantool_index_update_many(struct executor_task* task)
 {
-    struct tarantool_index_update_request* request = (struct tarantool_index_update_request*)message->input;
+    struct tarantool_index_update_request* request = (struct tarantool_index_update_request*)task->input;
     struct port* port = mempool_alloc(&tarantool_tuple_ports);
     port_c_create(port);
 
@@ -673,18 +673,18 @@ void tarantool_index_update_many(struct executor_task* message)
         port_destroy(port);
         return;
     }
-    message->output = port;
+    task->output = port;
 }
 
-void tarantool_iterator_next_many(struct executor_task* message)
+void tarantool_iterator_next_many(struct executor_task* task)
 {
     struct port* port = mempool_alloc(&tarantool_tuple_ports);
     port_c_create(port);
     uint32_t found = 0;
-    while (found < message->input_size)
+    while (found < task->input_size)
     {
         box_tuple_t* tuple;
-        if (unlikely(box_iterator_next((box_iterator_t*)message->input, &tuple) < 0 || !tuple))
+        if (unlikely(box_iterator_next((box_iterator_t*)task->input, &tuple) < 0 || !tuple))
         {
             port_destroy(port);
             return;
@@ -696,28 +696,28 @@ void tarantool_iterator_next_many(struct executor_task* message)
         }
         found++;
     }
-    message->output = port;
+    task->output = port;
 }
 
-void tarantool_iterator_destroy(struct executor_task* message)
+void tarantool_iterator_destroy(struct executor_task* task)
 {
-    box_iterator_free((box_iterator_t*)message->input);
+    box_iterator_free((box_iterator_t*)task->input);
 }
 
-void tarantool_free_output_buffer(struct executor_task* message)
+void tarantool_free_output_buffer(struct executor_task* task)
 {
-    smfree(&tarantool_box_output_buffers, message->input, message->input_size);
+    smfree(&tarantool_box_output_buffers, task->input, task->input_size);
 }
 
-void tarantool_free_output_port(struct executor_task* message)
+void tarantool_free_output_port(struct executor_task* task)
 {
-    port_destroy(message->input);
-    mempool_free(&tarantool_tuple_ports, message->input);
+    port_destroy(task->input);
+    mempool_free(&tarantool_tuple_ports, task->input);
 }
 
-void tarantool_free_output_tuple(struct executor_task* message)
+void tarantool_free_output_tuple(struct executor_task* task)
 {
-    tuple_unref(message->input);
+    tuple_unref(task->input);
 }
 
 void tarantool_destroy_box(struct tarantool_box* box)

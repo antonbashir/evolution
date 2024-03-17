@@ -11,13 +11,12 @@ import 'server.dart';
 import 'subscriber.dart';
 
 class ReactiveTransport {
-  final TransportModule _transport;
-  final Transport _worker;
+  final Transport _transport;
   final ReactiveModuleConfiguration _configuration;
   final List<ReactiveServer> _servers = [];
   final List<ReactiveClient> _clients = [];
 
-  ReactiveTransport(this._transport, this._worker, this._configuration);
+  ReactiveTransport(this._transport, this._configuration);
 
   Future<void> shutdown({bool transport = false}) async {
     await Future.wait(_servers.map((server) => server.close()));
@@ -49,7 +48,7 @@ class ReactiveTransport {
       leaseConfiguration: leaseConfiguration,
     );
     _servers.add(server);
-    _worker.servers.tcp(address, port, server.accept, configuration: tcpConfiguration);
+    _transport.servers.tcp(address, port, server.accept, configuration: tcpConfiguration);
   }
 
   void connect(
@@ -74,7 +73,7 @@ class ReactiveTransport {
       setupConfiguration: setupConfiguration ?? ReactiveTransportDefaults.setup,
     );
     _clients.add(client);
-    _worker.clients
+    _transport.clients
         .tcp(
           address,
           port,

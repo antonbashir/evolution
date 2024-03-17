@@ -4,7 +4,6 @@
 #include <stdbool.h>
 #include <sys/eventfd.h>
 #include "fiber.h"
-#include "executor_native.h"
 
 static struct executor_native* tarantool_executor;
 static bool active;

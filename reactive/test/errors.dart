@@ -57,7 +57,7 @@ void errors() {
     final transport = TransportModule()..initialize();
     final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
     await worker.initialize();
-    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module);
+    final reactive = ReactiveTransport(worker, ReactiveTransportDefaults.module);
     final clientPayload = "client-payload";
     final serverPayload = "server-payload";
     final errorPayload = Exception("error");

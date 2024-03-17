@@ -2,7 +2,7 @@
 #include <dlfcn.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <executor_native.h>
+#include <executor/executor.h>
 #include <lauxlib.h>
 #include <lua.h>
 #include <luajit.h>
