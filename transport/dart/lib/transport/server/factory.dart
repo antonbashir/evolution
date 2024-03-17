@@ -43,27 +43,23 @@ class TransportServersFactory {
     configuration = configuration ?? TransportDefaults.tcpServer;
     final server = using(
       (Arena arena) {
-        final pointer = calloc<transport_server>(sizeOf<transport_server>());
-        if (pointer == nullptr) {
-          throw TransportInitializationException(TransportMessages.serverMemoryError);
-        }
-        final result = transport_server_initialize_tcp(
-          pointer,
+        final server = transport_server_initialize_tcp(
           _tcpConfiguration(configuration!, arena),
           address.address.toNativeUtf8(allocator: arena).cast(),
           port,
         );
+        final result = server.ref.initialization_error;
         if (result < 0) {
-          if (pointer.ref.fd > 0) {
-            system_shutdown_descriptor(pointer.ref.fd);
-            calloc.free(pointer);
+          if (server.ref.fd > 0) {
+            system_shutdown_descriptor(server.ref.fd);
+            transport_server_destroy(server);
             throw TransportInitializationException(TransportMessages.serverError(result));
           }
-          calloc.free(pointer);
+          transport_server_destroy(server);
           throw TransportInitializationException(TransportMessages.serverSocketError(result));
         }
         return TransportServerChannel(
-          pointer,
+          server,
           _workerPointer,
           configuration.readTimeout?.inSeconds,
           configuration.writeTimeout?.inSeconds,
@@ -86,30 +82,26 @@ class TransportServersFactory {
     configuration = configuration ?? TransportDefaults.udpServer;
     final server = using(
       (Arena arena) {
-        final pointer = calloc<transport_server>(sizeOf<transport_server>());
-        if (pointer == nullptr) {
-          throw TransportInitializationException(TransportMessages.serverMemoryError);
-        }
-        final result = transport_server_initialize_udp(
-          pointer,
+        final server = transport_server_initialize_udp(
           _udpConfiguration(configuration!, arena),
           address.address.toNativeUtf8(allocator: arena).cast(),
           port,
         );
+        final result = server.ref.initialization_error;
         if (result < 0) {
-          if (pointer.ref.fd > 0) {
-            system_shutdown_descriptor(pointer.ref.fd);
-            calloc.free(pointer);
+          if (server.ref.fd > 0) {
+            system_shutdown_descriptor(server.ref.fd);
+            transport_server_destroy(server);
             throw TransportInitializationException(TransportMessages.serverError(result));
           }
-          calloc.free(pointer);
+          transport_server_destroy(server);
           throw TransportInitializationException(TransportMessages.serverSocketError(result));
         }
         if (configuration.multicastManager != null) {
           configuration.multicastManager!.subscribe(
             onAddMembership: (configuration) => using(
               (arena) => transport_socket_multicast_add_membership(
-                pointer.ref.fd,
+                server.ref.fd,
                 configuration.groupAddress.toNativeUtf8(allocator: arena).cast(),
                 configuration.localAddress.toNativeUtf8(allocator: arena).cast(),
                 _getMembershipIndex(configuration),
@@ -117,7 +109,7 @@ class TransportServersFactory {
             ),
             onDropMembership: (configuration) => using(
               (arena) => transport_socket_multicast_drop_membership(
-                pointer.ref.fd,
+                server.ref.fd,
                 configuration.groupAddress.toNativeUtf8(allocator: arena).cast(),
                 configuration.localAddress.toNativeUtf8(allocator: arena).cast(),
                 _getMembershipIndex(configuration),
@@ -125,7 +117,7 @@ class TransportServersFactory {
             ),
             onAddSourceMembership: (configuration) => using(
               (arena) => transport_socket_multicast_add_source_membership(
-                pointer.ref.fd,
+                server.ref.fd,
                 configuration.groupAddress.toNativeUtf8(allocator: arena).cast(),
                 configuration.localAddress.toNativeUtf8(allocator: arena).cast(),
                 configuration.sourceAddress.toNativeUtf8(allocator: arena).cast(),
@@ -133,7 +125,7 @@ class TransportServersFactory {
             ),
             onDropSourceMembership: (configuration) => using(
               (arena) => transport_socket_multicast_drop_source_membership(
-                pointer.ref.fd,
+                server.ref.fd,
                 configuration.groupAddress.toNativeUtf8(allocator: arena).cast(),
                 configuration.localAddress.toNativeUtf8(allocator: arena).cast(),
                 configuration.sourceAddress.toNativeUtf8(allocator: arena).cast(),
@@ -142,7 +134,7 @@ class TransportServersFactory {
           );
         }
         return TransportServerChannel(
-          pointer,
+          server,
           _workerPointer,
           configuration.readTimeout?.inSeconds,
           configuration.writeTimeout?.inSeconds,
@@ -152,7 +144,7 @@ class TransportServersFactory {
           _datagramResponderPool,
           datagramChannel: TransportChannel(
             _workerPointer,
-            pointer.ref.fd,
+            server.ref.fd,
             _buffers,
           ),
         );
@@ -170,26 +162,22 @@ class TransportServersFactory {
     configuration = configuration ?? TransportDefaults.unixStreamServer;
     final server = using(
       (Arena arena) {
-        final pointer = calloc<transport_server>(sizeOf<transport_server>());
-        if (pointer == nullptr) {
-          throw TransportInitializationException(TransportMessages.serverMemoryError);
-        }
-        final result = transport_server_initialize_unix_stream(
-          pointer,
+        final server = transport_server_initialize_unix_stream(
           _unixStreamConfiguration(configuration!, arena),
           path.toNativeUtf8(allocator: arena).cast(),
         );
+        final result = server.ref.initialization_error;
         if (result < 0) {
-          if (pointer.ref.fd > 0) {
-            system_shutdown_descriptor(pointer.ref.fd);
-            calloc.free(pointer);
+          if (server.ref.fd > 0) {
+            system_shutdown_descriptor(server.ref.fd);
+            transport_server_destroy(server);
             throw TransportInitializationException(TransportMessages.serverError(result));
           }
-          calloc.free(pointer);
+          transport_server_destroy(server);
           throw TransportInitializationException(TransportMessages.serverSocketError(result));
         }
         return TransportServerChannel(
-          pointer,
+          server,
           _workerPointer,
           configuration.readTimeout?.inSeconds,
           configuration.writeTimeout?.inSeconds,

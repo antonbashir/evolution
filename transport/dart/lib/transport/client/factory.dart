@@ -2,9 +2,8 @@ import 'dart:async';
 import 'dart:ffi';
 import 'dart:io';
 
-import 'package:core/core.dart';
 import 'package:ffi/ffi.dart';
-import 'package:memory/memory.dart';
+import 'package:meta/meta.dart';
 
 import '../bindings.dart';
 import '../channel.dart';
@@ -14,11 +13,9 @@ import '../defaults.dart';
 import '../exception.dart';
 import '../payload.dart';
 import 'client.dart';
-import 'provider.dart';
 import 'configuration.dart';
+import 'provider.dart';
 import 'registry.dart';
-
-import 'package:meta/meta.dart';
 
 class TransportClientsFactory {
   final TransportClientRegistry _registry;
@@ -36,25 +33,21 @@ class TransportClientsFactory {
     configuration = configuration ?? TransportDefaults.tcpClient;
     final clients = <Future<TransportClientConnection>>[];
     for (var clientIndex = 0; clientIndex < configuration.pool; clientIndex++) {
-      final clientPointer = calloc<transport_client>(sizeOf<transport_client>());
-      if (clientPointer == nullptr) {
-        throw TransportInitializationException(TransportMessages.clientMemoryError);
-      }
-      final result = using(
+      final clientPointer = using(
         (arena) => transport_client_initialize_tcp(
-          clientPointer,
           _tcpConfiguration(configuration!, arena),
           address.address.toNativeUtf8(allocator: arena).cast(),
           port,
         ),
       );
+      final result = clientPointer.ref.initialization_error;
       if (result < 0) {
         if (clientPointer.ref.fd > 0) {
           system_shutdown_descriptor(clientPointer.ref.fd);
-          calloc.free(clientPointer);
+          transport_client_destroy(clientPointer);
           throw TransportInitializationException(TransportMessages.clientError(result));
         }
-        calloc.free(clientPointer);
+        transport_client_destroy(clientPointer);
         throw TransportInitializationException(TransportMessages.clientSocketError(result));
       }
       final client = TransportClientChannel(
@@ -87,32 +80,28 @@ class TransportClientsFactory {
   }) {
     configuration = configuration ?? TransportDefaults.udpClient;
     final clientPointer = using((arena) {
-      final pointer = calloc<transport_client>(sizeOf<transport_client>());
-      if (pointer == nullptr) {
-        throw TransportInitializationException(TransportMessages.clientMemoryError);
-      }
-      final result = transport_client_initialize_udp(
-        pointer,
+      final client = transport_client_initialize_udp(
         _udpConfiguration(configuration!, arena),
         sourceAddress.address.toNativeUtf8(allocator: arena).cast(),
         destinationPort,
         destinationAddress.address.toNativeUtf8(allocator: arena).cast(),
         sourcePort,
       );
+      final result = client.ref.initialization_error;
       if (result < 0) {
-        if (pointer.ref.fd > 0) {
-          system_shutdown_descriptor(pointer.ref.fd);
-          calloc.free(pointer);
+        if (client.ref.fd > 0) {
+          system_shutdown_descriptor(client.ref.fd);
+          transport_client_destroy(client);
           throw TransportInitializationException(TransportMessages.clientError(result));
         }
-        calloc.free(pointer);
+        transport_client_destroy(client);
         throw TransportInitializationException(TransportMessages.clientSocketError(result));
       }
       if (configuration.multicastManager != null) {
         configuration.multicastManager!.subscribe(
           onAddMembership: (configuration) => using(
             (arena) => transport_socket_multicast_add_membership(
-              pointer.ref.fd,
+              client.ref.fd,
               configuration.groupAddress.toNativeUtf8(allocator: arena).cast(),
               configuration.localAddress.toNativeUtf8(allocator: arena).cast(),
               _getMembershipIndex(configuration),
@@ -120,7 +109,7 @@ class TransportClientsFactory {
           ),
           onDropMembership: (configuration) => using(
             (arena) => transport_socket_multicast_drop_membership(
-              pointer.ref.fd,
+              client.ref.fd,
               configuration.groupAddress.toNativeUtf8(allocator: arena).cast(),
               configuration.localAddress.toNativeUtf8(allocator: arena).cast(),
               _getMembershipIndex(configuration),
@@ -128,7 +117,7 @@ class TransportClientsFactory {
           ),
           onAddSourceMembership: (configuration) => using(
             (arena) => transport_socket_multicast_add_source_membership(
-              pointer.ref.fd,
+              client.ref.fd,
               configuration.groupAddress.toNativeUtf8(allocator: arena).cast(),
               configuration.localAddress.toNativeUtf8(allocator: arena).cast(),
               configuration.sourceAddress.toNativeUtf8(allocator: arena).cast(),
@@ -136,7 +125,7 @@ class TransportClientsFactory {
           ),
           onDropSourceMembership: (configuration) => using(
             (arena) => transport_socket_multicast_drop_source_membership(
-              pointer.ref.fd,
+              client.ref.fd,
               configuration.groupAddress.toNativeUtf8(allocator: arena).cast(),
               configuration.localAddress.toNativeUtf8(allocator: arena).cast(),
               configuration.sourceAddress.toNativeUtf8(allocator: arena).cast(),
@@ -144,7 +133,7 @@ class TransportClientsFactory {
           ),
         );
       }
-      return pointer;
+      return client;
     });
     final client = TransportClientChannel(
       TransportChannel(
@@ -171,24 +160,20 @@ class TransportClientsFactory {
     configuration = configuration ?? TransportDefaults.unixStreamClient;
     final clients = <Future<TransportClientConnection>>[];
     for (var clientIndex = 0; clientIndex < configuration.pool; clientIndex++) {
-      final clientPointer = calloc<transport_client>(sizeOf<transport_client>());
-      if (clientPointer == nullptr) {
-        throw TransportInitializationException(TransportMessages.clientMemoryError);
-      }
-      final result = using(
+      final clientPointer = using(
         (arena) => transport_client_initialize_unix_stream(
-          clientPointer,
           _unixStreamConfiguration(configuration!, arena),
           path.toNativeUtf8(allocator: arena).cast(),
         ),
       );
+      final result = clientPointer.ref.initialization_error;
       if (result < 0) {
         if (clientPointer.ref.fd > 0) {
           system_shutdown_descriptor(clientPointer.ref.fd);
-          calloc.free(clientPointer);
+          transport_client_destroy(clientPointer);
           throw TransportInitializationException(TransportMessages.clientError(result));
         }
-        calloc.free(clientPointer);
+        transport_client_destroy(clientPointer);
         throw TransportInitializationException(TransportMessages.clientSocketError(result));
       }
       final channel = TransportChannel(
@@ -196,7 +181,7 @@ class TransportClientsFactory {
         clientPointer.ref.fd,
         _buffers,
       );
-      final client = TransportClientChannel(
+      final clientChannel = TransportClientChannel(
         channel,
         clientPointer,
         _workerPointer,
@@ -207,8 +192,8 @@ class TransportClientsFactory {
         _payloadPool,
         connectTimeout: configuration.connectTimeout?.inSeconds,
       );
-      _registry.add(clientPointer.ref.fd, client);
-      clients.add(client.connect().then(TransportClientConnection.new, onError: (error, stackTrace) {
+      _registry.add(clientPointer.ref.fd, clientChannel);
+      clients.add(clientChannel.connect().then(TransportClientConnection.new, onError: (error, stackTrace) {
         channel.close();
         _registry.remove(clientPointer.ref.fd);
         transport_client_destroy(clientPointer);
