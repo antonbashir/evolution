@@ -54,12 +54,7 @@ class CoreModule extends Module<core_module, CoreModuleConfiguration, CoreModule
   }
 
   @entry
-  CoreModule._load(int address)
-      : super.load(
-          address,
-          (native) => SystemLibrary.load(native.ref.library),
-          (native) => CoreModuleConfiguration.fromNative(native.ref.configuration),
-        );
+  CoreModule._load(int address) : super.load(address, (native) => SystemLibrary.load(native.ref.library), (native) => CoreModuleConfiguration.fromNative(native.ref.configuration));
 
   @override
   void destroy() => core_module_destroy(native);

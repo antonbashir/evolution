@@ -8,10 +8,10 @@ extern "C"
 {
 #endif
 
-#define print_message(format, ...) system_get()->on_print(format NEW_LINE, __VA_ARGS__)
-#define print_error(format, ...) system_get()->on_print_error(format NEW_LINE, __VA_ARGS__)
-#define print_string(string) print_message("%s", string)
-#define print_error_string(string) print_error("%s", string)
+#define print_message(format, ...) system_get()->on_print(format NEW_LINE NEW_LINE, __VA_ARGS__)
+#define print_error(format, ...) system_get()->on_print_error(format NEW_LINE NEW_LINE, __VA_ARGS__)
+#define print_string(string) print_message("%s" NEW_LINE, string)
+#define print_error_string(string) print_error("%s" NEW_LINE, string)
 #define print_event(event) system_get()->on_event_print(event)
 
 #ifdef TRACE
