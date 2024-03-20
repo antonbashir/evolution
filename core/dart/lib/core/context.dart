@@ -7,31 +7,35 @@ import 'package:ffi/ffi.dart';
 import 'bindings.dart';
 import 'constants.dart';
 import 'exceptions.dart';
-import 'library.dart';
 import 'printer.dart';
 
 final _context = _Context._();
 ContextProvider context() => _context;
 
-typedef ModuleLoader<ModuleNative extends NativeType> = Void Function(Pointer<ModuleNative> native);
-
-mixin ModuleProvider<ModuleNative extends NativeType, ConfigurationType extends ModuleConfiguration, StateType extends ModuleState> {
+mixin ModuleProvider<Native extends NativeType, Configuration extends ModuleConfiguration, State extends ModuleState> {
   String get name;
-  ConfigurationType get configuration;
-  StateType get state;
-  Pointer<ModuleNative> get native;
+  Configuration get configuration;
+  State get state;
+  Pointer<Native> get native;
 }
 
 mixin ModuleState {}
 mixin ModuleConfiguration {}
 
-mixin Module<ModuleNative extends NativeType, ConfigurationType extends ModuleConfiguration, StateType extends ModuleState> implements ModuleProvider<ModuleNative, ConfigurationType, StateType> {
+abstract class Module<Native extends NativeType, Configuration extends ModuleConfiguration, State extends ModuleState> implements ModuleProvider<Native, Configuration, State> {
+  final Configuration configuration;
+  final Pointer<Native> native;
+
   Set<String> get dependencies => {};
+  State get state;
 
-  late final Pointer<ModuleNative> native;
-  late final ConfigurationType configuration;
+  Module(this.configuration, Pointer<Native> Function() creator) : native = creator();
 
-  Pointer<ModuleNative> create(ConfigurationType configuration);
+  Module.load(int address, Configuration Function(Pointer<Native> native) configurator)
+      : native = Pointer.fromAddress(address),
+        configuration = configurator(Pointer.fromAddress(address)) {
+    _context._load(this);
+  }
 
   FutureOr<void> initialize() {}
 
@@ -41,22 +45,11 @@ mixin Module<ModuleNative extends NativeType, ConfigurationType extends ModuleCo
 
   FutureOr<void> unfork() {}
 
-  bool validate() => true;
-
   void destroy() {}
 
   void unload() {}
 
-  void _spawn(ConfigurationType configuration) {
-    this.native = create(configuration);
-    this.configuration = configuration;
-  }
-
-  void restore(int address, ConfigurationType Function(Pointer<ModuleNative>) configuration) {
-    this.native = Pointer.fromAddress(address);
-    this.configuration = configuration(native);
-    _context._load(this);
-  }
+  bool validate() => true;
 }
 
 mixin ContextProvider {
@@ -68,10 +61,7 @@ class _Context implements ContextProvider {
   var _modules = <String, Module>{};
   var _native = <String, Pointer<Void>>{};
 
-  late Completer _restoreCompleter;
-
   _Context._() {
-    SystemLibrary.loadCore();
     final context = context_get();
     if (context.ref.initialized) {
       final modules = context.ref.containers;
@@ -87,11 +77,11 @@ class _Context implements ContextProvider {
     _native = {};
   }
 
-  void _create(Module module, ModuleConfiguration configuration) {
+  void _create(Module module) {
     if (_native[module.name] != null) throw CoreException(CoreErrors.moduleAlreadyLoaded(module.name));
     final failedDependencies = module.dependencies.where((dependency) => !_modules.containsKey(dependency)).toList();
     if (failedDependencies.isNotEmpty) throw CoreException(CoreErrors.moduleDependenciesNotFound(failedDependencies));
-    _modules[module.name] = module.._spawn(configuration);
+    _modules[module.name] = module;
     using((arena) => context_put_module(module.name.toNativeUtf8(allocator: arena), module.native.cast(), module.runtimeType.toString().toNativeUtf8()));
     _native[module.name] = module.native.cast();
   }
@@ -99,13 +89,10 @@ class _Context implements ContextProvider {
   void _load(Module module) {
     if (_native[module.name] == null) throw CoreException(CoreErrors.moduleNotLoaded(module.name));
     _modules[module.name] = module;
-    if (_modules.length == _native.length) _restoreCompleter.complete();
   }
 
-  Future<void> _restore() async {
-    _restoreCompleter = Completer();
+  void _restore() {
     context_load_modules();
-    await _restoreCompleter.future;
   }
 
   @override
@@ -119,26 +106,26 @@ class _Context implements ContextProvider {
   }
 }
 
-Future<void> launch(List<(Module, ModuleConfiguration)> modules, FutureOr<void> Function() main) async {
-  for (var (module, configuration) in modules) _context._create(module, configuration);
+Future<void> launch(List<Module> modules, FutureOr<void> Function() main) async {
+  for (var module in modules) _context._create(module);
   for (var module in _context._modules.values) module.validate();
-  information(CoreMessages.modulesCreated);
+  information(CoreMessages.modulesCreated(_context._modules.keys));
   for (var module in _context._modules.values) await Future.value(module.initialize());
   await main();
   for (var module in _context._modules.values.toList().reversed) await Future.value(module.shutdown());
   for (var module in _context._modules.values.toList().reversed) module.destroy();
-  information(CoreMessages.modulesDestroyed);
+  information(CoreMessages.modulesDestroyed(_context._modules.keys));
   _context._clear();
 }
 
 Future<void> fork(FutureOr<void> Function() main) async {
-  await _context._restore();
-  information(CoreMessages.modulesLoaded);
+  _context._restore();
+  information(CoreMessages.modulesLoaded(_context._modules.keys));
   for (var module in _context._modules.values) await Future.value(module.fork());
   await main();
   for (var module in _context._modules.values.toList().reversed) await Future.value(module.unfork());
   for (var module in _context._modules.values.toList().reversed) module.unload();
-  information(CoreMessages.modulesUnloaded);
+  information(CoreMessages.modulesUnloaded(_context._modules.keys));
 }
 
 RawReceivePort? _killer = null;

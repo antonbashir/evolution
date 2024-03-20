@@ -41,23 +41,19 @@ class ExecutorModuleState implements ModuleState {
   }
 }
 
-class ExecutorModule with Module<executor_module, ExecutorModuleConfiguration, ExecutorModuleState> {
+class ExecutorModule extends Module<executor_module, ExecutorModuleConfiguration, ExecutorModuleState> {
   final name = executorModuleName;
   final dependencies = {coreModuleName, memoryModuleName};
   final state = ExecutorModuleState();
 
-  ExecutorModule();
+  ExecutorModule({ExecutorModuleConfiguration configuration = ExecutorDefaults.module})
+      : super(configuration, () {
+          SystemLibrary.loadByName(executorLibraryName, executorPackageName);
+          return using((arena) => executor_module_create(configuration.toNative(arena)));
+        });
 
   @entry
-  ExecutorModule._restore(int address) {
-    restore(address, (native) => ExecutorModuleConfiguration.fromNative(native.ref.configuration));
-  }
-
-  @override
-  Pointer<executor_module> create(ExecutorModuleConfiguration configuration) {
-    SystemLibrary.loadByName(executorLibraryName, executorPackageName);
-    return using((arena) => executor_module_create(configuration.toNative(arena)));
-  }
+  ExecutorModule._load(int address) : super.load(address, (native) => ExecutorModuleConfiguration.fromNative(native.ref.configuration));
 
   @override
   FutureOr<void> initialize() {

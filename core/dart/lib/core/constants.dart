@@ -75,10 +75,10 @@ class CoreErrors {
 class CoreMessages {
   CoreMessages._();
 
-  static const modulesCreated = "Modules created,activating...";
-  static const modulesDestroyed = "Modules destroyed,exiting...";
-  static const modulesLoaded = "Modules loaded,activating...";
-  static const modulesUnloaded = "Modules unloaded,exiting...";
+  static String modulesCreated(Iterable<String> modules) => "Modules created: (${modules.join(",")})";
+  static String modulesDestroyed(Iterable<String> modules) => "Modules destroyed: (${modules.join(",")})";
+  static String modulesLoaded(Iterable<String> modules) => "Modules loaded: (${modules.join(",")})";
+  static String modulesUnloaded(Iterable<String> modules) => "Modules unloaded: (${modules.join(",")})";
   static String loadingLibrary(path) => "Loading: $path";
 }
 

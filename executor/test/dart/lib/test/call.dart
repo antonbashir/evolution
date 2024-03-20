@@ -12,9 +12,9 @@ import 'producer.dart';
 
 Future<void> _execute(FutureOr<void> Function() test) => launch(
       [
-        (CoreModule(), CoreDefaults.module),
-        (MemoryModule(), MemoryDefaults.module),
-        (ExecutorModule(), ExecutorDefaults.module),
+        CoreModule(),
+        MemoryModule(),
+        ExecutorModule(),
       ],
       () async {
         SystemLibrary.loadByPath("${Directory(path.dirname(Platform.script.toFilePath())).parent.path}/assets/libexecutor_test.so");

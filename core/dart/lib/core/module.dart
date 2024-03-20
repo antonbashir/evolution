@@ -7,7 +7,9 @@ import 'bindings.dart';
 import 'configuration.dart';
 import 'constants.dart';
 import 'context.dart';
+import 'defaults.dart';
 import 'exceptions.dart';
+import 'library.dart';
 import 'printer.dart';
 
 void _defaultErrorHandler(Error error, StackTrace stack) {
@@ -43,19 +45,18 @@ class CoreModuleState implements ModuleState {
   });
 }
 
-class CoreModule with Module<core_module, CoreModuleConfiguration, CoreModuleState> {
+class CoreModule extends Module<core_module, CoreModuleConfiguration, CoreModuleState> {
   final name = coreModuleName;
   final state = CoreModuleState(printer: print, errorHandler: _defaultErrorHandler, exceptionHandler: _defaultExceptionHandler);
 
-  CoreModule();
+  CoreModule({CoreModuleConfiguration configuration = CoreDefaults.module})
+      : super(configuration, () {
+          SystemLibrary.loadCore();
+          return using((arena) => core_module_create(configuration.toNative(arena)));
+        });
 
   @entry
-  CoreModule._restore(int address) {
-    restore(address, (native) => CoreModuleConfiguration.fromNative(native.ref.configuration));
-  }
-
-  @override
-  Pointer<core_module> create(CoreModuleConfiguration configuration) => using((arena) => core_module_create(configuration.toNative(arena)));
+  CoreModule._load(int address) : super.load(address, (native) => CoreModuleConfiguration.fromNative(native.ref.configuration));
 
   @override
   void destroy() => core_module_destroy(native);

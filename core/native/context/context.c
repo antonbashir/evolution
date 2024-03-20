@@ -1,7 +1,7 @@
 #include "context.h"
+#include <dart_api.h>
 #include <panic/panic.h>
 #include <printer/printer.h>
-#include <dart_api.h>
 
 struct context context_instance;
 
@@ -74,7 +74,7 @@ DART_LEAF_FUNCTION void context_load_modules()
         for (int libraryIndex = 0; libraryIndex < librariesCount; libraryIndex++)
         {
             Dart_Handle library = Dart_ListGetAt(libraries, libraryIndex);
-            if (Dart_IsNull(library) || Dart_IsError(library)) continue;
+            if (Dart_IsError(library) || Dart_IsNull(library)) continue;
             Dart_Handle className = Dart_NewStringFromUTF8((const uint8_t*)container.type, strlen(container.type));
             Dart_Handle class = Dart_GetClass(library, className);
             if (Dart_IsError(class) || Dart_IsNull(class)) continue;
@@ -82,6 +82,10 @@ DART_LEAF_FUNCTION void context_load_modules()
             Dart_Handle arguments[1];
             arguments[0] = Dart_NewIntegerFromUint64((uint64_t)container.module);
             Dart_Handle createdModule = Dart_New(class, constructor, 1, arguments);
+            if (Dart_IsError(createdModule))
+            {
+                Dart_PropagateError(createdModule);
+            }
         }
     }
     Dart_ExitScope();

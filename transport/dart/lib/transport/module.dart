@@ -2,10 +2,12 @@ import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
 import 'package:memory/memory/constants.dart';
-import 'package:transport/transport.dart';
 
 import 'bindings.dart';
+import 'configuration.dart';
 import 'constants.dart';
+import 'defaults.dart';
+import 'transport.dart';
 
 class TransportModuleState implements ModuleState {
   Transport transport({TransportConfiguration configuration = TransportDefaults.transport}) {
@@ -14,21 +16,19 @@ class TransportModuleState implements ModuleState {
   }
 }
 
-class TransportModule with Module<transport_module, TransportModuleConfiguration, TransportModuleState> {
+class TransportModule extends Module<transport_module, TransportModuleConfiguration, TransportModuleState> {
   final name = transportModuleName;
   final state = TransportModuleState();
   final dependencies = {coreModuleName, memoryModuleName, executorModuleName};
 
-  @entry
-  TransportModule._restore(int address) {
-    restore(address, (native) => TransportModuleConfiguration.fromNative(native.ref.configuration));
-  }
+  TransportModule({TransportModuleConfiguration configuration = TransportDefaults.module})
+      : super(configuration, () {
+          SystemLibrary.loadByName(transportLibraryName, transportPackageName);
+          return using((arena) => transport_module_create(configuration.toNative(arena)));
+        });
 
-  @override
-  Pointer<transport_module> create(TransportModuleConfiguration configuration) {
-    SystemLibrary.loadByName(transportLibraryName, transportPackageName);
-    return using((arena) => transport_module_create(configuration.toNative(arena)));
-  }
+  @entry
+  TransportModule._load(int address) : super.load(address, (native) => TransportModuleConfiguration.fromNative(native.ref.configuration));
 }
 
 extension ContextProviderTransportExtensions on ContextProvider {

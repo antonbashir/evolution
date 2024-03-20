@@ -1,3 +1,5 @@
+library memory;
+
 export 'memory/bindings.dart';
 export 'memory/buffers.dart';
 export 'memory/configuration.dart';

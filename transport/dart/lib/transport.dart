@@ -1,3 +1,5 @@
+library transport;
+
 export 'transport/module.dart';
 export 'transport/client/configuration.dart';
 export 'transport/configuration.dart';

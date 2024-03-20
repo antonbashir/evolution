@@ -37,7 +37,7 @@ class TestData with Tuple {
 void main(List<String> args) {
   test(
     "[tuples][dynamic][input]: read-write ",
-    () => launch((creator) => creator.create(CoreModule(), CoreDefaults.module).create(MemoryModule(), MemoryDefaults.module)).activate(() {
+    () => launch([CoreModule(), MemoryModule()], () {
       final data = TestData(1, "test");
       final buffer = context().inputOutputBuffers().allocateInputBuffer();
       final writer = context().tuples().dynamic.input(buffer);
@@ -58,7 +58,7 @@ void main(List<String> args) {
   );
   test(
     "[tuples][dynamic][output]: read-write ",
-    () => launch((creator) => creator.create(CoreModule(), CoreDefaults.module).create(MemoryModule(), MemoryDefaults.module)).activate(() {
+    () => launch([CoreModule(), MemoryModule()], () {
       final data = TestData(1, "test");
       final buffer = context().inputOutputBuffers().allocateOutputBuffer();
       final writer = context().tuples().dynamic.output(buffer);

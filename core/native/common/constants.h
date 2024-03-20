@@ -69,10 +69,11 @@ extern "C"
 #define ERROR_CRASH_HANDLING "Error %d while handling crash"
 
 #define PANIC_CONTEXT_CREATED "Context already created"
+#define MODULE_LOADING_FAILED "Failed to load module %s"
 
 #define LOADING_LIBRARY_MESSAGE "Loading library: %s"
 
-#define DART_MODULE_FACTORY "_restore"
+#define DART_MODULE_FACTORY "_load"
 
 #if defined(__cplusplus)
 }
