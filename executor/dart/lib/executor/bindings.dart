@@ -1,6 +1,7 @@
 // Generated
 // ignore_for_file: unused_import
 
+export 'package:core/core.dart';
 export '../bindings/executor/task.dart';
 export '../bindings/executor/executor.dart';
 export '../bindings/executor/module.dart';

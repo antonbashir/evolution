@@ -22,6 +22,7 @@ DART_STRUCTURE struct transport_module
 {
     DART_FIELD const char* name;
     DART_FIELD struct transport_module_configuration configuration;
+    DART_FIELD struct system_library* library;
 };
 #define module_structure struct transport_module
 #include <modules/module.h>

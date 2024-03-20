@@ -47,13 +47,19 @@ class ExecutorModule extends Module<executor_module, ExecutorModuleConfiguration
   final state = ExecutorModuleState();
 
   ExecutorModule({ExecutorModuleConfiguration configuration = ExecutorDefaults.module})
-      : super(configuration, () {
-          SystemLibrary.loadByName(executorLibraryName, executorPackageName);
-          return using((arena) => executor_module_create(configuration.toNative(arena)));
-        });
+      : super(
+          configuration,
+          SystemLibrary.loadByName(executorLibraryName, executorModuleName),
+          using((arena) => executor_module_create(configuration.toNative(arena))),
+        );
 
   @entry
-  ExecutorModule._load(int address) : super.load(address, (native) => ExecutorModuleConfiguration.fromNative(native.ref.configuration));
+  ExecutorModule._load(int address)
+      : super.load(
+          address,
+          (native) => SystemLibrary.load(native.ref.library),
+          (native) => ExecutorModuleConfiguration.fromNative(native.ref.configuration),
+        );
 
   @override
   FutureOr<void> initialize() {

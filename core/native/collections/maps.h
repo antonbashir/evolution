@@ -31,6 +31,7 @@ DART_STRUCTURE struct module_container
 DART_STRUCTURE struct system_library
 {
     DART_FIELD const char* path;
+    DART_FIELD const char* module;
     DART_FIELD void* handle;
 };
 #define simple_map_node_t struct system_library*

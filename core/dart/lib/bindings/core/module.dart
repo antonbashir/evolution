@@ -3,6 +3,7 @@
 
 import 'dart:ffi';
 import 'package:ffi/ffi.dart';
+import '../../core/bindings.dart';
 
 final class core_module_configuration extends Struct {
   @Bool()
@@ -14,6 +15,7 @@ final class core_module_configuration extends Struct {
 final class core_module extends Struct {
   external Pointer<Utf8> name;
   external core_module_configuration configuration;
+  external Pointer<system_library> library;
 }
 
 @Native<Pointer<core_module> Function(Pointer<core_module_configuration> configuration)>(isLeaf: true)

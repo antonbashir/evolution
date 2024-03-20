@@ -3,6 +3,7 @@ import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
 
+import '../core.dart';
 import 'bindings.dart';
 import 'constants.dart';
 import 'exceptions.dart';
@@ -24,14 +25,16 @@ mixin ModuleConfiguration {}
 abstract class Module<Native extends NativeType, Configuration extends ModuleConfiguration, State extends ModuleState> implements ModuleProvider<Native, Configuration, State> {
   final Configuration configuration;
   final Pointer<Native> native;
+  final SystemLibrary library;
 
   Set<String> get dependencies => {};
   State get state;
 
-  Module(this.configuration, Pointer<Native> Function() creator) : native = creator();
+  Module(this.configuration, this.library, this.native);
 
-  Module.load(int address, Configuration Function(Pointer<Native> native) configurator)
+  Module.load(int address, SystemLibrary Function(Pointer<Native> native) library, Configuration Function(Pointer<Native> native) configurator)
       : native = Pointer.fromAddress(address),
+        library = library(Pointer.fromAddress(address)),
         configuration = configurator(Pointer.fromAddress(address)) {
     _context._load(this);
   }

@@ -12,6 +12,7 @@ final class transport_module_configuration extends Struct {
 final class transport_module extends Struct {
   external Pointer<Utf8> name;
   external transport_module_configuration configuration;
+  external Pointer<system_library> library;
 }
 
 final class transport_module_state extends Opaque {}

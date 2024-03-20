@@ -51,13 +51,19 @@ class MemoryModule extends Module<memory_module, MemoryModuleConfiguration, Memo
   final state = MemoryModuleState();
 
   MemoryModule({MemoryModuleConfiguration configuration = MemoryDefaults.module})
-      : super(configuration, () {
-          SystemLibrary.loadByName(configuration.libraryPackageMode == LibraryPackageMode.shared ? memorySharedLibraryName : memoryLibraryName, memoryPackageName);
-          return using((arena) => memory_module_create(configuration.toNative(arena)));
-        });
+      : super(
+          configuration,
+          SystemLibrary.loadByName(configuration.libraryPackageMode == LibraryPackageMode.shared ? memorySharedLibraryName : memoryLibraryName, memoryModuleName),
+          using((arena) => memory_module_create(configuration.toNative(arena))),
+        );
 
   @entry
-  MemoryModule._load(int address) : super.load(address, (native) => MemoryModuleConfiguration.fromNative(native.ref.configuration));
+  MemoryModule._load(int address)
+      : super.load(
+          address,
+          (native) => SystemLibrary.load(native.ref.library),
+          (native) => MemoryModuleConfiguration.fromNative(native.ref.configuration),
+        );
 
   @override
   FutureOr<void> initialize() {

@@ -15,5 +15,6 @@ final class module_container extends Struct {
 
 final class system_library extends Struct {
   external Pointer<Utf8> path;
+  external Pointer<Utf8> module;
   external Pointer<Void> handle;
 }

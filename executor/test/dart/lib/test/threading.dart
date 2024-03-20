@@ -20,7 +20,7 @@ void _execute(FutureOr<void> Function() test) => launch(
         ExecutorModule(),
       ],
       () async {
-        SystemLibrary.loadByPath("${Directory(path.dirname(Platform.script.toFilePath())).parent.path}/assets/libexecutor_test.so");
+        SystemLibrary.loadByPath("${Directory(path.dirname(Platform.script.toFilePath())).parent.path}/assets/libexecutor_test.so", "executor_test");
         await test();
       },
     );

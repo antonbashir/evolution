@@ -49,14 +49,17 @@ class CoreModule extends Module<core_module, CoreModuleConfiguration, CoreModule
   final name = coreModuleName;
   final state = CoreModuleState(printer: print, errorHandler: _defaultErrorHandler, exceptionHandler: _defaultExceptionHandler);
 
-  CoreModule({CoreModuleConfiguration configuration = CoreDefaults.module})
-      : super(configuration, () {
-          SystemLibrary.loadCore();
-          return using((arena) => core_module_create(configuration.toNative(arena)));
-        });
+  CoreModule({CoreModuleConfiguration configuration = CoreDefaults.module}) : super(configuration, SystemLibrary.loadCore(), using((arena) => core_module_create(configuration.toNative(arena)))) {
+    system_library_put(library.handle);
+  }
 
   @entry
-  CoreModule._load(int address) : super.load(address, (native) => CoreModuleConfiguration.fromNative(native.ref.configuration));
+  CoreModule._load(int address)
+      : super.load(
+          address,
+          (native) => SystemLibrary.load(native.ref.library),
+          (native) => CoreModuleConfiguration.fromNative(native.ref.configuration),
+        );
 
   @override
   void destroy() => core_module_destroy(native);

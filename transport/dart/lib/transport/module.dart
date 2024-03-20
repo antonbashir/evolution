@@ -22,13 +22,19 @@ class TransportModule extends Module<transport_module, TransportModuleConfigurat
   final dependencies = {coreModuleName, memoryModuleName, executorModuleName};
 
   TransportModule({TransportModuleConfiguration configuration = TransportDefaults.module})
-      : super(configuration, () {
-          SystemLibrary.loadByName(transportLibraryName, transportPackageName);
-          return using((arena) => transport_module_create(configuration.toNative(arena)));
-        });
+      : super(
+          configuration,
+          SystemLibrary.loadByName(transportLibraryName, transportModuleName),
+          using((arena) => transport_module_create(configuration.toNative(arena))),
+        );
 
   @entry
-  TransportModule._load(int address) : super.load(address, (native) => TransportModuleConfiguration.fromNative(native.ref.configuration));
+  TransportModule._load(int address)
+      : super.load(
+          address,
+          (native) => SystemLibrary.load(native.ref.library),
+          (native) => TransportModuleConfiguration.fromNative(native.ref.configuration),
+        );
 }
 
 extension ContextProviderTransportExtensions on ContextProvider {

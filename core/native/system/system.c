@@ -84,7 +84,7 @@ void system_initialize_default()
 #endif
 }
 
-struct system_library* system_library_load(const char* path)
+struct system_library* system_library_load(const char* path, const char* module)
 {
     struct system_library* current = system_library_get(path);
     if (current != NULL)
@@ -102,8 +102,14 @@ struct system_library* system_library_load(const char* path)
     struct system_library* new = calloc(1, sizeof(struct system_library));
     new->handle = handle;
     new->path = strdup(path);
+    new->module = strdup(module);
     simple_map_system_libraries_put(system_instance.system_libraries, new, NULL, NULL);
     return new;
+}
+
+DART_LEAF_FUNCTION void system_library_put(struct system_library* library)
+{
+    simple_map_system_libraries_put(system_instance.system_libraries, library, NULL, NULL);
 }
 
 struct system_library* system_library_get(const char* path)
@@ -116,11 +122,26 @@ struct system_library* system_library_get(const char* path)
     return NULL;
 }
 
+struct system_library* system_library_by_module(const char* module)
+{
+    simple_map_int_t slot;
+    simple_map_foreach(system_instance.system_libraries, slot)
+    {
+        if (slot != simple_map_end(system_instance.system_libraries))
+        {
+            struct system_library* library = *simple_map_system_libraries_node(system_instance.system_libraries, slot);
+            if (strcmp(library->module, module) == 0) return library;
+        }
+    }
+    return NULL;
+}
+
 struct system_library* system_library_reload(const struct system_library* library)
 {
     const char* path = library->path;
+    const char* module = library->module;
     system_library_unload(library);
-    return system_library_load(path);
+    return system_library_load(path, module);
 }
 
 void system_library_unload(const struct system_library* library)
@@ -130,6 +151,7 @@ void system_library_unload(const struct system_library* library)
         dlclose(library->handle);
     }
     simple_map_system_libraries_remove(system_instance.system_libraries, &library, NULL);
+    free((void*)library->module);
     free((void*)library->path);
     free((void*)library);
 }

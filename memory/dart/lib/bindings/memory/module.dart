@@ -13,6 +13,7 @@ final class memory_module_configuration extends Struct {
 final class memory_module extends Struct {
   external Pointer<Utf8> name;
   external memory_module_configuration configuration;
+  external Pointer<system_library> library;
 }
 
 @Native<Pointer<memory_module> Function(Pointer<memory_module_configuration> configuration)>(isLeaf: true)

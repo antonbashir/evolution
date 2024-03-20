@@ -254,62 +254,62 @@ external void tarantool_initialize_box(Pointer<tarantool_box> box);
 @Native<Void Function(Pointer<tarantool_box> box)>(isLeaf: true)
 external void tarantool_destroy_box(Pointer<tarantool_box> box);
 
-@Native<Void Function(Pointer<executor_task> message)>(isLeaf: true)
-external void tarantool_evaluate(Pointer<executor_task> message);
+@Native<Void Function(Pointer<executor_task> task)>(isLeaf: true)
+external void tarantool_evaluate(Pointer<executor_task> task);
 
-@Native<Void Function(Pointer<executor_task> message)>(isLeaf: true)
-external void tarantool_call(Pointer<executor_task> message);
+@Native<Void Function(Pointer<executor_task> task)>(isLeaf: true)
+external void tarantool_call(Pointer<executor_task> task);
 
-@Native<Void Function(Pointer<executor_task> message)>(isLeaf: true)
-external void tarantool_space_iterator(Pointer<executor_task> message);
+@Native<Void Function(Pointer<executor_task> task)>(isLeaf: true)
+external void tarantool_space_iterator(Pointer<executor_task> task);
 
-@Native<Void Function(Pointer<executor_task> message)>(isLeaf: true)
-external void tarantool_space_count(Pointer<executor_task> message);
+@Native<Void Function(Pointer<executor_task> task)>(isLeaf: true)
+external void tarantool_space_count(Pointer<executor_task> task);
 
-@Native<Void Function(Pointer<executor_task> message)>(isLeaf: true)
-external void tarantool_space_length(Pointer<executor_task> message);
+@Native<Void Function(Pointer<executor_task> task)>(isLeaf: true)
+external void tarantool_space_length(Pointer<executor_task> task);
 
-@Native<Void Function(Pointer<executor_task> message)>(isLeaf: true)
-external void tarantool_space_truncate(Pointer<executor_task> message);
+@Native<Void Function(Pointer<executor_task> task)>(isLeaf: true)
+external void tarantool_space_truncate(Pointer<executor_task> task);
 
-@Native<Void Function(Pointer<executor_task> message)>(isLeaf: true)
-external void tarantool_space_put_single(Pointer<executor_task> message);
+@Native<Void Function(Pointer<executor_task> task)>(isLeaf: true)
+external void tarantool_space_put_single(Pointer<executor_task> task);
 
-@Native<Void Function(Pointer<executor_task> message)>(isLeaf: true)
-external void tarantool_space_insert_single(Pointer<executor_task> message);
+@Native<Void Function(Pointer<executor_task> task)>(isLeaf: true)
+external void tarantool_space_insert_single(Pointer<executor_task> task);
 
-@Native<Void Function(Pointer<executor_task> message)>(isLeaf: true)
-external void tarantool_space_update_single(Pointer<executor_task> message);
+@Native<Void Function(Pointer<executor_task> task)>(isLeaf: true)
+external void tarantool_space_update_single(Pointer<executor_task> task);
 
-@Native<Void Function(Pointer<executor_task> message)>(isLeaf: true)
-external void tarantool_space_delete_single(Pointer<executor_task> message);
+@Native<Void Function(Pointer<executor_task> task)>(isLeaf: true)
+external void tarantool_space_delete_single(Pointer<executor_task> task);
 
-@Native<Void Function(Pointer<executor_task> message)>(isLeaf: true)
-external void tarantool_space_put_many(Pointer<executor_task> message);
+@Native<Void Function(Pointer<executor_task> task)>(isLeaf: true)
+external void tarantool_space_put_many(Pointer<executor_task> task);
 
-@Native<Void Function(Pointer<executor_task> message)>(isLeaf: true)
-external void tarantool_space_insert_many(Pointer<executor_task> message);
+@Native<Void Function(Pointer<executor_task> task)>(isLeaf: true)
+external void tarantool_space_insert_many(Pointer<executor_task> task);
 
-@Native<Void Function(Pointer<executor_task> message)>(isLeaf: true)
-external void tarantool_space_update_many(Pointer<executor_task> message);
+@Native<Void Function(Pointer<executor_task> task)>(isLeaf: true)
+external void tarantool_space_update_many(Pointer<executor_task> task);
 
-@Native<Void Function(Pointer<executor_task> message)>(isLeaf: true)
-external void tarantool_space_delete_many(Pointer<executor_task> message);
+@Native<Void Function(Pointer<executor_task> task)>(isLeaf: true)
+external void tarantool_space_delete_many(Pointer<executor_task> task);
 
-@Native<Void Function(Pointer<executor_task> message)>(isLeaf: true)
-external void tarantool_space_upsert(Pointer<executor_task> message);
+@Native<Void Function(Pointer<executor_task> task)>(isLeaf: true)
+external void tarantool_space_upsert(Pointer<executor_task> task);
 
-@Native<Void Function(Pointer<executor_task> message)>(isLeaf: true)
-external void tarantool_space_get(Pointer<executor_task> message);
+@Native<Void Function(Pointer<executor_task> task)>(isLeaf: true)
+external void tarantool_space_get(Pointer<executor_task> task);
 
-@Native<Void Function(Pointer<executor_task> message)>(isLeaf: true)
-external void tarantool_space_min(Pointer<executor_task> message);
+@Native<Void Function(Pointer<executor_task> task)>(isLeaf: true)
+external void tarantool_space_min(Pointer<executor_task> task);
 
-@Native<Void Function(Pointer<executor_task> message)>(isLeaf: true)
-external void tarantool_space_max(Pointer<executor_task> message);
+@Native<Void Function(Pointer<executor_task> task)>(isLeaf: true)
+external void tarantool_space_max(Pointer<executor_task> task);
 
-@Native<Void Function(Pointer<executor_task> message)>(isLeaf: true)
-external void tarantool_space_select(Pointer<executor_task> message);
+@Native<Void Function(Pointer<executor_task> task)>(isLeaf: true)
+external void tarantool_space_select(Pointer<executor_task> task);
 
-@Native<Void Function(Pointer<executor_task> message)>(isLeaf: true)
-external void tarantool_space_id_by_name(Pointer<executor_task> message);
+@Native<Void Function(Pointer<executor_task> task)>(isLeaf: true)
+external void tarantool_space_id_by_name(Pointer<executor_task> task);

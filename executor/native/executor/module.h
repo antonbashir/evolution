@@ -22,6 +22,7 @@ DART_STRUCTURE struct executor_module
 {
     DART_FIELD const char* name;
     DART_FIELD struct executor_module_configuration configuration;
+    DART_FIELD struct system_library* library;
     DART_FIELD struct executor_scheduler* scheduler;
     DART_FIELD DART_SUBSTITUTE(uint32_t) atomic_uint32_t executors;
 };

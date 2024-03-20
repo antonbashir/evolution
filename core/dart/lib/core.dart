@@ -11,4 +11,4 @@ export 'core/tuples.dart';
 export 'core/extensions.dart';
 export 'core/exceptions.dart';
 export 'core/environment.dart';
-export 'core/bindings.dart' show system_shutdown_descriptor, iovec, dlclose, dlopen, rtldGlobal, rtldLazy;
+export 'core/bindings.dart' show system_shutdown_descriptor, iovec, dlclose, dlopen, rtldGlobal, rtldLazy, system_library;

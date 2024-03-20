@@ -22,6 +22,7 @@ DART_STRUCTURE struct memory_module
 {
     DART_FIELD const char* name;
     DART_FIELD struct memory_module_configuration configuration;
+    DART_FIELD struct system_library* library;
 };
 #define module_structure struct memory_module
 #include <modules/module.h>

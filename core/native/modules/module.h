@@ -35,6 +35,7 @@ struct _unknown_module
 {
     const char* name;
     struct _unknown_module_configuration configuration;
+    struct system_library* library;
 };
 #define module_structure struct _unknown_module
 #endif
@@ -96,6 +97,7 @@ static FORCEINLINE void* _module(construct)(module_configuration* configuration)
     module_structure* created = _module(new_checked)(sizeof(module_structure));
     created->name = _declare_module_name;
     created->configuration = *configuration;
+    created->library = system_library_by_module(_declare_module_name);
     return created;
 }
 
