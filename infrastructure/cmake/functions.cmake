@@ -15,3 +15,16 @@ function(list_add_prefix list_in prefix list_out)
 
   set(${list_out} ${result} PARENT_SCOPE)
 endfunction()
+
+
+function(include_dart_api)
+FetchContent_Declare(
+  ${PROJECT_NAME}_dart_api
+  GIT_REPOSITORY ${DEPENDENCY_DART_API_REPOSITORY}
+  GIT_TAG ${DEPENDENCY_DART_API_VERSION}
+  SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/dart-api-source
+  BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/dart-api-binary
+)
+FetchContent_MakeAvailable(${PROJECT_NAME}_dart_api)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/dependencies/dart-api-source)
+endfunction()

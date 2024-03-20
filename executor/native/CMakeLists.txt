@@ -4,7 +4,7 @@ project(executor_native C ASM)
 
 include_directories(${executor_liburing_SOURCE_DIR}/src/include)
 include_directories(${executor_liburing_BINARY_DIR}/src/include)
-
+include_dart_api()
 include_directories(${PROJECT_BINARY_DIR})
 include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${CORE_INCLUDE_DIRECTORY})

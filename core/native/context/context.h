@@ -6,7 +6,6 @@
 #include <common/constants.h>
 #include <hashing/hashing.h>
 #include <system/library.h>
-#include "dart/dart_api.h"
 
 #if defined(__cplusplus)
 extern "C"

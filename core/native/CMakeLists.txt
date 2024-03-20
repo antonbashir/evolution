@@ -5,6 +5,7 @@ project(core_native C CXX ASM)
 include_directories(${PROJECT_BINARY_DIR})
 include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${CORE_LIBUNWIND_INCLUDE})
+include_dart_api()
 
 file(GLOB sources
   **/*.c

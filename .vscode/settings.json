@@ -154,6 +154,7 @@
     "mutex": "c",
     "stop_token": "c",
     "*.def": "c",
-    "cmath": "c"
+    "cmath": "c",
+    "dart_api.h": "c"
   },
 }

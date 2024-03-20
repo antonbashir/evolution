@@ -1,6 +1,7 @@
 #include "context.h"
 #include <panic/panic.h>
 #include <printer/printer.h>
+#include <dart_api.h>
 
 struct context context_instance;
 

@@ -51,6 +51,9 @@ set(DEPENDENCY_MSGPUCK_VERSION evolution)
 set(DEPENDENCY_TARANTOOL_REPOSITORY "developer@git.local:dependencies/tarantool.git")
 set(DEPENDENCY_TARANTOOL_VERSION evolution-3.0.0)
 
+set(DEPENDENCY_DART_API_REPOSITORY "developer@git.local:dependencies/dart-api.git")
+set(DEPENDENCY_DART_API_VERSION 3.3.0)
+
 set(CORE_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/core/native)
 set(EXECUTOR_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/executor/native)
 set(MEMORY_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/memory/native)
