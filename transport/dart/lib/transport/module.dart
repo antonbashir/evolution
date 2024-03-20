@@ -2,12 +2,10 @@ import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
 import 'package:memory/memory/constants.dart';
+import 'package:transport/transport.dart';
 
 import 'bindings.dart';
-import 'configuration.dart';
 import 'constants.dart';
-import 'defaults.dart';
-import 'transport.dart';
 
 class TransportModuleState implements ModuleState {
   Transport transport({TransportConfiguration configuration = TransportDefaults.transport}) {
@@ -17,20 +15,17 @@ class TransportModuleState implements ModuleState {
 }
 
 class TransportModule with Module<transport_module, TransportModuleConfiguration, TransportModuleState> {
-  final String name = transportModuleName;
-  final TransportModuleState state;
+  final name = transportModuleName;
+  final state = TransportModuleState();
   final dependencies = {coreModuleName, memoryModuleName, executorModuleName};
-
-  TransportModule({TransportModuleState? state}) : state = state ?? TransportModuleState();
+  final loader = NativeCallable<ModuleLoader<transport_module>>.listener(_load);
+  static void _load(Pointer<transport_module> native) => TransportModule().load(TransportModuleConfiguration.fromNative(native.ref.configuration));
 
   @override
   Pointer<transport_module> create(TransportModuleConfiguration configuration) {
     SystemLibrary.loadByName(transportLibraryName, transportPackageName);
     return using((arena) => transport_module_create(configuration.toNative(arena)));
   }
-
-  @override
-  TransportModuleConfiguration load(Pointer<transport_module> native) => TransportModuleConfiguration.fromNative(native.ref.configuration);
 }
 
 extension ContextProviderTransportExtensions on ContextProvider {

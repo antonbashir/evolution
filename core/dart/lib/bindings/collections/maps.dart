@@ -10,6 +10,8 @@ final class module_container extends Struct {
   external int id;
   external Pointer<Utf8> name;
   external Pointer<Void> module;
+  @Uint64()
+  external int loader;
 }
 
 final class system_library extends Struct {

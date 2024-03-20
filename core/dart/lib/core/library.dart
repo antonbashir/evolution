@@ -33,7 +33,7 @@ class SystemLibrary {
     if (native != nullptr) {
       return SystemLibrary(native.ref.path.toDartString(), native);
     }
-    final dotDartTool = _findDotDartTool();
+    final dotDartTool = findDotDartTool();
     if (dotDartTool != null) {
       final packageNativeRoot = Directory(findPackageRoot(dotDartTool, packageName).toFilePath() + SourcesDirectories.assets);
       final libraryFile = File(packageNativeRoot.path + slash + libraryName);
@@ -59,7 +59,7 @@ class SystemLibrary {
     if (native != nullptr) {
       return;
     }
-    final dotDartTool = _findDotDartTool();
+    final dotDartTool = findDotDartTool();
     if (dotDartTool != null) {
       final packageNativeRoot = Directory(findPackageRoot(dotDartTool, corePackageName).toFilePath() + SourcesDirectories.assets);
       final libraryFile = File(packageNativeRoot.path + slash + coreLibraryName);
@@ -74,25 +74,5 @@ class SystemLibrary {
       throw CoreException(CoreErrors.systemLibraryLoadError(libraryFile.path));
     }
     throw CoreException(CoreErrors.unableToFindProjectRoot);
-  }
-
-  static Uri? _findDotDartTool() {
-    Uri root = Platform.script.resolve(currentDirectorySymbol);
-
-    do {
-      if (File.fromUri(root.resolve(SourcesDirectories.dotDartTool + slash + packageConfigJsonFile)).existsSync()) {
-        return root.resolve(SourcesDirectories.dotDartTool + slash);
-      }
-    } while (root != (root = root.resolve(parentDirectorySymbol)));
-
-    root = Directory.current.uri;
-
-    do {
-      if (File.fromUri(root.resolve(SourcesDirectories.dotDartTool + slash + packageConfigJsonFile)).existsSync()) {
-        return root.resolve(SourcesDirectories.dotDartTool + slash);
-      }
-    } while (root != (root = root.resolve(parentDirectorySymbol)));
-
-    return null;
   }
 }

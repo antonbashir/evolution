@@ -22,8 +22,11 @@ external void context_create();
 @Native<Pointer<Void> Function(Pointer<Utf8> name)>(isLeaf: true)
 external Pointer<Void> context_get_module(Pointer<Utf8> name);
 
-@Native<Void Function(Pointer<Utf8> name, Pointer<Void> module)>(isLeaf: true)
-external void context_put_module(Pointer<Utf8> name, Pointer<Void> module);
+@Native<Void Function(Pointer<Utf8> name, Pointer<Void> module, Uint64 loader)>(isLeaf: true)
+external void context_put_module(Pointer<Utf8> name, Pointer<Void> module, int loader);
 
 @Native<Void Function(Pointer<Utf8> name)>(isLeaf: true)
 external void context_remove_module(Pointer<Utf8> name);
+
+@Native<Void Function()>(isLeaf: false)
+external void context_load_modules();

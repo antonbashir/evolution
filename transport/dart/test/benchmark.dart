@@ -11,65 +11,59 @@ Future<void> main(List<String> args) async {
   await _benchDartTcp();
 }
 
-Future<void> _benchMyTcp() => launch(
-      (creator) => creator
-          .create(CoreModule(), CoreDefaults.module)
-          .create(MemoryModule(), MemoryDefaults.module)
-          .create(ExecutorModule(), ExecutorDefaults.module)
-          .create(TransportModule(), TransportDefaults.module),
-    ).activate(
+Future<void> _benchMyTcp() async => await launch(
+      [
+        (CoreModule(), CoreDefaults.module),
+        (MemoryModule(), MemoryDefaults.module),
+        (ExecutorModule(), ExecutorDefaults.module),
+        (TransportModule(), TransportDefaults.module),
+      ],
       () async {
         final transport = context().transport();
         await transport.initialize();
         final encoder = Utf8Encoder();
         final fromServer = encoder.convert("from server\n");
-
         for (var i = 0; i < 8; i++) {
-          Isolate.run(
-            () => fork((loader) => loader.load(CoreModule()).load(MemoryModule()).load(ExecutorModule()).load(TransportModule())).activate(
-              () async {
-                final worker = context().transport();
-                await worker.initialize();
-                worker.servers.tcp(
-                  InternetAddress("0.0.0.0"),
-                  12345,
-                  (connection) => connection.stream().listen((payload) {
-                    payload.release();
-                    connection.writeSingle(fromServer);
-                  }),
-                );
-                join();
-              },
-            ),
-          );
+          Isolate.run(() => fork(
+                () async {
+                  final transport = context().transport();
+                  await transport.initialize();
+                  transport.servers.tcp(
+                    InternetAddress("0.0.0.0"),
+                    12345,
+                    (connection) => connection.stream().listen((payload) {
+                      payload.release();
+                      connection.writeSingle(fromServer);
+                    }),
+                  );
+                  join();
+                },
+              ));
         }
         await Future.delayed(Duration(seconds: 1));
         for (var i = 0; i < 8; i++) {
-          Isolate.run(
-            () => fork((loader) => loader.load(CoreModule()).load(MemoryModule()).load(ExecutorModule()).load(TransportModule())).activate(
-              () async {
-                final worker = context().transport();
-                await worker.initialize();
-                final connector = await worker.clients.tcp(InternetAddress("127.0.0.1"), 12345, configuration: TransportDefaults.tcpClient.copyWith(pool: 256));
-                var count = 0;
-                final time = Stopwatch();
-                time.start();
-                for (var client in connector.clients) {
-                  client.stream().listen((element) {
-                    count++;
-                    element.release();
+          Isolate.run(() => fork(
+                () async {
+                  final worker = context().transport();
+                  await worker.initialize();
+                  final connector = await worker.clients.tcp(InternetAddress("127.0.0.1"), 12345, configuration: TransportDefaults.tcpClient.copyWith(pool: 256));
+                  var count = 0;
+                  final time = Stopwatch();
+                  time.start();
+                  for (var client in connector.clients) {
+                    client.stream().listen((element) {
+                      count++;
+                      element.release();
+                      client.writeSingle(fromServer);
+                    });
                     client.writeSingle(fromServer);
-                  });
-                  client.writeSingle(fromServer);
-                }
-                await Future.delayed(Duration(seconds: 10));
-                print("My RPS: ${count / 10}");
-                join();
-              },
-            ),
-          );
+                  }
+                  await Future.delayed(Duration(seconds: 10));
+                  print("My RPS: ${count / 10}");
+                  join();
+                },
+              ));
         }
-
         await Future.delayed(Duration(seconds: 15));
       },
     );
@@ -77,7 +71,6 @@ Future<void> _benchMyTcp() => launch(
 Future<void> _benchDartTcp() async {
   final encoder = Utf8Encoder();
   final fromServer = encoder.convert("from server\n");
-
   for (var i = 0; i < 2; i++) {
     Isolate.spawn((_) async {
       ServerSocket.bind(InternetAddress("127.0.0.1"), 2345, shared: true).then((server) {

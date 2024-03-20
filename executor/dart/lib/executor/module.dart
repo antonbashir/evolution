@@ -5,6 +5,7 @@ import 'package:core/core.dart';
 import 'package:ffi/ffi.dart';
 import 'package:memory/memory/constants.dart';
 
+import '../executor.dart';
 import 'bindings.dart';
 import 'broker.dart';
 import 'configuration.dart';
@@ -43,18 +44,15 @@ class ExecutorModuleState implements ModuleState {
 class ExecutorModule with Module<executor_module, ExecutorModuleConfiguration, ExecutorModuleState> {
   final name = executorModuleName;
   final dependencies = {coreModuleName, memoryModuleName};
-  final ExecutorModuleState state;
-
-  ExecutorModule({ExecutorModuleState? state}) : state = state ?? ExecutorModuleState();
+  final state = ExecutorModuleState();
+  final loader = NativeCallable<ModuleLoader<executor_module>>.listener(_load);
+  static void _load(Pointer<executor_module> native) => ExecutorModule().load(ExecutorModuleConfiguration.fromNative(native.ref.configuration));
 
   @override
   Pointer<executor_module> create(ExecutorModuleConfiguration configuration) {
     SystemLibrary.loadByName(executorLibraryName, executorPackageName);
     return using((arena) => executor_module_create(configuration.toNative(arena)));
   }
-
-  @override
-  ExecutorModuleConfiguration load(Pointer<executor_module> native) => ExecutorModuleConfiguration.fromNative(native.ref.configuration);
 
   @override
   FutureOr<void> initialize() {

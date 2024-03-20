@@ -48,18 +48,15 @@ class MemoryModuleState implements ModuleState {
 class MemoryModule with Module<memory_module, MemoryModuleConfiguration, MemoryModuleState> {
   final name = memoryModuleName;
   final dependencies = {coreModuleName};
-  final MemoryModuleState state;
-
-  MemoryModule({MemoryModuleState? state}) : state = state ?? MemoryModuleState();
+  final state = MemoryModuleState();
+  final loader = NativeCallable<ModuleLoader<memory_module>>.listener(_load);
+  static void _load(Pointer<memory_module> native) => MemoryModule().load(MemoryModuleConfiguration.fromNative(native.ref.configuration));
 
   @override
   Pointer<memory_module> create(MemoryModuleConfiguration configuration) {
     SystemLibrary.loadByName(configuration.libraryPackageMode == LibraryPackageMode.shared ? memorySharedLibraryName : memoryLibraryName, memoryPackageName);
     return using((arena) => memory_module_create(configuration.toNative(arena)));
   }
-
-  @override
-  MemoryModuleConfiguration load(Pointer<memory_module> native) => MemoryModuleConfiguration.fromNative(native.ref.configuration);
 
   @override
   FutureOr<void> initialize() {

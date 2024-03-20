@@ -9,7 +9,6 @@ import 'constants.dart';
 import 'context.dart';
 import 'exceptions.dart';
 import 'printer.dart';
-import 'state.dart';
 
 void _defaultErrorHandler(Error error, StackTrace stack) {
   Printer.printError(error, stack);
@@ -28,23 +27,34 @@ void _defaultExceptionHandler(Exception exception, StackTrace stack) {
   Printer.printException(exception, stack);
 }
 
+typedef PrinterFunction = void Function(String message);
+typedef ErrorHandlerFunction = void Function(Error error, StackTrace stackTrace);
+typedef ExceptionHandlerFunction = void Function(Exception exception, StackTrace stackTrace);
+
+class CoreModuleState implements ModuleState {
+  final PrinterFunction printer;
+  final ErrorHandlerFunction errorHandler;
+  final ExceptionHandlerFunction exceptionHandler;
+
+  CoreModuleState({
+    required this.printer,
+    required this.errorHandler,
+    required this.exceptionHandler,
+  });
+}
+
 class CoreModule with Module<core_module, CoreModuleConfiguration, CoreModuleState> {
   final name = coreModuleName;
-  final CoreModuleState state;
-
-  CoreModule({CoreModuleState? state})
-      : this.state = state ??
-            CoreModuleState(
-              printer: print,
-              errorHandler: _defaultErrorHandler,
-              exceptionHandler: _defaultExceptionHandler,
-            );
+  final state = CoreModuleState(
+    printer: print,
+    errorHandler: _defaultErrorHandler,
+    exceptionHandler: _defaultExceptionHandler,
+  );
+  final loader = NativeCallable<ModuleLoader<core_module>>.listener(_load);
+  static void _load(Pointer<core_module> native) => CoreModule().load(CoreModuleConfiguration.fromNative(native.ref.configuration));
 
   @override
   Pointer<core_module> create(CoreModuleConfiguration configuration) => using((arena) => core_module_create(configuration.toNative(arena)));
-
-  @override
-  CoreModuleConfiguration load(Pointer<core_module> native) => CoreModuleConfiguration.fromNative(native.ref.configuration);
 
   @override
   void destroy() => core_module_destroy(native);
