@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:ffi';
-import 'dart:isolate';
 
 import 'package:ffi/ffi.dart';
 
@@ -128,9 +127,24 @@ Future<void> fork(FutureOr<void> Function() main) async {
   information(CoreMessages.modulesUnloaded(_context._modules.keys));
 }
 
-RawReceivePort? _killer = null;
-SendPort join() {
-  if (_killer != null) return _killer!.sendPort;
-  _killer = RawReceivePort(() => _killer?.close());
-  return _killer!.sendPort;
+Completer? _blocker = null;
+Future<void> block() async {
+  if (_blocker != null) {
+    await _blocker!.future;
+    _blocker = null;
+    return;
+  }
+  _blocker = Completer();
+  await _blocker!.future;
+  _blocker = null;
+}
+
+void unblock() {
+  if (_blocker == null) {
+    return;
+  }
+  if (_blocker!.isCompleted) {
+    return;
+  }
+  _blocker!.complete();
 }

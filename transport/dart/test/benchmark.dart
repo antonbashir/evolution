@@ -13,10 +13,10 @@ Future<void> main(List<String> args) async {
 
 Future<void> _benchMyTcp() async => await launch(
       [
-        (CoreModule(), CoreDefaults.module),
-        (MemoryModule(), MemoryDefaults.module),
-        (ExecutorModule(), ExecutorDefaults.module),
-        (TransportModule(), TransportDefaults.module),
+        CoreModule(),
+        MemoryModule(),
+        ExecutorModule(),
+        TransportModule(),
       ],
       () async {
         final transport = context().transport();
@@ -36,7 +36,7 @@ Future<void> _benchMyTcp() async => await launch(
                       connection.writeSingle(fromServer);
                     }),
                   );
-                  join();
+                  block();
                 },
               ));
         }
@@ -60,7 +60,7 @@ Future<void> _benchMyTcp() async => await launch(
                   }
                   await Future.delayed(Duration(seconds: 10));
                   print("My RPS: ${count / 10}");
-                  join();
+                  block();
                 },
               ));
         }
