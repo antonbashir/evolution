@@ -2,18 +2,21 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'dart:io' as io;
 
+import 'package:core/core.dart';
 import 'package:memory/memory/defaults.dart';
 import 'package:test/test.dart';
 import 'package:transport/transport.dart';
+import 'package:transport/transport/bindings.dart';
 
 import 'generators.dart';
 import 'latch.dart';
+import 'test.dart';
 import 'validators.dart';
 
 void testTcpBuffers() {
   test("(tcp)", () async {
-    final transport = TransportModule()..initialize();
-    final worker = Transport(transport.transport(configuration: TransportDefaults.transport));
+    final transport = context().transport();
+    final worker = transport;
     await worker.initialize();
 
     var serverCompleter = Completer();
@@ -71,8 +74,8 @@ void testTcpBuffers() {
 
 void testUdpBuffers() {
   test("(udp)", () async {
-    final transport = TransportModule()..initialize();
-    final worker = Transport(transport.transport(configuration: TransportDefaults.transport));
+    final transport = context().transport();
+    final worker = transport;
     await worker.initialize();
 
     var serverCompleter = Completer();
@@ -133,8 +136,8 @@ void testUdpBuffers() {
 
 void testFileBuffers() {
   test("(file)", () async {
-    final transport = TransportModule()..initialize();
-    final worker = Transport(transport.transport(configuration: TransportDefaults.transport));
+    final transport = context().transport();
+    final worker = transport;
     await worker.initialize();
     final file = io.File("file");
     if (file.existsSync()) file.deleteSync();
@@ -168,35 +171,39 @@ void testFileBuffers() {
 }
 
 void testBuffersOverflow() {
-  test("(overflow)", () async {
-    final transport = TransportModule()..initialize();
-    final worker = Transport(transport.transport(configuration: TransportDefaults.transport.copyWith(memoryConfiguration: MemoryDefaults.memory.copyWith(staticBuffersCapacity: 2))));
-    await worker.initialize();
-
-    worker.servers.tcp(io.InternetAddress("0.0.0.0"), 12345, (connection) {
-      connection.stream().listen((value) {
-        value.release();
-        connection.writeSingle(Generators.response());
-        connection.writeSingle(Generators.response());
-        connection.writeSingle(Generators.response());
-        connection.writeSingle(Generators.response());
-        connection.writeSingle(Generators.response());
-        connection.writeSingle(Generators.response());
-      });
-    });
-    var clients = await worker.clients.tcp(io.InternetAddress("127.0.0.1"), 12345);
-    clients.select().writeSingle(Generators.request());
-    final bytes = BytesBuilder();
-    final completer = Completer();
-    clients.select().stream().listen((value) {
-      bytes.add(value.takeBytes());
-      if (bytes.length == Generators.responsesSumUnordered(6).length) {
-        completer.complete();
-      }
-    });
-    await completer.future;
-    Validators.responsesSumUnordered(bytes.takeBytes(), 6);
-    if (worker.buffers.used() != 2) throw TestFailure("actual: ${worker.buffers.used()}");
-    await transport.shutdown(gracefulTimeout: Duration(milliseconds: 100));
-  });
+  test(
+    "(overflow)",
+    () => execute(
+      () async {
+        final transport = context().transport(configuration: TransportDefaults.transport.copyWith(memoryConfiguration: MemoryDefaults.memory.copyWith(staticBuffersCapacity: 2)));
+        final worker = transport;
+        await worker.initialize();
+        worker.servers.tcp(io.InternetAddress("0.0.0.0"), 12345, (connection) {
+          connection.stream().listen((value) {
+            value.release();
+            connection.writeSingle(Generators.response());
+            connection.writeSingle(Generators.response());
+            connection.writeSingle(Generators.response());
+            connection.writeSingle(Generators.response());
+            connection.writeSingle(Generators.response());
+            connection.writeSingle(Generators.response());
+          });
+        });
+        var clients = await worker.clients.tcp(io.InternetAddress("127.0.0.1"), 12345);
+        clients.select().writeSingle(Generators.request());
+        final bytes = BytesBuilder();
+        final completer = Completer();
+        clients.select().stream().listen((value) {
+          bytes.add(value.takeBytes());
+          if (bytes.length == Generators.responsesSumUnordered(6).length) {
+            completer.complete();
+          }
+        });
+        await completer.future;
+        Validators.responsesSumUnordered(bytes.takeBytes(), 6);
+        if (worker.buffers.used() != 2) throw TestFailure("actual: ${worker.buffers.used()}");
+        await transport.shutdown(gracefulTimeout: Duration(milliseconds: 100));
+      },
+    ),
+  );
 }

@@ -11,7 +11,7 @@ import 'latch.dart';
 
 void shutdown() {
   test("shutdown (before initialization)", () async {
-    final transport = TransportModule()..initialize();
+    final transport = context().transport();
     final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
     await worker.initialize();
     final serverReactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module);
@@ -43,7 +43,7 @@ void shutdown() {
   });
 
   test("shutdown (after initialization)", () async {
-    final transport = TransportModule()..initialize();
+    final transport = context().transport();
     final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
     await worker.initialize();
     final serverReactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module);
@@ -83,7 +83,7 @@ void shutdown() {
   });
 
   test("graceful shutdown", () async {
-    final transport = TransportModule()..initialize();
+    final transport = context().transport();
     final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
     await worker.initialize();
     final serverReactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module.copyWith(gracefulTimeout: Duration(seconds: 1)));
@@ -139,7 +139,7 @@ void shutdown() {
   });
 
   test("graceful shutdown (fragmentation)", () async {
-    final transport = TransportModule()..initialize();
+    final transport = context().transport();
     final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
     await worker.initialize();
     final serverReactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module.copyWith(gracefulTimeout: Duration(seconds: 1)));

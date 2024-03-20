@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:transport/transport.dart';
 import 'package:test/test.dart';
-import 'package:transport/transport/exception.dart';
+import 'package:core/core.dart';
 
 Function _handleTimeout(Stopwatch actual, Duration expected, Completer completer) => (error) {
       if (!(error is TransportCanceledException)) throw TestFailure("actual: $error");
@@ -14,8 +14,8 @@ Function _handleTimeout(Stopwatch actual, Duration expected, Completer completer
 
 void testTcpTimeout({required Duration connection, required Duration serverRead, required Duration clientRead}) {
   test("(timeout tcp single) [connection = ${connection.inSeconds}, serverRead = ${serverRead.inSeconds}, clientRead = ${clientRead.inSeconds}] ", () async {
-    final transport = TransportModule()..initialize();
-    final worker = Transport(transport.transport(configuration: TransportDefaults.transport));
+    final transport = context().transport();
+    final worker = transport;
     await worker.initialize();
 
     final time = Stopwatch();
@@ -53,8 +53,8 @@ void testTcpTimeout({required Duration connection, required Duration serverRead,
 
 void testUdpTimeout({required Duration serverRead, required Duration clientRead}) {
   test("(timeout udp single) [serverRead = ${serverRead.inSeconds}, clientRead = ${clientRead.inSeconds}] ", () async {
-    final transport = TransportModule()..initialize();
-    final worker = Transport(transport.transport(configuration: TransportDefaults.transport));
+    final transport = context().transport();
+    final worker = transport;
     await worker.initialize();
 
     final time = Stopwatch();

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:ffi';
-import 'dart:isolate';
 
 import 'package:meta/meta.dart';
 
@@ -18,17 +17,15 @@ import 'server/responder.dart';
 import 'timeout.dart';
 
 class Transport {
-  final _fromTransport = ReceivePort();
+  final Pointer<transport> _native;
+  final Executor _executor;
 
-  late final Pointer<transport> _native;
-  late final Executor _executor;
   late final TransportClientRegistry _clientRegistry;
   late final TransportServerRegistry _serverRegistry;
   late final TransportClientsFactory _clientsFactory;
   late final TransportServersFactory _serversFactory;
   late final TransportFileRegistry _filesRegistry;
   late final TransportFilesFactory _filesFactory;
-  late final MemoryModule _memory;
   late final MemoryStaticBuffers _staticBuffers;
   late final TransportTimeoutChecker _timeoutChecker;
   late final TransportPayloadPool _payloadPool;
@@ -45,9 +42,6 @@ class Transport {
   Transport(this._native, this._executor);
 
   Future<void> initialize() async {
-    final configuration = await _fromTransport.first as List;
-    _native = Pointer.fromAddress(configuration[0] as int).cast<transport>();
-    _fromTransport.close();
     await _executor.initialize(processor: _process, pending: () => 0);
     _staticBuffers = context().staticBuffers();
     _native.ref.buffers = _staticBuffers.native.ref.buffers;
@@ -95,7 +89,6 @@ class Transport {
     _active = false;
     await _executor.shutdown();
     transport_destroy(_native);
-    _memory.destroy();
   }
 
   void _process(Pointer<Pointer<executor_completion_event>> completions, int count) {

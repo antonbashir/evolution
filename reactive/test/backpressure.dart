@@ -10,7 +10,7 @@ import 'latch.dart';
 void backpressure() {
   test("4 + 2 requests -> infinity response", () async {
     final latch = Latch(6);
-    final transport = TransportModule()..initialize();
+    final transport = context().transport();
     final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
     await worker.initialize();
     final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module);

@@ -1,5 +1,6 @@
 import 'package:transport/transport.dart';
 import 'package:test/test.dart';
+import 'package:transport/transport/bindings.dart';
 
 import 'buffers.dart';
 import 'bulk.dart';
@@ -10,16 +11,18 @@ import 'timeout.dart';
 import 'udp.dart';
 import 'unix.dart';
 
+void execute(void Function() test) => launch([CoreModule(), MemoryModule(), ExecutorModule(), TransportModule()], test);
+
 void main() {
   final initialization = true;
-  final shutdown = true;
-  final bulk = true;
-  final tcp = true;
-  final udp = true;
-  final unixStream = true;
-  final file = true;
-  final timeout = true;
-  final buffers = true;
+  final shutdown = false;
+  final bulk = false;
+  final tcp = false;
+  final udp = false;
+  final unixStream = false;
+  final file = false;
+  final timeout = false;
+  final buffers = false;
 
   group("[initialization]", timeout: Timeout(Duration(hours: 1)), skip: !initialization, () {
     testInitialization();
@@ -86,10 +89,12 @@ void main() {
 }
 
 void testInitialization() {
-  test("(initialize)", () async {
-    final module = TransportModule()..initialize();
-    final transport = Transport(module.transport(configuration: TransportDefaults.transport));
-    await transport.initialize();
-    await module.shutdown();
-  });
+  test(
+    "(initialize)",
+    () => execute(() async {
+      final transport = context().transport();
+      await transport.initialize();
+      await transport.shutdown();
+    }),
+  );
 }

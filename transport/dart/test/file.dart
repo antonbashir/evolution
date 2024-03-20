@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:core/core.dart';
 import 'package:transport/transport.dart';
 import 'package:test/test.dart';
 
@@ -9,10 +10,10 @@ import 'validators.dart';
 
 void testFileSingle({required int index}) {
   test("(single) [index = $index]", () async {
-    final transport = TransportModule()..initialize();
-    final worker = Transport(transport.transport(configuration: TransportDefaults.transport));
+    final transport = context().transport();
+    final worker = transport;
     await worker.initialize();
-    var nativeFile = File("file-${worker.id}");
+    var nativeFile = File("file-${worker.descriptor}");
     if (nativeFile.existsSync()) nativeFile.deleteSync();
     if (!nativeFile.existsSync()) nativeFile.createSync();
     final file = worker.files.open(nativeFile.path, create: true);
@@ -25,10 +26,10 @@ void testFileSingle({required int index}) {
 
 void testFileLoad({required int index, required int count}) {
   test("(load) [index = $index, count = $count]", () async {
-    final transport = TransportModule()..initialize();
-    final worker = Transport(transport.transport(configuration: TransportDefaults.transport));
+    final transport = context().transport();
+    final worker = transport;
     await worker.initialize();
-    var nativeFile = File("file-${worker.id}");
+    var nativeFile = File("file-${worker.descriptor}");
     if (nativeFile.existsSync()) nativeFile.deleteSync();
     if (!nativeFile.existsSync()) nativeFile.createSync();
     final file = worker.files.open(nativeFile.path, create: true);

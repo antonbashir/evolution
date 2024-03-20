@@ -1,6 +1,7 @@
 import 'dart:io' as io;
 import 'dart:typed_data';
 
+import 'package:core/core.dart';
 import 'package:transport/transport.dart';
 import 'package:test/test.dart';
 
@@ -10,8 +11,8 @@ import 'validators.dart';
 
 void testUdpSingle({required int index, required int clients}) {
   test("(single) [clients = $clients]", () async {
-    final transport = TransportModule()..initialize();
-    final worker = Transport(transport.transport(configuration: TransportDefaults.transport));
+    final transport = context().transport();
+    final worker = transport;
     await worker.initialize();
     worker.servers.udp(io.InternetAddress("0.0.0.0"), 12345).stream().listen(
       (event) {
@@ -21,7 +22,7 @@ void testUdpSingle({required int index, required int clients}) {
     );
     final latch = Latch(clients);
     for (var clientIndex = 0; clientIndex < clients; clientIndex++) {
-      final client = worker.clients.udp(io.InternetAddress("127.0.0.1"), (worker.id + 1) * 2000 + (clientIndex + 1), io.InternetAddress("127.0.0.1"), 12345);
+      final client = worker.clients.udp(io.InternetAddress("127.0.0.1"), (worker.descriptor + 1) * 2000 + (clientIndex + 1), io.InternetAddress("127.0.0.1"), 12345);
       client.stream().listen((event) {
         Validators.response(event.takeBytes());
         latch.countDown();
@@ -35,8 +36,8 @@ void testUdpSingle({required int index, required int clients}) {
 
 void testUdpMany({required int index, required int clients, required int count}) {
   test("(many) [clients = $clients, count = $count]", () async {
-    final transport = TransportModule()..initialize();
-    final worker = Transport(transport.transport(configuration: TransportDefaults.transport));
+    final transport = context().transport();
+    final worker = transport;
     await worker.initialize();
     final serverRequests = BytesBuilder();
     worker.servers.udp(io.InternetAddress("0.0.0.0"), 12345).stream().listen(
@@ -50,7 +51,7 @@ void testUdpMany({required int index, required int clients, required int count})
     );
     for (var clientIndex = 0; clientIndex < clients; clientIndex++) {
       final latch = Latch(1);
-      final client = worker.clients.udp(io.InternetAddress("127.0.0.1"), (worker.id + 1) * 2000 + (clientIndex + 1), io.InternetAddress("127.0.0.1"), 12345);
+      final client = worker.clients.udp(io.InternetAddress("127.0.0.1"), (worker.descriptor + 1) * 2000 + (clientIndex + 1), io.InternetAddress("127.0.0.1"), 12345);
       final clientResults = BytesBuilder();
       client.stream().listen((event) {
         clientResults.add(event.takeBytes());

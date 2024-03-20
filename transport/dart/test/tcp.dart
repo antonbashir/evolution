@@ -1,6 +1,7 @@
 import 'dart:io' as io;
 import 'dart:typed_data';
 
+import 'package:core/core.dart';
 import 'package:transport/transport.dart';
 import 'package:test/test.dart';
 
@@ -10,8 +11,8 @@ import 'validators.dart';
 
 void testTcpSingle({required int index, required int clientsPool}) {
   test("(single) [clients = $clientsPool]", () async {
-    final transport = TransportModule()..initialize();
-    final worker = Transport(transport.transport(configuration: TransportDefaults.transport));
+    final transport = context().transport();
+    final worker = transport;
     await worker.initialize();
     worker.servers.tcp(
       io.InternetAddress("0.0.0.0"),
@@ -39,8 +40,8 @@ void testTcpSingle({required int index, required int clientsPool}) {
 
 void testTcpMany({required int index, required int clientsPool, required int count}) {
   test("(many) [clients = $clientsPool, count = $count]", () async {
-    final transport = TransportModule()..initialize();
-    final worker = Transport(transport.transport(configuration: TransportDefaults.transport));
+    final transport = context().transport();
+    final worker = transport;
     await worker.initialize();
     worker.servers.tcp(
       io.InternetAddress("0.0.0.0"),
