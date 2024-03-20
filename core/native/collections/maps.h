@@ -16,7 +16,7 @@ DART_STRUCTURE struct module_container
     DART_FIELD uint32_t id;
     DART_FIELD const char* name;
     DART_FIELD void* module;
-    DART_FIELD uintptr_t loader;
+    DART_FIELD const char* type;
 };
 #define simple_map_node_t struct module_container
 #define simple_map_hash(node, _) (hash_string(node->name, strlen(node->name)))

@@ -49,8 +49,13 @@ class MemoryModule with Module<memory_module, MemoryModuleConfiguration, MemoryM
   final name = memoryModuleName;
   final dependencies = {coreModuleName};
   final state = MemoryModuleState();
-  final loader = NativeCallable<ModuleLoader<memory_module>>.listener(_load);
-  static void _load(Pointer<memory_module> native) => MemoryModule().load(MemoryModuleConfiguration.fromNative(native.ref.configuration));
+
+  MemoryModule();
+
+  @entry
+  MemoryModule._restore(int address) {
+    restore(address, (native) => MemoryModuleConfiguration.fromNative(native.ref.configuration));
+  }
 
   @override
   Pointer<memory_module> create(MemoryModuleConfiguration configuration) {

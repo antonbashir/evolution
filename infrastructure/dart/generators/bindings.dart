@@ -27,6 +27,7 @@ final ffiTypeMapping = {
   "__u64": "Uint64",
   "char": "Uint8",
   "void": "Void",
+  "Dart_Handle": "Handle",
 };
 
 final dartTypeMapping = {
@@ -55,6 +56,7 @@ final dartTypeMapping = {
   "__s64": "int",
   "__u64": "int",
   "char": "int",
+  "Dart_Handle": "Handle",
 };
 
 const dartField = "DART_FIELD";

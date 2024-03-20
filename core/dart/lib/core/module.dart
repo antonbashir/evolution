@@ -45,13 +45,14 @@ class CoreModuleState implements ModuleState {
 
 class CoreModule with Module<core_module, CoreModuleConfiguration, CoreModuleState> {
   final name = coreModuleName;
-  final state = CoreModuleState(
-    printer: print,
-    errorHandler: _defaultErrorHandler,
-    exceptionHandler: _defaultExceptionHandler,
-  );
-  final loader = NativeCallable<ModuleLoader<core_module>>.listener(_load);
-  static void _load(Pointer<core_module> native) => CoreModule().load(CoreModuleConfiguration.fromNative(native.ref.configuration));
+  final state = CoreModuleState(printer: print, errorHandler: _defaultErrorHandler, exceptionHandler: _defaultExceptionHandler);
+
+  CoreModule();
+
+  @entry
+  CoreModule._restore(int address) {
+    restore(address, (native) => CoreModuleConfiguration.fromNative(native.ref.configuration));
+  }
 
   @override
   Pointer<core_module> create(CoreModuleConfiguration configuration) => using((arena) => core_module_create(configuration.toNative(arena)));

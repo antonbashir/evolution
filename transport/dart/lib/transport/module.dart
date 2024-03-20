@@ -18,8 +18,11 @@ class TransportModule with Module<transport_module, TransportModuleConfiguration
   final name = transportModuleName;
   final state = TransportModuleState();
   final dependencies = {coreModuleName, memoryModuleName, executorModuleName};
-  final loader = NativeCallable<ModuleLoader<transport_module>>.listener(_load);
-  static void _load(Pointer<transport_module> native) => TransportModule().load(TransportModuleConfiguration.fromNative(native.ref.configuration));
+
+  @entry
+  TransportModule._restore(int address) {
+    restore(address, (native) => TransportModuleConfiguration.fromNative(native.ref.configuration));
+  }
 
   @override
   Pointer<transport_module> create(TransportModuleConfiguration configuration) {

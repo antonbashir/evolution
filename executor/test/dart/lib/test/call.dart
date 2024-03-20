@@ -10,19 +10,17 @@ import 'bindings.dart';
 import 'consumer.dart';
 import 'producer.dart';
 
-void _execute(FutureOr<void> Function() main) {
-  launch(
-    [
-      (CoreModule(), CoreDefaults.module),
-      (MemoryModule(), MemoryDefaults.module),
-      (ExecutorModule(), ExecutorDefaults.module),
-    ],
-    () async {
-      SystemLibrary.loadByPath("${Directory(path.dirname(Platform.script.toFilePath())).parent.path}/assets/libexecutor_test.so");
-      await main();
-    },
-  );
-}
+Future<void> _execute(FutureOr<void> Function() test) => launch(
+      [
+        (CoreModule(), CoreDefaults.module),
+        (MemoryModule(), MemoryDefaults.module),
+        (ExecutorModule(), ExecutorDefaults.module),
+      ],
+      () async {
+        SystemLibrary.loadByPath("${Directory(path.dirname(Platform.script.toFilePath())).parent.path}/assets/libexecutor_test.so");
+        await test();
+      },
+    );
 
 void testCallNative() {
   test(

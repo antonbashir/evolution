@@ -45,8 +45,13 @@ class ExecutorModule with Module<executor_module, ExecutorModuleConfiguration, E
   final name = executorModuleName;
   final dependencies = {coreModuleName, memoryModuleName};
   final state = ExecutorModuleState();
-  final loader = NativeCallable<ModuleLoader<executor_module>>.listener(_load);
-  static void _load(Pointer<executor_module> native) => ExecutorModule().load(ExecutorModuleConfiguration.fromNative(native.ref.configuration));
+
+  ExecutorModule();
+
+  @entry
+  ExecutorModule._restore(int address) {
+    restore(address, (native) => ExecutorModuleConfiguration.fromNative(native.ref.configuration));
+  }
 
   @override
   Pointer<executor_module> create(ExecutorModuleConfiguration configuration) {

@@ -5,6 +5,7 @@ import 'environment.dart';
 
 const inline = pragma("vm:prefer-inline");
 const neverInline = pragma("vm:never-inline");
+const entry = pragma("vm:entry-point");
 
 const coreModuleName = "core";
 const corePackageName = "core";

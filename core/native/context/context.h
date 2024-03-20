@@ -6,6 +6,7 @@
 #include <common/constants.h>
 #include <hashing/hashing.h>
 #include <system/library.h>
+#include "dart/dart_api.h"
 
 #if defined(__cplusplus)
 extern "C"
@@ -23,7 +24,7 @@ DART_STRUCTURE struct context
 DART_LEAF_FUNCTION struct context* context_get();
 DART_LEAF_FUNCTION void context_create();
 DART_LEAF_FUNCTION void* context_get_module(const char* name);
-DART_LEAF_FUNCTION void context_put_module(const char* name, void* module, uintptr_t loader);
+DART_LEAF_FUNCTION void context_put_module(const char* name, void* module, const char* type);
 DART_LEAF_FUNCTION void context_remove_module(const char* name);
 DART_FUNCTION void context_load_modules();
 

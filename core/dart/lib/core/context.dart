@@ -13,26 +13,25 @@ import 'printer.dart';
 final _context = _Context._();
 ContextProvider context() => _context;
 
-typedef ModuleLoader<NativeType extends Struct> = Void Function(Pointer<NativeType> native);
+typedef ModuleLoader<ModuleNative extends NativeType> = Void Function(Pointer<ModuleNative> native);
 
-mixin ModuleProvider<NativeType extends Struct, ConfigurationType extends ModuleConfiguration, StateType extends ModuleState> {
+mixin ModuleProvider<ModuleNative extends NativeType, ConfigurationType extends ModuleConfiguration, StateType extends ModuleState> {
   String get name;
   ConfigurationType get configuration;
   StateType get state;
-  Pointer<NativeType> get native;
+  Pointer<ModuleNative> get native;
 }
 
 mixin ModuleState {}
 mixin ModuleConfiguration {}
 
-mixin Module<NativeType extends Struct, ConfigurationType extends ModuleConfiguration, StateType extends ModuleState> implements ModuleProvider<NativeType, ConfigurationType, StateType> {
+mixin Module<ModuleNative extends NativeType, ConfigurationType extends ModuleConfiguration, StateType extends ModuleState> implements ModuleProvider<ModuleNative, ConfigurationType, StateType> {
   Set<String> get dependencies => {};
-  NativeCallable<void Function(Pointer<NativeType> module)> get loader;
 
-  late final Pointer<NativeType> native;
+  late final Pointer<ModuleNative> native;
   late final ConfigurationType configuration;
 
-  Pointer<NativeType> create(ConfigurationType configuration);
+  Pointer<ModuleNative> create(ConfigurationType configuration);
 
   FutureOr<void> initialize() {}
 
@@ -53,9 +52,9 @@ mixin Module<NativeType extends Struct, ConfigurationType extends ModuleConfigur
     this.configuration = configuration;
   }
 
-  void load(ConfigurationType configuration) {
-    this.native = native;
-    this.configuration = configuration;
+  void restore(int address, ConfigurationType Function(Pointer<ModuleNative>) configuration) {
+    this.native = Pointer.fromAddress(address);
+    this.configuration = configuration(native);
     _context._load(this);
   }
 }
@@ -68,6 +67,8 @@ mixin ContextProvider {
 class _Context implements ContextProvider {
   var _modules = <String, Module>{};
   var _native = <String, Pointer<Void>>{};
+
+  late Completer _restoreCompleter;
 
   _Context._() {
     SystemLibrary.loadCore();
@@ -91,16 +92,21 @@ class _Context implements ContextProvider {
     final failedDependencies = module.dependencies.where((dependency) => !_modules.containsKey(dependency)).toList();
     if (failedDependencies.isNotEmpty) throw CoreException(CoreErrors.moduleDependenciesNotFound(failedDependencies));
     _modules[module.name] = module.._spawn(configuration);
-    using((arena) => context_put_module(module.name.toNativeUtf8(allocator: arena), module.native.cast(), module.loader.nativeFunction.address));
+    using((arena) => context_put_module(module.name.toNativeUtf8(allocator: arena), module.native.cast(), module.runtimeType.toString().toNativeUtf8()));
     _native[module.name] = module.native.cast();
   }
 
   void _load(Module module) {
     if (_native[module.name] == null) throw CoreException(CoreErrors.moduleNotLoaded(module.name));
     _modules[module.name] = module;
+    if (_modules.length == _native.length) _restoreCompleter.complete();
   }
 
-  void _restore() => context_load_modules();
+  Future<void> _restore() async {
+    _restoreCompleter = Completer();
+    context_load_modules();
+    await _restoreCompleter.future;
+  }
 
   @override
   bool has(String id) => _modules[id] != null;
@@ -121,13 +127,12 @@ Future<void> launch(List<(Module, ModuleConfiguration)> modules, FutureOr<void> 
   await main();
   for (var module in _context._modules.values.toList().reversed) await Future.value(module.shutdown());
   for (var module in _context._modules.values.toList().reversed) module.destroy();
-  module.loader.close();
   information(CoreMessages.modulesDestroyed);
   _context._clear();
 }
 
 Future<void> fork(FutureOr<void> Function() main) async {
-  _context._restore();
+  await _context._restore();
   information(CoreMessages.modulesLoaded);
   for (var module in _context._modules.values) await Future.value(module.fork());
   await main();

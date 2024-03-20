@@ -72,6 +72,8 @@ extern "C"
 
 #define LOADING_LIBRARY_MESSAGE "Loading library: %s"
 
+#define DART_MODULE_FACTORY "_restore"
+
 #if defined(__cplusplus)
 }
 #endif

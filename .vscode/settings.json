@@ -153,6 +153,7 @@
     "transport.h": "c",
     "mutex": "c",
     "stop_token": "c",
-    "*.def": "c"
+    "*.def": "c",
+    "cmath": "c"
   },
 }

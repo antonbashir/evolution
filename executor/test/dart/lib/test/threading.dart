@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:ffi';
+import 'dart:io';
 import 'dart:isolate';
 
 import 'package:collection/collection.dart';
@@ -8,15 +9,26 @@ import 'package:executor_test/test/producer.dart';
 import 'package:ffi/ffi.dart';
 import 'package:memory/memory.dart';
 import 'package:test/test.dart';
+import 'package:path/path.dart' as path;
 
 import 'bindings.dart';
 
-ContextCreator _initialize(ContextCreator creator) => creator.create(CoreModule(), CoreDefaults.module).create(MemoryModule(), MemoryDefaults.module).create(ExecutorModule(), ExecutorDefaults.module);
+void _execute(FutureOr<void> Function() test) => launch(
+      [
+        (CoreModule(), CoreDefaults.module),
+        (MemoryModule(), MemoryDefaults.module),
+        (ExecutorModule(), ExecutorDefaults.module),
+      ],
+      () async {
+        SystemLibrary.loadByPath("${Directory(path.dirname(Platform.script.toFilePath())).parent.path}/assets/libexecutor_test.so");
+        await test();
+      },
+    );
 
 void testThreadingNative() {
   test(
     "[isolates]dart(bytes) <-> [threads]native(bytes)",
-    () => launch(_initialize).activate(() async {
+    () => _execute(() async {
       final messages = 16;
       final isolates = 4;
       final threads = 8;
@@ -69,7 +81,7 @@ void testThreadingNative() {
 void testThreadingDart() {
   test(
     "[threads]native(bytes) <-> [isolates]dart(bytes)",
-    () => launch(_initialize).activate(() async {
+    () => _execute(() async {
       final messages = 16;
       final isolates = 4;
       final threads = 8;
@@ -128,7 +140,7 @@ void testThreadingDart() {
   );
 }
 
-Future<void> _callNativeIsolate(List<dynamic> input) => fork((loader) => loader.load(CoreModule()).load(MemoryModule()).load(ExecutorModule())).activate(() async {
+Future<void> _callNativeIsolate(List<dynamic> input) => fork(() async {
       final messages = input[0];
       final threads = input[1];
       final calls = <Future<Pointer<executor_task>>>[];
@@ -158,7 +170,7 @@ Future<void> _callNativeIsolate(List<dynamic> input) => fork((loader) => loader.
       input[2].send(null);
     });
 
-Future<void> _callDartIsolate(List<dynamic> input) => fork((loader) => loader.load(CoreModule()).load(MemoryModule()).load(ExecutorModule())).activate(() async {
+Future<void> _callDartIsolate(List<dynamic> input) => fork(() async {
       final messages = input[0];
       final executor = context().broker();
       await executor.initialize();

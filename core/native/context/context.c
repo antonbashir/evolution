@@ -35,13 +35,13 @@ void* context_get_module(const char* name)
     return NULL;
 }
 
-void context_put_module(const char* name, void* module, uintptr_t loader)
+void context_put_module(const char* name, void* module, const char* type)
 {
     struct module_container container = {
         .id = context_instance.size,
         .name = strdup(name),
         .module = module,
-        .loader = loader,
+        .type = type,
     };
     memcpy(&context_instance.containers[context_instance.size], &container, sizeof(struct module_container));
     simple_map_modules_put_copy(context_instance.modules, &container, NULL, NULL);
@@ -63,9 +63,25 @@ void context_remove_module(const char* name)
 
 DART_LEAF_FUNCTION void context_load_modules()
 {
+    Dart_EnterScope();
     for (int i = 0; i < context_instance.size; i++)
     {
-        void (*loader)(void*) = (void (*)(void*))context_instance.containers[i].loader;
-        loader(context_instance.containers[i].module);
+        struct module_container container = context_instance.containers[i];
+        intptr_t librariesCount;
+        Dart_Handle libraries = Dart_GetLoadedLibraries();
+        Dart_ListLength(libraries, &librariesCount);
+        for (int libraryIndex = 0; libraryIndex < librariesCount; libraryIndex++)
+        {
+            Dart_Handle library = Dart_ListGetAt(libraries, libraryIndex);
+            if (Dart_IsNull(library) || Dart_IsError(library)) continue;
+            Dart_Handle className = Dart_NewStringFromUTF8((const uint8_t*)container.type, strlen(container.type));
+            Dart_Handle class = Dart_GetClass(library, className);
+            if (Dart_IsError(class) || Dart_IsNull(class)) continue;
+            Dart_Handle constructor = Dart_NewStringFromUTF8((const uint8_t*)DART_MODULE_FACTORY, strlen(DART_MODULE_FACTORY));
+            Dart_Handle arguments[1];
+            arguments[0] = Dart_NewIntegerFromUint64((uint64_t)container.module);
+            Dart_Handle createdModule = Dart_New(class, constructor, 1, arguments);
+        }
     }
+    Dart_ExitScope();
 }
