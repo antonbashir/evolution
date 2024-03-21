@@ -72,7 +72,7 @@ static void* executor_scheduler_listen(void* input)
                     bool result = Dart_PostInteger(executor->callback, executor->id);
                     if (!result)
                     {
-                        print_event(executor_module_event(event_error(event_scope(EXECUTOR_SCOPE_SCHEDULER_POLLIN),
+                        print_event(executor_module_event(event_error(event_field_scope(EXECUTOR_SCOPE_SCHEDULER_POLLIN),
                                                                       event_field(EXECUTOR_CQE_FIELD_RESULT, cqe->res),
                                                                       event_field(EXECUTOR_CQE_FIELD_USER_DATA, cqe->user_data),
                                                                       event_field(EXECUTOR_CQE_FIELD_FLAGS, cqe->flags))));
@@ -115,7 +115,7 @@ static void* executor_scheduler_listen(void* input)
                     bool result = Dart_PostInteger(executor->callback, executor->id);
                     if (!result)
                     {
-                        print_event(executor_module_event(event_error(event_scope(EXECUTOR_SCOPE_SCHEDULER_UNREGISTER),
+                        print_event(executor_module_event(event_error(event_field_scope(EXECUTOR_SCOPE_SCHEDULER_UNREGISTER),
                                                                       event_field(EXECUTOR_CQE_FIELD_RESULT, cqe->res),
                                                                       event_field(EXECUTOR_CQE_FIELD_USER_DATA, cqe->user_data),
                                                                       event_field(EXECUTOR_CQE_FIELD_FLAGS, cqe->flags))));

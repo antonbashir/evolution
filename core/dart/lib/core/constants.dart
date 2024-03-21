@@ -1,7 +1,10 @@
 import 'dart:ffi';
 import 'dart:typed_data';
 
+import '../core.dart';
+import 'context.dart';
 import 'environment.dart';
+import 'event.dart';
 
 const inline = pragma("vm:prefer-inline");
 const neverInline = pragma("vm:never-inline");
@@ -36,24 +39,37 @@ const nativeDirectory = "native";
 
 const modulesMaximum = 64;
 
-const printLevelPanic = 0;
-const printLevelError = 1;
-const printLevelWarning = 2;
-const printLevelInformation = 3;
-const printLevelTrace = 4;
+const eventFieldMessage = "message";
+const eventFieldCode = "code";
 
-const printLevelPanicLabel = "(panic)";
-const printLevelErrorLabel = "(error)";
-const printLevelWarningLabel = "(warning)";
-const printLevelInformationLabel = "(information)";
-const printLevelTraceLabel = "(trace)";
+const eventLevelUnknown = -1;
+const eventLevelPanic = 0;
+const eventLevelError = 1;
+const eventLevelWarning = 2;
+const eventLevelInformation = 3;
+const eventLevelTrace = 4;
 
-const printExceptionLabel = "(exception)";
+const eventLevelPanicLabel = "(panic)";
+const eventLevelErrorLabel = "(error)";
+const eventLevelWarningLabel = "(warning)";
+const eventLevelInformationLabel = "(information)";
+const eventLevelTraceLabel = "(trace)";
+
+String eventLevelFormat(int level) => switch (level) {
+      eventLevelInformation => eventLevelInformationLabel,
+      eventLevelTrace => eventLevelTraceLabel,
+      eventLevelWarning => eventLevelWarningLabel,
+      eventLevelError => eventLevelErrorLabel,
+      eventLevelPanic => eventLevelPanicLabel,
+      _ => "(unknown)"
+    };
 
 const printSystemExceptionTag = "system";
 
 const printErrorStackPart = "Error stack:";
 const printCatchStackPart = "Catch stack:";
+
+final datePickerFirstDate = DateTime(DateTime.now().year);
 
 enum LibraryPackageMode {
   shared,
@@ -72,14 +88,13 @@ class CoreErrors {
   static moduleDependenciesNotFound(List<String> dependencies) => "Module dependencies were not found: ${dependencies}";
 }
 
-class CoreMessages {
-  CoreMessages._();
+class CoreEvents {
+  CoreEvents._();
 
-  static String modulesCreated(Iterable<String> modules) => "Modules created: (${modules.join(",")})";
-  static String modulesDestroyed(Iterable<String> modules) => "Modules destroyed: (${modules.join(",")})";
-  static String modulesLoaded(Iterable<String> modules) => "Modules loaded: (${modules.join(",")})";
-  static String modulesUnloaded(Iterable<String> modules) => "Modules unloaded: (${modules.join(",")})";
-  static String loadingLibrary(path) => "Loading: $path";
+  static Event modulesCreated(Iterable<String> modules) => context().coreModuleEvent(Event.information([EventField.string(eventFieldMessage, "Modules created: (${modules.join(",")})")]));
+  static Event modulesDestroyed(Iterable<String> modules) => context().coreModuleEvent(Event.information([EventField.string(eventFieldMessage, "Modules destroyed: (${modules.join(",")})")]));
+  static Event modulesLoaded(Iterable<String> modules) => context().coreModuleEvent(Event.information([EventField.string(eventFieldMessage, "Modules loaded: (${modules.join(",")})")]));
+  static Event modulesUnloaded(Iterable<String> modules) => context().coreModuleEvent(Event.information([EventField.string(eventFieldMessage, "Modules unloaded: (${modules.join(",")})")]));
 }
 
 class TupleErrors {

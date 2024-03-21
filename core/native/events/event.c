@@ -2,7 +2,6 @@
 #include <printer/printer.h>
 #include <stacktrace/stacktrace.h>
 #include <strings/format.h>
-#include "field.h"
 
 #define raise(format, ...)                                                                                     \
     print_message("(panic): %s(...) %s:%d - " format "\n", __FUNCTION__, __FILENAME__, __LINE__, __VA_ARGS__); \
@@ -36,19 +35,6 @@
         ++(event->fields_count);                                                     \
     }                                                                                \
     while (0);
-
-static FORCEINLINE struct event_field_structure* event_find_field(struct event* event, const char* name)
-{
-    struct event_field_structure* field = NULL;
-    for (int i = 0; i < event->fields_count; ++i)
-    {
-        field = event->fields[i];
-        if (strcmp(name, field->name) == 0)
-            break;
-        field = NULL;
-    }
-    return field;
-}
 
 struct event* event_create(uint8_t level, const char* function, const char* file, uint32_t line)
 {
@@ -100,7 +86,7 @@ void event_setup(struct event* event, const char* raised_module_name)
 
 void event_destroy(struct event* event)
 {
-    for (int i = 0; i < event->fields_count; ++i) free(event->fields[i]);
+    for (int i = 0; i < event->fields_count; ++i) event_field_delete(event->fields[i]);
     free(event->fields);
     free(event);
 }
@@ -152,6 +138,10 @@ char event_get_character(struct event* event, const char* name)
     {
         raise("event field %s is not found", name);
     }
+    if (field->type != MODULE_EVENT_TYPE_CHARACTER)
+    {
+        raise("event field %s is not character", name);
+    }
     return field->character;
 }
 
@@ -161,6 +151,10 @@ void* event_get_address(struct event* event, const char* name)
     if (field == NULL)
     {
         raise("event field %s is not found", name);
+    }
+    if (field->type != MODULE_EVENT_TYPE_ADDRESS)
+    {
+        raise("event field %s is not address", name);
     }
     return field->address;
 }
@@ -172,6 +166,10 @@ bool event_get_boolean(struct event* event, const char* name)
     {
         raise("event field %s is not found", name);
     }
+    if (field->type != MODULE_EVENT_TYPE_BOOLEAN)
+    {
+        raise("event field %s is not boolean", name);
+    }
     return field->boolean;
 }
 
@@ -181,6 +179,10 @@ int64_t event_get_signed(struct event* event, const char* name)
     if (field == NULL)
     {
         raise("event field %s is not found", name);
+    }
+    if (field->type != MODULE_EVENT_TYPE_SIGNED)
+    {
+        raise("event field %s is not signed", name);
     }
     return field->signed_number;
 }
@@ -192,6 +194,10 @@ uint64_t event_get_unsigned(struct event* event, const char* name)
     {
         raise("event field %s is not found", name);
     }
+    if (field->type != MODULE_EVENT_TYPE_UNSIGNED)
+    {
+        raise("event field %s is not unsigned", name);
+    }
     return field->unsigned_number;
 }
 
@@ -201,6 +207,10 @@ double event_get_double(struct event* event, const char* name)
     if (field == NULL)
     {
         raise("event field %s is not found", name);
+    }
+    if (field->type != MODULE_EVENT_TYPE_DOUBLE)
+    {
+        raise("event field %s is not double", name);
     }
     return field->double_number;
 }
@@ -212,7 +222,31 @@ const char* event_get_string(struct event* event, const char* name)
     {
         raise("event field %s is not found", name);
     }
+    if (field->type != MODULE_EVENT_TYPE_STRING)
+    {
+        raise("event field %s is not string", name);
+    }
     return field->string;
+}
+
+bool event_field_is_signed(struct event* event, const char* name)
+{
+    struct event_field_structure* field = event_find_field(event, name);
+    if (field == NULL)
+    {
+        return false;
+    }
+    return field->type == MODULE_EVENT_TYPE_SIGNED;
+}
+
+bool event_field_is_unsigned(struct event* event, const char* name)
+{
+    struct event_field_structure* field = event_find_field(event, name);
+    if (field == NULL)
+    {
+        return false;
+    }
+    return field->type == MODULE_EVENT_TYPE_UNSIGNED;
 }
 
 const char* event_format(struct event* event)

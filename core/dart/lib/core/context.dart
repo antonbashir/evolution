@@ -3,8 +3,10 @@ import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
 
+import '../core.dart';
 import 'bindings.dart';
 import 'constants.dart';
+import 'event.dart';
 import 'exceptions.dart';
 import 'library.dart';
 import 'printer.dart';
@@ -20,6 +22,7 @@ mixin ModuleProvider<Native extends NativeType, Configuration extends ModuleConf
 }
 
 mixin ModuleState {}
+
 mixin ModuleConfiguration {}
 
 abstract class Module<Native extends NativeType, Configuration extends ModuleConfiguration, State extends ModuleState> implements ModuleProvider<Native, Configuration, State> {
@@ -57,11 +60,15 @@ abstract class Module<Native extends NativeType, Configuration extends ModuleCon
 mixin ContextProvider {
   dynamic get(String id);
   bool has(String id);
+  Event get lastNativeEvent;
 }
 
 class _Context implements ContextProvider {
   var _modules = <String, Module>{};
   var _native = <String, Pointer<Void>>{};
+  Event? _lastNativeEvent;
+
+  Event get lastNativeEvent => _lastNativeEvent == null ? throw CoreError("Last native event is null") : _lastNativeEvent!;
 
   _Context._() {
     final context = context_get();
@@ -80,21 +87,25 @@ class _Context implements ContextProvider {
   }
 
   void _create(Module module) {
-    if (_native[module.name] != null) throw CoreException(CoreErrors.moduleAlreadyLoaded(module.name));
+    if (_native[module.name] != null) throw CoreError(CoreErrors.moduleAlreadyLoaded(module.name));
     final failedDependencies = module.dependencies.where((dependency) => !_modules.containsKey(dependency)).toList();
-    if (failedDependencies.isNotEmpty) throw CoreException(CoreErrors.moduleDependenciesNotFound(failedDependencies));
+    if (failedDependencies.isNotEmpty) throw CoreError(CoreErrors.moduleDependenciesNotFound(failedDependencies));
     _modules[module.name] = module;
     using((arena) => context_put_module(module.name.toNativeUtf8(allocator: arena), module.native.cast(), module.runtimeType.toString().toNativeUtf8()));
     _native[module.name] = module.native.cast();
   }
 
   void _load(Module module) {
-    if (_native[module.name] == null) throw CoreException(CoreErrors.moduleNotLoaded(module.name));
+    if (_native[module.name] == null) throw CoreError(CoreErrors.moduleNotLoaded(module.name));
     _modules[module.name] = module;
   }
 
-  void _restore() {
-    context_load_modules();
+  void _restore() => context_load();
+
+  @entry
+  void _onNativeEvent(int address) {
+    Pointer<event> native = Pointer.fromAddress(address);
+    _lastNativeEvent = Event.native(native);
   }
 
   @override
@@ -103,7 +114,7 @@ class _Context implements ContextProvider {
   @override
   Module get(String id) {
     final module = _modules[id];
-    if (module == null) throw CoreException(CoreErrors.moduleNotFound(id));
+    if (module == null) throw CoreError(CoreErrors.moduleNotFound(id));
     return module;
   }
 }
@@ -111,23 +122,35 @@ class _Context implements ContextProvider {
 Future<void> launch(List<Module> modules, FutureOr<void> Function() main) async {
   for (var module in modules) _context._create(module);
   for (var module in _context._modules.values) module.validate();
-  information(CoreMessages.modulesCreated(_context._modules.keys));
+  printEvent(CoreEvents.modulesCreated(_context._modules.keys));
   for (var module in _context._modules.values) await Future.value(module.initialize());
-  await main();
+  await runZonedGuarded(
+      main,
+      (error, stack) => error is Error
+          ? context().coreModule().state.errorHandler(error, stack)
+          : error is Exception
+              ? context().coreModule().state.exceptionHandler(error, stack)
+              : context().coreModule().state.errorHandler(UnimplementedError(error.toString()), stack));
   for (var module in _context._modules.values.toList().reversed) await Future.value(module.shutdown());
   for (var module in _context._modules.values.toList().reversed) module.destroy();
-  information(CoreMessages.modulesDestroyed(_context._modules.keys));
+  printEvent(CoreEvents.modulesDestroyed(_context._modules.keys));
   _context._clear();
 }
 
 Future<void> fork(FutureOr<void> Function() main) async {
   _context._restore();
-  information(CoreMessages.modulesLoaded(_context._modules.keys));
+  printEvent(CoreEvents.modulesLoaded(_context._modules.keys));
   for (var module in _context._modules.values) await Future.value(module.fork());
-  await main();
+  await runZonedGuarded(
+      main,
+      (error, stack) => error is Error
+          ? context().coreModule().state.errorHandler(error, stack)
+          : error is Exception
+              ? context().coreModule().state.exceptionHandler(error, stack)
+              : context().coreModule().state.errorHandler(UnimplementedError(error.toString()), stack));
   for (var module in _context._modules.values.toList().reversed) await Future.value(module.unfork());
   for (var module in _context._modules.values.toList().reversed) module.unload();
-  information(CoreMessages.modulesUnloaded(_context._modules.keys));
+  printEvent(CoreEvents.modulesUnloaded(_context._modules.keys));
 }
 
 Completer? _blocker = null;

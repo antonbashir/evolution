@@ -2,49 +2,45 @@ import 'dart:isolate';
 
 import 'constants.dart';
 import 'context.dart';
+import 'event.dart';
 import 'module.dart';
 
 class Printer {
   const Printer._();
 
-  static void print(dynamic message) {
-    if (!context().coreModule().configuration.silent) context().coreModule().state.printer(message?.toString() ?? empty);
+  static void printOut(dynamic message) {
+    if (!context().coreModule().configuration.silent) context().coreModule().state.outPrinter(message?.toString() ?? empty);
   }
 
-  static void printError(Error error, StackTrace stack) {
-    final configuration = context().coreModule().configuration;
-    if (!configuration.silent && configuration.printLevel >= printLevelError) {
-      print(
-        "[${DateTime.now()}] {${Isolate.current.debugName}} $printLevelErrorLabel: ${error.toString()}$newLine$printErrorStackPart$newLine${error.stackTrace}$newLine$printCatchStackPart$newLine$stack",
-      );
+  static void printError(dynamic message) {
+    if (!context().coreModule().configuration.silent) context().coreModule().state.errorPrinter(message?.toString() ?? empty);
+  }
+}
+
+void printEvent(Event event) {
+  final configuration = context().coreModule().configuration;
+  if (!configuration.silent && configuration.printLevel >= event.level) {
+    if (event.level >= eventLevelError) {
+      context().coreModule().state.errorPrinter(event.format());
+      return;
     }
-  }
-
-  static void printException(Exception exception, StackTrace stack) {
-    final configuration = context().coreModule().configuration;
-    if (!configuration.silent && configuration.printLevel >= printLevelError) {
-      print("[${DateTime.now()}] {${Isolate.current.debugName}} $printExceptionLabel: ${exception.toString()}$newLine$stack\n");
-    }
+    context().coreModule().state.outPrinter(event.format());
   }
 }
 
-void trace(String message) {
+void printError(Error error, StackTrace stack) {
   final configuration = context().coreModule().configuration;
-  if (!configuration.silent && configuration.printLevel >= printLevelTrace) {
-    Printer.print("[${DateTime.now()}] {${Isolate.current.debugName}} $printLevelTraceLabel: $message");
+  if (!configuration.silent && configuration.printLevel >= eventLevelError) {
+    final prefix = "[${DateTime.now()}] {${Isolate.current.debugName}} $eventLevelErrorLabel";
+    final message = "$prefix: ${error.toString()}$newLine$printErrorStackPart$newLine${error.stackTrace}$newLine$printCatchStackPart$newLine$stack";
+    Printer.printError(message);
   }
 }
 
-void information(String message) {
+void printException(Exception exception, StackTrace stack) {
   final configuration = context().coreModule().configuration;
-  if (!configuration.silent && configuration.printLevel >= printLevelInformation) {
-    Printer.print("[${DateTime.now()}] {${Isolate.current.debugName}} $printLevelInformationLabel: $message");
-  }
-}
-
-void warning(String message) {
-  final configuration = context().coreModule().configuration;
-  if (!configuration.silent && configuration.printLevel >= printLevelWarning) {
-    Printer.print("[${DateTime.now()}] {${Isolate.current.debugName}} $printLevelWarningLabel: $message");
+  if (!configuration.silent && configuration.printLevel >= eventLevelError) {
+    final prefix = "[${DateTime.now()}] {${Isolate.current.debugName}} $eventLevelErrorLabel";
+    Printer.printError("$prefix: ${exception.toString()}$newLine$stack$newLine");
   }
 }

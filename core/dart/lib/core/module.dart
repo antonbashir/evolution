@@ -8,25 +8,25 @@ import 'configuration.dart';
 import 'constants.dart';
 import 'context.dart';
 import 'defaults.dart';
+import 'event.dart';
 import 'exceptions.dart';
 import 'library.dart';
 import 'printer.dart';
 
 void _defaultErrorHandler(Error error, StackTrace stack) {
-  Printer.printError(error, stack);
+  printError(error, stack);
   exit(-1);
 }
 
 void _defaultExceptionHandler(Exception exception, StackTrace stack) {
-  if (exception is CoreException) {
-    Printer.printException(exception, stack);
-    exit(-1);
+  if (exception is ModuleException) {
+    Printer.printError(exception.toString());
+    if (exception.event.level == eventLevelPanic) {
+      exit(exception.event.has(eventFieldCode) ? exception.event.getInteger(eventFieldCode) : -1);
+    }
+    return;
   }
-  if (exception is SystemException) {
-    Printer.printException(exception, stack);
-    exit(-exception.code);
-  }
-  Printer.printException(exception, stack);
+  printException(exception, stack);
 }
 
 typedef PrinterFunction = void Function(String message);
@@ -34,12 +34,14 @@ typedef ErrorHandlerFunction = void Function(Error error, StackTrace stackTrace)
 typedef ExceptionHandlerFunction = void Function(Exception exception, StackTrace stackTrace);
 
 class CoreModuleState implements ModuleState {
-  final PrinterFunction printer;
+  final PrinterFunction outPrinter;
+  final PrinterFunction errorPrinter;
   final ErrorHandlerFunction errorHandler;
   final ExceptionHandlerFunction exceptionHandler;
 
   CoreModuleState({
-    required this.printer,
+    required this.outPrinter,
+    required this.errorPrinter,
     required this.errorHandler,
     required this.exceptionHandler,
   });
@@ -47,7 +49,12 @@ class CoreModuleState implements ModuleState {
 
 class CoreModule extends Module<core_module, CoreModuleConfiguration, CoreModuleState> {
   final name = coreModuleName;
-  final state = CoreModuleState(printer: print, errorHandler: _defaultErrorHandler, exceptionHandler: _defaultExceptionHandler);
+  final state = CoreModuleState(
+    outPrinter: stdout.writeln,
+    errorPrinter: stderr.writeln,
+    errorHandler: _defaultErrorHandler,
+    exceptionHandler: _defaultExceptionHandler,
+  );
 
   CoreModule({CoreModuleConfiguration configuration = CoreDefaults.module}) : super(configuration, SystemLibrary.loadCore(), using((arena) => core_module_create(configuration.toNative(arena)))) {
     system_library_put(library.handle);
@@ -60,6 +67,8 @@ class CoreModule extends Module<core_module, CoreModuleConfiguration, CoreModule
   void destroy() => core_module_destroy(native);
 }
 
-extension ContextProviderCoreExtensions on ContextProvider {
+extension CoreContextExtensions on ContextProvider {
   ModuleProvider<core_module, CoreModuleConfiguration, CoreModuleState> coreModule() => get(coreModuleName);
+  Event coreModuleEvent(Event source) => source.setup(coreModuleName);
+  void coreModuleThrow(Event event) => throw ModuleException(event.setup(coreModuleName));
 }

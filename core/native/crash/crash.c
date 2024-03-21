@@ -20,16 +20,16 @@ static void crash_signal_callback(int signal, siginfo_t* information, void* cont
         switch (signal)
         {
             case SIGILL:
-                crash_event = event_panic(event_message(CRASH_ILLEGAL_INSTRUCTION));
+                crash_event = event_panic(event_field_message(CRASH_ILLEGAL_INSTRUCTION));
                 break;
             case SIGBUS:
-                crash_event = event_panic(event_message(CRASH_BUS_ERROR));
+                crash_event = event_panic(event_field_message(CRASH_BUS_ERROR));
                 break;
             case SIGFPE:
-                crash_event = event_panic(event_message(CRASH_FLOATING_POINT_ERROR));
+                crash_event = event_panic(event_field_message(CRASH_FLOATING_POINT_ERROR));
                 break;
             case SIGSEGV:
-                crash_event = event_panic(event_message(CRASH_SEGMENTATION_FAULT));
+                crash_event = event_panic(event_field_message(CRASH_SEGMENTATION_FAULT));
                 switch (information->si_code)
                 {
                     case SEGV_MAPERR:

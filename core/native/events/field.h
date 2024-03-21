@@ -10,7 +10,7 @@ extern "C"
 {
 #endif
 
-struct event_field_structure
+DART_STRUCTURE struct event_field_structure
 {
     const char* name;
     union
@@ -53,7 +53,7 @@ FORCEINLINE void event_field_set_signed(struct event_field_structure* field, int
 FORCEINLINE void event_field_set_string(struct event_field_structure* field, const char* value)
 {
     field->type = MODULE_EVENT_TYPE_STRING;
-    field->string = value;
+    field->string = strdup(value);
 }
 
 FORCEINLINE void event_field_set_character(struct event_field_structure* field, char value)
@@ -68,10 +68,19 @@ FORCEINLINE void event_field_set_address(struct event_field_structure* field, vo
     field->address = value;
 }
 
+FORCEINLINE void event_field_delete(struct event_field_structure* field)
+{
+    if (field->type == MODULE_EVENT_TYPE_STRING)
+    {
+        free((void*)field->string);
+    }
+    free(field);
+}
+
 void event_field_set_any(struct event_field_structure* field, ...);
 
-#define event_message(message) event_field(MODULE_EVENT_FIELD_MESSAGE, message)
-#define event_scope(scope) event_field(MODULE_EVENT_FIELD_SCOPE, scope)
+#define event_field_message(message) event_field(MODULE_EVENT_FIELD_MESSAGE, message)
+#define event_field_scope(scope) event_field(MODULE_EVENT_FIELD_SCOPE, scope)
 
 #define event_field(field_name, field_value)                                                                                           \
     ({                                                                                                                                 \

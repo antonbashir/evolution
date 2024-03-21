@@ -73,7 +73,10 @@ extern "C"
 
 #define LOADING_LIBRARY_MESSAGE "Loading library: %s"
 
+#define DART_CORE_LIBRARY "core"
 #define DART_MODULE_FACTORY "_load"
+#define DART_CONTEXT_FIELD "_context"
+#define DART_CONTEXT_ON_NATIVE_EVENT_FUNCTION "_onNativeEvent"
 
 #if defined(__cplusplus)
 }

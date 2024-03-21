@@ -28,5 +28,8 @@ external void context_put_module(Pointer<Utf8> name, Pointer<Void> module, Point
 @Native<Void Function(Pointer<Utf8> name)>(isLeaf: true)
 external void context_remove_module(Pointer<Utf8> name);
 
+@Native<Void Function(Pointer<event> event)>(isLeaf: true)
+external void context_set_local_event(Pointer<event> event);
+
 @Native<Void Function()>(isLeaf: false)
-external void context_load_modules();
+external void context_load();

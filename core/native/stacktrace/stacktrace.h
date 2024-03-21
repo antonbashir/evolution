@@ -25,6 +25,7 @@ FORCE_ALIGN_ARG_POINTER NOINLINE void stacktrace_collect_current(struct stacktra
 int stacktrace_format(struct stacktrace* trace, char* buffer, size_t buffer_size);
 int stacktrace_format_at(int skip, int index, char* buffer, size_t size);
 void stacktrace_print(int skip);
+DART_LEAF_FUNCTION const char* stacktrace_to_string(int skip);
 
 #define stacktrace_callers(skip, count)                                                                                                                           \
     ({                                                                                                                                                            \

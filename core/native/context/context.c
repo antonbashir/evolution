@@ -14,7 +14,7 @@ void context_create()
 {
     if (context_instance.initialized)
     {
-        raise_panic(event_panic(event_message(PANIC_CONTEXT_CREATED)));
+        raise_panic(event_panic(event_field_message(PANIC_CONTEXT_CREATED)));
     }
     context_instance.modules = simple_map_modules_new();
     context_instance.containers = calloc(MODULES_MAXIMUM, sizeof(struct module_container));
@@ -24,6 +24,13 @@ void context_create()
     }
     context_instance.initialized = true;
     context_instance.size = 0;
+    Dart_EnterScope();
+    context_instance.context_field = Dart_GetField(Dart_LookupLibrary(Dart_NewStringFromUTF8((const uint8_t*)DART_CORE_LIBRARY, strlen(DART_CORE_LIBRARY))), Dart_NewStringFromUTF8((const uint8_t*)DART_CONTEXT_FIELD, strlen(DART_CONTEXT_FIELD)));
+    if (Dart_IsError(context_instance.context_field))
+    {
+        Dart_PropagateError(context_instance.context_field);
+    }
+    Dart_ExitScope();
 }
 
 void* context_get_module(const char* name)
@@ -62,7 +69,7 @@ void context_remove_module(const char* name)
     context_instance.size--;
 }
 
-DART_LEAF_FUNCTION void context_load_modules()
+DART_LEAF_FUNCTION void context_load()
 {
     Dart_EnterScope();
     for (int i = 0; i < context_instance.size; i++)
@@ -87,6 +94,24 @@ DART_LEAF_FUNCTION void context_load_modules()
                 Dart_PropagateError(createdModule);
             }
         }
+    }
+    context_instance.context_field = Dart_GetField(Dart_LookupLibrary(Dart_NewStringFromUTF8((const uint8_t*)DART_CORE_LIBRARY, strlen(DART_CORE_LIBRARY))), Dart_NewStringFromUTF8((const uint8_t*)DART_CONTEXT_FIELD, strlen(DART_CONTEXT_FIELD)));
+    if (Dart_IsError(context_instance.context_field))
+    {
+        Dart_PropagateError(context_instance.context_field);
+    }
+    Dart_ExitScope();
+}
+
+void context_set_local_event(struct event* event)
+{
+    Dart_EnterScope();
+    Dart_Handle arguments[1];
+    arguments[0] = Dart_NewIntegerFromUint64((uint64_t)event);
+    Dart_Handle createdModule = Dart_Invoke(context_instance.context_field, Dart_NewStringFromUTF8((const uint8_t*)DART_CONTEXT_ON_NATIVE_EVENT_FUNCTION, strlen(DART_CONTEXT_ON_NATIVE_EVENT_FUNCTION)), 1, arguments);
+    if (Dart_IsError(createdModule))
+    {
+        Dart_PropagateError(createdModule);
     }
     Dart_ExitScope();
 }

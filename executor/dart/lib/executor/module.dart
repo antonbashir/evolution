@@ -5,7 +5,6 @@ import 'package:core/core.dart';
 import 'package:ffi/ffi.dart';
 import 'package:memory/memory/constants.dart';
 
-import '../executor.dart';
 import 'bindings.dart';
 import 'broker.dart';
 import 'configuration.dart';
@@ -101,7 +100,7 @@ class ExecutorModule extends Module<executor_module, ExecutorModuleConfiguration
   }
 }
 
-extension ContextProviderExecutorExtensions on ContextProvider {
+extension ExecutorContextExtensions on ContextProvider {
   ModuleProvider<executor_module, ExecutorModuleConfiguration, ExecutorModuleState> executorModule() => get(executorModuleName);
   Executor executor({ExecutorConfiguration configuration = ExecutorDefaults.executor}) => executorModule().state.executor(configuration: configuration);
   ExecutorBroker broker({ExecutorConfiguration configuration = ExecutorDefaults.executor}) => executorModule().state.broker(configuration: configuration);

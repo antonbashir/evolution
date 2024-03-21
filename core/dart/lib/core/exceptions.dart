@@ -1,50 +1,34 @@
 import 'dart:ffi';
 
-import 'constants.dart';
+import 'package:ffi/ffi.dart';
 
-class CoreException implements Exception {
+import 'bindings.dart';
+import 'constants.dart';
+import 'event.dart';
+import 'context.dart' as context;
+
+class ModuleException implements Exception {
+  final Event event;
+  final StackTrace _dartStackTrace = StackTrace.current;
+  Pointer<Utf8> _nativeStackTrace = stacktrace_to_string(0);
+
+  ModuleException(this.event);
+
+  ModuleException.local() : event = context.context().lastNativeEvent;
+
+  @override
+  String toString() {
+    final formatted = event.format();
+    final result = "$formatted${newLine}${_dartStackTrace.toString()}${newLine}${_nativeStackTrace.toDartString()}";
+    return result;
+  }
+}
+
+class CoreError extends Error {
   final String message;
 
-  const CoreException(this.message);
+  CoreError(this.message);
 
   @override
   String toString() => "[$coreModuleName] $message";
-}
-
-class SystemException implements Exception {
-  final int code;
-  final String message;
-
-  SystemException(this.code) : message = SystemErrors.of(code).message;
-
-  @inline
-  static Pointer<T> checkPointer<T extends NativeType>(Pointer<T> result, [void Function()? finalizer]) {
-    if (result == nullptr) {
-      finalizer?.call();
-      throw SystemException(SystemErrors.ENOMEM.code);
-    }
-    return result;
-  }
-
-  @inline
-  static int checkResult(int result, [void Function()? finalizer]) {
-    if (result < 0) {
-      finalizer?.call();
-      throw SystemException(-result);
-    }
-    return result;
-  }
-
-  @override
-  String toString() => "[$printSystemExceptionTag] ($code) $dash $message";
-}
-
-extension SystemExceptionPointerExtensions<T extends NativeType> on Pointer<T> {
-  @inline
-  Pointer<T> check([void Function()? finalizer]) => SystemException.checkPointer(this, finalizer);
-}
-
-extension SystemExceptionIntExtensions on int {
-  @inline
-  int check([void Function()? finalizer]) => SystemException.checkResult(this, finalizer);
 }

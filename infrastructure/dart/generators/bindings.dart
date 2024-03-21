@@ -137,7 +137,7 @@ extension ArgumentsExtension on List<String> {
 }
 
 extension StringExtension on String {
-  String clear() => replaceAll(constWord, "").replaceAll(structWord, "").replaceAll(";", "").trim();
+  String clear() => replaceFirst(constWord, "").replaceFirst(structWord, "").replaceAll(";", "").trim();
 }
 
 Map<String, FileDeclarations> collectNative(String nativeDirectory) {
@@ -215,7 +215,7 @@ Map<String, FileDeclarations> collectNative(String nativeDirectory) {
         if (!(line.contains(structWord))) return;
         currentStructureDeclaration = StructureDeclaration();
         fileDeclarations.structures.add(currentStructureDeclaration!);
-        currentStructureDeclaration!.name = line.replaceAll(structWord, "").replaceAll("{", "").trim();
+        currentStructureDeclaration!.name = line.replaceFirst(structWord, "").replaceAll("{", "").trim();
         currentStructureDeclaration!.fields = {};
         return;
       }
