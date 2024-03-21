@@ -55,6 +55,7 @@ const eventLevelInformationLabel = "(information)";
 const eventLevelTraceLabel = "(trace)";
 
 const moduleErrorCode = -1997;
+const moduleErrorMessage = "Unknown system error";
 
 String eventLevelFormat(int level) => switch (level) {
       eventLevelInformation => eventLevelInformationLabel,
@@ -425,4 +426,6 @@ class SystemErrors {
     if (_errors[code] == null) throw UnimplementedError("Unknown system error code: $code");
     return _errors[code]!;
   }
+
+  static bool contains(int code) => _errors[code] != null;
 }
