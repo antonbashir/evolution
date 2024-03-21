@@ -3,14 +3,11 @@ import 'dart:io';
 
 import 'package:ffi/ffi.dart';
 
+import '../core.dart';
 import 'bindings.dart';
 import 'configuration.dart';
-import 'constants.dart';
-import 'context.dart';
-import 'defaults.dart';
 import 'event.dart';
-import 'exceptions.dart';
-import 'library.dart';
+import 'local.dart';
 import 'printer.dart';
 
 void _defaultErrorHandler(Error error, StackTrace stack) {
@@ -69,6 +66,24 @@ class CoreModule extends Module<core_module, CoreModuleConfiguration, CoreModule
 
 extension CoreContextExtensions on ContextProvider {
   ModuleProvider<core_module, CoreModuleConfiguration, CoreModuleState> coreModule() => get(coreModuleName);
-  Event coreModuleEvent(Event source) => source.setup(coreModuleName);
-  void coreModuleThrow(Event event) => throw ModuleException(event.setup(coreModuleName));
+}
+
+extension CorePointerExtensions<T extends NativeType> on Pointer<T> {
+  Pointer<T> check() {
+    if (this == nullptr) {
+      localEvent().consume()?.let((event) => event.raise());
+      Event.system(SystemErrors.ENOMEM).raise();
+    }
+    return this;
+  }
+}
+
+extension CoreIntegerExtensions on int {
+  int check() {
+    if (this == moduleErrorCode) {
+      localEvent().consume()?.let((event) => event.raise());
+      Event.system(SystemErrors.of(-this)).raise();
+    }
+    return this;
+  }
 }

@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.16.0)
 project(core C ASM)
 
+fetch_dart_api()
+
 FetchContent_Declare(
   core_libunwind
   GIT_REPOSITORY ${DEPENDENCY_LIBUNWIND_REPOSITORY}

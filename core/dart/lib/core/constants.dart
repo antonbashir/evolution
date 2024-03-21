@@ -54,6 +54,8 @@ const eventLevelWarningLabel = "(warning)";
 const eventLevelInformationLabel = "(information)";
 const eventLevelTraceLabel = "(trace)";
 
+const moduleErrorCode = -1997;
+
 String eventLevelFormat(int level) => switch (level) {
       eventLevelInformation => eventLevelInformationLabel,
       eventLevelTrace => eventLevelTraceLabel,
@@ -103,10 +105,10 @@ class CoreErrors {
 class CoreEvents {
   CoreEvents._();
 
-  static Event modulesCreated(Iterable<String> modules) => context().coreModuleEvent(Event.information([EventField.string(eventFieldMessage, "Modules created: (${modules.join(",")})")]));
-  static Event modulesDestroyed(Iterable<String> modules) => context().coreModuleEvent(Event.information([EventField.string(eventFieldMessage, "Modules destroyed: (${modules.join(",")})")]));
-  static Event modulesLoaded(Iterable<String> modules) => context().coreModuleEvent(Event.information([EventField.string(eventFieldMessage, "Modules loaded: (${modules.join(",")})")]));
-  static Event modulesUnloaded(Iterable<String> modules) => context().coreModuleEvent(Event.information([EventField.string(eventFieldMessage, "Modules unloaded: (${modules.join(",")})")]));
+  static Event modulesCreated(Iterable<String> modules) => Event.information([EventField.string(eventFieldMessage, "Modules created: (${modules.join(",")})")]);
+  static Event modulesDestroyed(Iterable<String> modules) => Event.information([EventField.string(eventFieldMessage, "Modules destroyed: (${modules.join(",")})")]);
+  static Event modulesLoaded(Iterable<String> modules) => Event.information([EventField.string(eventFieldMessage, "Modules loaded: (${modules.join(",")})")]);
+  static Event modulesUnloaded(Iterable<String> modules) => Event.information([EventField.string(eventFieldMessage, "Modules unloaded: (${modules.join(",")})")]);
 }
 
 class TupleErrors {

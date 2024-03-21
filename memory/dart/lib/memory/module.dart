@@ -26,11 +26,11 @@ class MemoryModuleState implements ModuleState {
 
   void create() {
     instance = memory_create(configuration.quotaSize, configuration.preallocationSize, configuration.slabSize).check();
-    staticBuffers = MemoryStaticBuffers(memory_static_buffers_create(configuration.staticBuffersCapacity, configuration.staticBufferSize).check(() => memory_destroy(instance)));
-    final nativeBuffers = memory_io_buffers_create(instance).check(() => memory_destroy(instance));
+    staticBuffers = MemoryStaticBuffers(memory_static_buffers_create(configuration.staticBuffersCapacity, configuration.staticBufferSize).check());
+    final nativeBuffers = memory_io_buffers_create(instance).check();
     inputOutputBuffers = MemoryInputOutputBuffers(nativeBuffers, configuration.preallocationSize);
     structures = MemoryStructurePools(instance);
-    final nativeSmall = memory_small_allocator_create(instance, configuration.smallAllocationFactor).check(() => memory_destroy(instance));
+    final nativeSmall = memory_small_allocator_create(instance, configuration.smallAllocationFactor).check();
     smalls = MemorySmallData(nativeSmall);
     doubles = structures.register(sizeOf<Double>());
     tuples = MemoryTuples(nativeSmall, inputOutputBuffers);
@@ -89,7 +89,7 @@ class MemoryModule extends Module<memory_module, MemoryModuleConfiguration, Memo
   }
 }
 
-extension MemoryContextExtensions on ContextProvider {
+extension MemoryExtensions on ContextProvider {
   ModuleProvider<memory_module, MemoryModuleConfiguration, MemoryModuleState> memoryModule() => get(memoryModuleName);
   MemoryStaticBuffers staticBuffers() => memoryModule().state.staticBuffers;
   MemoryInputOutputBuffers inputOutputBuffers() => memoryModule().state.inputOutputBuffers;

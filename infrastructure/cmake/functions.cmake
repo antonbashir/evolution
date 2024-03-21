@@ -18,6 +18,11 @@ endfunction()
 
 
 function(include_dart_api)
+get_property(DART_API_INCLUDE_DIRECTORY_PROPERTY GLOBAL PROPERTY DART_API_INCLUDE_DIRECTORY)
+include_directories(${DART_API_INCLUDE_DIRECTORY_PROPERTY})
+endfunction()
+
+function(fetch_dart_api)
 FetchContent_Declare(
   ${PROJECT_NAME}_dart_api
   GIT_REPOSITORY ${DEPENDENCY_DART_API_REPOSITORY}
@@ -26,5 +31,5 @@ FetchContent_Declare(
   BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/dart-api-binary
 )
 FetchContent_MakeAvailable(${PROJECT_NAME}_dart_api)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/dependencies/dart-api-source)
+set_property(GLOBAL PROPERTY DART_API_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/dart-api-source)
 endfunction()

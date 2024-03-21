@@ -2,10 +2,12 @@ import 'dart:ffi';
 import 'dart:isolate';
 
 import 'package:ffi/ffi.dart';
+import 'package:stack_trace/stack_trace.dart';
 
 import 'bindings.dart';
 import 'constants.dart';
 import 'errors.dart';
+import 'exceptions.dart';
 import 'extensions.dart';
 
 class EventField {
@@ -27,44 +29,75 @@ class Event {
   final Map<String, EventField> fields;
   final DateTime timestamp = DateTime.now();
 
+  final String module;
   final EventSource source;
   final int level;
+  final String location;
+  final String caller;
 
-  late final String module;
   late final Pointer<event> native;
 
   Event.panic(List<EventField> fields)
       : level = eventLevelPanic,
+        module = Frame.caller().package ?? unknown,
+        location = Frame.caller().location,
+        caller = Frame.caller().member ?? unknown,
         source = EventSource.dart,
         fields = fields.groupBy((field) => field.name);
 
   Event.error(List<EventField> fields)
       : level = eventLevelError,
+        module = Frame.caller().package ?? unknown,
+        location = Frame.caller().location,
+        caller = Frame.caller().member ?? unknown,
         source = EventSource.dart,
         fields = fields.groupBy((field) => field.name);
 
   Event.warning(List<EventField> fields)
       : level = eventLevelWarning,
+        module = Frame.caller().package ?? unknown,
+        location = Frame.caller().location,
+        caller = Frame.caller().member ?? unknown,
         source = EventSource.dart,
         fields = fields.groupBy((field) => field.name);
 
   Event.information(List<EventField> fields)
       : level = eventLevelInformation,
+        module = Frame.caller().package ?? unknown,
+        location = Frame.caller().location,
+        caller = Frame.caller().member ?? unknown,
         source = EventSource.dart,
         fields = fields.groupBy((field) => field.name);
 
   Event.trace(List<EventField> fields)
       : level = eventLevelTrace,
+        module = Frame.caller().package ?? unknown,
+        location = Frame.caller().location,
+        caller = Frame.caller().member ?? unknown,
         source = EventSource.dart,
         fields = fields.groupBy((field) => field.name);
 
   Event.native(this.native)
       : fields = {},
         source = EventSource.native,
+        location = Frame.caller().location,
+        caller = Frame.caller().member ?? unknown,
         level = event_get_level(native),
         module = event_get_module(native).toDartString();
 
-  Event setup(String module) => this..module = module;
+  Event.system(SystemError error, [List<EventField>? fields])
+      : fields = {
+          eventFieldCode: EventField.integer(eventFieldCode, error.code),
+          eventFieldMessage: EventField.string(eventFieldMessage, error.message),
+          ...(fields ?? []).groupBy((field) => field.name)
+        },
+        module = Frame.caller().package ?? unknown,
+        source = EventSource.dart,
+        location = Frame.caller().location,
+        caller = Frame.caller().member ?? unknown,
+        level = eventLevelError;
+
+  void raise() => throw ModuleException(this);
 
   bool has(String name) {
     if (source == EventSource.native) return using((arena) => event_has_field(native, name.toNativeUtf8(allocator: arena)));
@@ -164,8 +197,9 @@ class Event {
       return "$formatted${newLine}isolate = ${isolate.debugName}";
     }
     final formatted = StringBuffer();
-    formatted.writeln("[$timestamp] ${isolate.debugName} ${eventLevelFormat(level)}: ");
+    formatted.writeln("[$timestamp] ${eventLevelFormat(level)}: $caller(...) $location");
     formatted.writeln("module = $module");
+    formatted.writeln("isolate = ${isolate.debugName}");
     fields.values.forEach((field) => formatted.writeln("${field.name} = ${field.value}"));
     return formatted.toString();
   }

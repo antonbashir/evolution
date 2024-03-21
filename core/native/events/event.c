@@ -249,6 +249,16 @@ bool event_field_is_unsigned(struct event* event, const char* name)
     return field->type == MODULE_EVENT_TYPE_UNSIGNED;
 }
 
+const char* event_get_module(struct event* event)
+{
+    return event->raised_module_name;
+}
+
+uint8_t event_get_level(struct event* event)
+{
+    return event->level;
+}
+
 const char* event_format(struct event* event)
 {
     size_t size = 0;

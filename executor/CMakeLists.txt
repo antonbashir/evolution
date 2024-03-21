@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.16.0)
 project(executor C ASM)
 
+fetch_dart_api()
+
 FetchContent_Declare(
   executor_liburing
   GIT_REPOSITORY ${DEPENDENCY_LIBURING_REPOSITORY}

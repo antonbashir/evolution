@@ -62,16 +62,8 @@ DART_LEAF_FUNCTION const char* event_get_string(struct event* event, const char*
 
 DART_LEAF_FUNCTION bool event_field_is_signed(struct event* event, const char* name);
 DART_LEAF_FUNCTION bool event_field_is_unsigned(struct event* event, const char* name);
-
-DART_INLINE_LEAF_FUNCTION const char* event_get_module(struct event* event)
-{
-    return event->raised_module_name;
-}
-
-DART_INLINE_LEAF_FUNCTION uint8_t event_get_level(struct event* event)
-{
-    return event->level;
-}
+DART_LEAF_FUNCTION const char* event_get_module(struct event* event);
+DART_LEAF_FUNCTION uint8_t event_get_level(struct event* event);
 
 DART_LEAF_FUNCTION const char* event_format(struct event* event);
 

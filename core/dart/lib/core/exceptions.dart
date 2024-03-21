@@ -5,7 +5,6 @@ import 'package:ffi/ffi.dart';
 import 'bindings.dart';
 import 'constants.dart';
 import 'event.dart';
-import 'context.dart' as context;
 
 class ModuleException implements Exception {
   final Event event;
@@ -13,8 +12,6 @@ class ModuleException implements Exception {
   Pointer<Utf8> _nativeStackTrace = stacktrace_to_string(0);
 
   ModuleException(this.event);
-
-  ModuleException.local() : event = context.context().lastNativeEvent;
 
   @override
   String toString() {

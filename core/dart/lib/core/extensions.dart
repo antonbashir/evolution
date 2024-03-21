@@ -5,8 +5,15 @@ import 'bindings.dart';
 import 'constants.dart';
 
 extension NullableExtensions<T> on T? {
+  @inline
   R? let<R>(R Function(T) action) {
     if (this != null) return action(this as T);
+    return null;
+  }
+
+  @inline
+  void run<R>(R Function(T) action) {
+    if (this != null) action(this as T);
     return null;
   }
 }

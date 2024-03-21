@@ -6,7 +6,6 @@ import 'package:ffi/ffi.dart';
 import '../core.dart';
 import 'bindings.dart';
 import 'errors.dart';
-import 'event.dart';
 import 'printer.dart';
 
 final _context = _Context._();
@@ -58,15 +57,11 @@ abstract class Module<Native extends NativeType, Configuration extends ModuleCon
 mixin ContextProvider {
   dynamic get(String id);
   bool has(String id);
-  Event get lastNativeEvent;
 }
 
 class _Context implements ContextProvider {
   var _modules = <String, Module>{};
   var _native = <String, Pointer<Void>>{};
-  Event? _lastNativeEvent;
-
-  Event get lastNativeEvent => _lastNativeEvent == null ? throw CoreError("Last native event is null") : _lastNativeEvent!;
 
   _Context._() {
     final context = context_get();
@@ -99,12 +94,6 @@ class _Context implements ContextProvider {
   }
 
   void _restore() => context_load();
-
-  @entry
-  void _onNativeEvent(int address) {
-    Pointer<event> native = Pointer.fromAddress(address);
-    _lastNativeEvent = Event.native(native);
-  }
 
   @override
   bool has(String id) => _modules[id] != null;

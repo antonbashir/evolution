@@ -75,8 +75,8 @@ extern "C"
 
 #define DART_CORE_LIBRARY "core"
 #define DART_MODULE_FACTORY "_load"
-#define DART_CONTEXT_FIELD "_context"
-#define DART_CONTEXT_ON_NATIVE_EVENT_FUNCTION "_onNativeEvent"
+#define DART_LOCAL_EVENT_FIELD "_localEvent"
+#define DART_PRODUCE_FUNCTION "_produce"
 
 #if defined(__cplusplus)
 }

@@ -4,7 +4,6 @@
 #include <collections/maps.h>
 #include <common/common.h>
 #include <common/constants.h>
-#include <dart_api.h>
 #include <events/event.h>
 #include <hashing/hashing.h>
 #include <system/library.h>
@@ -14,16 +13,15 @@ extern "C"
 {
 #endif
 
-DART_STRUCTURE struct context
+DART_STRUCTURE struct context_structure
 {
     DART_FIELD bool initialized;
     DART_FIELD size_t size;
     DART_FIELD struct module_container* containers;
-    Dart_Handle context_field;
     struct simple_map_modules_t* modules;
 };
 
-DART_LEAF_FUNCTION struct context* context_get();
+DART_LEAF_FUNCTION struct context_structure* context_get();
 DART_LEAF_FUNCTION void context_create();
 DART_LEAF_FUNCTION void* context_get_module(const char* name);
 DART_LEAF_FUNCTION void context_put_module(const char* name, void* module, const char* type);

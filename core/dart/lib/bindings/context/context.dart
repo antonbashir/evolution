@@ -5,7 +5,7 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import '../../core/bindings.dart';
 
-final class context extends Struct {
+final class context_structure extends Struct {
   @Bool()
   external bool initialized;
   @Size()
@@ -13,8 +13,8 @@ final class context extends Struct {
   external Pointer<module_container> containers;
 }
 
-@Native<Pointer<context> Function()>(isLeaf: true)
-external Pointer<context> context_get();
+@Native<Pointer<context_structure> Function()>(isLeaf: true)
+external Pointer<context_structure> context_get();
 
 @Native<Void Function()>(isLeaf: true)
 external void context_create();
