@@ -33,11 +33,6 @@ DART_LEAF_FUNCTION void context_remove_module(const char* name);
 DART_LEAF_FUNCTION void context_set_local_event(struct event* event);
 DART_FUNCTION void context_load();
 
-DART_INLINE_LEAF_FUNCTION void test_throw()
-{
-    event_local(event_system_error(13));
-}
-
 #if defined(__cplusplus)
 }
 #endif

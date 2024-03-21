@@ -258,10 +258,3 @@ class Event {
     return formatted.toString();
   }
 }
-
-void main(List<String> args) {
-  launch([CoreModule()], () {
-    test_throw();
-    nullptr.systemCheck();
-  });
-}
