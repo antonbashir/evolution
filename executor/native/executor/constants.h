@@ -17,8 +17,8 @@ extern "C"
 
 #define EXECUTOR_ERROR_RING_FULL -1
 
-#define EXECUTOR_SCOPE_SCHEDULER_POLLIN "scheduler pollin"
-#define EXECUTOR_SCOPE_SCHEDULER_UNREGISTER "scheduler unregister"
+#define EXECUTOR_SCOPE_SCHEDULER_POLLIN "scheduler.pollin"
+#define EXECUTOR_SCOPE_SCHEDULER_UNREGISTER "scheduler.unregister"
 
 #if defined(__cplusplus)
 }
