@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:ffi';
 
-import 'package:core/core.dart';
 import 'package:ffi/ffi.dart';
 import 'package:memory/memory/constants.dart';
 
@@ -66,7 +65,7 @@ class ExecutorModule extends Module<executor_module, ExecutorModuleConfiguration
     if (scheduler == nullptr || !scheduler.ref.initialized) {
       final error = scheduler.ref.initialization_error.cast<Utf8>().toDartString();
       if (scheduler != nullptr) executor_scheduler_destroy(scheduler);
-      throw ExecutorException(error);
+      throw ExecutorModuleError(error);
     }
     native.ref.scheduler = scheduler;
     state.create(native);
@@ -89,7 +88,7 @@ class ExecutorModule extends Module<executor_module, ExecutorModuleConfiguration
     if (!executor_scheduler_shutdown(scheduler)) {
       final error = scheduler.ref.shutdown_error.cast<Utf8>().toDartString();
       executor_scheduler_destroy(scheduler);
-      throw ExecutorException(error);
+      throw ExecutorModuleError(error);
     }
     executor_scheduler_destroy(scheduler);
   }

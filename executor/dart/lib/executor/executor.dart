@@ -2,13 +2,10 @@ import 'dart:async';
 import 'dart:ffi';
 import 'dart:isolate';
 
-import 'package:memory/memory.dart';
-
 import 'bindings.dart';
 import 'configuration.dart';
 import 'constants.dart';
 import 'defaults.dart';
-import 'exception.dart';
 
 final _registry = List<Executor?>.filled(maximumExecutors, null);
 
@@ -56,9 +53,9 @@ class Executor {
     executor_destroy(native);
   }
 
-  void activate() => ExecutorException.checkRing(executor_register_on_scheduler(native, _callback.sendPort.nativePort));
+  void activate() => executor_register_on_scheduler(native, _callback.sendPort.nativePort).systemCheck();
 
-  void deactivate() => ExecutorException.checkRing(executor_unregister_from_scheduler(native, false));
+  void deactivate() => executor_unregister_from_scheduler(native, false).systemCheck();
 
   @inline
   void _awake() {
@@ -68,18 +65,18 @@ class Executor {
       return;
     }
     if (native.ref.state & executorStatePaused == 0) {
-      ExecutorException.checkRing(executor_awake_begin(native), () => executor_awake_complete(native, 0));
+      executor_awake_begin(native).systemCheck();
       final count = executor_peek(native);
       if (count == 0) {
         if (native.ref.state & executorStateStopping != 0 && _pending() == 0) {
-          ExecutorException.checkRing(executor_unregister_from_scheduler(native, true));
+          executor_unregister_from_scheduler(native, true).systemCheck();
         }
         return;
       }
       _processor(_completions, count);
       executor_awake_complete(native, count);
       if (native.ref.state & executorStateStopping != 0 && _pending() == 0) {
-        ExecutorException.checkRing(executor_unregister_from_scheduler(native, true));
+        executor_unregister_from_scheduler(native, true).systemCheck();
         return;
       }
     }

@@ -46,7 +46,7 @@ class ExecutorMethodImplementation implements ExecutorMethod {
     message.ref.owner = _executorId;
     message.ref.method = _methodId;
     _calls[message.address] = completer;
-    ExecutorException.checkRing(executor_call_native(_executor, target, message), () => _calls.remove(message.address));
+    executor_call_native(_executor, target, message).systemCheck(() => _calls.remove(message.address));
     return completer.future.then(_onComplete);
   }
 

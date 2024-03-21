@@ -2,11 +2,10 @@ import 'dart:async';
 import 'dart:ffi';
 
 import 'bindings.dart';
-import 'exception.dart';
 
 class ExecutorConsumerExecutor {
   final List<ExecutorCallbackExecutor> _callbacks;
-  
+
   int get pending => _callbacks.map((callback) => callback._pending).fold(0, (value, element) => value + element);
 
   ExecutorConsumerExecutor(this._callbacks);
@@ -29,5 +28,5 @@ class ExecutorCallbackExecutor {
   }
 
   @inline
-  void _respond(Pointer<executor_task> task) => ExecutorException.checkRing(executor_callback_to_native(_executor, task));
+  void _respond(Pointer<executor_task> task) => executor_callback_to_native(_executor, task).systemCheck();
 }

@@ -22,8 +22,9 @@ extension NullableExtensions<T> on T? {
 
 extension PointerExtensions<T extends NativeType> on Pointer<T> {
   @inline
-  Pointer<T> systemCheck() {
+  Pointer<T> systemCheck([void Function()? finalizer]) {
     if (this == nullptr) {
+      finalizer?.call();
       LocalEvent.consume()?.let((event) => event.raise());
       Event.system(SystemErrors.ENOMEM).raise();
     }
@@ -33,12 +34,14 @@ extension PointerExtensions<T extends NativeType> on Pointer<T> {
 
 extension IntegerExtensions on int {
   @inline
-  int systemCheck() {
+  int systemCheck([void Function()? finalizer]) {
     if (this == moduleErrorCode) {
+      finalizer?.call();
       LocalEvent.consume()?.let((event) => event.raise());
       Event.error((event) => event.code(moduleErrorCode).message(moduleErrorMessage)).raise();
     }
     if (SystemErrors.contains(-this)) {
+      finalizer?.call();
       Event.system(SystemErrors.of(-this)).raise();
     }
     return this;

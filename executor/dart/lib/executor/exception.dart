@@ -1,19 +1,9 @@
-import 'package:core/core.dart';
-
 import 'constants.dart';
 
-class ExecutorException implements Exception {
+class ExecutorModuleError extends Error {
   final String message;
 
-  const ExecutorException(this.message);
-
-  @inline
-  static checkRing(int result, [void Function()? finalizer]) {
-    if (result == executorErrorRingFull) {
-      finalizer?.call();
-      throw ExecutorException(ExecutorErrors.executorRingFullError);
-    }
-  }
+  ExecutorModuleError(this.message);
 
   @override
   String toString() => "[$executorModuleName] $message";
