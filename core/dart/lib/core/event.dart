@@ -150,6 +150,14 @@ class Event {
 
   void print() => printEvent(this);
 
+  void destroy() {
+    if (fromNative) {
+      event_destroy(native);
+      return;
+    }
+    fields.clear();
+  }
+
   bool has(String name) {
     if (source == EventSource.native) return using((arena) => event_has_field(native, name.toNativeUtf8(allocator: arena)));
     return fields.containsKey(name);
