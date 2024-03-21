@@ -4,18 +4,14 @@ import 'event.dart';
 
 class ModuleException implements Exception {
   final Event event;
-  final String _dartStackTrace;
-  final String _nativeStackTrace;
+  final String _message;
 
   ModuleException(this.event)
-      : _dartStackTrace = "$dartStackPart${newLine}${StackTrace.current}",
-        _nativeStackTrace = "$nativeStackPart${newLine}${event.fromDart ? newLine : event.has(eventFieldStackTrace) ? event.getString(eventFieldStackTrace) + newLine : newLine}";
+      : _message =
+            "${event.format()}${newLine}${"$dartStackPart${newLine}${StackTrace.current}"}${newLine}$nativeStackPart${newLine}${event.fromDart ? newLine : event.has(eventFieldStackTrace) ? event.getString(eventFieldStackTrace) + newLine : newLine}" {
+    if (event.fromNative) event_destroy(event.native);
+  }
 
   @override
-  String toString() {
-    final formatted = event.format();
-    final result = "$formatted${newLine}$_dartStackTrace${newLine}$_nativeStackTrace";
-    if (event.fromNative) event_destroy(event.native);
-    return result;
-  }
+  String toString() => _message;
 }
