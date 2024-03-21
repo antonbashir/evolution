@@ -260,7 +260,7 @@ uint8_t event_get_level(struct event* event)
     return event->level;
 }
 
-void event_local(struct event* event)
+void event_set_local(struct event* event)
 {
     Dart_EnterScope();
     char stack_trace_buffer[STACKTRACE_PRINT_BUFFER];

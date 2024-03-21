@@ -16,6 +16,7 @@ extern "C"
 #define event_panic(...) event_build(MODULE_EVENT_LEVEL_PANIC, __FUNCTION__, __FILENAME__, __LINE__, VA_LENGTH(__VA_ARGS__), ##__VA_ARGS__)
 #define event_system_error(code, ...) event_error(strerror(code), event_field(MODULE_EVENT_FIELD_CODE, code), ##__VA_ARGS__)
 #define event_system_panic(code, ...) event_panic(strerror(code), event_field(MODULE_EVENT_FIELD_CODE, code), ##__VA_ARGS__)
+#define event_out_of_memory(...) event_system_error(ENOMEM, ##__VA_ARGS__)
 
 #if defined(__cplusplus)
 }

@@ -10,27 +10,35 @@
 struct executor_instance* executor_create(struct executor_configuration* configuration, struct executor_scheduler* scheduler, uint32_t id)
 {
     struct executor_instance* executor = executor_module_new(sizeof(struct executor_instance));
+    if (executor == NULL)
+    {
+        event_set_local(executor_module_event(event_out_of_memory()));
+        return NULL;
+    }
+
     executor->id = id;
     executor->configuration = *configuration;
     executor->scheduler = scheduler;
     executor->state = EXECUTOR_STATE_PAUSED;
 
     executor->completions = executor_module_allocate(configuration->ring_size, sizeof(struct io_uring_cqe*));
-    if (!executor->completions)
+    if (executor->completions == NULL)
     {
+        event_set_local(executor_module_event(event_out_of_memory()));
         return NULL;
     }
 
     executor->ring = executor_module_new(sizeof(struct io_uring));
-    if (!executor->ring)
+    if (executor->ring == NULL)
     {
+        event_set_local(executor_module_event(event_out_of_memory()));
         return NULL;
     }
 
     int32_t result = io_uring_queue_init(configuration->ring_size, executor->ring, configuration->ring_flags);
     if (result)
     {
-        print_event(executor_module_event(event_system_error(-result)));
+        event_set_local(executor_module_event(event_system_error(-result)));
         return NULL;
     }
 
