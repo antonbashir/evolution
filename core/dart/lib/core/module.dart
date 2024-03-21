@@ -6,8 +6,6 @@ import 'package:ffi/ffi.dart';
 import '../core.dart';
 import 'bindings.dart';
 import 'configuration.dart';
-import 'event.dart';
-import 'local.dart';
 import 'printer.dart';
 
 void _defaultErrorHandler(Error error, StackTrace stack) {
@@ -66,24 +64,4 @@ class CoreModule extends Module<core_module, CoreModuleConfiguration, CoreModule
 
 extension CoreContextExtensions on ContextProvider {
   ModuleProvider<core_module, CoreModuleConfiguration, CoreModuleState> coreModule() => get(coreModuleName);
-}
-
-extension CorePointerExtensions<T extends NativeType> on Pointer<T> {
-  Pointer<T> check() {
-    if (this == nullptr) {
-      LocalEvent.consume()?.let((event) => event.raise());
-      Event.system(SystemErrors.ENOMEM).raise();
-    }
-    return this;
-  }
-}
-
-extension CoreIntegerExtensions on int {
-  int check() {
-    if (this == moduleErrorCode) {
-      LocalEvent.consume()?.let((event) => event.raise());
-      Event.system(SystemErrors.of(-this)).raise();
-    }
-    return this;
-  }
 }

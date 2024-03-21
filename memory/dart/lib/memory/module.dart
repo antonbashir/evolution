@@ -25,12 +25,12 @@ class MemoryModuleState implements ModuleState {
   MemoryModuleState({this.configuration = MemoryDefaults.memory});
 
   void create() {
-    instance = memory_create(configuration.quotaSize, configuration.preallocationSize, configuration.slabSize).check();
-    staticBuffers = MemoryStaticBuffers(memory_static_buffers_create(configuration.staticBuffersCapacity, configuration.staticBufferSize).check());
-    final nativeBuffers = memory_io_buffers_create(instance).check();
+    instance = memory_create(configuration.quotaSize, configuration.preallocationSize, configuration.slabSize).systemCheck();
+    staticBuffers = MemoryStaticBuffers(memory_static_buffers_create(configuration.staticBuffersCapacity, configuration.staticBufferSize).systemCheck());
+    final nativeBuffers = memory_io_buffers_create(instance).systemCheck();
     inputOutputBuffers = MemoryInputOutputBuffers(nativeBuffers, configuration.preallocationSize);
     structures = MemoryStructurePools(instance);
-    final nativeSmall = memory_small_allocator_create(instance, configuration.smallAllocationFactor).check();
+    final nativeSmall = memory_small_allocator_create(instance, configuration.smallAllocationFactor).systemCheck();
     smalls = MemorySmallData(nativeSmall);
     doubles = structures.register(sizeOf<Double>());
     tuples = MemoryTuples(nativeSmall, inputOutputBuffers);

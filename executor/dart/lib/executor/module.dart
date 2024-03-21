@@ -27,13 +27,13 @@ class ExecutorModuleState implements ModuleState {
   }
 
   Executor executor({ExecutorConfiguration configuration = ExecutorDefaults.executor}) {
-    final executor = Executor(using((arena) => executor_create(configuration.toNative(arena), _module.ref.scheduler, executor_next_id(_module))).check());
+    final executor = Executor(using((arena) => executor_create(configuration.toNative(arena), _module.ref.scheduler, executor_next_id(_module))).systemCheck());
     _customs.add(executor);
     return executor;
   }
 
   ExecutorBroker broker({ExecutorConfiguration configuration = ExecutorDefaults.executor}) {
-    final executor = using((arena) => executor_create(configuration.toNative(arena), _module.ref.scheduler, executor_next_id(_module))).check();
+    final executor = using((arena) => executor_create(configuration.toNative(arena), _module.ref.scheduler, executor_next_id(_module))).systemCheck();
     final broker = ExecutorBroker(Executor(executor, configuration: configuration));
     _brokers.add(broker);
     return broker;

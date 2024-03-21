@@ -262,14 +262,14 @@ uint8_t event_get_level(struct event* event)
 
 void event_local(struct event* event)
 {
+    Dart_EnterScope();
     char stack_trace_buffer[STACKTRACE_PRINT_BUFFER];
     struct stacktrace trace;
-    stacktrace_collect_current(&trace, 0);
+    stacktrace_collect_current(&trace, 1);
     if (stacktrace_format(&trace, stack_trace_buffer, STACKTRACE_PRINT_BUFFER) > 0)
     {
         event_set_string(event, MODULE_EVENT_FIELD_STACK_TRACE, strdupa(stack_trace_buffer));
     }
-    Dart_EnterScope();
     Dart_Handle local_library = Dart_LookupLibrary(Dart_NewStringFromUTF8((const uint8_t*)DART_CORE_LOCAL_LIBRARY, strlen(DART_CORE_LOCAL_LIBRARY)));
     if (Dart_IsError(local_library))
     {

@@ -6,10 +6,7 @@ import 'package:stack_trace/stack_trace.dart';
 
 import '../core.dart';
 import 'bindings.dart';
-import 'constants.dart';
 import 'errors.dart';
-import 'exceptions.dart';
-import 'extensions.dart';
 import 'printer.dart';
 
 class EventField {
@@ -146,7 +143,7 @@ class Event {
         level = eventLevelError;
 
   bool get fromNative => source == EventSource.native;
-  
+
   bool get fromDart => source == EventSource.dart;
 
   void raise() => throw ModuleException(this);
@@ -265,6 +262,6 @@ class Event {
 void main(List<String> args) {
   launch([CoreModule()], () {
     test_throw();
-    nullptr.check();
+    nullptr.systemCheck();
   });
 }

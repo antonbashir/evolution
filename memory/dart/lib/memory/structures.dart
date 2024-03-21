@@ -14,7 +14,7 @@ class MemoryStructurePools {
   MemoryStructurePools(this._memory);
 
   MemoryStructurePool<T> register<T extends NativeType>(int size) {
-    final pool = memory_pool_create(_memory, size).check();
+    final pool = memory_pool_create(_memory, size).systemCheck();
     _pools[T.hashCode] = pool;
     return MemoryStructurePool<T>(T.hashCode, pool);
   }
@@ -31,7 +31,7 @@ class MemoryStructurePools {
   Pointer<T> allocate<T extends NativeType>() {
     final pool = _pools[T.hashCode];
     if (pool == null) throw MemoryException(MemoryErrors.unknownStructurePool(T.toString()));
-    return memory_pool_allocate(pool).check().cast();
+    return memory_pool_allocate(pool).systemCheck().cast();
   }
 
   @inline
@@ -63,7 +63,7 @@ class MemoryStructurePool<T extends NativeType> {
   int size() => _pool.ref.size;
 
   @inline
-  Pointer<T> allocate() => memory_pool_allocate(_pool).check().cast();
+  Pointer<T> allocate() => memory_pool_allocate(_pool).systemCheck().cast();
 
   @inline
   void free(Pointer<T> payload) => memory_pool_free(_pool, payload.cast());

@@ -11,7 +11,7 @@ import 'transport.dart';
 
 class TransportModuleState implements ModuleState {
   Transport transport({TransportConfiguration configuration = TransportDefaults.transport}) {
-    final nativeTransport = using((arena) => transport_initialize(configuration.toNative(arena))).check();
+    final nativeTransport = using((arena) => transport_initialize(configuration.toNative(arena))).systemCheck();
     return Transport(nativeTransport, context().executor());
   }
 }

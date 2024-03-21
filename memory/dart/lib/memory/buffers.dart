@@ -92,7 +92,7 @@ class MemoryInputOutputBuffers {
   MemoryInputOutputBuffers(this._buffers, this.initialCapacity);
 
   ({Uint8List buffer, ByteData data, void Function() cleaner}) wrapInput(int size) {
-    final inputBuffer = memory_io_buffers_allocate_input(_buffers, size).check();
+    final inputBuffer = memory_io_buffers_allocate_input(_buffers, size).systemCheck();
     final reserved = inputBuffer.reserve(size);
     final buffer = reserved.cast<Uint8>().asTypedList(size);
     final data = ByteData.view(buffer.buffer, buffer.offsetInBytes);
@@ -100,7 +100,7 @@ class MemoryInputOutputBuffers {
   }
 
   ({Uint8List buffer, ByteData data, void Function() cleaner}) wrapOutput(int size) {
-    final outputBuffer = memory_io_buffers_allocate_output(_buffers, size).check();
+    final outputBuffer = memory_io_buffers_allocate_output(_buffers, size).systemCheck();
     final reserved = outputBuffer.reserve(size);
     final buffer = reserved.cast<Uint8>().asTypedList(size);
     final data = ByteData.view(buffer.buffer, buffer.offsetInBytes);
@@ -108,10 +108,10 @@ class MemoryInputOutputBuffers {
   }
 
   @inline
-  Pointer<memory_input_buffer> allocateInputBuffer({int? initialCapacity}) => memory_io_buffers_allocate_input(_buffers, initialCapacity ?? this.initialCapacity).check();
+  Pointer<memory_input_buffer> allocateInputBuffer({int? initialCapacity}) => memory_io_buffers_allocate_input(_buffers, initialCapacity ?? this.initialCapacity).systemCheck();
 
   @inline
-  Pointer<memory_output_buffer> allocateOutputBuffer({int? initialCapacity}) => memory_io_buffers_allocate_output(_buffers, initialCapacity ?? this.initialCapacity).check();
+  Pointer<memory_output_buffer> allocateOutputBuffer({int? initialCapacity}) => memory_io_buffers_allocate_output(_buffers, initialCapacity ?? this.initialCapacity).systemCheck();
 
   @inline
   void freeInputBuffer(Pointer<memory_input_buffer> buffer) => memory_io_buffers_free_input(_buffers, buffer);
@@ -151,13 +151,13 @@ extension MemoryInputBufferExtensions on Pointer<memory_input_buffer> {
   }
 
   @inline
-  Pointer<Uint8> finalize(int delta) => memory_input_buffer_finalize(this, delta).check();
+  Pointer<Uint8> finalize(int delta) => memory_input_buffer_finalize(this, delta).systemCheck();
 
   @inline
-  Pointer<Uint8> reserve(int size) => memory_input_buffer_reserve(this, size).check();
+  Pointer<Uint8> reserve(int size) => memory_input_buffer_reserve(this, size).systemCheck();
 
   @inline
-  Pointer<Uint8> finalizeReserve(int delta, int size) => memory_input_buffer_finalize_reserve(this, delta, size).check();
+  Pointer<Uint8> finalizeReserve(int delta, int size) => memory_input_buffer_finalize_reserve(this, delta, size).systemCheck();
 }
 
 extension MemoryOutputBufferExtensions on Pointer<memory_output_buffer> {
@@ -178,11 +178,11 @@ extension MemoryOutputBufferExtensions on Pointer<memory_output_buffer> {
   }
 
   @inline
-  Pointer<Uint8> finalize(int delta) => memory_output_buffer_finalize(this, delta).check();
+  Pointer<Uint8> finalize(int delta) => memory_output_buffer_finalize(this, delta).systemCheck();
 
   @inline
-  Pointer<Uint8> reserve(int size) => memory_output_buffer_reserve(this, size).check();
+  Pointer<Uint8> reserve(int size) => memory_output_buffer_reserve(this, size).systemCheck();
 
   @inline
-  Pointer<Uint8> finalizeReserve(int delta, int size) => memory_output_buffer_finalize_reserve(this, delta, size).check();
+  Pointer<Uint8> finalizeReserve(int delta, int size) => memory_output_buffer_finalize_reserve(this, delta, size).systemCheck();
 }

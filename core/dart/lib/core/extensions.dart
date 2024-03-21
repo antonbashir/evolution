@@ -3,6 +3,8 @@ import 'dart:typed_data';
 
 import 'bindings.dart';
 import 'constants.dart';
+import 'event.dart';
+import 'local.dart';
 
 extension NullableExtensions<T> on T? {
   @inline
@@ -15,6 +17,25 @@ extension NullableExtensions<T> on T? {
   void run<R>(R Function(T) action) {
     if (this != null) action(this as T);
     return null;
+  }
+}
+
+extension PointerExtensions<T extends NativeType> on Pointer<T> {
+  Pointer<T> systemCheck() {
+    if (this == nullptr) {
+      LocalEvent.consume()?.let((event) => event.raise());
+      Event.system(SystemErrors.ENOMEM).raise();
+    }
+    return this;
+  }
+}
+
+extension IntegerExtensions on int {
+  int systemCheck() {
+    if (this == moduleErrorCode) {
+      LocalEvent.consume()?.let((event) => event.raise());
+    }
+    return this;
   }
 }
 
