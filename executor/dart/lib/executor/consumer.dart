@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:ffi';
 
-import 'package:core/core.dart';
-
 import 'bindings.dart';
 import 'exception.dart';
 
