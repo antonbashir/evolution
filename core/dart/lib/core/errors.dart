@@ -1,9 +1,9 @@
 import 'constants.dart';
 
-class CoreError extends Error {
+class CoreModuleError extends Error {
   final String message;
 
-  CoreError(this.message);
+  CoreModuleError(this.message);
 
   @override
   String toString() => "[$coreModuleName] $message";

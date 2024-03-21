@@ -30,11 +30,11 @@ Uri findPackageRoot(Uri dotDartTool, String packageName) {
   try {
     packageConfig = json.decode(packageConfigFile.readAsStringSync());
   } catch (ignore) {
-    throw CoreError(CoreErrors.unableToFindProjectRoot);
+    throw CoreModuleError(CoreErrors.unableToFindProjectRoot);
   }
   final package = (packageConfig[PackageConfigFields.packages] ?? []).firstWhere(
     (element) => element[PackageConfigFields.name] == packageName,
-    orElse: () => throw CoreError(CoreErrors.unableToFindProjectRoot),
+    orElse: () => throw CoreModuleError(CoreErrors.unableToFindProjectRoot),
   );
   return packageConfigFile.uri.resolve(package[PackageConfigFields.rootUri] ?? empty);
 }

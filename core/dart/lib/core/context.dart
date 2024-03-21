@@ -80,16 +80,16 @@ class _Context implements ContextProvider {
   }
 
   void _create(Module module) {
-    if (_native[module.name] != null) throw CoreError(CoreErrors.moduleAlreadyLoaded(module.name));
+    if (_native[module.name] != null) throw CoreModuleError(CoreErrors.moduleAlreadyLoaded(module.name));
     final failedDependencies = module.dependencies.where((dependency) => !_modules.containsKey(dependency)).toList();
-    if (failedDependencies.isNotEmpty) throw CoreError(CoreErrors.moduleDependenciesNotFound(failedDependencies));
+    if (failedDependencies.isNotEmpty) throw CoreModuleError(CoreErrors.moduleDependenciesNotFound(failedDependencies));
     _modules[module.name] = module;
     using((arena) => context_put_module(module.name.toNativeUtf8(allocator: arena), module.native.cast(), module.runtimeType.toString().toNativeUtf8()));
     _native[module.name] = module.native.cast();
   }
 
   void _load(Module module) {
-    if (_native[module.name] == null) throw CoreError(CoreErrors.moduleNotLoaded(module.name));
+    if (_native[module.name] == null) throw CoreModuleError(CoreErrors.moduleNotLoaded(module.name));
     _modules[module.name] = module;
   }
 
@@ -101,7 +101,7 @@ class _Context implements ContextProvider {
   @override
   Module get(String id) {
     final module = _modules[id];
-    if (module == null) throw CoreError(CoreErrors.moduleNotFound(id));
+    if (module == null) throw CoreModuleError(CoreErrors.moduleNotFound(id));
     return module;
   }
 }

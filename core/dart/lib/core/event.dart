@@ -166,16 +166,16 @@ class Event {
   double getDouble(String name) {
     if (source == EventSource.native) return using((arena) => event_get_double(native, name.toNativeUtf8(allocator: arena)));
     final field = fields[name];
-    if (field == null) throw CoreError("Event field $name is not found");
-    if (field.type != EventFieldType.double) throw CoreError("Event field $name is not double");
+    if (field == null) throw CoreModuleError("Event field $name is not found");
+    if (field.type != EventFieldType.double) throw CoreModuleError("Event field $name is not double");
     return field.value;
   }
 
   bool getBoolean(String name) {
     if (source == EventSource.native) return using((arena) => event_get_boolean(native, name.toNativeUtf8(allocator: arena)));
     final field = fields[name];
-    if (field == null) throw CoreError("Event field $name is not found");
-    if (field.type != EventFieldType.boolean) throw CoreError("Event field $name is not boolean");
+    if (field == null) throw CoreModuleError("Event field $name is not found");
+    if (field.type != EventFieldType.boolean) throw CoreModuleError("Event field $name is not boolean");
     return field.value;
   }
 
@@ -185,27 +185,27 @@ class Event {
           ? event_get_signed(native, name.toNativeUtf8(allocator: arena))
           : event_field_is_unsigned(native, name.toNativeUtf8(allocator: arena))
               ? event_get_signed(native, name.toNativeUtf8(allocator: arena))
-              : throw CoreError("Event field $name is not found"));
+              : throw CoreModuleError("Event field $name is not found"));
     }
     final field = fields[name];
-    if (field == null) throw CoreError("Event field $name is not found");
-    if (field.type != EventFieldType.integer) throw CoreError("Event field $name is not integer");
+    if (field == null) throw CoreModuleError("Event field $name is not found");
+    if (field.type != EventFieldType.integer) throw CoreModuleError("Event field $name is not integer");
     return field.value;
   }
 
   String getString(String name) {
     if (source == EventSource.native) return using((arena) => event_get_string(native, name.toNativeUtf8(allocator: arena)).toDartString());
     final field = fields[name];
-    if (field == null) throw CoreError("Event field $name is not found");
-    if (field.type != EventFieldType.string) throw CoreError("Event field $name is not string");
+    if (field == null) throw CoreModuleError("Event field $name is not found");
+    if (field.type != EventFieldType.string) throw CoreModuleError("Event field $name is not string");
     return field.value;
   }
 
   Object getObject(String name) {
-    if (source == EventSource.native) throw CoreError("Native events can't have object field");
+    if (source == EventSource.native) throw CoreModuleError("Native events can't have object field");
     final field = fields[name];
-    if (field == null) throw CoreError("Event field $name is not found");
-    if (field.type != EventFieldType.object) throw CoreError("Event field $name is not object");
+    if (field == null) throw CoreModuleError("Event field $name is not found");
+    if (field.type != EventFieldType.object) throw CoreModuleError("Event field $name is not object");
     return field.value;
   }
 
@@ -246,7 +246,7 @@ class Event {
   }
 
   void setObject(String name, dynamic value) {
-    if (source == EventSource.native) throw CoreError("Native events can't have object field");
+    if (source == EventSource.native) throw CoreModuleError("Native events can't have object field");
     fields[name] = EventField.object(name, value);
   }
 

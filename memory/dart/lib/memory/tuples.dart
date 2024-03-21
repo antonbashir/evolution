@@ -3,7 +3,7 @@ import 'dart:typed_data';
 
 import '../memory.dart';
 import 'constants.dart';
-import 'exceptions.dart';
+import 'errors.dart';
 
 class MemoryTuples {
   final Pointer<memory_small_allocator> _small;
@@ -326,13 +326,13 @@ class MemoryTupleDynamicOutputWriter {
 
 mixin MemoryInputTuple implements Tuple {
   @override
-  int get tupleSize => throw MemoryException(MemoryErrors.tupleComputeSizeImpossible(runtimeType));
+  int get tupleSize => throw MemoryModuleError(MemoryErrors.tupleComputeSizeImpossible(runtimeType));
   void serializeToInput(MemoryTupleDynamicInputWriter writer);
 }
 
 mixin MemoryOutputTuple implements Tuple {
   @override
-  int get tupleSize => throw MemoryException(MemoryErrors.tupleComputeSizeImpossible(runtimeType));
+  int get tupleSize => throw MemoryModuleError(MemoryErrors.tupleComputeSizeImpossible(runtimeType));
 
   void serializeToOutput(MemoryTupleDynamicInputWriter writer);
 }

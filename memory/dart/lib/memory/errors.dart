@@ -1,9 +1,9 @@
 import 'constants.dart';
 
-class MemoryException implements Exception {
+class MemoryModuleError extends Error {
   final String message;
 
-  const MemoryException(this.message);
+  MemoryModuleError(this.message);
 
   @override
   String toString() => "[$memoryModuleName] $message";

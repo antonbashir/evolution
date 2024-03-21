@@ -4,7 +4,7 @@ import 'bindings.dart';
 import 'configuration.dart';
 import 'constants.dart';
 import 'defaults.dart';
-import 'exceptions.dart';
+import 'errors.dart';
 import 'objects.dart';
 
 class MemoryStructurePools {
@@ -30,7 +30,7 @@ class MemoryStructurePools {
   @inline
   Pointer<T> allocate<T extends NativeType>() {
     final pool = _pools[T.hashCode];
-    if (pool == null) throw MemoryException(MemoryErrors.unknownStructurePool(T.toString()));
+    if (pool == null) throw MemoryModuleError(MemoryErrors.unknownStructurePool(T.toString()));
     return memory_pool_allocate(pool).systemCheck().cast();
   }
 

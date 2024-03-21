@@ -17,8 +17,8 @@ class SystemLibrary {
 
   SystemLibrary(this.path, this.module, this.handle) {
     if (handle == nullptr) {
-      if (dlerror() != nullptr) throw CoreError(dlerror().toDartString());
-      throw CoreError(CoreErrors.systemLibraryLoadError(path));
+      if (dlerror() != nullptr) throw CoreModuleError(dlerror().toDartString());
+      throw CoreModuleError(CoreErrors.systemLibraryLoadError(path));
     }
   }
 
@@ -40,17 +40,17 @@ class SystemLibrary {
         if (native != nullptr) {
           return SystemLibrary(native.ref.path.toDartString(), moduleName, native);
         }
-        if (dlerror() != nullptr) throw CoreError(dlerror().toDartString());
-        throw CoreError(CoreErrors.systemLibraryLoadError(libraryFile.path));
+        if (dlerror() != nullptr) throw CoreModuleError(dlerror().toDartString());
+        throw CoreModuleError(CoreErrors.systemLibraryLoadError(libraryFile.path));
       }
-      throw CoreError(CoreErrors.systemLibraryLoadError(libraryFile.path));
+      throw CoreModuleError(CoreErrors.systemLibraryLoadError(libraryFile.path));
     }
-    throw CoreError(CoreErrors.unableToFindProjectRoot);
+    throw CoreModuleError(CoreErrors.unableToFindProjectRoot);
   }
 
   factory SystemLibrary.loadByPath(String libraryPath, String moduleName) => File(libraryPath).existsSync()
       ? SystemLibrary(libraryPath, moduleName, using((arena) => system_library_load(libraryPath.toNativeUtf8(allocator: arena), moduleName.toNativeUtf8(allocator: arena))))
-      : throw CoreError(CoreErrors.systemLibraryLoadError(libraryPath));
+      : throw CoreModuleError(CoreErrors.systemLibraryLoadError(libraryPath));
 
   void unload() {
     system_library_unload(handle);
@@ -86,11 +86,11 @@ class SystemLibrary {
           _core = SystemLibrary(libraryFile.path, coreModuleName, library);
           return _core!;
         }
-        if (dlerror() != nullptr) throw CoreError(dlerror().toDartString());
-        throw CoreError(CoreErrors.systemLibraryLoadError(libraryFile.path));
+        if (dlerror() != nullptr) throw CoreModuleError(dlerror().toDartString());
+        throw CoreModuleError(CoreErrors.systemLibraryLoadError(libraryFile.path));
       }
-      throw CoreError(CoreErrors.systemLibraryLoadError(libraryFile.path));
+      throw CoreModuleError(CoreErrors.systemLibraryLoadError(libraryFile.path));
     }
-    throw CoreError(CoreErrors.unableToFindProjectRoot);
+    throw CoreModuleError(CoreErrors.unableToFindProjectRoot);
   }
 }

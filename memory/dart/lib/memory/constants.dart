@@ -12,5 +12,5 @@ class MemoryErrors {
   MemoryErrors._();
 
   static String unknownStructurePool(String type) => "Unknown structure pool: $type";
-  static String tupleComputeSizeImpossible(Type type) => "Tuple compute size impossible for $type";
+  static String tupleComputeSizeImpossible(Type type) => "Compute tuple size impossible for $type";
 }
