@@ -39,6 +39,7 @@ extern "C"
 #define MODULE_EVENT_FIELD_SCOPE "scope"
 #define MODULE_EVENT_FIELD_CALLER "caller"
 #define MODULE_EVENT_FIELD_ADDRESS "address"
+#define MODULE_EVENT_FIELD_STACK_TRACE "stack-trace"
 #define MODULE_EVENT_FIELD_SIGNAL_INFORMATION "signal-information"
 
 #define SYSTEM_PRINT_LEVEL_TRACE MODULE_EVENT_LEVEL_TRACE
@@ -54,7 +55,7 @@ extern "C"
 #define STACKTRACE_FRAME_FORMAT_SHORT "%s:%lu"
 #define STACKTRACE_PROCEDURE_SIZE 128
 #define STACKTRACE_FRAME_MAX 128
-#define STACKTRACE_PRINT_BUFFER 1024
+#define STACKTRACE_PRINT_BUFFER 2048
 #define STACKTRACE_UNKNOWN "(unknown)"
 
 #define CRASH_ILLEGAL_INSTRUCTION "Crashed: Illegal instruction"
@@ -73,9 +74,9 @@ extern "C"
 
 #define LOADING_LIBRARY_MESSAGE "Loading library: %s"
 
-#define DART_CORE_LIBRARY "core"
+#define DART_CORE_LOCAL_LIBRARY "package:core/core/local.dart"
 #define DART_MODULE_FACTORY "_load"
-#define DART_LOCAL_EVENT_FIELD "_localEvent"
+#define DART_LOCAL_EVENT_CLASS "LocalEvent"
 #define DART_PRODUCE_FUNCTION "_produce"
 
 #if defined(__cplusplus)

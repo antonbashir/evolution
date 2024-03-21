@@ -32,7 +32,7 @@ void printError(Error error, StackTrace stack) {
   final configuration = context().coreModule().configuration;
   if (!configuration.silent && configuration.printLevel >= eventLevelError) {
     final prefix = "[${DateTime.now()}] {${Isolate.current.debugName}} $eventLevelErrorLabel";
-    final message = "$prefix: ${error.toString()}$newLine$printErrorStackPart$newLine${error.stackTrace}$newLine$printCatchStackPart$newLine$stack";
+    final message = "$prefix: ${error.toString()}$newLine$errorStackPart$newLine${error.stackTrace}$newLine$catchStackPart$newLine$stack";
     Printer.printError(message);
   }
 }

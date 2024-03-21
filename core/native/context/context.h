@@ -7,11 +7,14 @@
 #include <events/event.h>
 #include <hashing/hashing.h>
 #include <system/library.h>
+#include "events/events.h"
 
 #if defined(__cplusplus)
 extern "C"
 {
 #endif
+
+typedef struct _Dart_Handle* Dart_Handle;
 
 DART_STRUCTURE struct context_structure
 {
@@ -19,6 +22,7 @@ DART_STRUCTURE struct context_structure
     DART_FIELD size_t size;
     DART_FIELD struct module_container* containers;
     struct simple_map_modules_t* modules;
+    Dart_Handle core_library;
 };
 
 DART_LEAF_FUNCTION struct context_structure* context_get();
@@ -28,6 +32,11 @@ DART_LEAF_FUNCTION void context_put_module(const char* name, void* module, const
 DART_LEAF_FUNCTION void context_remove_module(const char* name);
 DART_LEAF_FUNCTION void context_set_local_event(struct event* event);
 DART_FUNCTION void context_load();
+
+DART_INLINE_LEAF_FUNCTION void test_throw()
+{
+    event_local(event_system_error(13));
+}
 
 #if defined(__cplusplus)
 }

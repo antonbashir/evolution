@@ -1,9 +1,8 @@
 import 'dart:ffi';
 import 'dart:typed_data';
 
-import '../core.dart';
+import 'environment.dart';
 import 'errors.dart';
-import 'event.dart';
 
 const inline = pragma("vm:prefer-inline");
 const neverInline = pragma("vm:never-inline");
@@ -40,6 +39,7 @@ const modulesMaximum = 64;
 
 const eventFieldMessage = "message";
 const eventFieldCode = "code";
+const eventFieldStackTrace = "stack-trace";
 
 const eventLevelUnknown = -1;
 const eventLevelPanic = 0;
@@ -67,8 +67,10 @@ String eventLevelFormat(int level) => switch (level) {
 
 const printSystemExceptionTag = "system";
 
-const printErrorStackPart = "Error stack:";
-const printCatchStackPart = "Catch stack:";
+const errorStackPart = "Error stack:";
+const catchStackPart = "Catch stack:";
+const dartStackPart = "Dart stack:";
+const nativeStackPart = "Native stack:";
 
 final datePickerFirstDate = DateTime(DateTime.now().year);
 
@@ -105,10 +107,10 @@ class CoreErrors {
 class CoreEvents {
   CoreEvents._();
 
-  static Event modulesCreated(Iterable<String> modules) => Event.information([EventField.string(eventFieldMessage, "Modules created: (${modules.join(",")})")]);
-  static Event modulesDestroyed(Iterable<String> modules) => Event.information([EventField.string(eventFieldMessage, "Modules destroyed: (${modules.join(",")})")]);
-  static Event modulesLoaded(Iterable<String> modules) => Event.information([EventField.string(eventFieldMessage, "Modules loaded: (${modules.join(",")})")]);
-  static Event modulesUnloaded(Iterable<String> modules) => Event.information([EventField.string(eventFieldMessage, "Modules unloaded: (${modules.join(",")})")]);
+  static String modulesCreated(Iterable<String> modules) => "Modules created: (${modules.join(",")})";
+  static String modulesDestroyed(Iterable<String> modules) => "Modules destroyed: (${modules.join(",")})";
+  static String modulesLoaded(Iterable<String> modules) => "Modules loaded: (${modules.join(",")})";
+  static String modulesUnloaded(Iterable<String> modules) => "Modules unloaded: (${modules.join(",")})";
 }
 
 class TupleErrors {

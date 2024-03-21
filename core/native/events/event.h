@@ -28,7 +28,6 @@ DART_STRUCTURE struct event
 struct event* event_create(uint8_t level, const char* function, const char* file, uint32_t line);
 struct event* event_build(uint8_t level, const char* function, const char* file, uint32_t line, size_t fields, ...);
 void event_setup(struct event* event, const char* raised_module_name);
-void event_destroy(struct event* event);
 
 static FORCEINLINE struct event_field_structure* event_find_field(struct event* event, const char* name)
 {
@@ -64,8 +63,11 @@ DART_LEAF_FUNCTION bool event_field_is_signed(struct event* event, const char* n
 DART_LEAF_FUNCTION bool event_field_is_unsigned(struct event* event, const char* name);
 DART_LEAF_FUNCTION const char* event_get_module(struct event* event);
 DART_LEAF_FUNCTION uint8_t event_get_level(struct event* event);
-
 DART_LEAF_FUNCTION const char* event_format(struct event* event);
+
+DART_LEAF_FUNCTION void event_local(struct event* event);
+
+DART_LEAF_FUNCTION void event_destroy(struct event* event);
 
 #if defined(__cplusplus)
 }

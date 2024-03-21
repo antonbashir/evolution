@@ -1,22 +1,21 @@
-import 'dart:ffi';
-
-import 'package:ffi/ffi.dart';
-
 import 'bindings.dart';
 import 'constants.dart';
 import 'event.dart';
 
 class ModuleException implements Exception {
   final Event event;
-  final StackTrace _dartStackTrace = StackTrace.current;
-  Pointer<Utf8> _nativeStackTrace = stacktrace_to_string(0);
+  final String _dartStackTrace;
+  final String _nativeStackTrace;
 
-  ModuleException(this.event);
+  ModuleException(this.event)
+      : _dartStackTrace = "$dartStackPart${newLine}${StackTrace.current}",
+        _nativeStackTrace = "$nativeStackPart${newLine}${event.fromDart ? newLine : event.has(eventFieldStackTrace) ? event.getString(eventFieldStackTrace) + newLine : newLine}";
 
   @override
   String toString() {
     final formatted = event.format();
-    final result = "$formatted${newLine}${_dartStackTrace.toString()}${newLine}${_nativeStackTrace.toDartString()}";
+    final result = "$formatted${newLine}$_dartStackTrace${newLine}$_nativeStackTrace";
+    if (event.fromNative) event_destroy(event.native);
     return result;
   }
 }

@@ -66,3 +66,9 @@ external int event_get_level(Pointer<event> event);
 
 @Native<Pointer<Utf8> Function(Pointer<event> event)>(isLeaf: true)
 external Pointer<Utf8> event_format(Pointer<event> event);
+
+@Native<Void Function(Pointer<event> event)>(isLeaf: true)
+external void event_local(Pointer<event> event);
+
+@Native<Void Function(Pointer<event> event)>(isLeaf: true)
+external void event_destroy(Pointer<event> event);

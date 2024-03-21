@@ -4,11 +4,13 @@ import 'dart:isolate';
 import 'package:ffi/ffi.dart';
 import 'package:stack_trace/stack_trace.dart';
 
+import '../core.dart';
 import 'bindings.dart';
 import 'constants.dart';
 import 'errors.dart';
 import 'exceptions.dart';
 import 'extensions.dart';
+import 'printer.dart';
 
 class EventField {
   final dynamic value;
@@ -16,12 +18,58 @@ class EventField {
   final EventFieldType type;
 
   EventField._(this.value, this.name, this.type);
-
-  EventField.string(this.name, this.value) : type = EventFieldType.string;
-  EventField.integer(this.name, this.value) : type = EventFieldType.integer;
-  EventField.boolean(this.name, this.value) : type = EventFieldType.boolean;
-  EventField.double(this.name, this.value) : type = EventFieldType.double;
+  EventField.string(this.name, String value)
+      : type = EventFieldType.string,
+        this.value = value;
+  EventField.integer(this.name, int value)
+      : type = EventFieldType.integer,
+        this.value = value;
+  EventField.boolean(this.name, bool value)
+      : type = EventFieldType.boolean,
+        this.value = value;
+  EventField.double(this.name, double value)
+      : type = EventFieldType.double,
+        this.value = value;
   EventField.object(this.name, this.value) : type = EventFieldType.object;
+  EventField.message(this.value)
+      : name = eventFieldMessage,
+        type = EventFieldType.string;
+  EventField.code(this.value)
+      : name = eventFieldCode,
+        type = EventFieldType.string;
+}
+
+class EventBuilder {
+  final _events = <EventField>[];
+
+  EventBuilder string(String name, String value) {
+    _events.add(EventField.string(name, value));
+    return this;
+  }
+
+  EventBuilder integer(String name, int value) {
+    _events.add(EventField.integer(name, value));
+    return this;
+  }
+
+  EventBuilder boolean(String name, bool value) {
+    _events.add(EventField.boolean(name, value));
+    return this;
+  }
+
+  EventBuilder double(String name, dynamic value) {
+    _events.add(EventField.double(name, value));
+    return this;
+  }
+
+  EventBuilder object(String name, dynamic value) {
+    _events.add(EventField.object(name, value));
+    return this;
+  }
+
+  EventBuilder message(String value) => string(eventFieldMessage, value);
+
+  EventBuilder code(int value) => integer(eventFieldCode, value);
 }
 
 class Event {
@@ -37,45 +85,45 @@ class Event {
 
   late final Pointer<event> native;
 
-  Event.panic(List<EventField> fields)
+  Event.panic([EventBuilder Function(EventBuilder builder)? builder])
       : level = eventLevelPanic,
         module = Frame.caller().package ?? unknown,
         location = Frame.caller().location,
         caller = Frame.caller().member ?? unknown,
         source = EventSource.dart,
-        fields = fields.groupBy((field) => field.name);
+        fields = (builder?.call(EventBuilder()) ?? EventBuilder())._events.groupBy((field) => field.name);
 
-  Event.error(List<EventField> fields)
+  Event.error([EventBuilder Function(EventBuilder builder)? builder])
       : level = eventLevelError,
         module = Frame.caller().package ?? unknown,
         location = Frame.caller().location,
         caller = Frame.caller().member ?? unknown,
         source = EventSource.dart,
-        fields = fields.groupBy((field) => field.name);
+        fields = (builder?.call(EventBuilder()) ?? EventBuilder())._events.groupBy((field) => field.name);
 
-  Event.warning(List<EventField> fields)
+  Event.warning([EventBuilder Function(EventBuilder builder)? builder])
       : level = eventLevelWarning,
         module = Frame.caller().package ?? unknown,
         location = Frame.caller().location,
         caller = Frame.caller().member ?? unknown,
         source = EventSource.dart,
-        fields = fields.groupBy((field) => field.name);
+        fields = (builder?.call(EventBuilder()) ?? EventBuilder())._events.groupBy((field) => field.name);
 
-  Event.information(List<EventField> fields)
+  Event.information([EventBuilder Function(EventBuilder builder)? builder])
       : level = eventLevelInformation,
         module = Frame.caller().package ?? unknown,
         location = Frame.caller().location,
         caller = Frame.caller().member ?? unknown,
         source = EventSource.dart,
-        fields = fields.groupBy((field) => field.name);
+        fields = (builder?.call(EventBuilder()) ?? EventBuilder())._events.groupBy((field) => field.name);
 
-  Event.trace(List<EventField> fields)
+  Event.trace([EventBuilder Function(EventBuilder builder)? builder])
       : level = eventLevelTrace,
         module = Frame.caller().package ?? unknown,
         location = Frame.caller().location,
         caller = Frame.caller().member ?? unknown,
         source = EventSource.dart,
-        fields = fields.groupBy((field) => field.name);
+        fields = (builder?.call(EventBuilder()) ?? EventBuilder())._events.groupBy((field) => field.name);
 
   Event.native(this.native)
       : fields = {},
@@ -83,13 +131,13 @@ class Event {
         location = Frame.caller().location,
         caller = Frame.caller().member ?? unknown,
         level = event_get_level(native),
-        module = event_get_module(native).toDartString();
+        module = event_get_module(native) == nullptr ? unknown : event_get_module(native).toDartString();
 
-  Event.system(SystemError error, [List<EventField>? fields])
+  Event.system(SystemError error, [EventBuilder Function(EventBuilder builder)? builder])
       : fields = {
           eventFieldCode: EventField.integer(eventFieldCode, error.code),
           eventFieldMessage: EventField.string(eventFieldMessage, error.message),
-          ...(fields ?? []).groupBy((field) => field.name)
+          ...(builder?.call(EventBuilder()) ?? EventBuilder())._events.groupBy((field) => field.name)
         },
         module = Frame.caller().package ?? unknown,
         source = EventSource.dart,
@@ -97,7 +145,13 @@ class Event {
         caller = Frame.caller().member ?? unknown,
         level = eventLevelError;
 
+  bool get fromNative => source == EventSource.native;
+  
+  bool get fromDart => source == EventSource.dart;
+
   void raise() => throw ModuleException(this);
+
+  void print() => printEvent(this);
 
   bool has(String name) {
     if (source == EventSource.native) return using((arena) => event_has_field(native, name.toNativeUtf8(allocator: arena)));
@@ -193,8 +247,11 @@ class Event {
 
   String format() {
     if (source == EventSource.native) {
-      final formatted = event_format(native).toDartString();
-      return "$formatted${newLine}isolate = ${isolate.debugName}";
+      final formatted = StringBuffer(event_format(native).toDartString());
+      formatted.writeln("dart.isolate = ${isolate.debugName}");
+      formatted.writeln("dart.location = $location");
+      formatted.writeln("dart.caller = $caller(...)");
+      return formatted.toString();
     }
     final formatted = StringBuffer();
     formatted.writeln("[$timestamp] ${eventLevelFormat(level)}: $caller(...) $location");
@@ -203,4 +260,11 @@ class Event {
     fields.values.forEach((field) => formatted.writeln("${field.name} = ${field.value}"));
     return formatted.toString();
   }
+}
+
+void main(List<String> args) {
+  launch([CoreModule()], () {
+    test_throw();
+    nullptr.check();
+  });
 }

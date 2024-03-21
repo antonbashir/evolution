@@ -81,8 +81,9 @@ int stacktrace_format(struct stacktrace* trace, char* buffer, size_t buffer_size
         }
         total += written;
         if (free) delete procedure;
-        if (total >= buffer_size) {
-          return total;
+        if (total >= buffer_size)
+        {
+            return total;
         }
     }
     return total;
@@ -116,17 +117,4 @@ int stacktrace_format_at(int skip, int index, char* buffer, size_t size)
     }
     if (free) delete procedure;
     return written;
-}
-
-const char* stacktrace_to_string(int skip)
-{
-    char* buffer = (char*)calloc(STACKTRACE_PRINT_BUFFER, 1);
-    struct stacktrace trace;
-    stacktrace_collect_current(&trace, skip + 2);
-    if (stacktrace_format(&trace, buffer, STACKTRACE_PRINT_BUFFER) > 0)
-    {
-        return buffer;
-    }
-    free(buffer);
-    return NULL;
 }

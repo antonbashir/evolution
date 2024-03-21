@@ -90,21 +90,3 @@ DART_LEAF_FUNCTION void context_load()
     }
     Dart_ExitScope();
 }
-
-void context_set_local_event(struct event* event)
-{
-    Dart_EnterScope();
-    Dart_Handle local_event_field = Dart_GetField(Dart_LookupLibrary(Dart_NewStringFromUTF8((const uint8_t*)DART_CORE_LIBRARY, strlen(DART_CORE_LIBRARY))), Dart_NewStringFromUTF8((const uint8_t*)DART_LOCAL_EVENT_FIELD, strlen(DART_LOCAL_EVENT_FIELD)));
-    if (Dart_IsError(local_event_field))
-    {
-        Dart_PropagateError(local_event_field);
-    }
-    Dart_Handle arguments[1];
-    arguments[0] = Dart_NewIntegerFromUint64((uint64_t)event);
-    Dart_Handle result = Dart_Invoke(local_event_field, Dart_NewStringFromUTF8((const uint8_t*)DART_PRODUCE_FUNCTION, strlen(DART_PRODUCE_FUNCTION)), 1, arguments);
-    if (Dart_IsError(result))
-    {
-        Dart_PropagateError(result);
-    }
-    Dart_ExitScope();
-}

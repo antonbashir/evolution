@@ -33,3 +33,6 @@ external void context_set_local_event(Pointer<event> event);
 
 @Native<Void Function()>(isLeaf: false)
 external void context_load();
+
+@Native<Void Function()>(isLeaf: true)
+external void test_throw();

@@ -1,4 +1,4 @@
-library core;
+library corefucking;
 
 export 'core/constants.dart';
 export 'core/strings.dart';

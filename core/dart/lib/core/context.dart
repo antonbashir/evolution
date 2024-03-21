@@ -6,7 +6,7 @@ import 'package:ffi/ffi.dart';
 import '../core.dart';
 import 'bindings.dart';
 import 'errors.dart';
-import 'printer.dart';
+import 'event.dart';
 
 final _context = _Context._();
 ContextProvider context() => _context;
@@ -109,7 +109,7 @@ class _Context implements ContextProvider {
 Future<void> launch(List<Module> modules, FutureOr<void> Function() main) async {
   for (var module in modules) _context._create(module);
   for (var module in _context._modules.values) module.validate();
-  printEvent(CoreEvents.modulesCreated(_context._modules.keys));
+  Event.information((event) => event.message(CoreEvents.modulesCreated(_context._modules.keys))).print();
   for (var module in _context._modules.values) await Future.value(module.initialize());
   await runZonedGuarded(
       main,
@@ -120,13 +120,13 @@ Future<void> launch(List<Module> modules, FutureOr<void> Function() main) async 
               : context().coreModule().state.errorHandler(UnimplementedError(error.toString()), stack));
   for (var module in _context._modules.values.toList().reversed) await Future.value(module.shutdown());
   for (var module in _context._modules.values.toList().reversed) module.destroy();
-  printEvent(CoreEvents.modulesDestroyed(_context._modules.keys));
+  Event.information((event) => event.message(CoreEvents.modulesDestroyed(_context._modules.keys))).print();
   _context._clear();
 }
 
 Future<void> fork(FutureOr<void> Function() main) async {
   _context._restore();
-  printEvent(CoreEvents.modulesLoaded(_context._modules.keys));
+  Event.information((event) => event.message(CoreEvents.modulesLoaded(_context._modules.keys))).print();
   for (var module in _context._modules.values) await Future.value(module.fork());
   await runZonedGuarded(
       main,
@@ -137,7 +137,7 @@ Future<void> fork(FutureOr<void> Function() main) async {
               : context().coreModule().state.errorHandler(UnimplementedError(error.toString()), stack));
   for (var module in _context._modules.values.toList().reversed) await Future.value(module.unfork());
   for (var module in _context._modules.values.toList().reversed) module.unload();
-  printEvent(CoreEvents.modulesUnloaded(_context._modules.keys));
+  Event.information((event) => event.message(CoreEvents.modulesUnloaded(_context._modules.keys))).print();
 }
 
 Completer? _blocker = null;

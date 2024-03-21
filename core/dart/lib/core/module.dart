@@ -71,7 +71,7 @@ extension CoreContextExtensions on ContextProvider {
 extension CorePointerExtensions<T extends NativeType> on Pointer<T> {
   Pointer<T> check() {
     if (this == nullptr) {
-      localEvent().consume()?.let((event) => event.raise());
+      LocalEvent.consume()?.let((event) => event.raise());
       Event.system(SystemErrors.ENOMEM).raise();
     }
     return this;
@@ -81,7 +81,7 @@ extension CorePointerExtensions<T extends NativeType> on Pointer<T> {
 extension CoreIntegerExtensions on int {
   int check() {
     if (this == moduleErrorCode) {
-      localEvent().consume()?.let((event) => event.raise());
+      LocalEvent.consume()?.let((event) => event.raise());
       Event.system(SystemErrors.of(-this)).raise();
     }
     return this;
