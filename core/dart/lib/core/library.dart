@@ -5,7 +5,7 @@ import 'package:ffi/ffi.dart';
 
 import 'bindings.dart';
 import 'constants.dart';
-import 'exceptions.dart';
+import 'errors.dart';
 import 'lookup.dart';
 
 SystemLibrary? _core;

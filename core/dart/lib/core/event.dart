@@ -5,21 +5,8 @@ import 'package:ffi/ffi.dart';
 
 import 'bindings.dart';
 import 'constants.dart';
-import 'exceptions.dart';
+import 'errors.dart';
 import 'extensions.dart';
-
-enum EventFieldType {
-  integer,
-  string,
-  boolean,
-  double,
-  object,
-}
-
-enum EventSource {
-  dart,
-  native,
-}
 
 class EventField {
   final dynamic value;

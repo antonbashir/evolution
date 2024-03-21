@@ -5,10 +5,8 @@ import 'package:ffi/ffi.dart';
 
 import '../core.dart';
 import 'bindings.dart';
-import 'constants.dart';
+import 'errors.dart';
 import 'event.dart';
-import 'exceptions.dart';
-import 'library.dart';
 import 'printer.dart';
 
 final _context = _Context._();

@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'constants.dart';
-import 'exceptions.dart';
+import 'errors.dart';
 
 Uri? findDotDartTool() {
   Uri root = Platform.script.resolve(currentDirectorySymbol);

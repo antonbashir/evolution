@@ -2,8 +2,7 @@ import 'dart:ffi';
 import 'dart:typed_data';
 
 import '../core.dart';
-import 'context.dart';
-import 'environment.dart';
+import 'errors.dart';
 import 'event.dart';
 
 const inline = pragma("vm:prefer-inline");
@@ -76,6 +75,19 @@ enum LibraryPackageMode {
   static,
 }
 
+enum EventFieldType {
+  integer,
+  string,
+  boolean,
+  double,
+  object,
+}
+
+enum EventSource {
+  dart,
+  native,
+}
+
 class CoreErrors {
   CoreErrors._();
 
@@ -128,16 +140,6 @@ class PackageConfigFields {
   static const rootUri = 'rootUri';
   static const name = 'name';
   static const packages = 'packages';
-}
-
-class SystemError {
-  final int code;
-  final String message;
-
-  SystemError(this.code, this.message);
-
-  @override
-  String toString() => message;
 }
 
 class SystemErrors {
