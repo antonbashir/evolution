@@ -1,11 +1,8 @@
 import 'dart:async';
 import 'dart:ffi';
 
-import 'package:core/core.dart';
-
 import 'bindings.dart';
 import 'declaration.dart';
-import 'exception.dart';
 
 class ExecutorProducerImplementation implements ExecutorProducerRegistrat {
   final Map<int, ExecutorMethodImplementation> _methods = {};
