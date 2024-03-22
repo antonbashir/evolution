@@ -87,7 +87,7 @@ Dart_Handle dart_get_file(const char* path)
 
 Dart_Handle dart_get_class(const char* file, const char* name)
 {
-    Dart_Handle library = dart_get_class(file, name);
+    Dart_Handle library = dart_get_file(file);
     if (library == NULL) return NULL;
     Dart_Handle class = Dart_GetClass(library, dart_from_string(name));
     if (!dart_check_with_null(class)) return NULL;
@@ -110,27 +110,32 @@ Dart_Handle dart_find_class(const char* name)
     return NULL;
 }
 
-Dart_Handle dart_call_function(Dart_Handle owner, const char* member, Dart_Handle* arguments, size_t arguments_count)
+Dart_Handle dart_call_static(const char* file, const char* class, const char* member, Dart_Handle* arguments, size_t arguments_count)
+{
+    Dart_Handle type = dart_get_class(file, class);
+    if (type == NULL) return NULL;
+    Dart_Handle result = Dart_Invoke(type, dart_from_string(member), arguments_count, arguments);
+    if (!dart_check(result)) return NULL;
+    return result;
+}
+
+Dart_Handle dart_invoke(Dart_Handle owner, const char* member, Dart_Handle* arguments, size_t arguments_count)
 {
     Dart_Handle result = Dart_Invoke(owner, dart_from_string(member), arguments_count, arguments);
     if (!dart_check(result)) return NULL;
     return result;
 }
 
-Dart_Handle dart_call_constructor(const char* class, const char* constructor, Dart_Handle* arguments, size_t arguments_count)
+Dart_Handle dart_call_constructor(Dart_Handle class, const char* constructor, Dart_Handle* arguments, size_t arguments_count)
 {
-    Dart_Handle found = dart_find_class(class);
-    if (!dart_check_with_null(found)) return NULL;
-    Dart_Handle result = Dart_New(found, dart_from_string(constructor), arguments_count, arguments);
+    Dart_Handle result = Dart_New(class, dart_from_string(constructor), arguments_count, arguments);
     if (!dart_check(result)) return NULL;
     return result;
 }
 
-Dart_Handle dart_new(const char* class, Dart_Handle* arguments, size_t arguments_count)
+Dart_Handle dart_new(Dart_Handle class, Dart_Handle* arguments, size_t arguments_count)
 {
-    Dart_Handle found = dart_find_class(class);
-    if (!dart_check_with_null(found)) return NULL;
-    Dart_Handle result = Dart_New(found, Dart_Null(), arguments_count, arguments);
+    Dart_Handle result = Dart_New(class, Dart_Null(), arguments_count, arguments);
     if (!dart_check(result)) return NULL;
     return result;
 }

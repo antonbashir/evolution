@@ -278,14 +278,8 @@ void event_propagate_local(struct event* event)
     {
         event_set_string(event, MODULE_EVENT_FIELD_STACK_TRACE, strdupa(stack_trace_buffer));
     }
-    Dart_Handle local_event_class = dart_get_class(DART_CORE_LOCAL_FILE, DART_LOCAL_EVENT_CLASS);
-    if (local_event_class == NULL)
-    {
-        Dart_ExitScope();
-        return;
-    }
     Dart_Handle arguments[1] = {dart_from_unsigned((intptr_t)event)};
-    if (dart_call_function(local_event_class, DART_PRODUCE_FUNCTION, arguments, 1) != NULL) local = event;
+    if (dart_call_static(DART_CORE_LOCAL_FILE, DART_LOCAL_EVENT_CLASS, DART_PRODUCE_FUNCTION, arguments, 1) != NULL) local = event;
     Dart_ExitScope();
 }
 
