@@ -7,35 +7,38 @@ import 'package:test/test.dart';
 
 import 'generators.dart';
 import 'latch.dart';
+import 'test.dart';
 import 'validators.dart';
 
 void testTcpSingle({required int index, required int clientsPool}) {
-  test("(single) [clients = $clientsPool]", () async {
-    final transport = context().transport();
-    final worker = transport;
-    await worker.initialize();
-    worker.servers.tcp(
-      io.InternetAddress("0.0.0.0"),
-      12345,
-      (connection) => connection.stream().listen(
-        (event) {
-          Validators.request(event.takeBytes());
-          connection.writeSingle(Generators.response());
-        },
-      ),
-    );
-    final clients = await worker.clients.tcp(io.InternetAddress("127.0.0.1"), 12345, configuration: TransportDefaults.tcpClient.copyWith(pool: clientsPool));
-    final latch = Latch(clientsPool);
-    clients.forEach((client) {
-      client.writeSingle(Generators.request());
-      client.stream().listen((value) {
-        Validators.response(value.takeBytes());
-        latch.countDown();
-      });
-    });
-    await latch.done();
-    await transport.shutdown(gracefulTimeout: Duration(milliseconds: 100));
-  });
+  test(
+      "(single) [clients = $clientsPool]",
+      () => execute(() async {
+            final transport = context().transport();
+            final worker = transport;
+            await worker.initialize();
+            worker.servers.tcp(
+              io.InternetAddress("0.0.0.0"),
+              12345,
+              (connection) => connection.stream().listen(
+                (event) {
+                  Validators.request(event.takeBytes());
+                  connection.writeSingle(Generators.response());
+                },
+              ),
+            );
+            final clients = await worker.clients.tcp(io.InternetAddress("127.0.0.1"), 12345, configuration: TransportDefaults.tcpClient.copyWith(pool: clientsPool));
+            final latch = Latch(clientsPool);
+            clients.forEach((client) {
+              client.writeSingle(Generators.request());
+              client.stream().listen((value) {
+                Validators.response(value.takeBytes());
+                latch.countDown();
+              });
+            });
+            await latch.done();
+            await transport.shutdown(gracefulTimeout: Duration(milliseconds: 100));
+          }));
 }
 
 void testTcpMany({required int index, required int clientsPool, required int count}) {

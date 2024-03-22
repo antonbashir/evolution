@@ -17,7 +17,7 @@ void main() {
   final initialization = true;
   final shutdown = false;
   final bulk = false;
-  final tcp = false;
+  final tcp = true;
   final udp = false;
   final unixStream = false;
   final file = false;

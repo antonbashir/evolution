@@ -1,9 +1,7 @@
 import 'dart:ffi';
 import 'dart:io';
 
-import 'package:core/core.dart';
 import 'package:ffi/ffi.dart';
-import 'package:memory/memory.dart';
 import 'package:meta/meta.dart';
 
 import '../bindings.dart';
