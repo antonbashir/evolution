@@ -38,7 +38,7 @@ extension IntegerExtensions on int {
     if (this == moduleErrorCode) {
       finalizer?.call();
       LocalEvent.consume()?.let((event) => event.raise());
-      Event.error((event) => event.code(moduleErrorCode).message(moduleErrorMessage)).raise();
+      Event.error((event) => event.code(moduleErrorCode).message(moduleUnknownErrorMessage)).raise();
     }
     if (SystemErrors.contains(-this)) {
       finalizer?.call();

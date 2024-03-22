@@ -37,10 +37,6 @@ const nativeDirectory = "native";
 
 const modulesMaximum = 64;
 
-const eventFieldMessage = "message";
-const eventFieldCode = "code";
-const eventFieldStackTrace = "stack-trace";
-
 const eventLevelUnknown = -1;
 const eventLevelPanic = 0;
 const eventLevelError = 1;
@@ -55,7 +51,7 @@ const eventLevelInformationLabel = "(information)";
 const eventLevelTraceLabel = "(trace)";
 
 const moduleErrorCode = -1997;
-const moduleErrorMessage = "Unknown system error";
+const moduleUnknownErrorMessage = "Unknown system error";
 
 String eventLevelFormat(int level) => switch (level) {
       eventLevelInformation => eventLevelInformationLabel,
@@ -72,8 +68,6 @@ const errorStackPart = "Error stack:";
 const catchStackPart = "Catch stack:";
 const dartStackPart = "Dart stack:";
 const nativeStackPart = "Native stack:";
-
-final datePickerFirstDate = DateTime(DateTime.now().year);
 
 enum LibraryPackageMode {
   shared,
@@ -93,16 +87,33 @@ enum EventSource {
   native,
 }
 
+class CoreEventFields {
+  CoreEventFields._();
+
+  static const message = "message";
+  static const code = "code";
+  static const stackTrace = "stack-trace";
+  static const module = "module";
+  static const isolate = "isolate";
+}
+
 class CoreErrors {
   CoreErrors._();
 
   static String systemLibraryLoadError(path) => "Unable to load library ${path}";
   static const nonLinuxError = "You should use Linux";
   static const unableToFindProjectRoot = "Unable to find project root";
-  static moduleAlreadyLoaded(String name) => "Module is already loaded: $name";
-  static moduleNotLoaded(String name) => "Module is not loaded: $name";
-  static moduleNotFound(String name) => "Module is not found: $name";
-  static moduleDependenciesNotFound(List<String> dependencies) => "Module dependencies were not found: ${dependencies}";
+  static String moduleAlreadyLoaded(String name) => "Module is already loaded: $name";
+  static String moduleNotLoaded(String name) => "Module is not loaded: $name";
+  static String moduleNotFound(String name) => "Module is not found: $name";
+  static String moduleDependenciesNotFound(List<String> dependencies) => "Module dependencies are not found: ${dependencies}";
+  static String eventFieldNotFound(String name) => "Event field $name is not found";
+  static String eventFieldNotDouble(String name) => "Event field $name is not double";
+  static String eventFieldNotBoolean(String name) => "Event field $name is not boolean";
+  static String eventFieldNotInteger(String name) => "Event field $name is not integer";
+  static String eventFieldNotString(String name) => "Event field $name is not string";
+  static String eventFieldNotObject(String name) => "Event field $name is not object";
+  static const eventNativeFieldsObjectType = "Native events can't have object field";
 }
 
 class CoreEvents {
@@ -112,6 +123,18 @@ class CoreEvents {
   static String modulesDestroyed(Iterable<String> modules) => "Modules destroyed: (${modules.join(",")})";
   static String modulesLoaded(Iterable<String> modules) => "Modules loaded: (${modules.join(",")})";
   static String modulesUnloaded(Iterable<String> modules) => "Modules unloaded: (${modules.join(",")})";
+}
+
+class CoreFormatters {
+  CoreFormatters._();
+
+  static String formatNativeEventDartFields(String isolate, String location, String caller) => """
+dart.isolate = ${isolate}
+dart.location = $location
+dart.caller = $caller(...)""";
+
+  static String formatEventField(String name, String value) => "$name = $value";
+  static String formatEventPrefix(String name, String value) => "$name = $value";
 }
 
 class TupleErrors {

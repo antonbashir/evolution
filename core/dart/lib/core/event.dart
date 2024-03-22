@@ -28,12 +28,14 @@ class EventField {
       : type = EventFieldType.double,
         this.value = value;
   EventField.object(this.name, this.value) : type = EventFieldType.object;
-  EventField.message(this.value)
-      : name = eventFieldMessage,
+  EventField.message(String value)
+      : name = CoreEventFields.message,
+        value = value,
         type = EventFieldType.string;
-  EventField.code(this.value)
-      : name = eventFieldCode,
-        type = EventFieldType.string;
+  EventField.code(int value)
+      : name = CoreEventFields.code,
+        value = value,
+        type = EventFieldType.integer;
 }
 
 class EventBuilder {
@@ -64,9 +66,9 @@ class EventBuilder {
     return this;
   }
 
-  EventBuilder message(String value) => string(eventFieldMessage, value);
+  EventBuilder message(String value) => string(CoreEventFields.message, value);
 
-  EventBuilder code(int value) => integer(eventFieldCode, value);
+  EventBuilder code(int value) => integer(CoreEventFields.code, value);
 }
 
 class Event {
@@ -132,8 +134,8 @@ class Event {
 
   Event.system(SystemError error, [EventBuilder Function(EventBuilder builder)? builder])
       : fields = {
-          eventFieldCode: EventField.integer(eventFieldCode, error.code),
-          eventFieldMessage: EventField.string(eventFieldMessage, error.message),
+          CoreEventFields.code: EventField.integer(CoreEventFields.code, error.code),
+          CoreEventFields.message: EventField.string(CoreEventFields.message, error.message),
           ...(builder?.call(EventBuilder()) ?? EventBuilder())._events.groupBy((field) => field.name)
         },
         module = Frame.caller().package ?? unknown,
@@ -166,16 +168,16 @@ class Event {
   double getDouble(String name) {
     if (source == EventSource.native) return using((arena) => event_get_double(native, name.toNativeUtf8(allocator: arena)));
     final field = fields[name];
-    if (field == null) throw CoreModuleError("Event field $name is not found");
-    if (field.type != EventFieldType.double) throw CoreModuleError("Event field $name is not double");
+    if (field == null) throw CoreModuleError(CoreErrors.eventFieldNotFound(name));
+    if (field.type != EventFieldType.double) throw CoreModuleError(CoreErrors.eventFieldNotDouble(name));
     return field.value;
   }
 
   bool getBoolean(String name) {
     if (source == EventSource.native) return using((arena) => event_get_boolean(native, name.toNativeUtf8(allocator: arena)));
     final field = fields[name];
-    if (field == null) throw CoreModuleError("Event field $name is not found");
-    if (field.type != EventFieldType.boolean) throw CoreModuleError("Event field $name is not boolean");
+    if (field == null) throw CoreModuleError(CoreErrors.eventFieldNotFound(name));
+    if (field.type != EventFieldType.boolean) throw CoreModuleError(CoreErrors.eventFieldNotBoolean(name));
     return field.value;
   }
 
@@ -185,27 +187,27 @@ class Event {
           ? event_get_signed(native, name.toNativeUtf8(allocator: arena))
           : event_field_is_unsigned(native, name.toNativeUtf8(allocator: arena))
               ? event_get_signed(native, name.toNativeUtf8(allocator: arena))
-              : throw CoreModuleError("Event field $name is not found"));
+              : throw CoreModuleError(CoreErrors.eventFieldNotFound(name)));
     }
     final field = fields[name];
-    if (field == null) throw CoreModuleError("Event field $name is not found");
-    if (field.type != EventFieldType.integer) throw CoreModuleError("Event field $name is not integer");
+    if (field == null) throw CoreModuleError(CoreErrors.eventFieldNotFound(name));
+    if (field.type != EventFieldType.integer) throw CoreModuleError(CoreErrors.eventFieldNotInteger(name));
     return field.value;
   }
 
   String getString(String name) {
     if (source == EventSource.native) return using((arena) => event_get_string(native, name.toNativeUtf8(allocator: arena)).toDartString());
     final field = fields[name];
-    if (field == null) throw CoreModuleError("Event field $name is not found");
-    if (field.type != EventFieldType.string) throw CoreModuleError("Event field $name is not string");
+    if (field == null) throw CoreModuleError(CoreErrors.eventFieldNotFound(name));
+    if (field.type != EventFieldType.string) throw CoreModuleError(CoreErrors.eventFieldNotString(name));
     return field.value;
   }
 
   Object getObject(String name) {
-    if (source == EventSource.native) throw CoreModuleError("Native events can't have object field");
+    if (source == EventSource.native) throw CoreModuleError(CoreErrors.eventNativeFieldsObjectType);
     final field = fields[name];
-    if (field == null) throw CoreModuleError("Event field $name is not found");
-    if (field.type != EventFieldType.object) throw CoreModuleError("Event field $name is not object");
+    if (field == null) throw CoreModuleError(CoreErrors.eventFieldNotFound(name));
+    if (field.type != EventFieldType.object) throw CoreModuleError(CoreErrors.eventFieldNotObject(name));
     return field.value;
   }
 
@@ -246,23 +248,21 @@ class Event {
   }
 
   void setObject(String name, dynamic value) {
-    if (source == EventSource.native) throw CoreModuleError("Native events can't have object field");
+    if (source == EventSource.native) throw CoreModuleError(CoreErrors.eventNativeFieldsObjectType);
     fields[name] = EventField.object(name, value);
   }
 
   String format() {
     if (source == EventSource.native) {
       final formatted = StringBuffer(event_format(native).toDartString());
-      formatted.writeln("dart.isolate = ${isolate.debugName}");
-      formatted.writeln("dart.location = $location");
-      formatted.writeln("dart.caller = $caller(...)");
+      formatted.writeln(CoreFormatters.formatNativeEventDartFields(isolate.debugName ?? empty, location, caller));
       return formatted.toString();
     }
     final formatted = StringBuffer();
     formatted.writeln("[$timestamp] ${eventLevelFormat(level)}: $caller(...) $location");
-    formatted.writeln("module = $module");
-    formatted.writeln("isolate = ${isolate.debugName}");
-    fields.values.forEach((field) => formatted.writeln("${field.name} = ${field.value}"));
+    formatted.writeln(CoreFormatters.formatEventField(CoreEventFields.module, module));
+    formatted.writeln(CoreFormatters.formatEventField(CoreEventFields.isolate, isolate.debugName ?? empty));
+    fields.values.forEach((field) => formatted.writeln(CoreFormatters.formatEventField(field.name, field.value)));
     return formatted.toString();
   }
 }
