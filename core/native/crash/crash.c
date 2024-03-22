@@ -46,17 +46,17 @@ static void crash_signal_callback(int signal, siginfo_t* information, void* cont
         }
         if (signal_code != NULL)
         {
-            event_set_string(crash_event, MODULE_EVENT_FIELD_CODE, signal_code);
+            event_set_string(crash_event, EVENT_FIELD_CODE, signal_code);
         }
         else
         {
-            event_set_signed(crash_event, MODULE_EVENT_FIELD_CODE, information->si_code);
+            event_set_signed(crash_event, EVENT_FIELD_CODE, information->si_code);
         }
         if (information->si_addr != NULL)
         {
-            event_set_address(crash_event, MODULE_EVENT_FIELD_ADDRESS, information->si_addr);
+            event_set_address(crash_event, EVENT_FIELD_ADDRESS, information->si_addr);
         }
-        event_set_address(crash_event, MODULE_EVENT_FIELD_SIGNAL_INFORMATION, information);
+        event_set_address(crash_event, EVENT_FIELD_SIGNAL_INFORMATION, information);
         print_event(crash_event);
     }
     else

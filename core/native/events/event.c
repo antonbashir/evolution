@@ -7,16 +7,16 @@
 
 __thread struct event* local = NULL;
 
-#define raise(format, ...)                                                                                     \
-    print_message("(panic): %s(...) %s:%d - " format "\n", __FUNCTION__, __FILENAME__, __LINE__, __VA_ARGS__); \
-    stacktrace_print(0);                                                                                       \
-    exit(-1);                                                                                                  \
+#define raise(format, ...)                                                                                \
+    print_message(EVENT_RAISE_FORMAT format NEW_LINE, __FUNCTION__, __FILENAME__, __LINE__, __VA_ARGS__); \
+    stacktrace_print(0);                                                                                  \
+    exit(-1);                                                                                             \
     unreachable();
 
-#define raise_system(code)                                                                                                         \
-    print_message("(panic): %s(...) %s:%d - code = %d, message = %s", __FUNCTION__, __FILENAME__, __LINE__, code, strerror(code)); \
-    stacktrace_print(0);                                                                                                           \
-    exit(-1);                                                                                                                      \
+#define raise_system(code)                                                                                \
+    print_message(EVENT_RAISE_SYSTEM_FORMAT, __FUNCTION__, __FILENAME__, __LINE__, code, strerror(code)); \
+    stacktrace_print(0);                                                                                  \
+    exit(-1);                                                                                             \
     unreachable();
 
 #define event_set_field(set_event, set_name, set_type, set_value)                    \
@@ -28,9 +28,9 @@ __thread struct event* local = NULL;
             event_field_set_##set_type(field, set_value);                            \
             break;                                                                   \
         }                                                                            \
-        if (event->fields_count == MODULE_EVENT_FIELDS_MAXIMUM)                      \
+        if (event->fields_count == EVENT_FIELDS_MAXIMUM)                             \
         {                                                                            \
-            raise("event fields limit is reached: %d", MODULE_EVENT_FIELDS_MAXIMUM); \
+            raise(ERROR_EVENT_FIELD_LIMIT_REACHED, EVENT_FIELDS_MAXIMUM);            \
         }                                                                            \
         field = calloc(1, sizeof(struct event_field_structure));                     \
         field->name = set_name;                                                      \
@@ -47,7 +47,7 @@ struct event* event_create(uint8_t level, const char* function, const char* file
     {
         raise_system(ENOMEM);
     }
-    created->fields = calloc(MODULE_EVENT_FIELDS_MAXIMUM, sizeof(struct event_field_structure));
+    created->fields = calloc(EVENT_FIELDS_MAXIMUM, sizeof(struct event_field_structure));
     if (created->fields == NULL)
     {
         raise_system(ENOMEM);
@@ -140,11 +140,11 @@ char event_get_character(struct event* event, const char* name)
     struct event_field_structure* field = event_find_field(event, name);
     if (field == NULL)
     {
-        raise("event field %s is not found", name);
+        raise(ERROR_EVENT_FIELD_NOT_FOUND, name);
     }
-    if (field->type != MODULE_EVENT_TYPE_CHARACTER)
+    if (field->type != EVENT_TYPE_CHARACTER)
     {
-        raise("event field %s is not character", name);
+        raise(ERROR_EVENT_FIELD_NOT_CHARACTER, name);
     }
     return field->character;
 }
@@ -154,11 +154,11 @@ void* event_get_address(struct event* event, const char* name)
     struct event_field_structure* field = event_find_field(event, name);
     if (field == NULL)
     {
-        raise("event field %s is not found", name);
+        raise(ERROR_EVENT_FIELD_NOT_FOUND, name);
     }
-    if (field->type != MODULE_EVENT_TYPE_ADDRESS)
+    if (field->type != EVENT_TYPE_ADDRESS)
     {
-        raise("event field %s is not address", name);
+        raise(ERROR_EVENT_FIELD_NOT_ADDRESS, name);
     }
     return field->address;
 }
@@ -168,11 +168,11 @@ bool event_get_boolean(struct event* event, const char* name)
     struct event_field_structure* field = event_find_field(event, name);
     if (field == NULL)
     {
-        raise("event field %s is not found", name);
+        raise(ERROR_EVENT_FIELD_NOT_FOUND, name);
     }
-    if (field->type != MODULE_EVENT_TYPE_BOOLEAN)
+    if (field->type != EVENT_TYPE_BOOLEAN)
     {
-        raise("event field %s is not boolean", name);
+        raise(ERROR_EVENT_FIELD_NOT_BOOLEAN, name);
     }
     return field->boolean;
 }
@@ -182,11 +182,11 @@ int64_t event_get_signed(struct event* event, const char* name)
     struct event_field_structure* field = event_find_field(event, name);
     if (field == NULL)
     {
-        raise("event field %s is not found", name);
+        raise(ERROR_EVENT_FIELD_NOT_FOUND, name);
     }
-    if (field->type != MODULE_EVENT_TYPE_SIGNED)
+    if (field->type != EVENT_TYPE_SIGNED)
     {
-        raise("event field %s is not signed", name);
+        raise(ERROR_EVENT_FIELD_NOT_SIGNED, name);
     }
     return field->signed_number;
 }
@@ -196,11 +196,11 @@ uint64_t event_get_unsigned(struct event* event, const char* name)
     struct event_field_structure* field = event_find_field(event, name);
     if (field == NULL)
     {
-        raise("event field %s is not found", name);
+        raise(ERROR_EVENT_FIELD_NOT_FOUND, name);
     }
-    if (field->type != MODULE_EVENT_TYPE_UNSIGNED)
+    if (field->type != EVENT_TYPE_UNSIGNED)
     {
-        raise("event field %s is not unsigned", name);
+        raise(ERROR_EVENT_FIELD_NOT_UNSIGNED, name);
     }
     return field->unsigned_number;
 }
@@ -210,11 +210,11 @@ double event_get_double(struct event* event, const char* name)
     struct event_field_structure* field = event_find_field(event, name);
     if (field == NULL)
     {
-        raise("event field %s is not found", name);
+        raise(ERROR_EVENT_FIELD_NOT_FOUND, name);
     }
-    if (field->type != MODULE_EVENT_TYPE_DOUBLE)
+    if (field->type != EVENT_TYPE_DOUBLE)
     {
-        raise("event field %s is not double", name);
+        raise(ERROR_EVENT_FIELD_NOT_DOUBLE, name);
     }
     return field->double_number;
 }
@@ -224,11 +224,11 @@ const char* event_get_string(struct event* event, const char* name)
     struct event_field_structure* field = event_find_field(event, name);
     if (field == NULL)
     {
-        raise("event field %s is not found", name);
+        raise(ERROR_EVENT_FIELD_NOT_FOUND, name);
     }
-    if (field->type != MODULE_EVENT_TYPE_STRING)
+    if (field->type != EVENT_TYPE_STRING)
     {
-        raise("event field %s is not string", name);
+        raise(ERROR_EVENT_FIELD_NOT_STRING, name);
     }
     return field->string;
 }
@@ -240,7 +240,7 @@ bool event_field_is_signed(struct event* event, const char* name)
     {
         return false;
     }
-    return field->type == MODULE_EVENT_TYPE_SIGNED;
+    return field->type == EVENT_TYPE_SIGNED;
 }
 
 bool event_field_is_unsigned(struct event* event, const char* name)
@@ -250,7 +250,7 @@ bool event_field_is_unsigned(struct event* event, const char* name)
     {
         return false;
     }
-    return field->type == MODULE_EVENT_TYPE_UNSIGNED;
+    return field->type == EVENT_TYPE_UNSIGNED;
 }
 
 const char* event_get_module(struct event* event)
@@ -276,7 +276,7 @@ void event_propagate_local(struct event* event)
     stacktrace_collect_current(&trace, 1);
     if (stacktrace_format(&trace, stack_trace_buffer, STACKTRACE_PRINT_BUFFER) > 0)
     {
-        event_set_string(event, MODULE_EVENT_FIELD_STACK_TRACE, strdupa(stack_trace_buffer));
+        event_set_string(event, EVENT_FIELD_STACK_TRACE, strdupa(stack_trace_buffer));
     }
     Dart_Handle arguments[] = {dart_from_unsigned((intptr_t)event)};
     if (dart_call_static(DART_CORE_LOCAL_FILE, DART_CORE_LOCAL_EVENT_CLASS, DART_PRODUCE_FUNCTION, arguments) != NULL) local = event;
@@ -308,31 +308,31 @@ const char* event_format(struct event* event)
 {
     size_t size = 0;
     int32_t written = 0;
-    char* buffer = calloc(MODULE_EVENT_BUFFER, sizeof(char));
+    char* buffer = calloc(EVENT_BUFFER, sizeof(char));
     if (buffer == NULL)
     {
         raise_system(ENOMEM);
     }
-    const char* type = MODULE_EVENT_LEVEL_UNKNOWN_LABEL;
+    const char* type = EVENT_LEVEL_UNKNOWN_LABEL;
     switch (event->level)
     {
-        case MODULE_EVENT_LEVEL_TRACE:
-            type = MODULE_EVENT_LEVEL_TRACE_LABEL;
+        case EVENT_LEVEL_TRACE:
+            type = EVENT_LEVEL_TRACE_LABEL;
             break;
-        case MODULE_EVENT_LEVEL_INFORMATION:
-            type = MODULE_EVENT_LEVEL_INFORMATION_LABEL;
+        case EVENT_LEVEL_INFORMATION:
+            type = EVENT_LEVEL_INFORMATION_LABEL;
             break;
-        case MODULE_EVENT_LEVEL_WARNING:
-            type = MODULE_EVENT_LEVEL_WARNING_LABEL;
+        case EVENT_LEVEL_WARNING:
+            type = EVENT_LEVEL_WARNING_LABEL;
             break;
-        case MODULE_EVENT_LEVEL_ERROR:
-            type = MODULE_EVENT_LEVEL_ERROR_LABEL;
+        case EVENT_LEVEL_ERROR:
+            type = EVENT_LEVEL_ERROR_LABEL;
             break;
-        case MODULE_EVENT_LEVEL_PANIC:
-            type = MODULE_EVENT_LEVEL_PANIC_LABEL;
+        case EVENT_LEVEL_PANIC:
+            type = EVENT_LEVEL_PANIC_LABEL;
             break;
     }
-    written = snprintf(buffer, MODULE_EVENT_BUFFER, "[%s] %s: %s(...) %s:%d\n", time_format_local(event->timestamp), type, event->function, event->file, event->line);
+    written = snprintf(buffer, EVENT_BUFFER, EVENT_FORMAT, time_format_local(event->timestamp), type, event->function, event->file, event->line);
     if (written < 0)
     {
         return buffer;
@@ -340,7 +340,7 @@ const char* event_format(struct event* event)
     size += written;
     if (event->raised_module_name != NULL)
     {
-        written = snprintf(buffer + size, MODULE_EVENT_BUFFER - size, "module = %s\n", event->raised_module_name);
+        written = snprintf(buffer + size, EVENT_BUFFER - size, EVENT_MODULE_PART, event->raised_module_name);
         if (written < 0)
         {
             return buffer;
@@ -353,26 +353,26 @@ const char* event_format(struct event* event)
         field = event->fields[i];
         switch (field->type)
         {
-            case MODULE_EVENT_TYPE_BOOLEAN:
-                written = snprintf(buffer + size, MODULE_EVENT_BUFFER - size, "%s = %s\n", field->name, field->boolean ? "true" : "false");
+            case EVENT_TYPE_BOOLEAN:
+                written = snprintf(buffer + size, EVENT_BUFFER - size, EVENT_FIELD_BOOLEAN_FORMAT, field->name, field->boolean ? TRUE_LABEL : FALSE_LABEL);
                 break;
-            case MODULE_EVENT_TYPE_UNSIGNED:
-                written = snprintf(buffer + size, MODULE_EVENT_BUFFER - size, "%s = %ld\n", field->name, field->unsigned_number);
+            case EVENT_TYPE_UNSIGNED:
+                written = snprintf(buffer + size, EVENT_BUFFER - size, EVENT_FIELD_UNSIGNED_FORMAT, field->name, field->unsigned_number);
                 break;
-            case MODULE_EVENT_TYPE_SIGNED:
-                written = snprintf(buffer + size, MODULE_EVENT_BUFFER - size, "%s = %ld\n", field->name, field->signed_number);
+            case EVENT_TYPE_SIGNED:
+                written = snprintf(buffer + size, EVENT_BUFFER - size, EVENT_FIELD_SIGNED_FORMAT, field->name, field->signed_number);
                 break;
-            case MODULE_EVENT_TYPE_DOUBLE:
-                written = snprintf(buffer + size, MODULE_EVENT_BUFFER - size, "%s = %lf\n", field->name, field->double_number);
+            case EVENT_TYPE_DOUBLE:
+                written = snprintf(buffer + size, EVENT_BUFFER - size, EVENT_FIELD_DOUBLE_FORMAT, field->name, field->double_number);
                 break;
-            case MODULE_EVENT_TYPE_STRING:
-                written = snprintf(buffer + size, MODULE_EVENT_BUFFER - size, "%s = %s\n", field->name, field->string);
+            case EVENT_TYPE_STRING:
+                written = snprintf(buffer + size, EVENT_BUFFER - size, EVENT_FIELD_STRING_FORMAT, field->name, field->string);
                 break;
-            case MODULE_EVENT_TYPE_ADDRESS:
-                written = snprintf(buffer + size, MODULE_EVENT_BUFFER - size, "%s = %p\n", field->name, field->address);
+            case EVENT_TYPE_ADDRESS:
+                written = snprintf(buffer + size, EVENT_BUFFER - size, EVENT_FIELD_ADDRESS_FORMAT, field->name, field->address);
                 break;
-            case MODULE_EVENT_TYPE_CHARACTER:
-                written = snprintf(buffer + size, MODULE_EVENT_BUFFER - size, "%s = %c\n", field->name, field->character);
+            case EVENT_TYPE_CHARACTER:
+                written = snprintf(buffer + size, EVENT_BUFFER - size, EVENT_FIELD_CHARACTER_FORMAT, field->name, field->character);
                 break;
         }
         if (written < 0)

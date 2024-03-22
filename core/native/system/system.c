@@ -32,9 +32,9 @@ void system_default_event_printer(struct event* event)
 {
     if (system_get()->print_level < event->level) return;
     const char* buffer = event_format(event);
-    system_get()->on_print("%s" NEW_LINE, buffer);
+    system_get()->on_print(STRING_FORMAT NEW_LINE, buffer);
     free((void*)buffer);
-    if (event->level <= MODULE_EVENT_LEVEL_ERROR)
+    if (event->level <= EVENT_LEVEL_ERROR)
     {
         stacktrace_print(0);
     }
@@ -44,9 +44,9 @@ void system_default_event_printer(struct event* event)
 void system_default_event_raiser(struct event* event)
 {
     if (system_get()->print_level < event->level) return;
-    system_get()->on_print("%s" NEW_LINE, event_format(event));
+    system_get()->on_print(STRING_FORMAT NEW_LINE, event_format(event));
     stacktrace_print(0);
-    exit(event_has_field(event, MODULE_EVENT_FIELD_CODE) ? event_get_unsigned(event, MODULE_EVENT_FIELD_CODE) : -1);
+    exit(event_has_field(event, EVENT_FIELD_CODE) ? event_get_unsigned(event, EVENT_FIELD_CODE) : -1);
     unreachable();
 }
 

@@ -28,49 +28,49 @@ DART_STRUCTURE struct event_field_structure
 
 FORCEINLINE void event_field_set_boolean(struct event_field_structure* field, bool value)
 {
-    field->type = MODULE_EVENT_TYPE_BOOLEAN;
+    field->type = EVENT_TYPE_BOOLEAN;
     field->boolean = value;
 }
 
 FORCEINLINE void event_field_set_double(struct event_field_structure* field, double value)
 {
-    field->type = MODULE_EVENT_TYPE_DOUBLE;
+    field->type = EVENT_TYPE_DOUBLE;
     field->double_number = value;
 }
 
 FORCEINLINE void event_field_set_unsigned(struct event_field_structure* field, uint64_t value)
 {
-    field->type = MODULE_EVENT_TYPE_UNSIGNED;
+    field->type = EVENT_TYPE_UNSIGNED;
     field->unsigned_number = value;
 }
 
 FORCEINLINE void event_field_set_signed(struct event_field_structure* field, int64_t value)
 {
-    field->type = MODULE_EVENT_TYPE_SIGNED;
+    field->type = EVENT_TYPE_SIGNED;
     field->signed_number = value;
 }
 
 FORCEINLINE void event_field_set_string(struct event_field_structure* field, const char* value)
 {
-    field->type = MODULE_EVENT_TYPE_STRING;
+    field->type = EVENT_TYPE_STRING;
     field->string = strdup(value);
 }
 
 FORCEINLINE void event_field_set_character(struct event_field_structure* field, char value)
 {
-    field->type = MODULE_EVENT_TYPE_CHARACTER;
+    field->type = EVENT_TYPE_CHARACTER;
     field->character = value;
 }
 
 FORCEINLINE void event_field_set_address(struct event_field_structure* field, void* value)
 {
-    field->type = MODULE_EVENT_TYPE_ADDRESS;
+    field->type = EVENT_TYPE_ADDRESS;
     field->address = value;
 }
 
 FORCEINLINE void event_field_delete(struct event_field_structure* field)
 {
-    if (field->type == MODULE_EVENT_TYPE_STRING)
+    if (field->type == EVENT_TYPE_STRING)
     {
         free((void*)field->string);
     }
@@ -79,8 +79,8 @@ FORCEINLINE void event_field_delete(struct event_field_structure* field)
 
 void event_field_set_any(struct event_field_structure* field, ...);
 
-#define event_field_message(message) event_field(MODULE_EVENT_FIELD_MESSAGE, message)
-#define event_field_scope(scope) event_field(MODULE_EVENT_FIELD_SCOPE, scope)
+#define event_field_message(message) event_field(EVENT_FIELD_MESSAGE, message)
+#define event_field_scope(scope) event_field(EVENT_FIELD_SCOPE, scope)
 
 #define event_field(field_name, field_value)                                                                                           \
     ({                                                                                                                                 \

@@ -6,47 +6,73 @@ extern "C"
 {
 #endif
 
+#define TRUE_LABEL "true"
+#define FALSE_LABEL "false"
+
+#define NEW_LINE "\n"
+#define EMPTY_STRING ""
+#define STRING_FORMAT "%s"
+#define TIMEZONE_FORMAT "%Z"
+#define DATE_TIME_FORMAT "%Y-%m-%d %H:%M:%S"
+#define TIME_MICROSECONDS_FORMAT ".%04ld"
+#define SPACE " "
+
+#define SIMPLE_MAP_STRING_SEED 13U
+
 #define MODULE_UNKNOWN_NAME "unknown"
 
 #define MODULES_MAXIMUM 64
 
-#define MODULE_EVENT_BUFFER 2048
-#define MODULE_EVENT_FIELDS_MAXIMUM 20
+#define EVENT_BUFFER 2048
+#define EVENT_FIELDS_MAXIMUM 20
 
-#define MODULE_EVENT_LEVEL_PANIC 0
-#define MODULE_EVENT_LEVEL_ERROR 1
-#define MODULE_EVENT_LEVEL_WARNING 2
-#define MODULE_EVENT_LEVEL_INFORMATION 3
-#define MODULE_EVENT_LEVEL_TRACE 4
+#define EVENT_LEVEL_PANIC 0
+#define EVENT_LEVEL_ERROR 1
+#define EVENT_LEVEL_WARNING 2
+#define EVENT_LEVEL_INFORMATION 3
+#define EVENT_LEVEL_TRACE 4
 
-#define MODULE_EVENT_LEVEL_UNKNOWN_LABEL "(unknown)";
-#define MODULE_EVENT_LEVEL_TRACE_LABEL "(trace)";
-#define MODULE_EVENT_LEVEL_INFORMATION_LABEL "(information)";
-#define MODULE_EVENT_LEVEL_WARNING_LABEL "(warning)";
-#define MODULE_EVENT_LEVEL_ERROR_LABEL "(error)";
-#define MODULE_EVENT_LEVEL_PANIC_LABEL "(panic)";
+#define EVENT_LEVEL_UNKNOWN_LABEL "(unknown)";
+#define EVENT_LEVEL_TRACE_LABEL "(trace)";
+#define EVENT_LEVEL_INFORMATION_LABEL "(information)";
+#define EVENT_LEVEL_WARNING_LABEL "(warning)";
+#define EVENT_LEVEL_ERROR_LABEL "(error)";
+#define EVENT_LEVEL_PANIC_LABEL "(panic)";
 
-#define MODULE_EVENT_TYPE_SIGNED 0
-#define MODULE_EVENT_TYPE_UNSIGNED 1
-#define MODULE_EVENT_TYPE_DOUBLE 2
-#define MODULE_EVENT_TYPE_STRING 3
-#define MODULE_EVENT_TYPE_ADDRESS 4
-#define MODULE_EVENT_TYPE_CHARACTER 5
-#define MODULE_EVENT_TYPE_BOOLEAN 6
+#define EVENT_TYPE_SIGNED 0
+#define EVENT_TYPE_UNSIGNED 1
+#define EVENT_TYPE_DOUBLE 2
+#define EVENT_TYPE_STRING 3
+#define EVENT_TYPE_ADDRESS 4
+#define EVENT_TYPE_CHARACTER 5
+#define EVENT_TYPE_BOOLEAN 6
 
-#define MODULE_EVENT_FIELD_MESSAGE "message"
-#define MODULE_EVENT_FIELD_CODE "code"
-#define MODULE_EVENT_FIELD_SCOPE "scope"
-#define MODULE_EVENT_FIELD_CALLER "caller"
-#define MODULE_EVENT_FIELD_ADDRESS "address"
-#define MODULE_EVENT_FIELD_STACK_TRACE "stack-trace"
-#define MODULE_EVENT_FIELD_SIGNAL_INFORMATION "signal-information"
+#define EVENT_FIELD_MESSAGE "message"
+#define EVENT_FIELD_CODE "code"
+#define EVENT_FIELD_SCOPE "scope"
+#define EVENT_FIELD_CALLER "caller"
+#define EVENT_FIELD_ADDRESS "address"
+#define EVENT_FIELD_STACK_TRACE "stack-trace"
+#define EVENT_FIELD_SIGNAL_INFORMATION "signal-information"
 
-#define SYSTEM_PRINT_LEVEL_TRACE MODULE_EVENT_LEVEL_TRACE
-#define SYSTEM_PRINT_LEVEL_INFORMATION MODULE_EVENT_LEVEL_INFORMATION
-#define SYSTEM_PRINT_LEVEL_WARNING MODULE_EVENT_LEVEL_WARNING
-#define SYSTEM_PRINT_LEVEL_ERROR MODULE_EVENT_LEVEL_ERROR
-#define SYSTEM_PRINT_LEVEL_PANIC MODULE_EVENT_LEVEL_PANIC
+#define EVENT_FORMAT "[%s] %s: %s(...) %s:%d\n"
+#define EVENT_MODULE_PART "module = %s\n"
+#define EVENT_FIELD_BOOLEAN_FORMAT "%s = %s\n"
+#define EVENT_FIELD_UNSIGNED_FORMAT "%s = %ld\n"
+#define EVENT_FIELD_SIGNED_FORMAT "%s = %ld\n"
+#define EVENT_FIELD_DOUBLE_FORMAT "%s = %lf\n"
+#define EVENT_FIELD_STRING_FORMAT "%s = %s\n"
+#define EVENT_FIELD_ADDRESS_FORMAT "%s = %p\n"
+#define EVENT_FIELD_CHARACTER_FORMAT "%s = %c\n"
+
+#define SYSTEM_PRINT_LEVEL_TRACE EVENT_LEVEL_TRACE
+#define SYSTEM_PRINT_LEVEL_INFORMATION EVENT_LEVEL_INFORMATION
+#define SYSTEM_PRINT_LEVEL_WARNING EVENT_LEVEL_WARNING
+#define SYSTEM_PRINT_LEVEL_ERROR EVENT_LEVEL_ERROR
+#define SYSTEM_PRINT_LEVEL_PANIC EVENT_LEVEL_PANIC
+
+#define EVENT_RAISE_SYSTEM_FORMAT "(panic): %s(...) %s:%d - code = %d, message = %s"
+#define EVENT_RAISE_FORMAT "(panic): %s(...) %s:%d - "
 
 #define STACKTRACE_FRAME_FORMAT_LONG \
     "#%-2d %p %s:%"                  \
@@ -68,6 +94,15 @@ extern "C"
 
 #define ERROR_UNEXPECTED_SIGNAL "Unexpected fatal signal: %d"
 #define ERROR_CRASH_HANDLING "Error %d while handling crash"
+#define ERROR_EVENT_FIELD_NOT_FOUND "Event field %s is not found"
+#define ERROR_EVENT_FIELD_NOT_CHARACTER "Event field %s is not character"
+#define ERROR_EVENT_FIELD_NOT_STRING "Event field %s is not string"
+#define ERROR_EVENT_FIELD_NOT_DOUBLE "Event field %s is not double"
+#define ERROR_EVENT_FIELD_NOT_UNSIGNED "Event field %s is not unsigned"
+#define ERROR_EVENT_FIELD_NOT_SIGNED "Event field %s is not signed"
+#define ERROR_EVENT_FIELD_NOT_BOOLEAN "Event field %s is not boolean"
+#define ERROR_EVENT_FIELD_NOT_ADDRESS "Event field %s is not address"
+#define ERROR_EVENT_FIELD_LIMIT_REACHED "Event fields limit is reached: %d"
 
 #define PANIC_CONTEXT_CREATED "Context already created"
 #define MODULE_LOADING_FAILED "Failed to load module %s"

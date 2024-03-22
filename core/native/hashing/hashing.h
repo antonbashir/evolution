@@ -2,14 +2,13 @@
 #define CORE_HASHING_H
 
 #include <common/common.h>
+#include <common/constants.h>
 #include <stdint.h>
 #include "murmur32.h"
 
 #define _ASSIGN(dst, src, ...) asm(""          \
                                    : "=r"(dst) \
                                    : "0"(src), ##__VA_ARGS__)
-
-#define SIMPLE_MAP_STRING_SEED 13U
 
 static FORCEINLINE uint32_t CONST hash_string(const char* string, uint32_t length)
 {
