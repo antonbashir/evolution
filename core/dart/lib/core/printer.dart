@@ -20,7 +20,7 @@ class Printer {
 void printEvent(Event event) {
   final configuration = context().coreModule().configuration;
   if (!configuration.silent && configuration.printLevel >= event.level) {
-    if (event.level >= eventLevelError) {
+    if (event.level <= eventLevelError) {
       context().coreModule().state.errorPrinter(event.format());
       return;
     }
