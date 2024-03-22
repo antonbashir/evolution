@@ -113,8 +113,8 @@ class StorageExecutor {
   StorageSchema get schema => _schema;
   MemoryTuples get tuples => _tuples;
 
-  Future<void> initialize(ExecutorModule executorModule) async {
-    _executor = Executor();
+  Future<void> initialize() async {
+    _executor = context().executor();
     await _executor.initialize();
     _descriptor = tarantool_executor_descriptor();
     _nativeFactory = calloc<tarantool_factory>(sizeOf<tarantool_factory>());

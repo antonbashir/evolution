@@ -1,9 +1,6 @@
 import 'dart:ffi';
 import 'dart:math';
 
-import 'package:core/core.dart';
-import 'package:executor/executor.dart';
-
 import 'bindings.dart';
 import 'executor.dart';
 import 'factory.dart';

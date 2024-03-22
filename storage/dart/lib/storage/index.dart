@@ -1,10 +1,6 @@
 import 'dart:async';
 import 'dart:ffi';
 
-import 'package:core/core.dart';
-import 'package:executor/executor.dart';
-import 'package:memory/memory.dart';
-
 import 'bindings.dart';
 import 'constants.dart';
 import 'executor.dart';
@@ -22,8 +18,8 @@ class StorageIndex {
   StorageIndex(this._spaceId, this._indexId, this._descriptor, this._tuples, this._factory, this._producer);
 
   Future<int> count({List<dynamic> key = const [], StorageIteratorType iteratorType = StorageIteratorType.eq}) {
-    final (key, keySize) = _tuples.emptyList;
-    return countBy(key, keySize, iteratorType: iteratorType);
+    final (:Pointer<Uint8> value, :int size) = _tuples.emptyList;
+    return countBy(value, size, iteratorType: iteratorType);
   }
 
   @inline
@@ -53,8 +49,8 @@ class StorageIndex {
 
   @inline
   Future<StorageIterator> iterator({StorageIteratorType iteratorType = StorageIteratorType.eq}) {
-    final (key, keySize) = _tuples.emptyList;
-    return iteratorBy(key, keySize, iteratorType: iteratorType);
+    final (:Pointer<Uint8> value, :int size) = _tuples.emptyList;
+    return iteratorBy(value, size, iteratorType: iteratorType);
   }
 
   @inline
@@ -84,8 +80,8 @@ class StorageIndex {
 
   @inline
   Future<Pointer<tarantool_tuple>> min() {
-    final (key, keySize) = _tuples.emptyList;
-    return minBy(key, keySize);
+    final (:Pointer<Uint8> value, :int size) = _tuples.emptyList;
+    return minBy(value, size);
   }
 
   @inline
@@ -100,8 +96,8 @@ class StorageIndex {
 
   @inline
   Future<Pointer<tarantool_tuple>> max() {
-    final (key, keySize) = _tuples.emptyList;
-    return maxBy(key, keySize);
+    final (:Pointer<Uint8> value, :int size) = _tuples.emptyList;
+    return maxBy(value, size);
   }
 
   @inline
@@ -159,8 +155,8 @@ class StorageIndex {
     int limit = int32MaxValue,
     StorageIteratorType iteratorType = StorageIteratorType.eq,
   }) {
-    final (key, keySize) = _tuples.emptyList;
-    return selectBy(key, keySize);
+    final (:Pointer<Uint8> value, :int size) = _tuples.emptyList;
+    return selectBy(value, size);
   }
 
   @inline

@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:ffi';
 
-import 'package:memory/memory.dart';
-
 import 'bindings.dart';
 import 'constants.dart';
 import 'executor.dart';
@@ -27,8 +25,8 @@ class StorageSpace {
 
   @inline
   Future<int> count({StorageIteratorType iteratorType = StorageIteratorType.eq}) {
-    final (key, keySize) = _tuples.emptyList;
-    return countBy(key, keySize, iteratorType: iteratorType);
+    final (:Pointer<Uint8> value, :int size) = _tuples.emptyList;
+    return countBy(value, size, iteratorType: iteratorType);
   }
 
   @inline
@@ -64,8 +62,8 @@ class StorageSpace {
 
   @inline
   Future<StorageIterator> iterator({StorageIteratorType iteratorType = StorageIteratorType.eq}) {
-    final (key, keySize) = _tuples.emptyList;
-    return iteratorBy(key, keySize, iteratorType: iteratorType);
+    final (:Pointer<Uint8> value, :int size) = _tuples.emptyList;
+    return iteratorBy(value, size, iteratorType: iteratorType);
   }
 
   @inline
@@ -176,8 +174,8 @@ class StorageSpace {
 
   @inline
   Future<StorageTuple> min() {
-    final (key, keySize) = _tuples.emptyList;
-    return minBy(key, keySize);
+    final (:Pointer<Uint8> value, :int size) = _tuples.emptyList;
+    return minBy(value, size);
   }
 
   @inline
@@ -267,8 +265,8 @@ class StorageSpace {
     int limit = int32MaxValue,
     StorageIteratorType iteratorType = StorageIteratorType.eq,
   }) {
-    final (key, keySize) = _tuples.emptyList;
-    return selectBy(key, keySize);
+    final (:Pointer<Uint8> value, :int size) = _tuples.emptyList;
+    return selectBy(value, size);
   }
 
   @inline
