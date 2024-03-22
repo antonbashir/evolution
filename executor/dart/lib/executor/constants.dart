@@ -5,17 +5,7 @@ import 'package:core/core.dart';
 final executorLibraryName = SystemEnvironment.debug ? "libexecutor_debug_${Abi.current()}.so" : "libexecutor_release_${Abi.current()}.so";
 const executorModuleName = "executor";
 
-class ExecutorErrors {
-  ExecutorErrors._();
-
-  static const executorRingFullError = "[executor] ring is full";
-  static executorError(int result) => SystemErrors.of(-result);
-}
-
 const maximumExecutors = 1 << 16;
-
-const executorErrorNotifierPost = 0;
-const executorErrorRingFull = -1;
 
 const executorStatePaused = 1 << 0;
 const executorStateIdle = 1 << 1;

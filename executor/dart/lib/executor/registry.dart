@@ -1,7 +1,5 @@
 import 'dart:ffi';
 
-import 'package:core/core/constants.dart';
-
 import 'bindings.dart';
 import 'consumer.dart';
 import 'declaration.dart';
@@ -9,10 +7,9 @@ import 'producer.dart';
 
 class ExecutorConsumerRegistry {
   final _consumers = <ExecutorConsumerExecutor>[];
-  
-  int get pending => _consumers.map((consumer) => consumer.pending).fold(0, (value, element) => value + element);
-
   final Pointer<executor_instance> _executor;
+
+  int get pending => _consumers.map((consumer) => consumer.pending).fold(0, (value, element) => value + element);
 
   ExecutorConsumerRegistry(this._executor);
 
@@ -30,10 +27,9 @@ class ExecutorConsumerRegistry {
 
 class ExecutorProducerRegistry {
   final _producers = <ExecutorProducerImplementation>[];
+  final Pointer<executor_instance> _pointer;
 
   int get pending => _producers.map((producer) => producer.pending).fold(0, (value, element) => value + element);
-
-  final Pointer<executor_instance> _pointer;
 
   ExecutorProducerRegistry(this._pointer);
 

@@ -1,6 +1,5 @@
 import 'dart:ffi';
 
-import 'package:core/core.dart';
 import 'package:ffi/ffi.dart';
 
 import 'bindings.dart';

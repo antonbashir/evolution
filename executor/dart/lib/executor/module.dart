@@ -9,7 +9,7 @@ import 'broker.dart';
 import 'configuration.dart';
 import 'constants.dart';
 import 'defaults.dart';
-import 'exception.dart';
+import 'error.dart';
 import 'executor.dart';
 
 class ExecutorModuleState implements ModuleState {

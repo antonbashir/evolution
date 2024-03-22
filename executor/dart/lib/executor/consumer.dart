@@ -6,9 +6,9 @@ import 'bindings.dart';
 class ExecutorConsumerExecutor {
   final List<ExecutorCallbackExecutor> _callbacks;
 
-  int get pending => _callbacks.map((callback) => callback._pending).fold(0, (value, element) => value + element);
-
   ExecutorConsumerExecutor(this._callbacks);
+
+  int get pending => _callbacks.map((callback) => callback._pending).fold(0, (value, element) => value + element);
 
   @inline
   void call(Pointer<executor_task> message) => _callbacks[message.ref.method].call(message);
