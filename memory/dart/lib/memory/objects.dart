@@ -53,6 +53,6 @@ class MemoryObjects<T> {
   void _extend(int nextCapacity) {
     if (_queue.length >= nextCapacity) return;
     final toAllocate = nextCapacity - _queue.length;
-    for (var i = 0; i < toAllocate; i++) _queue.add(_allocator());
+    for (var i = 0; i < toAllocate && _queue.length < configuration.maximumAvailableCapacity; i++) _queue.add(_allocator());
   }
 }
