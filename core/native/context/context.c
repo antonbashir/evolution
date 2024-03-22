@@ -2,6 +2,7 @@
 #include <dart_api.h>
 #include <panic/panic.h>
 #include <printer/printer.h>
+#include "dart/dart.h"
 
 struct context_structure context_instance;
 
@@ -68,25 +69,8 @@ DART_LEAF_FUNCTION void context_load()
     for (int i = 0; i < context_instance.size; i++)
     {
         struct module_container container = context_instance.containers[i];
-        intptr_t librariesCount;
-        Dart_Handle libraries = Dart_GetLoadedLibraries();
-        Dart_ListLength(libraries, &librariesCount);
-        for (int libraryIndex = 0; libraryIndex < librariesCount; libraryIndex++)
-        {
-            Dart_Handle library = Dart_ListGetAt(libraries, libraryIndex);
-            if (Dart_IsError(library) || Dart_IsNull(library)) continue;
-            Dart_Handle className = Dart_NewStringFromUTF8((const uint8_t*)container.type, strlen(container.type));
-            Dart_Handle class = Dart_GetClass(library, className);
-            if (Dart_IsError(class) || Dart_IsNull(class)) continue;
-            Dart_Handle constructor = Dart_NewStringFromUTF8((const uint8_t*)DART_MODULE_FACTORY, strlen(DART_MODULE_FACTORY));
-            Dart_Handle arguments[1];
-            arguments[0] = Dart_NewIntegerFromUint64((uint64_t)container.module);
-            Dart_Handle created_module = Dart_New(class, constructor, 1, arguments);
-            if (Dart_IsError(created_module))
-            {
-                Dart_PropagateError(created_module);
-            }
-        }
+        Dart_Handle arguments[1] = {dart_from_unsigned((uintptr_t)container.module)};
+        dart_call_constructor(container.type, DART_MODULE_FACTORY, arguments, 1);
     }
     Dart_ExitScope();
 }

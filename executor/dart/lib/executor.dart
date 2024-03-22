@@ -1,5 +1,3 @@
-library executor;
-
 export 'executor/configuration.dart';
 export 'executor/declaration.dart';
 export 'executor/defaults.dart';

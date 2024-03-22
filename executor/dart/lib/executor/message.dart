@@ -1,7 +1,6 @@
 import 'dart:ffi';
 import 'dart:typed_data';
 
-import 'package:core/core.dart';
 import 'package:ffi/ffi.dart';
 
 import 'bindings.dart';

@@ -74,11 +74,6 @@ extern "C"
 
 #define LOADING_LIBRARY_MESSAGE "Loading library: %s"
 
-#define DART_CORE_LOCAL_LIBRARY "package:core/core/local.dart"
-#define DART_MODULE_FACTORY "_load"
-#define DART_LOCAL_EVENT_CLASS "LocalEvent"
-#define DART_PRODUCE_FUNCTION "_produce"
-
 #if defined(__cplusplus)
 }
 #endif

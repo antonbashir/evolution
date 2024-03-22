@@ -1,5 +1,3 @@
-library core;
-
 export 'core/constants.dart';
 export 'core/strings.dart';
 export 'core/library.dart';

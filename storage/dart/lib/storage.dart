@@ -1,5 +1,3 @@
-library storage;
-
 export "storage/module.dart" show StorageModule;
 export 'storage/executor.dart' show StorageExecutor;
 

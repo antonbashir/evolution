@@ -66,6 +66,10 @@ DART_LEAF_FUNCTION uint8_t event_get_level(struct event* event);
 DART_LEAF_FUNCTION const char* event_format(struct event* event);
 
 DART_LEAF_FUNCTION void event_set_local(struct event* event);
+DART_LEAF_FUNCTION void event_propagate_local(struct event* event);
+DART_LEAF_FUNCTION void event_clear_local(bool propagate_to_dart);
+DART_LEAF_FUNCTION struct event* event_get_local();
+DART_LEAF_FUNCTION bool event_has_local(struct event* event);
 
 DART_LEAF_FUNCTION void event_destroy(struct event* event);
 
