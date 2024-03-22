@@ -68,7 +68,19 @@ external int event_get_level(Pointer<event> event);
 external Pointer<Utf8> event_format(Pointer<event> event);
 
 @Native<Void Function(Pointer<event> event)>(isLeaf: true)
-external void event_local(Pointer<event> event);
+external void event_set_local(Pointer<event> event);
+
+@Native<Void Function(Pointer<event> event)>(isLeaf: true)
+external void event_propagate_local(Pointer<event> event);
+
+@Native<Void Function(Bool propagate_to_dart)>(isLeaf: true)
+external void event_clear_local(bool propagate_to_dart);
+
+@Native<Pointer<event> Function()>(isLeaf: true)
+external Pointer<event> event_get_local();
+
+@Native<Bool Function(Pointer<event> event)>(isLeaf: true)
+external bool event_has_local(Pointer<event> event);
 
 @Native<Void Function(Pointer<event> event)>(isLeaf: true)
 external void event_destroy(Pointer<event> event);

@@ -28,6 +28,7 @@ DART_LEAF_FUNCTION const char* tarantool_create_string(struct tarantool_factory*
 DART_LEAF_FUNCTION void tarantool_free_string(struct tarantool_factory* factory, const char* string, size_t size);
 
 DART_LEAF_FUNCTION void tarantool_factory_destroy(struct tarantool_factory* factory);
+
 #if defined(__cplusplus)
 }
 #endif

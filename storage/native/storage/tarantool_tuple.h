@@ -9,6 +9,7 @@
 DART_TYPE struct tarantool_tuple;
 DART_TYPE struct tarantool_port_vtab;
 DART_TYPE struct tarantool_tuple_iterator;
+
 DART_STRUCTURE struct tarantool_tuple_port_entry
 {
     DART_FIELD struct tarantool_tuple_port_entry* next;

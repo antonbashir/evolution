@@ -9,6 +9,7 @@
 extern "C"
 {
 #endif
+
 DART_STRUCTURE struct tarantool_configuration
 {
     DART_FIELD const char* initial_script;
@@ -33,6 +34,7 @@ DART_LEAF_FUNCTION int32_t tarantool_is_read_only();
 DART_LEAF_FUNCTION const char* tarantool_initialization_error();
 DART_LEAF_FUNCTION const char* tarantool_shutdown_error();
 DART_LEAF_FUNCTION bool tarantool_shutdown();
+
 #if defined(__cplusplus)
 }
 #endif

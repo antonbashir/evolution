@@ -5,24 +5,19 @@
 #include <common/common.h>
 #include <common/constants.h>
 #include <events/event.h>
-#include <hashing/hashing.h>
 #include <system/library.h>
-#include "events/events.h"
 
 #if defined(__cplusplus)
 extern "C"
 {
 #endif
 
-typedef struct _Dart_Handle* Dart_Handle;
-
 DART_STRUCTURE struct context_structure
 {
     DART_FIELD bool initialized;
     DART_FIELD size_t size;
     DART_FIELD struct module_container* containers;
-    struct simple_map_modules_t* modules;
-    Dart_Handle core_library;
+    DART_FIELD DART_TYPE struct simple_map_modules_t* modules;
 };
 
 DART_LEAF_FUNCTION struct context_structure* context_get();
