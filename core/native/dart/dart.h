@@ -12,8 +12,8 @@ extern "C"
 typedef struct _Dart_Handle* Dart_Handle;
 
 #define DART_CORE_LOCAL_FILE "package:core/core/local.dart"
-#define DART_MODULE_FACTORY "_load"
-#define DART_LOCAL_EVENT_CLASS "LocalEvent"
+#define DART_CORE_LOCAL_EVENT_CLASS "LocalEvent"
+#define DART_LOAD_FUNCTION "_load"
 #define DART_PRODUCE_FUNCTION "_produce"
 
 Dart_Handle dart_from_string(const char* native);
