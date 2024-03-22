@@ -50,12 +50,16 @@ extern "C"
 #define EVENT_TYPE_BOOLEAN 6
 
 #define EVENT_FIELD_MESSAGE "message"
+#define EVENT_FIELD_ERROR_KIND "error-kind"
 #define EVENT_FIELD_CODE "code"
 #define EVENT_FIELD_SCOPE "scope"
 #define EVENT_FIELD_CALLER "caller"
 #define EVENT_FIELD_ADDRESS "address"
 #define EVENT_FIELD_STACK_TRACE "stack-trace"
 #define EVENT_FIELD_SIGNAL_INFORMATION "signal-information"
+
+#define EVENT_ERROR_KIND_MODULE "module"
+#define EVENT_ERROR_KIND_SYSTEM "system"
 
 #define EVENT_FORMAT "[%s] %s: %s(...) %s:%d\n"
 #define EVENT_MODULE_PART "module = %s\n"
