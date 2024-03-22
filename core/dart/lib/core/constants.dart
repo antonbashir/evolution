@@ -99,9 +99,9 @@ class CoreErrors {
   static String systemLibraryLoadError(path) => "Unable to load library ${path}";
   static const nonLinuxError = "You should use Linux";
   static const unableToFindProjectRoot = "Unable to find project root";
-  static moduleAlreadyLoaded(String name) => "Module was already loaded: $name";
-  static moduleNotLoaded(String name) => "Module was not loaded: $name";
-  static moduleNotFound(String name) => "Module was not found: $name";
+  static moduleAlreadyLoaded(String name) => "Module is already loaded: $name";
+  static moduleNotLoaded(String name) => "Module is not loaded: $name";
+  static moduleNotFound(String name) => "Module is not found: $name";
   static moduleDependenciesNotFound(List<String> dependencies) => "Module dependencies were not found: ${dependencies}";
 }
 

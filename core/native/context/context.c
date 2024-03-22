@@ -69,7 +69,7 @@ DART_LEAF_FUNCTION void context_load()
     for (int i = 0; i < context_instance.size; i++)
     {
         struct module_container container = context_instance.containers[i];
-        Dart_Handle arguments[1] = {dart_from_unsigned((uintptr_t)container.module)};
+        Dart_Handle arguments[] = {dart_from_unsigned((uintptr_t)container.module)};
         dart_call_constructor(dart_find_class(container.type), DART_LOAD_FUNCTION, arguments, 1);
     }
     Dart_ExitScope();
