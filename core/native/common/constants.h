@@ -23,6 +23,8 @@ extern "C"
 
 #define MODULES_MAXIMUM 64
 
+#define MODULE_ERROR_CODE -1997
+
 #define EVENT_BUFFER 2048
 #define EVENT_FIELDS_MAXIMUM 20
 

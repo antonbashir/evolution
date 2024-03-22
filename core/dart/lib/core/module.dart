@@ -16,7 +16,7 @@ void _defaultErrorHandler(Error error, StackTrace stack) {
 void _defaultExceptionHandler(Exception exception, StackTrace stack) {
   if (exception is ModuleException) {
     Printer.printError(exception.toString());
-    if (exception.event.level == eventLevelPanic) {
+    if (exception.event.level == EventLevel.panic) {
       exit(exception.event.has(CoreEventFields.code) ? exception.event.getInteger(CoreEventFields.code) : -1);
     }
     return;

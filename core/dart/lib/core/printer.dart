@@ -20,7 +20,7 @@ class Printer {
 void printEvent(Event event) {
   final configuration = context().coreModule().configuration;
   if (!configuration.silent && configuration.printLevel >= event.level) {
-    if (event.level <= eventLevelError) {
+    if (event.level <= EventLevel.error) {
       context().coreModule().state.errorPrinter(event.format());
       return;
     }
@@ -30,8 +30,8 @@ void printEvent(Event event) {
 
 void printError(Error error, StackTrace stack) {
   final configuration = context().coreModule().configuration;
-  if (!configuration.silent && configuration.printLevel >= eventLevelError) {
-    final prefix = "[${DateTime.now()}] {${Isolate.current.debugName}} $eventLevelErrorLabel";
+  if (!configuration.silent && configuration.printLevel >= EventLevel.error) {
+    final prefix = "[${DateTime.now()}] {${Isolate.current.debugName}} ${EventLevel.error.label}";
     final message = "$prefix: ${error.toString()}$newLine$errorStackPart$newLine${error.stackTrace}$newLine$catchStackPart$newLine$stack";
     Printer.printError(message);
   }
@@ -39,8 +39,8 @@ void printError(Error error, StackTrace stack) {
 
 void printException(Exception exception, StackTrace stack) {
   final configuration = context().coreModule().configuration;
-  if (!configuration.silent && configuration.printLevel >= eventLevelError) {
-    final prefix = "[${DateTime.now()}] {${Isolate.current.debugName}} $eventLevelErrorLabel";
+  if (!configuration.silent && configuration.printLevel >= EventLevel.error) {
+    final prefix = "[${DateTime.now()}] {${Isolate.current.debugName}} ${EventLevel.error.label}";
     Printer.printError("$prefix: ${exception.toString()}$newLine$stack$newLine");
   }
 }

@@ -37,30 +37,36 @@ const nativeDirectory = "native";
 
 const modulesMaximum = 64;
 
-const eventLevelUnknown = -1;
-const eventLevelPanic = 0;
-const eventLevelError = 1;
-const eventLevelWarning = 2;
-const eventLevelInformation = 3;
-const eventLevelTrace = 4;
+enum EventLevel {
+  unknown(-1, "(unknown)"),
+  panic(0, "(unknown)"),
+  error(1, "(unknown)"),
+  warning(2, "(unknown)"),
+  information(3, "(unknown)"),
+  trace(4, "(unknown)");
 
-const eventLevelPanicLabel = "(panic)";
-const eventLevelErrorLabel = "(error)";
-const eventLevelWarningLabel = "(warning)";
-const eventLevelInformationLabel = "(information)";
-const eventLevelTraceLabel = "(trace)";
+  final int level;
+  final String label;
+
+  const EventLevel(this.level, this.label);
+
+  static EventLevel ofLevel(int level) => switch (level) {
+        0 => EventLevel.panic,
+        1 => EventLevel.error,
+        2 => EventLevel.warning,
+        3 => EventLevel.information,
+        4 => EventLevel.trace,
+        _ => EventLevel.unknown,
+      };
+
+  operator <(EventLevel other) => this.level < other.level;
+  operator <=(EventLevel other) => this.level <= other.level;
+  operator >(EventLevel other) => this.level > other.level;
+  operator >=(EventLevel other) => this.level >= other.level;
+}
 
 const moduleErrorCode = -1997;
 const moduleUnknownErrorMessage = "Unknown system error";
-
-String eventLevelFormat(int level) => switch (level) {
-      eventLevelInformation => eventLevelInformationLabel,
-      eventLevelTrace => eventLevelTraceLabel,
-      eventLevelWarning => eventLevelWarningLabel,
-      eventLevelError => eventLevelErrorLabel,
-      eventLevelPanic => eventLevelPanicLabel,
-      _ => "(unknown)"
-    };
 
 const printSystemExceptionTag = "system";
 

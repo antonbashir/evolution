@@ -78,14 +78,14 @@ class Event {
 
   final String module;
   final EventSource source;
-  final int level;
+  final EventLevel level;
   final String location;
   final String caller;
 
   late final Pointer<event> native;
 
   Event.panic([EventBuilder Function(EventBuilder builder)? builder])
-      : level = eventLevelPanic,
+      : level = EventLevel.panic,
         module = Frame.caller().package ?? unknown,
         location = Frame.caller().location,
         caller = Frame.caller().member ?? unknown,
@@ -93,7 +93,7 @@ class Event {
         fields = (builder?.call(EventBuilder()) ?? EventBuilder())._events.groupBy((field) => field.name);
 
   Event.error([EventBuilder Function(EventBuilder builder)? builder])
-      : level = eventLevelError,
+      : level = EventLevel.error,
         module = Frame.caller().package ?? unknown,
         location = Frame.caller().location,
         caller = Frame.caller().member ?? unknown,
@@ -101,7 +101,7 @@ class Event {
         fields = (builder?.call(EventBuilder()) ?? EventBuilder())._events.groupBy((field) => field.name);
 
   Event.warning([EventBuilder Function(EventBuilder builder)? builder])
-      : level = eventLevelWarning,
+      : level = EventLevel.warning,
         module = Frame.caller().package ?? unknown,
         location = Frame.caller().location,
         caller = Frame.caller().member ?? unknown,
@@ -109,7 +109,7 @@ class Event {
         fields = (builder?.call(EventBuilder()) ?? EventBuilder())._events.groupBy((field) => field.name);
 
   Event.information([EventBuilder Function(EventBuilder builder)? builder])
-      : level = eventLevelInformation,
+      : level = EventLevel.information,
         module = Frame.caller().package ?? unknown,
         location = Frame.caller().location,
         caller = Frame.caller().member ?? unknown,
@@ -117,7 +117,7 @@ class Event {
         fields = (builder?.call(EventBuilder()) ?? EventBuilder())._events.groupBy((field) => field.name);
 
   Event.trace([EventBuilder Function(EventBuilder builder)? builder])
-      : level = eventLevelTrace,
+      : level = EventLevel.trace,
         module = Frame.caller().package ?? unknown,
         location = Frame.caller().location,
         caller = Frame.caller().member ?? unknown,
@@ -129,7 +129,7 @@ class Event {
         source = EventSource.native,
         location = Frame.caller().location,
         caller = Frame.caller().member ?? unknown,
-        level = event_get_level(native),
+        level = EventLevel.ofLevel(event_get_level(native)),
         module = event_get_module(native) == nullptr ? unknown : event_get_module(native).toDartString();
 
   Event.system(SystemError error, [EventBuilder Function(EventBuilder builder)? builder])
@@ -142,7 +142,7 @@ class Event {
         source = EventSource.dart,
         location = Frame.caller().location,
         caller = Frame.caller().member ?? unknown,
-        level = eventLevelError;
+        level = EventLevel.error;
 
   bool get fromNative => source == EventSource.native;
 
@@ -259,7 +259,7 @@ class Event {
       return formatted.toString();
     }
     final formatted = StringBuffer();
-    formatted.writeln("[$timestamp] ${eventLevelFormat(level)}: $caller(...) $location");
+    formatted.writeln("[$timestamp] ${level.label}: $caller(...) $location");
     formatted.writeln(CoreFormatters.formatEventField(CoreEventFields.module, module));
     formatted.writeln(CoreFormatters.formatEventField(CoreEventFields.isolate, isolate.debugName ?? empty));
     fields.values.forEach((field) => formatted.writeln(CoreFormatters.formatEventField(field.name, field.value)));
