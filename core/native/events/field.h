@@ -79,6 +79,7 @@ FORCEINLINE void event_field_delete(struct event_field_structure* field)
 
 void event_field_set_any(struct event_field_structure* field, ...);
 
+#define event_field_code(code) event_field(EVENT_FIELD_CODE, code)
 #define event_field_message(message) event_field(EVENT_FIELD_MESSAGE, message)
 #define event_field_scope(scope) event_field(EVENT_FIELD_SCOPE, scope)
 

@@ -1,0 +1,15 @@
+#ifndef EXECUTOR_ERRORS_H
+#define EXECUTOR_ERRORS_H
+
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
+#define executor_error_ring_full(...) executor_module_event(event_error(event_field_code(0), event_field_message("io_ring sqe is full"), ##__VA_ARGS__))
+
+#if defined(__cplusplus)
+}
+#endif
+
+#endif

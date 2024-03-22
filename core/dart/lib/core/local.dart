@@ -17,8 +17,5 @@ class LocalEvent {
   }
 
   @entry
-  static void _produce(int address) {
-    Pointer<event> native = Pointer.fromAddress(address);
-    _event = native;
-  }
+  static void _produce(int address) => _event = Pointer.fromAddress(address);
 }

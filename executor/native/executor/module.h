@@ -28,6 +28,7 @@ DART_STRUCTURE struct executor_module
 };
 #define module_structure struct executor_module
 #include <modules/module.h>
+
 DART_LEAF_FUNCTION struct executor_module* executor_module_create(struct executor_module_configuration* configuration);
 DART_LEAF_FUNCTION void executor_module_destroy(struct executor_module* module);
 DART_INLINE_LEAF_FUNCTION uint32_t executor_next_id(struct executor_module* module)

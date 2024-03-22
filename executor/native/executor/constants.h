@@ -15,8 +15,6 @@ extern "C"
 #define EXECUTOR_STATE_STOPPING 1 << 3
 #define EXECUTOR_STATE_STOPPED 1 << 4
 
-#define EXECUTOR_ERROR_RING_FULL -1
-
 #define EXECUTOR_SCOPE_SCHEDULER_POLLIN "scheduler.pollin"
 #define EXECUTOR_SCOPE_SCHEDULER_UNREGISTER "scheduler.unregister"
 
