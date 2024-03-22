@@ -4,7 +4,9 @@
 #include <common/common.h>
 #include <memory/memory.h>
 #include <system/library.h>
+#include <events/events.h>
 #include "constants.h"
+#include "errors.h"
 #include "module.h"
 
 #if defined(__cplusplus)
@@ -70,7 +72,10 @@ DART_INLINE_LEAF_FUNCTION void memory_static_buffers_push(struct memory_static_b
 DART_INLINE_LEAF_FUNCTION int32_t memory_static_buffers_pop(struct memory_static_buffers* pool)
 {
     if (unlikely(pool->available == 0))
-        return MEMORY_BUFFER_USED;
+    {
+        event_propagate_local(memory_error_buffers_unavailable());
+        return MODULE_ERROR_CODE;
+    }
     return pool->ids[--pool->available];
 }
 
