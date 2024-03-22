@@ -15,7 +15,6 @@ typedef struct _Dart_Handle* Dart_Handle;
 #define DART_MODULE_FACTORY "_load"
 #define DART_LOCAL_EVENT_CLASS "LocalEvent"
 #define DART_PRODUCE_FUNCTION "_produce"
-#define DART_GET_FUNCTION "_get"
 
 Dart_Handle dart_from_string(const char* native);
 Dart_Handle dart_from_signed(int64_t native);

@@ -81,11 +81,7 @@ double dart_to_double(Dart_Handle value, bool* ok)
 Dart_Handle dart_get_file(const char* path)
 {
     Dart_Handle library = Dart_LookupLibrary(dart_from_string(path));
-    if (Dart_IsError(library))
-    {
-        Dart_PropagateError(library);
-        return NULL;
-    }
+    if (!dart_check_with_null(library)) return NULL;
     return library;
 }
 
@@ -94,12 +90,7 @@ Dart_Handle dart_get_class(const char* file, const char* name)
     Dart_Handle library = dart_get_class(file, name);
     if (library == NULL) return NULL;
     Dart_Handle class = Dart_GetClass(library, dart_from_string(name));
-    if (Dart_IsError(class))
-    {
-        Dart_PropagateError(class);
-        return NULL;
-    }
-    if (Dart_IsNull(class)) return NULL;
+    if (!dart_check_with_null(class)) return NULL;
     return class;
 }
 
@@ -111,19 +102,9 @@ Dart_Handle dart_find_class(const char* name)
     for (int libraryIndex = 0; libraryIndex < librariesCount; libraryIndex++)
     {
         Dart_Handle library = Dart_ListGetAt(libraries, libraryIndex);
-        if (Dart_IsNull(library)) continue;
-        if (Dart_IsError(library))
-        {
-            Dart_PropagateError(library);
-            return NULL;
-        }
+        if (!dart_check_with_null(library)) continue;
         Dart_Handle class = Dart_GetClass(library, dart_from_string(name));
-        if (Dart_IsNull(class)) continue;
-        if (Dart_IsError(class))
-        {
-            Dart_PropagateError(library);
-            return NULL;
-        }
+        if (Dart_IsNull(class) || Dart_IsError(class)) continue;
         return class;
     }
     return NULL;
