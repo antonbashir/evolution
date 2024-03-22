@@ -63,7 +63,7 @@ extern "C"
 #endif
 
 #ifndef length_of
-#define length_of(array) (sizeof(array) / sizeof((array)[0]))
+#define length_of(x) ((sizeof(x)/sizeof(0[x])) / ((size_t)(!(sizeof(x) % sizeof(0[x])))))
 #endif
 
 #define typecheck(type, x)             \
@@ -233,17 +233,11 @@ extern "C"
 #define DART_INLINE_FUNCTION static FORCEINLINE
 #define DART_INLINE_LEAF_FUNCTION static FORCEINLINE
 #endif
-
 #define DART_FUNCTION
-
 #define DART_LEAF_FUNCTION
-
 #define DART_STRUCTURE
-
 #define DART_FIELD
-
 #define DART_SUBSTITUTE(x)
-
 #define DART_TYPE
 
 #if defined(__cplusplus)

@@ -155,6 +155,7 @@
     "stop_token": "c",
     "*.def": "c",
     "cmath": "c",
-    "dart_api.h": "c"
+    "dart_api.h": "c",
+    "dart.h": "c"
   },
 }

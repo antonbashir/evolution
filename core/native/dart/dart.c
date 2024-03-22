@@ -1,5 +1,6 @@
 #include "dart.h"
 #include <dart_api.h>
+#include "printer/printer.h"
 
 Dart_Handle dart_from_string(const char* native)
 {
@@ -110,25 +111,25 @@ Dart_Handle dart_find_class(const char* name)
     return NULL;
 }
 
-Dart_Handle dart_call_static(const char* file, const char* class, const char* member, Dart_Handle* arguments, size_t arguments_count)
+Dart_Handle dart_call_static(const char* file, const char* class, const char* member, Dart_Handle* arguments)
 {
     Dart_Handle type = dart_get_class(file, class);
     if (type == NULL) return NULL;
-    Dart_Handle result = Dart_Invoke(type, dart_from_string(member), arguments_count, arguments);
+    Dart_Handle result = Dart_Invoke(type, dart_from_string(member), length_of(arguments), arguments);
     if (!dart_check(result)) return NULL;
     return result;
 }
 
-Dart_Handle dart_invoke(Dart_Handle owner, const char* member, Dart_Handle* arguments, size_t arguments_count)
+Dart_Handle dart_invoke(Dart_Handle owner, const char* member, Dart_Handle* arguments)
 {
-    Dart_Handle result = Dart_Invoke(owner, dart_from_string(member), arguments_count, arguments);
+    Dart_Handle result = Dart_Invoke(owner, dart_from_string(member), length_of(arguments), arguments);
     if (!dart_check(result)) return NULL;
     return result;
 }
 
-Dart_Handle dart_call_constructor(Dart_Handle class, const char* constructor, Dart_Handle* arguments, size_t arguments_count)
+Dart_Handle dart_call_constructor(Dart_Handle class, const char* constructor, Dart_Handle* arguments)
 {
-    Dart_Handle result = Dart_New(class, dart_from_string(constructor), arguments_count, arguments);
+    Dart_Handle result = Dart_New(class, dart_from_string(constructor), length_of(arguments), arguments);
     if (!dart_check(result)) return NULL;
     return result;
 }
