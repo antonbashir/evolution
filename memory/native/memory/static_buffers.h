@@ -52,7 +52,7 @@ DART_INLINE_LEAF_FUNCTION void memory_static_buffers_destroy(struct memory_stati
     for (size_t index = 0; index < pool->capacity; index++)
     {
         struct iovec* buffer = &pool->buffers[index];
-        free(buffer->iov_base);
+        memory_module_delete(buffer->iov_base);
     }
     memory_module_delete(pool->ids);
     memory_module_delete(pool->buffers);
