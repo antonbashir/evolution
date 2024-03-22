@@ -31,8 +31,8 @@ class MemoryObjects<T> {
       return message;
     }
     final allocated = _queue.removeLast();
-    if (_queue.length < configuration.minimumAvailableCapacity) {
-      _extend((_queue.length * _extensionFactor).ceil());
+    if (_queue.length < configuration.maximumAvailableCapacity) {
+      unawaited(Future.microtask(() => _extend((_queue.length * _extensionFactor).ceil())));
     }
     return allocated;
   }
@@ -40,7 +40,7 @@ class MemoryObjects<T> {
   @inline
   void release(T message) {
     _queue.add(message);
-    if (_queue.length > configuration.maximumAvailableCapacity) Future.microtask(_shrink);
+    if (_queue.length > configuration.maximumAvailableCapacity) unawaited(Future.microtask(_shrink));
   }
 
   void _shrink() {
