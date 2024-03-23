@@ -7,4 +7,5 @@ DART_TYPE struct ip_mreqn;
 DART_TYPE struct sockaddr;
 DART_TYPE struct sockaddr_in;
 DART_TYPE struct sockaddr_un;
+DART_TYPE struct msghdr;
 #endif

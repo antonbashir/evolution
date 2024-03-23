@@ -1,6 +1,7 @@
 #include "transport.h"
 #include <liburing.h>
 #include "constants.h"
+#include "errors.h"
 #include "maps.h"
 #include "module.h"
 
@@ -70,19 +71,20 @@ static FORCEINLINE void transport_add_event(struct transport* transport, int32_t
     simple_map_events_put_copy(transport->events, &node, NULL, 0);
 }
 
-int8_t transport_write(struct transport* transport,
-                       uint32_t fd,
-                       uint16_t buffer_id,
-                       uint32_t offset,
-                       int64_t timeout,
-                       uint16_t event,
-                       uint8_t sqe_flags)
+int16_t transport_write(struct transport* transport,
+                        uint32_t fd,
+                        uint16_t buffer_id,
+                        uint32_t offset,
+                        int64_t timeout,
+                        uint16_t event,
+                        uint8_t sqe_flags)
 {
     struct io_uring* ring = transport->transport_executor->ring;
     struct io_uring_sqe* sqe = io_uring_get_sqe(ring);
     if (unlikely(sqe == NULL))
     {
-        return TRANSPORT_RING_FULL;
+        event_propagate_local(transport_error_ring_full());
+        return MODULE_ERROR_CODE;
     }
     uint64_t data = (((uint64_t)(fd) << 32) | (uint64_t)(buffer_id) << 16) | ((uint64_t)event);
     struct iovec* buffer = &transport->buffers[buffer_id];
@@ -94,19 +96,20 @@ int8_t transport_write(struct transport* transport,
     return 0;
 }
 
-int8_t transport_read(struct transport* transport,
-                      uint32_t fd,
-                      uint16_t buffer_id,
-                      uint32_t offset,
-                      int64_t timeout,
-                      uint16_t event,
-                      uint8_t sqe_flags)
+int16_t transport_read(struct transport* transport,
+                       uint32_t fd,
+                       uint16_t buffer_id,
+                       uint32_t offset,
+                       int64_t timeout,
+                       uint16_t event,
+                       uint8_t sqe_flags)
 {
     struct io_uring* ring = transport->transport_executor->ring;
     struct io_uring_sqe* sqe = io_uring_get_sqe(ring);
     if (unlikely(sqe == NULL))
     {
-        return TRANSPORT_RING_FULL;
+        event_propagate_local(transport_error_ring_full());
+        return MODULE_ERROR_CODE;
     }
     uint64_t data = (((uint64_t)(fd) << 32) | (uint64_t)(buffer_id) << 16) | ((uint64_t)event);
     struct iovec* buffer = &transport->buffers[buffer_id];
@@ -118,21 +121,22 @@ int8_t transport_read(struct transport* transport,
     return 0;
 }
 
-int8_t transport_send_message(struct transport* transport,
-                              uint32_t fd,
-                              uint16_t buffer_id,
-                              struct sockaddr* address,
-                              transport_socket_family_t socket_family,
-                              int32_t message_flags,
-                              int64_t timeout,
-                              uint16_t event,
-                              uint8_t sqe_flags)
+int16_t transport_send_message(struct transport* transport,
+                               uint32_t fd,
+                               uint16_t buffer_id,
+                               struct sockaddr* address,
+                               transport_socket_family_t socket_family,
+                               int32_t message_flags,
+                               int64_t timeout,
+                               uint16_t event,
+                               uint8_t sqe_flags)
 {
     struct io_uring* ring = transport->transport_executor->ring;
     struct io_uring_sqe* sqe = io_uring_get_sqe(ring);
     if (unlikely(sqe == NULL))
     {
-        return TRANSPORT_RING_FULL;
+        event_propagate_local(transport_error_ring_full());
+        return MODULE_ERROR_CODE;
     }
     uint64_t data = (((uint64_t)(fd) << 32) | (uint64_t)(buffer_id) << 16) | ((uint64_t)event);
     struct msghdr* message;
@@ -160,20 +164,21 @@ int8_t transport_send_message(struct transport* transport,
     return 0;
 }
 
-int8_t transport_receive_message(struct transport* transport,
-                                 uint32_t fd,
-                                 uint16_t buffer_id,
-                                 transport_socket_family_t socket_family,
-                                 int32_t message_flags,
-                                 int64_t timeout,
-                                 uint16_t event,
-                                 uint8_t sqe_flags)
+int16_t transport_receive_message(struct transport* transport,
+                                  uint32_t fd,
+                                  uint16_t buffer_id,
+                                  transport_socket_family_t socket_family,
+                                  int32_t message_flags,
+                                  int64_t timeout,
+                                  uint16_t event,
+                                  uint8_t sqe_flags)
 {
     struct io_uring* ring = transport->transport_executor->ring;
     struct io_uring_sqe* sqe = io_uring_get_sqe(ring);
     if (unlikely(sqe == NULL))
     {
-        return TRANSPORT_RING_FULL;
+        event_propagate_local(transport_error_ring_full());
+        return MODULE_ERROR_CODE;
     }
     uint64_t data = (((uint64_t)(fd) << 32) | (uint64_t)(buffer_id) << 16) | ((uint64_t)event);
     struct msghdr* message;
@@ -201,13 +206,14 @@ int8_t transport_receive_message(struct transport* transport,
     return 0;
 }
 
-int8_t transport_connect(struct transport* transport, struct transport_client* client, int64_t timeout)
+int16_t transport_connect(struct transport* transport, struct transport_client* client, int64_t timeout)
 {
     struct io_uring* ring = transport->transport_executor->ring;
     struct io_uring_sqe* sqe = io_uring_get_sqe(ring);
     if (unlikely(sqe == NULL))
     {
-        return TRANSPORT_RING_FULL;
+        event_propagate_local(transport_error_ring_full());
+        return MODULE_ERROR_CODE;
     }
     uint64_t data = ((uint64_t)(client->fd) << 32) | ((uint64_t)TRANSPORT_EVENT_CONNECT | (uint64_t)TRANSPORT_EVENT_CLIENT);
     struct sockaddr* address = client->family == INET
@@ -220,13 +226,14 @@ int8_t transport_connect(struct transport* transport, struct transport_client* c
     return 0;
 }
 
-int8_t transport_accept(struct transport* transport, struct transport_server* server)
+int16_t transport_accept(struct transport* transport, struct transport_server* server)
 {
     struct io_uring* ring = transport->transport_executor->ring;
     struct io_uring_sqe* sqe = io_uring_get_sqe(ring);
     if (unlikely(sqe == NULL))
     {
-        return TRANSPORT_RING_FULL;
+        event_propagate_local(transport_error_ring_full());
+        return MODULE_ERROR_CODE;
     }
     uint64_t data = ((uint64_t)(server->fd) << 32) | ((uint64_t)TRANSPORT_EVENT_ACCEPT | (uint64_t)TRANSPORT_EVENT_SERVER);
     struct sockaddr* address = server->family == INET
@@ -239,7 +246,7 @@ int8_t transport_accept(struct transport* transport, struct transport_server* se
     return 0;
 }
 
-int8_t transport_cancel_by_fd(struct transport* transport, int32_t fd)
+int16_t transport_cancel_by_fd(struct transport* transport, int32_t fd)
 {
     simple_map_int_t index;
     simple_map_int_t to_delete[transport->events->size];
@@ -253,7 +260,8 @@ int8_t transport_cancel_by_fd(struct transport* transport, int32_t fd)
             struct io_uring_sqe* sqe = io_uring_get_sqe(ring);
             if (unlikely(sqe == NULL))
             {
-                return TRANSPORT_RING_FULL;
+                event_propagate_local(transport_error_ring_full());
+                return MODULE_ERROR_CODE;
             }
             io_uring_prep_cancel(sqe, (void*)node->data, IORING_ASYNC_CANCEL_ALL);
             sqe->flags |= IOSQE_CQE_SKIP_SUCCESS;
