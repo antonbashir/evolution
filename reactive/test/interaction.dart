@@ -1,228 +1,250 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:core/core.dart';
 import 'package:reactive/reactive/constants.dart';
 import 'package:transport/transport.dart';
 import 'package:reactive/reactive.dart';
 import 'package:test/test.dart';
 import 'latch.dart';
+import 'test.dart';
 
 void interaction() {
-  test('1 request -> 1 cancel', timeout: Timeout(Duration(seconds: 60)), () async {
-    final transport = context().transport();
-    final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
-    worker.initialize();
-    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module);
-    final clientPayload = "client-payload";
+  test(
+    '1 request -> 1 cancel',
+    timeout: Timeout(Duration(seconds: 60)),
+    () => runTest(() async {
+      final transport = context().transport();
 
-    final latch = Latch(2);
+      transport.initialize();
+      final reactive = ReactiveTransport(transport, ReactiveTransportDefaults.module);
+      final clientPayload = "client-payload";
 
-    void serve(dynamic payload, ReactiveProducer producer) {
-      expect(payload, clientPayload);
-      producer.cancel();
-      latch.notify();
-    }
+      final latch = Latch(2);
 
-    reactive.serve(InternetAddress.anyIPv4, 12345, (subscriber) => subscriber.subscribe("channel", onPayload: serve));
+      void serve(dynamic payload, ReactiveProducer producer) {
+        expect(payload, clientPayload);
+        producer.cancel();
+        latch.notify();
+      }
 
-    reactive.connect(
-      InternetAddress.loopbackIPv4,
-      12345,
-      (subscriber) => subscriber.subscribe(
-        "channel",
-        onCancel: (producer) => latch.notify(),
-        onSubscribe: (producer) {
-          producer.payload(clientPayload);
-          producer.request(1);
-        },
-      ),
-    );
+      reactive.serve(InternetAddress.anyIPv4, 12345, (subscriber) => subscriber.subscribe("channel", onPayload: serve));
 
-    await latch.done();
-    await reactive.shutdown(transport: true);
-  });
+      reactive.connect(
+        InternetAddress.loopbackIPv4,
+        12345,
+        (subscriber) => subscriber.subscribe(
+          "channel",
+          onCancel: (producer) => latch.notify(),
+          onSubscribe: (producer) {
+            producer.payload(clientPayload);
+            producer.request(1);
+          },
+        ),
+      );
 
-  test('1 request -> 1 response', timeout: Timeout(Duration(seconds: 60)), () async {
-    final transport = context().transport();
-    final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
-    worker.initialize();
-    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module);
-    final clientPayload = "client-payload";
-    final serverPayload = "server-payload";
+      await latch.done();
+      await reactive.shutdown(transport: true);
+    }),
+  );
 
-    final latch = Latch(2);
+  test(
+    '1 request -> 1 response',
+    timeout: Timeout(Duration(seconds: 60)),
+    () => runTest(() async {
+      final transport = context().transport();
 
-    void serve(dynamic payload, ReactiveProducer producer) {
-      expect(payload, clientPayload);
-      producer.payload(serverPayload, complete: true);
-      latch.notify();
-    }
+      transport.initialize();
+      final reactive = ReactiveTransport(transport, ReactiveTransportDefaults.module);
+      final clientPayload = "client-payload";
+      final serverPayload = "server-payload";
 
-    void communicate(dynamic payload, ReactiveProducer producer) {
-      expect(payload, serverPayload);
-      latch.notify();
-    }
+      final latch = Latch(2);
 
-    reactive.serve(InternetAddress.anyIPv4, 12345, (subscriber) => subscriber.subscribe("channel", onPayload: serve));
+      void serve(dynamic payload, ReactiveProducer producer) {
+        expect(payload, clientPayload);
+        producer.payload(serverPayload, complete: true);
+        latch.notify();
+      }
 
-    reactive.connect(
-      InternetAddress.loopbackIPv4,
-      12345,
-      (subscriber) => subscriber.subscribe(
-        "channel",
-        onPayload: communicate,
-        onSubscribe: (producer) {
-          producer.payload(clientPayload);
-          producer.request(1);
-        },
-      ),
-    );
+      void communicate(dynamic payload, ReactiveProducer producer) {
+        expect(payload, serverPayload);
+        latch.notify();
+      }
 
-    await latch.done();
-    await reactive.shutdown(transport: true);
-  });
+      reactive.serve(InternetAddress.anyIPv4, 12345, (subscriber) => subscriber.subscribe("channel", onPayload: serve));
 
-  test('1 request -> 2 responses', timeout: Timeout(Duration(seconds: 60)), () async {
-    final transport = context().transport();
-    final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
-    worker.initialize();
-    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module);
-    final clientPayload = "client-payload";
-    final serverPayload = "server-payload";
+      reactive.connect(
+        InternetAddress.loopbackIPv4,
+        12345,
+        (subscriber) => subscriber.subscribe(
+          "channel",
+          onPayload: communicate,
+          onSubscribe: (producer) {
+            producer.payload(clientPayload);
+            producer.request(1);
+          },
+        ),
+      );
 
-    final latch = Latch(3);
+      await latch.done();
+      await reactive.shutdown(transport: true);
+    }),
+  );
 
-    void serve(dynamic payload, ReactiveProducer producer) {
-      expect(payload, clientPayload);
-      producer.payload(serverPayload);
-      producer.payload(serverPayload, complete: true);
-      latch.notify();
-    }
+  test(
+    '1 request -> 2 responses',
+    timeout: Timeout(Duration(seconds: 60)),
+    () => runTest(() async {
+      final transport = context().transport();
 
-    void communicate(dynamic payload, ReactiveProducer producer) {
-      expect(payload, serverPayload);
-      latch.notify();
-    }
+      transport.initialize();
+      final reactive = ReactiveTransport(transport, ReactiveTransportDefaults.module);
+      final clientPayload = "client-payload";
+      final serverPayload = "server-payload";
 
-    reactive.serve(
-      InternetAddress.anyIPv4,
-      12345,
-      (subscriber) => subscriber.subscribe("channel", onPayload: serve),
-    );
+      final latch = Latch(3);
 
-    reactive.connect(
-      InternetAddress.loopbackIPv4,
-      12345,
-      (subscriber) => subscriber.subscribe(
-        "channel",
-        onPayload: communicate,
-        onSubscribe: (producer) {
-          producer.payload(clientPayload);
-          producer.request(2);
-        },
-      ),
-    );
+      void serve(dynamic payload, ReactiveProducer producer) {
+        expect(payload, clientPayload);
+        producer.payload(serverPayload);
+        producer.payload(serverPayload, complete: true);
+        latch.notify();
+      }
 
-    await latch.done();
-    await reactive.shutdown(transport: true);
-  });
+      void communicate(dynamic payload, ReactiveProducer producer) {
+        expect(payload, serverPayload);
+        latch.notify();
+      }
 
-  test('2 request -> 4 responses', timeout: Timeout(Duration(seconds: 60)), () async {
-    final transport = context().transport();
-    final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
-    worker.initialize();
-    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module);
-    final clientPayload = "client-payload";
-    final serverPayload = "server-payload";
+      reactive.serve(
+        InternetAddress.anyIPv4,
+        12345,
+        (subscriber) => subscriber.subscribe("channel", onPayload: serve),
+      );
 
-    final latch = Latch(6);
+      reactive.connect(
+        InternetAddress.loopbackIPv4,
+        12345,
+        (subscriber) => subscriber.subscribe(
+          "channel",
+          onPayload: communicate,
+          onSubscribe: (producer) {
+            producer.payload(clientPayload);
+            producer.request(2);
+          },
+        ),
+      );
 
-    void serve(dynamic payload, ReactiveProducer producer) {
-      expect(payload, clientPayload);
-      producer.request(1);
-      producer.payload(serverPayload);
-      producer.payload(serverPayload);
-      latch.notify();
-    }
+      await latch.done();
+      await reactive.shutdown(transport: true);
+    }),
+  );
 
-    void communicate(dynamic payload, ReactiveProducer producer) {
-      expect(payload, serverPayload);
-      latch.notify();
-    }
+  test(
+    '2 request -> 4 responses',
+    timeout: Timeout(Duration(seconds: 60)),
+    () => runTest(() async {
+      final transport = context().transport();
 
-    reactive.serve(
-      InternetAddress.anyIPv4,
-      12345,
-      (subscriber) => subscriber.subscribe("channel", onPayload: serve),
-    );
+      transport.initialize();
+      final reactive = ReactiveTransport(transport, ReactiveTransportDefaults.module);
+      final clientPayload = "client-payload";
+      final serverPayload = "server-payload";
 
-    reactive.connect(
-      InternetAddress.loopbackIPv4,
-      12345,
-      (subscriber) => subscriber.subscribe(
-        "channel",
-        onPayload: communicate,
-        onSubscribe: (producer) {
-          producer.payload(clientPayload);
-          producer.payload(clientPayload);
-          producer.request(4);
-        },
-      ),
-    );
+      final latch = Latch(6);
 
-    await latch.done();
-    await reactive.shutdown(transport: true);
-  });
+      void serve(dynamic payload, ReactiveProducer producer) {
+        expect(payload, clientPayload);
+        producer.request(1);
+        producer.payload(serverPayload);
+        producer.payload(serverPayload);
+        latch.notify();
+      }
 
-  test('infinity requests -> infinity responses', timeout: Timeout(Duration(seconds: 60)), () async {
-    final transport = context().transport();
-    final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
-    worker.initialize();
-    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module);
-    final clientPayload = "client-payload";
-    final serverPayload = "server-payload";
+      void communicate(dynamic payload, ReactiveProducer producer) {
+        expect(payload, serverPayload);
+        latch.notify();
+      }
 
-    final clientLatch = Latch(100);
-    final serverLatch = Latch(100);
+      reactive.serve(
+        InternetAddress.anyIPv4,
+        12345,
+        (subscriber) => subscriber.subscribe("channel", onPayload: serve),
+      );
 
-    void serve(dynamic payload, ReactiveProducer producer) {
-      expect(payload, clientPayload);
-      serverLatch.notify();
-    }
+      reactive.connect(
+        InternetAddress.loopbackIPv4,
+        12345,
+        (subscriber) => subscriber.subscribe(
+          "channel",
+          onPayload: communicate,
+          onSubscribe: (producer) {
+            producer.payload(clientPayload);
+            producer.payload(clientPayload);
+            producer.request(4);
+          },
+        ),
+      );
 
-    void communicate(dynamic payload, ReactiveProducer producer) {
-      expect(payload, serverPayload);
-      clientLatch.notify();
-    }
+      await latch.done();
+      await reactive.shutdown(transport: true);
+    }),
+  );
 
-    reactive.serve(
-      InternetAddress.anyIPv4,
-      12345,
-      (subscriber) => subscriber.subscribe(
-        "channel",
-        onPayload: serve,
-        onSubscribe: (producer) {
-          Stream.periodic(Duration.zero).take(500).listen((event) => producer.payload(serverPayload));
-        },
-      ),
-    );
+  test(
+    'infinity requests -> infinity responses',
+    timeout: Timeout(Duration(seconds: 60)),
+    () => runTest(() async {
+      final transport = context().transport();
 
-    reactive.connect(
-      InternetAddress.loopbackIPv4,
-      12345,
-      (subscriber) => subscriber.subscribe(
-        "channel",
-        configuration: ReactiveTransportDefaults.channel.copyWith(initialRequestCount: reactiveInfinityRequestsCount),
-        onPayload: communicate,
-        onSubscribe: (producer) {
-          producer.request(reactiveInfinityRequestsCount);
-          Stream.periodic(Duration.zero).take(500).listen((event) => producer.payload(clientPayload));
-        },
-      ),
-    );
+      transport.initialize();
+      final reactive = ReactiveTransport(transport, ReactiveTransportDefaults.module);
+      final clientPayload = "client-payload";
+      final serverPayload = "server-payload";
 
-    await serverLatch.done();
-    await clientLatch.done();
-    await reactive.shutdown(transport: true);
-  });
+      final clientLatch = Latch(100);
+      final serverLatch = Latch(100);
+
+      void serve(dynamic payload, ReactiveProducer producer) {
+        expect(payload, clientPayload);
+        serverLatch.notify();
+      }
+
+      void communicate(dynamic payload, ReactiveProducer producer) {
+        expect(payload, serverPayload);
+        clientLatch.notify();
+      }
+
+      reactive.serve(
+        InternetAddress.anyIPv4,
+        12345,
+        (subscriber) => subscriber.subscribe(
+          "channel",
+          onPayload: serve,
+          onSubscribe: (producer) {
+            Stream.periodic(Duration.zero).take(500).listen((event) => producer.payload(serverPayload));
+          },
+        ),
+      );
+
+      reactive.connect(
+        InternetAddress.loopbackIPv4,
+        12345,
+        (subscriber) => subscriber.subscribe(
+          "channel",
+          configuration: ReactiveTransportDefaults.channel.copyWith(initialRequestCount: reactiveInfinityRequestsCount),
+          onPayload: communicate,
+          onSubscribe: (producer) {
+            producer.request(reactiveInfinityRequestsCount);
+            Stream.periodic(Duration.zero).take(500).listen((event) => producer.payload(clientPayload));
+          },
+        ),
+      );
+
+      await serverLatch.done();
+      await clientLatch.done();
+      await reactive.shutdown(transport: true);
+    }),
+  );
 }

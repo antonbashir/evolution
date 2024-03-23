@@ -1,13 +1,13 @@
 import 'dart:io';
 
+import 'package:core/core.dart';
 import 'package:reactive/reactive.dart';
 import 'package:transport/transport.dart';
 
 Future<void> main() async {
   final transport = context().transport();
-  final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
-  worker.initialize();
-  final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module.copyWith());
+  transport.initialize();
+  final reactive = ReactiveTransport(transport, ReactiveTransportDefaults.module.copyWith());
   final clientPayload = "client-payload";
   final serverPayload = "server-payload";
 

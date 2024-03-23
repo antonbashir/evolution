@@ -16,7 +16,7 @@ void testUnixStreamSingle({required int index, required int clientsPool}) {
     () => runTest(() async {
       final transport = context().transport();
       final worker = transport;
-      worker.initialize();
+      transport.initialize();
       final serverSocket = File(Directory.systemTemp.path + "/dart-iouring-socket_${worker.descriptor}.sock");
       if (serverSocket.existsSync()) serverSocket.deleteSync();
       worker.servers.unixStream(
@@ -49,7 +49,7 @@ void testUnixStreamMany({required int index, required int clientsPool, required 
     () => runTest(() async {
       final transport = context().transport();
       final worker = transport;
-      worker.initialize();
+      transport.initialize();
       final serverSocket = File(Directory.systemTemp.path + "/dart-iouring-socket_${worker.descriptor}.sock");
       if (serverSocket.existsSync()) serverSocket.deleteSync();
       worker.servers.unixStream(

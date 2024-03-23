@@ -1,77 +1,87 @@
 import 'dart:io';
 
+import 'package:core/core.dart';
 import 'package:reactive/reactive/frame.dart';
 import 'package:transport/transport.dart';
 import 'package:reactive/reactive.dart';
 import 'package:test/test.dart';
 import 'latch.dart';
+import 'test.dart';
 
 void keepalive() {
-  test('pass', timeout: Timeout(Duration(seconds: 60)), () async {
-    final latch = Latch(2);
-    var delta = DateTime.now();
+  test(
+    'pass',
+    timeout: Timeout(Duration(seconds: 60)),
+    () => runTest(() async {
+      final latch = Latch(2);
+      var delta = DateTime.now();
 
-    void _trace(frame) {
-      if (frame is KeepAliveFrame) {
-        latch.notify();
-        if (latch.count == 2) {
-          expect(true, DateTime.now().millisecondsSinceEpoch - delta.millisecondsSinceEpoch > Duration(seconds: 5).inMilliseconds);
+      void _trace(frame) {
+        if (frame is KeepAliveFrame) {
+          latch.notify();
+          if (latch.count == 2) {
+            expect(true, DateTime.now().millisecondsSinceEpoch - delta.millisecondsSinceEpoch > Duration(seconds: 5).inMilliseconds);
+          }
         }
       }
-    }
 
-    final transport = context().transport();
-    final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
-    worker.initialize();
-    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module.copyWith(tracer: _trace));
+      final transport = context().transport();
 
-    reactive.serve(
-      InternetAddress.anyIPv4,
-      12345,
-      (subscriber) => subscriber.subscribe("channel"),
-    );
+      transport.initialize();
+      final reactive = ReactiveTransport(transport, ReactiveTransportDefaults.module.copyWith(tracer: _trace));
 
-    reactive.connect(
-      InternetAddress.loopbackIPv4,
-      12345,
-      setupConfiguration: ReactiveTransportDefaults.setup.copyWith(keepAliveInterval: Duration(seconds: 5)),
-      (subscriber) => subscriber.subscribe("channel"),
-    );
+      reactive.serve(
+        InternetAddress.anyIPv4,
+        12345,
+        (subscriber) => subscriber.subscribe("channel"),
+      );
 
-    await latch.done();
+      reactive.connect(
+        InternetAddress.loopbackIPv4,
+        12345,
+        setupConfiguration: ReactiveTransportDefaults.setup.copyWith(keepAliveInterval: Duration(seconds: 5)),
+        (subscriber) => subscriber.subscribe("channel"),
+      );
 
-    await reactive.shutdown(transport: true);
-  });
+      await latch.done();
 
-  test('fail', timeout: Timeout(Duration(seconds: 60)), () async {
-    final latch = Latch(2);
+      await reactive.shutdown(transport: true);
+    }),
+  );
 
-    final transport = context().transport();
-    final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
-    worker.initialize();
-    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module);
+  test(
+    'fail',
+    timeout: Timeout(Duration(seconds: 60)),
+    () => runTest(() async {
+      final latch = Latch(2);
 
-    reactive.serve(
-      InternetAddress.anyIPv4,
-      12345,
-      onShutdown: () => latch.notify(),
-      (subscriber) {
-        subscriber.subscribe("channel");
-      },
-    );
+      final transport = context().transport();
 
-    reactive.connect(
-      InternetAddress.loopbackIPv4,
-      12345,
-      onShutdown: () => latch.notify(),
-      setupConfiguration: ReactiveTransportDefaults.setup.copyWith(keepAliveInterval: Duration(seconds: 10), keepAliveMaxLifetime: Duration(seconds: 5)),
-      (subscriber) {
-        subscriber.subscribe("channel");
-      },
-    );
+      transport.initialize();
+      final reactive = ReactiveTransport(transport, ReactiveTransportDefaults.module);
 
-    await latch.done();
+      reactive.serve(
+        InternetAddress.anyIPv4,
+        12345,
+        onShutdown: () => latch.notify(),
+        (subscriber) {
+          subscriber.subscribe("channel");
+        },
+      );
 
-    await reactive.shutdown(transport: true);
-  });
+      reactive.connect(
+        InternetAddress.loopbackIPv4,
+        12345,
+        onShutdown: () => latch.notify(),
+        setupConfiguration: ReactiveTransportDefaults.setup.copyWith(keepAliveInterval: Duration(seconds: 10), keepAliveMaxLifetime: Duration(seconds: 5)),
+        (subscriber) {
+          subscriber.subscribe("channel");
+        },
+      );
+
+      await latch.done();
+
+      await reactive.shutdown(transport: true);
+    }),
+  );
 }

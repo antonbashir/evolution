@@ -14,7 +14,7 @@ void testForceShutdown() {
     () => runTest(() async {
       final transport = context().transport();
       final worker = transport;
-      worker.initialize();
+      transport.initialize();
       final file = File("file");
       if (file.existsSync()) file.deleteSync();
 
@@ -55,7 +55,7 @@ void testGracefulShutdown({required Duration gracefulTimeout}) {
     () => runTest(() async {
       final transport = context().transport();
       final worker = transport;
-      worker.initialize();
+      transport.initialize();
       final file = File("file");
       if (file.existsSync()) file.deleteSync();
 

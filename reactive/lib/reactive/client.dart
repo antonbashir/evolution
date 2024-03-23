@@ -92,7 +92,6 @@ class ReactiveClientConnection implements ReactiveConnection {
     final supplier = ReactiveStreamIdSupplier.client();
     final streamId = supplier.next({});
     _broker = ReactiveBroker(
-      _transportConfiguration,
       _brokerConfiguration,
       this,
       streamId,

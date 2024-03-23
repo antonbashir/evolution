@@ -10,6 +10,8 @@ dependencies:
   collection: ^1.18.0
   transport:
     path: ../transport/dart
+  executor:
+    path: ../executor/dart
   core:
     path: ../core/dart
   memory:

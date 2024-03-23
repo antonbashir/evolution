@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:transport/transport.dart';
+import 'package:core/core.dart';
 import 'package:reactive/reactive.dart';
 import 'package:test/test.dart';
+import 'package:transport/transport.dart';
 
 import 'latch.dart';
+import 'test.dart';
 
 class _ClientChannel with ReactiveChannel {
   final String key;
@@ -127,156 +129,168 @@ class _ServerChannel with ReactiveChannel {
 }
 
 void custom() {
-  test('channel', timeout: Timeout(Duration(seconds: 60)), () async {
-    final transport = context().transport();
-    final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
-    worker.initialize();
-    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module);
+  test(
+    'channel',
+    timeout: Timeout(Duration(seconds: 60)),
+    () => runTest(() async {
+      final transport = context().transport();
 
-    final clientLatch = EventLatch("client", {"complete", "payload", "request", "subscribe"});
-    final clientPayload = "client-payload";
+      transport.initialize();
+      final reactive = ReactiveTransport(transport, ReactiveTransportDefaults.module);
 
-    final serverPayload = "server-payload";
-    final serverLatch = EventLatch("server", {"complete", "payload", "request", "subscribe"});
+      final clientLatch = EventLatch("client", {"complete", "payload", "request", "subscribe"});
+      final clientPayload = "client-payload";
 
-    reactive.serve(
-      InternetAddress.anyIPv4,
-      12345,
-      (subscriber) => subscriber.subscribeCustom(
-        _ServerChannel(
-          key: "channel",
-          configuration: ReactiveTransportDefaults.channel,
-          latch: serverLatch,
-          clientPayload: clientPayload,
-          serverPayload: serverPayload,
-          clientRequests: 1,
+      final serverPayload = "server-payload";
+      final serverLatch = EventLatch("server", {"complete", "payload", "request", "subscribe"});
+
+      reactive.serve(
+        InternetAddress.anyIPv4,
+        12345,
+        (subscriber) => subscriber.subscribeCustom(
+          _ServerChannel(
+            key: "channel",
+            configuration: ReactiveTransportDefaults.channel,
+            latch: serverLatch,
+            clientPayload: clientPayload,
+            serverPayload: serverPayload,
+            clientRequests: 1,
+          ),
         ),
-      ),
-    );
+      );
 
-    reactive.connect(
-      InternetAddress.loopbackIPv4,
-      12345,
-      (subscriber) => subscriber.subscribeCustom(
-        _ClientChannel(
-          key: "channel",
-          configuration: ReactiveTransportDefaults.channel,
-          latch: clientLatch,
-          clientPayload: clientPayload,
-          serverPayload: serverPayload,
-          clientRequests: 1,
-          serverRequests: 1,
+      reactive.connect(
+        InternetAddress.loopbackIPv4,
+        12345,
+        (subscriber) => subscriber.subscribeCustom(
+          _ClientChannel(
+            key: "channel",
+            configuration: ReactiveTransportDefaults.channel,
+            latch: clientLatch,
+            clientPayload: clientPayload,
+            serverPayload: serverPayload,
+            clientRequests: 1,
+            serverRequests: 1,
+          ),
         ),
-      ),
-    );
+      );
 
-    await clientLatch.done();
-    await serverLatch.done();
+      await clientLatch.done();
+      await serverLatch.done();
 
-    await reactive.shutdown(transport: true);
-  });
+      await reactive.shutdown(transport: true);
+    }),
+  );
 
-  test('channel (server error)', timeout: Timeout(Duration(seconds: 60)), () async {
-    final transport = context().transport();
-    final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
-    worker.initialize();
-    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module);
+  test(
+    'channel (server error)',
+    timeout: Timeout(Duration(seconds: 60)),
+    () => runTest(() async {
+      final transport = context().transport();
 
-    final clientLatch = EventLatch("client", {"complete", "error", "request", "subscribe"});
-    final clientPayload = "client-payload";
+      transport.initialize();
+      final reactive = ReactiveTransport(transport, ReactiveTransportDefaults.module);
 
-    final serverError = "server-error";
-    final serverPayload = "server-payload";
-    final serverLatch = EventLatch("server", {"payload", "request", "subscribe"});
+      final clientLatch = EventLatch("client", {"complete", "error", "request", "subscribe"});
+      final clientPayload = "client-payload";
 
-    reactive.serve(
-      InternetAddress.anyIPv4,
-      12345,
-      (subscriber) => subscriber.subscribeCustom(
-        _ServerChannel(
-          key: "channel",
-          configuration: ReactiveTransportDefaults.channel,
-          latch: serverLatch,
-          clientPayload: clientPayload,
-          serverPayload: serverPayload,
-          clientRequests: 1,
-          serverError: serverError,
+      final serverError = "server-error";
+      final serverPayload = "server-payload";
+      final serverLatch = EventLatch("server", {"payload", "request", "subscribe"});
+
+      reactive.serve(
+        InternetAddress.anyIPv4,
+        12345,
+        (subscriber) => subscriber.subscribeCustom(
+          _ServerChannel(
+            key: "channel",
+            configuration: ReactiveTransportDefaults.channel,
+            latch: serverLatch,
+            clientPayload: clientPayload,
+            serverPayload: serverPayload,
+            clientRequests: 1,
+            serverError: serverError,
+          ),
         ),
-      ),
-    );
+      );
 
-    reactive.connect(
-      InternetAddress.loopbackIPv4,
-      12345,
-      (subscriber) => subscriber.subscribeCustom(
-        _ClientChannel(
-          key: "channel",
-          configuration: ReactiveTransportDefaults.channel,
-          latch: clientLatch,
-          clientPayload: clientPayload,
-          serverPayload: serverPayload,
-          serverError: serverError,
-          clientRequests: 1,
-          serverRequests: 1,
+      reactive.connect(
+        InternetAddress.loopbackIPv4,
+        12345,
+        (subscriber) => subscriber.subscribeCustom(
+          _ClientChannel(
+            key: "channel",
+            configuration: ReactiveTransportDefaults.channel,
+            latch: clientLatch,
+            clientPayload: clientPayload,
+            serverPayload: serverPayload,
+            serverError: serverError,
+            clientRequests: 1,
+            serverRequests: 1,
+          ),
         ),
-      ),
-    );
+      );
 
-    await clientLatch.done();
-    await serverLatch.done();
+      await clientLatch.done();
+      await serverLatch.done();
 
-    await reactive.shutdown(transport: true);
-  });
+      await reactive.shutdown(transport: true);
+    }),
+  );
 
-  test('channel (client error)', timeout: Timeout(Duration(seconds: 60)), () async {
-    final transport = context().transport();
-    final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
-    worker.initialize();
-    final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module);
+  test(
+    'channel (client error)',
+    timeout: Timeout(Duration(seconds: 60)),
+    () => runTest(() async {
+      final transport = context().transport();
 
-    final clientLatch = EventLatch("client", {"payload", "request", "subscribe"});
-    final clientError = "client-error";
-    final clientPayload = "client-payload";
+      transport.initialize();
+      final reactive = ReactiveTransport(transport, ReactiveTransportDefaults.module);
 
-    final serverPayload = "server-payload";
-    final serverLatch = EventLatch("server", {"complete", "error", "request", "subscribe"});
+      final clientLatch = EventLatch("client", {"payload", "request", "subscribe"});
+      final clientError = "client-error";
+      final clientPayload = "client-payload";
 
-    reactive.serve(
-      InternetAddress.anyIPv4,
-      12345,
-      (subscriber) => subscriber.subscribeCustom(
-        _ServerChannel(
-          key: "channel",
-          configuration: ReactiveTransportDefaults.channel,
-          latch: serverLatch,
-          clientPayload: clientPayload,
-          serverPayload: serverPayload,
-          clientRequests: 1,
-          clientError: clientError,
+      final serverPayload = "server-payload";
+      final serverLatch = EventLatch("server", {"complete", "error", "request", "subscribe"});
+
+      reactive.serve(
+        InternetAddress.anyIPv4,
+        12345,
+        (subscriber) => subscriber.subscribeCustom(
+          _ServerChannel(
+            key: "channel",
+            configuration: ReactiveTransportDefaults.channel,
+            latch: serverLatch,
+            clientPayload: clientPayload,
+            serverPayload: serverPayload,
+            clientRequests: 1,
+            clientError: clientError,
+          ),
         ),
-      ),
-    );
+      );
 
-    reactive.connect(
-      InternetAddress.loopbackIPv4,
-      12345,
-      (subscriber) => subscriber.subscribeCustom(
-        _ClientChannel(
-          key: "channel",
-          configuration: ReactiveTransportDefaults.channel,
-          latch: clientLatch,
-          clientPayload: clientPayload,
-          serverPayload: serverPayload,
-          clientError: clientError,
-          clientRequests: 1,
-          serverRequests: 1,
+      reactive.connect(
+        InternetAddress.loopbackIPv4,
+        12345,
+        (subscriber) => subscriber.subscribeCustom(
+          _ClientChannel(
+            key: "channel",
+            configuration: ReactiveTransportDefaults.channel,
+            latch: clientLatch,
+            clientPayload: clientPayload,
+            serverPayload: serverPayload,
+            clientError: clientError,
+            clientRequests: 1,
+            serverRequests: 1,
+          ),
         ),
-      ),
-    );
+      );
 
-    await clientLatch.done();
-    await serverLatch.done();
+      await clientLatch.done();
+      await serverLatch.done();
 
-    await reactive.shutdown(transport: true);
-  });
+      await reactive.shutdown(transport: true);
+    }),
+  );
 }

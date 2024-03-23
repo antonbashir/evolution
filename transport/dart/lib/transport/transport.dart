@@ -107,7 +107,7 @@ class Transport {
             : client
                 ? TransportEvent.clientEvent(event & ~transportEventClient)
                 : TransportEvent.fileEvent(event & ~transportEventFile);
-        Printer.printOut(TransportMessages.workerTrace(parsed, result, data, fd));
+        Event.trace((event) => event.message(TransportMessages.workerTrace(parsed, result, data, fd))).print();
       }));
       if (event & transportEventClient != 0) {
         event &= ~transportEventClient;

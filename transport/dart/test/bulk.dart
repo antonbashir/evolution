@@ -15,7 +15,7 @@ void testBulk() {
     () => runTest(() async {
       final transport = context().transport();
       final worker = transport;
-      worker.initialize();
+      transport.initialize();
       final file1 = File("file1");
       final file2 = File("file2");
       final file3 = File("file3");

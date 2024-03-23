@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:core/core.dart';
+import 'package:transport/transport/bindings.dart';
 
 import 'channel.dart';
 import 'codec.dart';
@@ -19,7 +19,6 @@ import 'supplier.dart';
 import 'writer.dart';
 
 class ReactiveBroker {
-  final ReactiveModuleConfiguration _transportConfiguration;
   final ReactiveLeaseConfiguration? leaseConfiguration;
   final ReactiveBrokerConfiguration _configuration;
   final ReactiveConnection _connection;
@@ -45,7 +44,6 @@ class ReactiveBroker {
   bool get activated => _activated;
 
   ReactiveBroker(
-    this._transportConfiguration,
     this._configuration,
     this._connection,
     this._currentLocalStreamId,
@@ -102,7 +100,7 @@ class ReactiveBroker {
         _connection,
         streamId,
         channel.configuration,
-        _transportConfiguration.workerConfiguration.memoryConfiguration.staticBuffersCapacity,
+        context().memoryModule().configuration.memoryConfiguration.staticBuffersCapacity,
       );
       _streams[streamId] = ReactiveStream(
         streamId,
@@ -131,7 +129,7 @@ class ReactiveBroker {
         _connection,
         remoteStreamId,
         channel.configuration,
-        _transportConfiguration.workerConfiguration.memoryConfiguration.staticBuffersCapacity,
+        context().memoryModule().configuration.memoryConfiguration.staticBuffersCapacity,
       );
       final stream = ReactiveStream(
         remoteStreamId,

@@ -6,6 +6,6 @@ class SystemEnvironment {
   };
 
   Map<String, String> get entries => {..._entries};
-  bool get debug => _entries["DEBUG"]?.let(bool.parse) ?? false;
+  bool get debug => _entries["DEBUG"]?.ifNotEmpty(bool.parse) ?? false;
   set debug(bool debug) => _entries["DEBUG"] = debug.toString();
 }

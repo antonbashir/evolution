@@ -66,6 +66,9 @@ extension StringNullableExtensions on String? {
 
   @inline
   bool get isNotEmpty => this != null && this! != "";
+
+  @inline
+  R? ifNotEmpty<R>(R Function(String) action) => isNotEmpty ? action(this!) : null;
 }
 
 extension IterableNullableExtensions<T> on Iterable<T>? {
