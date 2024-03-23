@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'constants.dart';
-import 'strings.dart';
+import 'extensions.dart';
 
 const _decoder = const Utf8Decoder();
 

@@ -6,6 +6,12 @@ import 'constants.dart';
 import 'event.dart';
 import 'local.dart';
 
+const int _oneByteLimit = 0x7f;
+const int _twoByteLimit = 0x7ff;
+const int _surrogateTagMask = 0xFC00;
+const int _surrogateValueMask = 0x3FF;
+const int _leadSurrogateMin = 0xD800;
+
 extension NullableExtensions<T> on T? {
   @inline
   R? let<R>(R Function(T) action) {
@@ -58,6 +64,32 @@ extension IterableExtension<T> on Iterable<T> {
 extension StringExtensions on String {
   @inline
   DateTime? parseUtc() => DateTime.tryParse(this)?.toUtc();
+
+  @inline
+  int encode(Uint8List buffer, int offset) {
+    final startOffset = offset;
+    for (var stringIndex = 0; stringIndex < length; stringIndex++) {
+      final codeUnit = codeUnitAt(stringIndex);
+      if (codeUnit <= _oneByteLimit) {
+        buffer[offset++] = codeUnit;
+      } else if ((codeUnit & _surrogateTagMask) == _leadSurrogateMin) {
+        final nextCodeUnit = codeUnitAt(++stringIndex);
+        final rune = 0x10000 + ((codeUnit & _surrogateValueMask) << 10) | (nextCodeUnit & _surrogateValueMask);
+        buffer[offset++] = 0xF0 | (rune >> 18);
+        buffer[offset++] = 0x80 | ((rune >> 12) & 0x3f);
+        buffer[offset++] = 0x80 | ((rune >> 6) & 0x3f);
+        buffer[offset++] = 0x80 | (rune & 0x3f);
+      } else if (codeUnit <= _twoByteLimit) {
+        buffer[offset++] = 0xC0 | (codeUnit >> 6);
+        buffer[offset++] = 0x80 | (codeUnit & 0x3f);
+      } else {
+        buffer[offset++] = 0xE0 | (codeUnit >> 12);
+        buffer[offset++] = 0x80 | ((codeUnit >> 6) & 0x3f);
+        buffer[offset++] = 0x80 | (codeUnit & 0x3f);
+      }
+    }
+    return offset - startOffset;
+  }
 }
 
 extension StringNullableExtensions on String? {
@@ -179,5 +211,13 @@ extension SystemIovecExtensions on Pointer<iovec> {
       written += output.length;
     }
     return written;
+  }
+}
+
+extension Uint8StringExtensions on Pointer<Uint8> {
+  set string(String value) {
+    final buffer = asTypedList(value.length);
+    final length = value.encode(buffer, 0);
+    buffer[length] = 0;
   }
 }
