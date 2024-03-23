@@ -26,8 +26,8 @@ void main() {
   final file = true;
   final bulk = true;
   final timeout = true;
-  final buffers = true;
-  final shutdown = false;
+  final buffers = false;
+  final shutdown = true;
 
   group("[initialization]", timeout: Timeout(Duration(hours: 1)), skip: !initialization, () {
     testInitialization();
