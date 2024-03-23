@@ -17,8 +17,6 @@ extern "C"
 #define TIME_MICROSECONDS_FORMAT ".%04ld"
 #define SPACE " "
 
-#define SIMPLE_MAP_STRING_SEED 13U
-
 #define MODULE_UNKNOWN_NAME "unknown"
 
 #define MODULES_MAXIMUM 64

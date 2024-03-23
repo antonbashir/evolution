@@ -238,6 +238,12 @@ extern "C"
 #define DART_SUBSTITUTE(x)
 #define DART_TYPE
 
+#define HASHING_WYHASH 0
+#define HASHING_WYHASH32 1
+#define HASHING_MURMUR32 2
+#define HASHING_XXHASH64 3
+#define HASHING_XXHASH32 4
+
 #if defined(__cplusplus)
 }
 #endif

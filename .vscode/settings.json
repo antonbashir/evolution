@@ -157,6 +157,8 @@
     "cmath": "c",
     "dart_api.h": "c",
     "dart.h": "c",
-    "bits.h": "c"
+    "bits.h": "c",
+    "wyhash.h": "c",
+    "wyhash32.h": "c"
   },
 }
