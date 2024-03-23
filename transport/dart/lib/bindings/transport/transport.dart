@@ -19,7 +19,7 @@ final class transport extends Struct {
 @Native<Pointer<transport> Function(Pointer<transport_configuration> configuration)>(isLeaf: true)
 external Pointer<transport> transport_initialize(Pointer<transport_configuration> configuration);
 
-@Native<Int32 Function(Pointer<transport> transport, Pointer<executor_instance> executor)>(isLeaf: true)
+@Native<Int16 Function(Pointer<transport> transport, Pointer<executor_instance> executor)>(isLeaf: true)
 external int transport_setup(Pointer<transport> transport, Pointer<executor_instance> executor);
 
 @Native<Int16 Function(Pointer<transport> transport, Uint32 fd, Uint16 buffer_id, Uint32 offset, Int64 timeout, Uint16 event, Uint8 sqe_flags)>(isLeaf: true)

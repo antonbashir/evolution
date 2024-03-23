@@ -11,7 +11,7 @@ void testForceShutdown() {
   test("[force]", () async {
     final transport = context().transport();
     final worker = transport;
-    await worker.initialize();
+    worker.initialize();
     final file = File("file");
     if (file.existsSync()) file.deleteSync();
 
@@ -49,7 +49,7 @@ void testGracefulShutdown({required Duration gracefulTimeout}) {
   test("[gracefulTimeout = ${gracefulTimeout.inSeconds}]", () async {
     final transport = context().transport();
     final worker = transport;
-    await worker.initialize();
+    worker.initialize();
     final file = File("file");
     if (file.existsSync()) file.deleteSync();
 

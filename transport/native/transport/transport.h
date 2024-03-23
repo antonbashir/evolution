@@ -24,7 +24,7 @@ DART_STRUCTURE struct transport
 
 DART_LEAF_FUNCTION struct transport* transport_initialize(struct transport_configuration* configuration);
 
-DART_LEAF_FUNCTION int32_t transport_setup(struct transport* transport, struct executor_instance* executor);
+DART_LEAF_FUNCTION int16_t transport_setup(struct transport* transport, struct executor_instance* executor);
 
 DART_LEAF_FUNCTION int16_t transport_write(struct transport* transport,
                                            uint32_t fd,

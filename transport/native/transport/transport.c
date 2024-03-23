@@ -11,7 +11,7 @@ struct transport* transport_initialize(struct transport_configuration* configura
     transport->configuration = *configuration;
 
     transport->events = simple_map_events_new();
-    if (!transport->events)
+    if (transport->events == NULL)
     {
         return NULL;
     }
@@ -20,24 +20,22 @@ struct transport* transport_initialize(struct transport_configuration* configura
     transport->inet_used_messages = transport_module_allocate(configuration->memory_instance_configuration.static_buffers_capacity, sizeof(struct msghdr));
     transport->unix_used_messages = transport_module_allocate(configuration->memory_instance_configuration.static_buffers_capacity, sizeof(struct msghdr));
 
-    if (!transport->inet_used_messages || !transport->unix_used_messages)
+    if (transport->inet_used_messages == NULL || transport->unix_used_messages == NULL)
     {
         return NULL;
     }
 
     for (size_t index = 0; index < configuration->memory_instance_configuration.static_buffers_capacity; index++)
     {
-        memset(&transport->inet_used_messages[index], 0, sizeof(struct msghdr));
         transport->inet_used_messages[index].msg_name = transport_module_new(sizeof(struct sockaddr_in));
-        if (!transport->inet_used_messages[index].msg_name)
+        if (transport->inet_used_messages[index].msg_name == NULL)
         {
             return NULL;
         }
         transport->inet_used_messages[index].msg_namelen = sizeof(struct sockaddr_in);
 
-        memset(&transport->unix_used_messages[index], 0, sizeof(struct msghdr));
         transport->unix_used_messages[index].msg_name = transport_module_new(sizeof(struct sockaddr_un));
-        if (!transport->unix_used_messages[index].msg_name)
+        if (transport->unix_used_messages[index].msg_name == NULL)
         {
             return NULL;
         }
@@ -47,14 +45,15 @@ struct transport* transport_initialize(struct transport_configuration* configura
     return transport;
 }
 
-int32_t transport_setup(struct transport* transport, struct executor_instance* transport_executor)
+int16_t transport_setup(struct transport* transport, struct executor_instance* transport_executor)
 {
     transport->transport_executor = transport_executor;
     struct io_uring* ring = transport_executor->ring;
     int32_t result = io_uring_register_buffers(transport->transport_executor->ring, transport->buffers, transport->configuration.memory_instance_configuration.static_buffers_capacity);
     if (result)
     {
-        return result;
+        event_propagate_local(transport_error_system(-result));
+        return MODULE_ERROR_CODE;
     }
 
     return 0;
@@ -92,7 +91,6 @@ int16_t transport_write(struct transport* transport,
     io_uring_sqe_set_data64(sqe, data);
     sqe->flags |= sqe_flags;
     transport_add_event(transport, fd, data, timeout);
-    executor_submit(transport->transport_executor);
     return 0;
 }
 
@@ -117,7 +115,6 @@ int16_t transport_read(struct transport* transport,
     io_uring_sqe_set_data64(sqe, data);
     sqe->flags |= sqe_flags;
     transport_add_event(transport, fd, data, timeout);
-    executor_submit(transport->transport_executor);
     return 0;
 }
 
@@ -160,7 +157,6 @@ int16_t transport_send_message(struct transport* transport,
     io_uring_sqe_set_data64(sqe, data);
     sqe->flags |= sqe_flags;
     transport_add_event(transport, fd, data, timeout);
-    executor_submit(transport->transport_executor);
     return 0;
 }
 
@@ -202,7 +198,6 @@ int16_t transport_receive_message(struct transport* transport,
     io_uring_sqe_set_data64(sqe, data);
     sqe->flags |= sqe_flags;
     transport_add_event(transport, fd, data, timeout);
-    executor_submit(transport->transport_executor);
     return 0;
 }
 
@@ -222,7 +217,6 @@ int16_t transport_connect(struct transport* transport, struct transport_client* 
     io_uring_prep_connect(sqe, client->fd, address, client->client_address_length);
     io_uring_sqe_set_data64(sqe, data);
     transport_add_event(transport, client->fd, data, timeout);
-    executor_submit(transport->transport_executor);
     return 0;
 }
 
@@ -242,7 +236,6 @@ int16_t transport_accept(struct transport* transport, struct transport_server* s
     io_uring_prep_accept(sqe, server->fd, address, &server->server_address_length, 0);
     io_uring_sqe_set_data64(sqe, data);
     transport_add_event(transport, server->fd, data, TRANSPORT_TIMEOUT_INFINITY);
-    executor_submit(transport->transport_executor);
     return 0;
 }
 

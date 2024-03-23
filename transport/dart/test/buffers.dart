@@ -17,7 +17,7 @@ void testTcpBuffers() {
   test("(tcp)", () async {
     final transport = context().transport();
     final worker = transport;
-    await worker.initialize();
+    worker.initialize();
 
     var serverCompleter = Completer();
     var clientCompleter = Completer();
@@ -76,7 +76,7 @@ void testUdpBuffers() {
   test("(udp)", () async {
     final transport = context().transport();
     final worker = transport;
-    await worker.initialize();
+    worker.initialize();
 
     var serverCompleter = Completer();
     var clientCompleter = Completer();
@@ -138,7 +138,7 @@ void testFileBuffers() {
   test("(file)", () async {
     final transport = context().transport();
     final worker = transport;
-    await worker.initialize();
+    worker.initialize();
     final file = io.File("file");
     if (file.existsSync()) file.deleteSync();
 
@@ -177,7 +177,7 @@ void testBuffersOverflow() {
       () async {
         final transport = context().transport(configuration: TransportDefaults.transport.copyWith(memoryConfiguration: MemoryDefaults.memory.copyWith(staticBuffersCapacity: 2)));
         final worker = transport;
-        await worker.initialize();
+        worker.initialize();
         worker.servers.tcp(io.InternetAddress("0.0.0.0"), 12345, (connection) {
           connection.stream().listen((value) {
             value.release();

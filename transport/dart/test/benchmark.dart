@@ -19,15 +19,12 @@ Future<void> _benchMyTcp() async => await launch(
         TransportModule(),
       ],
       () async {
-        final transport = context().transport();
-        await transport.initialize();
         final encoder = Utf8Encoder();
         final fromServer = encoder.convert("from server\n");
         for (var i = 0; i < 8; i++) {
           Isolate.run(() => fork(
                 () async {
-                  final transport = context().transport();
-                  await transport.initialize();
+                  final transport = context().transport()..initialize();
                   transport.servers.tcp(
                     InternetAddress("0.0.0.0"),
                     12345,
@@ -44,9 +41,8 @@ Future<void> _benchMyTcp() async => await launch(
         for (var i = 0; i < 8; i++) {
           Isolate.run(() => fork(
                 () async {
-                  final worker = context().transport();
-                  await worker.initialize();
-                  final connector = await worker.clients.tcp(InternetAddress("127.0.0.1"), 12345, configuration: TransportDefaults.tcpClient.copyWith(pool: 256));
+                  final transport = context().transport()..initialize();
+                  final connector = await transport.clients.tcp(InternetAddress("127.0.0.1"), 12345, configuration: TransportDefaults.tcpClient.copyWith(pool: 256));
                   var count = 0;
                   final time = Stopwatch();
                   time.start();

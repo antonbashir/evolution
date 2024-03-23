@@ -28,7 +28,7 @@ void testCallNative() {
     () => _execute(() async {
       final executor = context().broker();
       test_call_reset();
-      await executor.initialize();
+      executor.initialize();
       final native = test_executor_initialize(true);
       final producer = executor.producer(TestNativeProducer());
       executor.activate();
@@ -45,7 +45,7 @@ void testCallNative() {
     () => _execute(() async {
       final executor = context().broker();
       test_call_reset();
-      await executor.initialize();
+      executor.initialize();
       final native = test_executor_initialize(true);
       final producer = executor.producer(TestNativeProducer());
       executor.activate();
@@ -63,7 +63,7 @@ void testCallNative() {
     () => _execute(() async {
       final executor = context().broker();
       test_call_reset();
-      await executor.initialize();
+      executor.initialize();
       final native = test_executor_initialize(true);
       final producer = executor.producer(TestNativeProducer());
       executor.activate();
@@ -81,7 +81,7 @@ void testCallNative() {
     () => _execute(() async {
       final executor = context().broker();
       test_call_reset();
-      await executor.initialize();
+      executor.initialize();
       final native = test_executor_initialize(true);
       final producer = executor.producer(TestNativeProducer());
       executor.activate();
@@ -103,7 +103,7 @@ void testCallDart() {
     () => _execute(() async {
       final executor = context().broker();
       test_call_reset();
-      await executor.initialize();
+      executor.initialize();
       final native = test_executor_initialize(true);
       final completer = Completer();
       executor.consumer(TestNativeConsumer((message) => completer.complete()));
@@ -120,7 +120,7 @@ void testCallDart() {
     () => _execute(() async {
       final executor = context().broker();
       test_call_reset();
-      await executor.initialize();
+      executor.initialize();
       final native = test_executor_initialize(true);
       final completer = Completer();
       executor.consumer(TestNativeConsumer(
@@ -142,7 +142,7 @@ void testCallDart() {
     () => _execute(() async {
       final executor = context().broker();
       test_call_reset();
-      await executor.initialize();
+      executor.initialize();
       final native = test_executor_initialize(true);
       final completer = Completer();
       executor.consumer(TestNativeConsumer(
@@ -164,7 +164,7 @@ void testCallDart() {
     () => _execute(() async {
       final executor = context().broker();
       test_call_reset();
-      await executor.initialize();
+      executor.initialize();
       final native = test_executor_initialize(true);
       final completer = Completer();
       executor.consumer(TestNativeConsumer(

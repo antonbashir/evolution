@@ -12,7 +12,7 @@ void testFileSingle({required int index}) {
   test("(single) [index = $index]", () async {
     final transport = context().transport();
     final worker = transport;
-    await worker.initialize();
+    worker.initialize();
     var nativeFile = File("file-${worker.descriptor}");
     if (nativeFile.existsSync()) nativeFile.deleteSync();
     if (!nativeFile.existsSync()) nativeFile.createSync();
@@ -28,7 +28,7 @@ void testFileLoad({required int index, required int count}) {
   test("(load) [index = $index, count = $count]", () async {
     final transport = context().transport();
     final worker = transport;
-    await worker.initialize();
+    worker.initialize();
     var nativeFile = File("file-${worker.descriptor}");
     if (nativeFile.existsSync()) nativeFile.deleteSync();
     if (!nativeFile.existsSync()) nativeFile.createSync();

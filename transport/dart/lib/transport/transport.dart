@@ -8,7 +8,6 @@ import 'bindings.dart';
 import 'client/factory.dart';
 import 'client/registry.dart';
 import 'constants.dart';
-import 'exception.dart';
 import 'file/factory.dart';
 import 'file/registry.dart';
 import 'payload.dart';
@@ -20,6 +19,7 @@ import 'timeout.dart';
 class Transport {
   final Pointer<transport> _native;
   final Executor _executor;
+  final void Function(Transport transport) _onDestroy;
 
   late final TransportClientRegistry _clientRegistry;
   late final TransportServerRegistry _serverRegistry;
@@ -40,16 +40,13 @@ class Transport {
   TransportClientsFactory get clients => _clientsFactory;
   TransportFilesFactory get files => _filesFactory;
 
-  Transport(this._native, this._executor);
+  Transport(this._native, this._executor, this._onDestroy);
 
-  Future<void> initialize() async {
-    await _executor.initialize(processor: _process, pending: () => 0);
+  void initialize() async {
+    _executor.initialize(processor: _process, pending: () => 0);
     _staticBuffers = context().staticBuffers();
     _native.ref.buffers = _staticBuffers.native.ref.buffers;
-    final result = transport_setup(_native, _executor.native);
-    if (result != 0) {
-      throw TransportInitializationException(TransportMessages.workerError(result));
-    }
+    transport_setup(_native, _executor.native).systemCheck();
     _payloadPool = TransportPayloadPool(_staticBuffers);
     _datagramResponderPool = TransportServerDatagramResponderPool(_staticBuffers);
     _clientRegistry = TransportClientRegistry();
@@ -90,6 +87,7 @@ class Transport {
     _active = false;
     await _executor.shutdown();
     transport_destroy(_native);
+    _onDestroy(this);
   }
 
   void _process(Pointer<Pointer<executor_completion_event>> completions, int count) {
@@ -109,7 +107,7 @@ class Transport {
             : client
                 ? TransportEvent.clientEvent(event & ~transportEventClient)
                 : TransportEvent.fileEvent(event & ~transportEventFile);
-        print(TransportMessages.workerTrace(parsed, result, data, fd));
+        Printer.printOut(TransportMessages.workerTrace(parsed, result, data, fd));
       }));
       if (event & transportEventClient != 0) {
         event &= ~transportEventClient;

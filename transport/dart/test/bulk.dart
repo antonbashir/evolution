@@ -12,7 +12,7 @@ void testBulk() {
   test("bulk", () async {
     final transport = context().transport();
     final worker = transport;
-    await worker.initialize();
+    worker.initialize();
     final file1 = File("file1");
     final file2 = File("file2");
     final file3 = File("file3");

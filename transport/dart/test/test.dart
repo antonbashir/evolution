@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:transport/transport.dart';
 import 'package:test/test.dart';
 import 'package:transport/transport/bindings.dart';
@@ -11,7 +13,7 @@ import 'timeout.dart';
 import 'udp.dart';
 import 'unix.dart';
 
-void execute(void Function() test) => launch([CoreModule(), MemoryModule(), ExecutorModule(), TransportModule()], test);
+void execute(FutureOr<void> Function() test) => launch([CoreModule(), MemoryModule(), ExecutorModule(), TransportModule()], test);
 
 void main() {
   final initialization = true;
@@ -88,13 +90,10 @@ void main() {
   });
 }
 
-void testInitialization() {
-  test(
-    "(initialize)",
-    () => execute(() async {
-      final transport = context().transport();
-      await transport.initialize();
-      await transport.shutdown();
-    }),
-  );
-}
+void testInitialization() => test(
+      "(initialize)",
+      () => execute(() async {
+        final transport = context().transport()..initialize();
+        await transport.shutdown();
+      }),
+    );

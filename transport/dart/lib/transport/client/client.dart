@@ -2,8 +2,6 @@ import 'dart:async';
 import 'dart:ffi';
 import 'dart:typed_data';
 
-import 'package:core/core.dart';
-import 'package:memory/memory.dart';
 import 'package:meta/meta.dart';
 
 import '../bindings.dart';
@@ -65,6 +63,7 @@ class TransportClientChannel {
     if (onError != null) _outboundErrorHandlers[bufferId] = onError;
     if (onDone != null) _outboundDoneHandlers[bufferId] = onDone;
     _channel.write(bytes, bufferId, transportEventWrite | transportEventClient, timeout: _writeTimeout);
+    _channel.submit();
     _pending++;
   }
 
@@ -92,6 +91,7 @@ class TransportClientChannel {
     );
     if (onError != null) _outboundErrorHandlers[lastBufferId] = onError;
     if (onDone != null) _outboundDoneHandlers[lastBufferId] = onDone;
+    _channel.submit();
     _pending += bytes.length;
   }
 
@@ -106,6 +106,7 @@ class TransportClientChannel {
       transportEventReceiveMessage | transportEventClient,
       timeout: _readTimeout,
     );
+    _channel.submit();
     _pending++;
   }
 
@@ -170,6 +171,7 @@ class TransportClientChannel {
     );
     if (onError != null) _outboundErrorHandlers[lastBufferId] = onError;
     if (onDone != null) _outboundDoneHandlers[lastBufferId] = onDone;
+    _channel.submit();
     _pending += bytes.length;
   }
 
@@ -177,6 +179,7 @@ class TransportClientChannel {
   Future<TransportClientChannel> connect() {
     if (_closing) return Future.error(TransportClosedException.forClient());
     transport_connect(_workerPointer, _pointer, _connectTimeout!);
+    _channel.submit();
     _pending++;
     return _connector.future.then((_) => this);
   }
@@ -273,7 +276,7 @@ class TransportClientChannel {
     if (_pending > 0) {
       if (gracefulTimeout == null) {
         _active = false;
-        transport_cancel_by_fd(_workerPointer, _pointer.ref.fd);
+        transport_cancel_by_fd(_workerPointer, _pointer.ref.fd).systemCheck();
         await _closer.future;
       }
       if (gracefulTimeout != null) {
@@ -281,7 +284,7 @@ class TransportClientChannel {
           gracefulTimeout,
           onTimeout: () async {
             _active = false;
-            transport_cancel_by_fd(_workerPointer, _pointer.ref.fd);
+            transport_cancel_by_fd(_workerPointer, _pointer.ref.fd).systemCheck();
             await _closer.future;
           },
         );

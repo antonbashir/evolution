@@ -130,7 +130,7 @@ void custom() {
   test('channel', timeout: Timeout(Duration(seconds: 60)), () async {
     final transport = context().transport();
     final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
-    await worker.initialize();
+    worker.initialize();
     final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module);
 
     final clientLatch = EventLatch("client", {"complete", "payload", "request", "subscribe"});
@@ -179,7 +179,7 @@ void custom() {
   test('channel (server error)', timeout: Timeout(Duration(seconds: 60)), () async {
     final transport = context().transport();
     final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
-    await worker.initialize();
+    worker.initialize();
     final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module);
 
     final clientLatch = EventLatch("client", {"complete", "error", "request", "subscribe"});
@@ -231,7 +231,7 @@ void custom() {
   test('channel (client error)', timeout: Timeout(Duration(seconds: 60)), () async {
     final transport = context().transport();
     final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
-    await worker.initialize();
+    worker.initialize();
     final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module);
 
     final clientLatch = EventLatch("client", {"payload", "request", "subscribe"});

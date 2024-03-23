@@ -12,7 +12,7 @@ void lease() {
     final latch = Latch(4);
     final transport = context().transport();
     final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
-    await worker.initialize();
+    worker.initialize();
     final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module);
     reactive.serve(
       InternetAddress.anyIPv4,
@@ -60,7 +60,7 @@ void lease() {
     final latch = Latch(1);
     final transport = context().transport();
     final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
-    await worker.initialize();
+    worker.initialize();
     final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module);
     reactive.serve(
       InternetAddress.anyIPv4,
@@ -104,7 +104,7 @@ void lease() {
     final errorLatch = Latch(1);
     final transport = context().transport();
     final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
-    await worker.initialize();
+    worker.initialize();
     final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module);
     reactive.serve(
       InternetAddress.anyIPv4,

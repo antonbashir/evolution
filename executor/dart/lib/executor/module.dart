@@ -18,22 +18,23 @@ class ExecutorModuleState implements ModuleState {
 
   late final Pointer<executor_module> _module;
 
-  void create(Pointer<executor_module> module) => _module = module;
+  void _create(Pointer<executor_module> module) => _module = module;
 
-  Future<void> destroy() async {
+  Future<void> _destroy() async {
     await Future.wait(_brokers.map((broker) => broker.shutdown()));
     await Future.wait(_customs.map((executor) => executor.shutdown()));
   }
 
   Executor executor({ExecutorConfiguration configuration = ExecutorDefaults.executor}) {
-    final executor = Executor(using((arena) => executor_create(configuration.toNative(arena), _module.ref.scheduler, executor_next_id(_module))).systemCheck());
+    final native = using((arena) => executor_create(configuration.toNative(arena), _module.ref.scheduler, executor_next_id(_module))).systemCheck();
+    final executor = Executor(native, _customs.remove);
     _customs.add(executor);
     return executor;
   }
 
   ExecutorBroker broker({ExecutorConfiguration configuration = ExecutorDefaults.executor}) {
     final executor = using((arena) => executor_create(configuration.toNative(arena), _module.ref.scheduler, executor_next_id(_module))).systemCheck();
-    final broker = ExecutorBroker(Executor(executor, configuration: configuration));
+    final broker = ExecutorBroker(Executor(executor, _brokers.remove, configuration: configuration));
     _brokers.add(broker);
     return broker;
   }
@@ -68,22 +69,22 @@ class ExecutorModule extends Module<executor_module, ExecutorModuleConfiguration
       throw ExecutorModuleError(error);
     }
     native.ref.scheduler = scheduler;
-    state.create(native);
+    state._create(native);
   }
 
   @override
   FutureOr<void> fork() {
-    state.create(native);
+    state._create(native);
   }
 
   @override
   FutureOr<void> unfork() async {
-    await state.destroy();
+    await state._destroy();
   }
 
   @override
   Future<void> shutdown() async {
-    await state.destroy();
+    await state._destroy();
     final scheduler = native.ref.scheduler;
     if (!executor_scheduler_shutdown(scheduler)) {
       final error = scheduler.ref.shutdown_error.cast<Utf8>().toDartString();

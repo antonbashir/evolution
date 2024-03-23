@@ -22,6 +22,7 @@ class Executor {
   final int descriptor;
   final int id;
   final Completer<void> _stopper = Completer();
+  final void Function(Executor destroyed) _onDestroy;
 
   late final ExecutorProcessor _processor;
   late final ExecutorPending _pending;
@@ -33,11 +34,11 @@ class Executor {
   @inline
   bool get needSubmit => native.ref.state & executorStateIdle != 0;
 
-  Executor(this.native, {this.configuration = ExecutorDefaults.executor})
+  Executor(this.native, this._onDestroy, {this.configuration = ExecutorDefaults.executor})
       : descriptor = native.ref.descriptor,
         id = native.ref.id;
 
-  Future<void> initialize({required ExecutorProcessor processor, required ExecutorPending pending}) async {
+  void initialize({required ExecutorProcessor processor, required ExecutorPending pending}) {
     _processor = processor;
     _pending = pending;
     _completions = native.ref.completions;
@@ -45,12 +46,12 @@ class Executor {
   }
 
   Future<void> shutdown() async {
-    if (native.ref.state & (executorStateStopping | executorStateStopped) != 0) return;
     native.ref.state = executorStateStopping;
     if (_pending() != 0) await _stopper.future;
     _registry[id] = null;
     _callback.close();
     executor_destroy(native);
+    _onDestroy(this);
   }
 
   void activate() => executor_register_on_scheduler(native, _callback.sendPort.nativePort).systemCheck();
@@ -68,9 +69,7 @@ class Executor {
       executor_awake_begin(native).systemCheck();
       final count = executor_peek(native);
       if (count == 0) {
-        if (native.ref.state & executorStateStopping != 0 && _pending() == 0) {
-          executor_unregister_from_scheduler(native, true).systemCheck();
-        }
+        executor_awake_complete(native, count);
         return;
       }
       _processor(_completions, count);

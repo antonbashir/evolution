@@ -1,9 +1,6 @@
 import 'dart:ffi';
 import 'dart:typed_data';
 
-import 'package:core/core.dart';
-import 'package:memory/memory.dart';
-
 import 'bindings.dart';
 import 'constants.dart';
 
@@ -102,4 +99,7 @@ class TransportChannel {
 
   @inline
   void close() => system_shutdown_descriptor(fd);
+
+  @inline
+  void submit() => executor_submit(_pointer.ref.transport_executor);
 }

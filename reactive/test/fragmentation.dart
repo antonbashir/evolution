@@ -13,7 +13,7 @@ void fragmentation() {
   test('1 fragmented request', timeout: Timeout(Duration(seconds: 60)), () async {
     final transport = context().transport();
     final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
-    await worker.initialize();
+    worker.initialize();
     final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module);
     final fullPayload = Uint8List.fromList(List.generate(1 * 1024 * 1024, (index) => 31));
 
@@ -51,7 +51,7 @@ void fragmentation() {
   test('1 simple request -> 1 fragmented request', timeout: Timeout(Duration(seconds: 60)), () async {
     final transport = context().transport();
     final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
-    await worker.initialize();
+    worker.initialize();
     final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module);
     final simplePayload = Uint8List.fromList("simple".codeUnits);
     final fullPayload = Uint8List.fromList(List.generate(1 * 1024 * 1024, (index) => 31));
@@ -98,7 +98,7 @@ void fragmentation() {
   test('1 simple request -> 1 fragmented request -> 1 simple request', timeout: Timeout(Duration(seconds: 60)), () async {
     final transport = context().transport();
     final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
-    await worker.initialize();
+    worker.initialize();
     final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module);
     final simplePayload = Uint8List.fromList("simple".codeUnits);
     final fullPayload = Uint8List.fromList(List.generate(1 * 1024 * 1024, (index) => 31));
@@ -152,7 +152,7 @@ void fragmentation() {
   test('1 simple request -> 1 fragmented request -> 1 simple request -> 1 fragmented request', timeout: Timeout(Duration(seconds: 60)), () async {
     final transport = context().transport();
     final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
-    await worker.initialize();
+    worker.initialize();
     final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module);
     final simplePayload = Uint8List.fromList("simple".codeUnits);
     final fullPayload = Uint8List.fromList(List.generate(1 * 1024 * 1024, (index) => 31));

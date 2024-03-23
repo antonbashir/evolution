@@ -12,7 +12,7 @@ void backpressure() {
     final latch = Latch(6);
     final transport = context().transport();
     final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
-    await worker.initialize();
+    worker.initialize();
     final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module);
     late final Timer timer;
     reactive.serve(

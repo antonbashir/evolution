@@ -145,7 +145,7 @@ Future<void> _callNativeIsolate(List<dynamic> input) => fork(() async {
       final threads = input[1];
       final calls = <Future<Pointer<executor_task>>>[];
       final executor = context().broker();
-      await executor.initialize();
+      executor.initialize();
       final producer = executor.producer(TestNativeProducer());
       executor.activate();
       final descriptors = test_threading_executor_descriptors();
@@ -173,7 +173,7 @@ Future<void> _callNativeIsolate(List<dynamic> input) => fork(() async {
 Future<void> _callDartIsolate(List<dynamic> input) => fork(() async {
       final messages = input[0];
       final executor = context().broker();
-      await executor.initialize();
+      executor.initialize();
       var count = 0;
       final completer = Completer();
       executor.consumer(TestNativeConsumer(

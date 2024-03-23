@@ -16,7 +16,7 @@ void testTcpTimeout({required Duration connection, required Duration serverRead,
   test("(timeout tcp single) [connection = ${connection.inSeconds}, serverRead = ${serverRead.inSeconds}, clientRead = ${clientRead.inSeconds}] ", () async {
     final transport = context().transport();
     final worker = transport;
-    await worker.initialize();
+    worker.initialize();
 
     final time = Stopwatch();
     var completer = Completer();
@@ -55,7 +55,7 @@ void testUdpTimeout({required Duration serverRead, required Duration clientRead}
   test("(timeout udp single) [serverRead = ${serverRead.inSeconds}, clientRead = ${clientRead.inSeconds}] ", () async {
     final transport = context().transport();
     final worker = transport;
-    await worker.initialize();
+    worker.initialize();
 
     final time = Stopwatch();
     var completer = Completer();

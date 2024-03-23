@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
@@ -10,10 +11,16 @@ import 'defaults.dart';
 import 'transport.dart';
 
 class TransportModuleState implements ModuleState {
+  final _transports = <Transport>[];
+
   Transport transport({TransportConfiguration configuration = TransportDefaults.transport}) {
-    final nativeTransport = using((arena) => transport_initialize(configuration.toNative(arena))).systemCheck();
-    return Transport(nativeTransport, context().executor());
+    final native = using((arena) => transport_initialize(configuration.toNative(arena))).systemCheck();
+    final transport = Transport(native, context().executor(), _transports.remove);
+    _transports.add(transport);
+    return transport;
   }
+
+  Future<void> _destroy({Duration? gracefulTimeout}) => Future.wait(_transports.map((transport) => transport.shutdown(gracefulTimeout: gracefulTimeout)));
 }
 
 class TransportModule extends Module<transport_module, TransportModuleConfiguration, TransportModuleState> {
@@ -35,6 +42,11 @@ class TransportModule extends Module<transport_module, TransportModuleConfigurat
           (native) => SystemLibrary.load(native.ref.library),
           (native) => TransportModuleConfiguration.fromNative(native.ref.configuration),
         );
+
+  @override
+  FutureOr<void> shutdown() async {
+    await state._destroy();
+  }
 }
 
 extension ContextProviderTransportExtensions on ContextProvider {

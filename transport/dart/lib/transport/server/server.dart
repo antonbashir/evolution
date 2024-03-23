@@ -2,16 +2,13 @@ import 'dart:async';
 import 'dart:ffi';
 import 'dart:typed_data';
 
-import 'package:core/core.dart';
-import 'package:memory/memory.dart';
-
-import 'provider.dart';
-import 'registry.dart';
 import '../bindings.dart';
 import '../channel.dart';
 import '../constants.dart';
 import '../exception.dart';
 import '../payload.dart';
+import 'provider.dart';
+import 'registry.dart';
 import 'responder.dart';
 
 abstract class TransportServer {
@@ -56,6 +53,7 @@ class TransportServerConnectionChannel {
     if (_closing || _server._closing) return Future.error(TransportClosedException.forServer());
     channel.read(bufferId, transportEventRead | transportEventServer, timeout: _readTimeout);
     _pending++;
+    channel.submit();
   }
 
   Future<void> writeSingle(Uint8List bytes, {void Function(Exception error)? onError, void Function()? onDone}) async {
@@ -65,6 +63,7 @@ class TransportServerConnectionChannel {
     if (onDone != null) _outboundDoneHandlers[bufferId] = onDone;
     channel.write(bytes, bufferId, transportEventWrite | transportEventServer, timeout: _writeTimeout);
     _pending++;
+    channel.submit();
   }
 
   Future<void> writeMany(List<Uint8List> bytes, {bool linked = true, void Function(Exception error)? onError, void Function()? onDone}) async {
@@ -92,6 +91,7 @@ class TransportServerConnectionChannel {
     if (onError != null) _outboundErrorHandlers[lastBufferId] = onError;
     if (onDone != null) _outboundDoneHandlers[lastBufferId] = onDone;
     _pending += bytes.length;
+    channel.submit();
   }
 
   void notify(int bufferId, int result, int event) {
@@ -208,6 +208,7 @@ class TransportServerChannel implements TransportServer {
     if (_closing) throw TransportClosedException.forServer();
     _acceptor = onAccept;
     transport_accept(_workerPointer, pointer);
+    executor_submit(_workerPointer.ref.transport_executor);
   }
 
   Future<void> receive({TransportDatagramMessageFlag? flags}) async {
@@ -221,6 +222,7 @@ class TransportServerChannel implements TransportServer {
       transportEventReceiveMessage | transportEventServer,
       timeout: _readTimeout,
     );
+    _datagramChannel.submit();
     _pending++;
   }
 
@@ -246,6 +248,7 @@ class TransportServerChannel implements TransportServer {
       transportEventSendMessage | transportEventServer,
       timeout: _writeTimeout,
     );
+    channel.submit();
     _pending++;
   }
 
@@ -289,6 +292,7 @@ class TransportServerChannel implements TransportServer {
     );
     if (onError != null) _outboundErrorHandlers[lastBufferId] = onError;
     if (onDone != null) _outboundDoneHandlers[lastBufferId] = onDone;
+    channel.submit();
     _pending += bytes.length;
   }
 

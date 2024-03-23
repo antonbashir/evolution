@@ -22,7 +22,7 @@ void keepalive() {
 
     final transport = context().transport();
     final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
-    await worker.initialize();
+    worker.initialize();
     final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module.copyWith(tracer: _trace));
 
     reactive.serve(
@@ -48,7 +48,7 @@ void keepalive() {
 
     final transport = context().transport();
     final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
-    await worker.initialize();
+    worker.initialize();
     final reactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module);
 
     reactive.serve(

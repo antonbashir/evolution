@@ -115,14 +115,17 @@ struct transport_server* transport_server_initialize_unix_stream(struct transpor
 
 void transport_server_destroy(struct transport_server* server)
 {
+    
     if (server->family == TRANSPORT_SOCKET_FAMILY_INET)
     {
         transport_module_delete(server->inet_server_address);
     }
+    
     if (server->family == TRANSPORT_SOCKET_FAMILY_UNIX)
     {
         unlink(server->unix_server_address->sun_path);
         transport_module_delete(server->unix_server_address);
     }
+ 
     transport_module_delete(server);
 }

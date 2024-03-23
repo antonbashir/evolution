@@ -100,12 +100,12 @@ void transport_client_destroy(struct transport_client* client)
 {
     if (client->family == TRANSPORT_SOCKET_FAMILY_INET)
     {
-        if (client->inet_destination_address)
+        if (client->inet_destination_address != NULL)
         {
             transport_module_delete(client->inet_destination_address);
         }
 
-        if (client->inet_source_address)
+        if (client->inet_source_address != NULL)
         {
             transport_module_delete(client->inet_source_address);
         }

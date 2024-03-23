@@ -13,7 +13,7 @@ void shutdown() {
   test("shutdown (before initialization)", () async {
     final transport = context().transport();
     final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
-    await worker.initialize();
+    worker.initialize();
     final serverReactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module);
     final clientReactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module);
 
@@ -45,7 +45,7 @@ void shutdown() {
   test("shutdown (after initialization)", () async {
     final transport = context().transport();
     final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
-    await worker.initialize();
+    worker.initialize();
     final serverReactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module);
     final clientReactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module);
 
@@ -85,7 +85,7 @@ void shutdown() {
   test("graceful shutdown", () async {
     final transport = context().transport();
     final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
-    await worker.initialize();
+    worker.initialize();
     final serverReactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module.copyWith(gracefulTimeout: Duration(seconds: 1)));
     final clientReactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module.copyWith(gracefulTimeout: Duration(seconds: 1)));
     final clientPayload = "client-payload";
@@ -141,7 +141,7 @@ void shutdown() {
   test("graceful shutdown (fragmentation)", () async {
     final transport = context().transport();
     final worker = Transport(transport.transport(configuration: ReactiveTransportDefaults.module.workerConfiguration));
-    await worker.initialize();
+    worker.initialize();
     final serverReactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module.copyWith(gracefulTimeout: Duration(seconds: 1)));
     final clientReactive = ReactiveTransport(transport, worker, ReactiveTransportDefaults.module.copyWith(gracefulTimeout: Duration(seconds: 1)));
     final fullPayload = Uint8List.fromList(List.generate(1 * 1024 * 1024, (index) => 31));

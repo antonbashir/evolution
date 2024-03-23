@@ -13,7 +13,7 @@ void testUdpSingle({required int index, required int clients}) {
   test("(single) [clients = $clients]", () async {
     final transport = context().transport();
     final worker = transport;
-    await worker.initialize();
+    worker.initialize();
     worker.servers.udp(io.InternetAddress("0.0.0.0"), 12345).stream().listen(
       (event) {
         Validators.request(event.takeBytes());
@@ -38,7 +38,7 @@ void testUdpMany({required int index, required int clients, required int count})
   test("(many) [clients = $clients, count = $count]", () async {
     final transport = context().transport();
     final worker = transport;
-    await worker.initialize();
+    worker.initialize();
     final serverRequests = BytesBuilder();
     worker.servers.udp(io.InternetAddress("0.0.0.0"), 12345).stream().listen(
       (responder) {
