@@ -5,7 +5,7 @@ class CoreDefaults {
   CoreDefaults._();
 
   static const CoreModuleConfiguration module = CoreModuleConfiguration(
-    printLevel: EventLevel.trace,
+    printLevel: EventLevel.information,
     silent: false,
   );
 }

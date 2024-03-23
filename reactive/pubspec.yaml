@@ -5,8 +5,10 @@ publish_to: none
 environment:
   sdk: ">=3.3.0 <4.1.0"
 
+dev_dependencies:
+  test: ^1.24.6
+
 dependencies:
-  test: ^1.22.0
   collection: ^1.18.0
   transport:
     path: ../transport/dart

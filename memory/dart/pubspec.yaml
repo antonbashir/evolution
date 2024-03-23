@@ -9,4 +9,3 @@ dependencies:
   ffi: ^2.1.0
   core:
     path: ../../core/dart
-  test: ^1.25.2

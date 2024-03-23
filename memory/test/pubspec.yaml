@@ -1,4 +1,4 @@
-name: executor_test
+name: memory_tests
 version: 0.0.0
 publish_to: none
 
@@ -11,9 +11,6 @@ dev_dependencies:
 dependencies:
   ffi: ^2.1.0
   core:
-    path: ../../../core/dart/
+    path: ../../core/dart
   memory:
-    path: ../../../memory/dart/
-  executor:
-    path: ../../dart/
-  collection: ^1.18.0
+    path: ../dart

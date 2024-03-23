@@ -24,8 +24,8 @@
       "toolArgs": [
         "--define=DEBUG=true"
       ],
-      "cwd": "${workspaceFolder}/storage/dart",
-      "program": "${workspaceFolder}/storage/dart/test/test.dart",
+      "cwd": "${workspaceFolder}/storage",
+      "program": "${workspaceFolder}/storage/test/test.dart",
       "preLaunchTask": "storage-native-build"
     },
     {
@@ -36,10 +36,10 @@
       "args": [
         "--enable-asserts",
         "-DDEBUG=true",
-        "${workspaceFolder}/storage/dart/test/test.dart"
+        "${workspaceFolder}/storage/test/test.dart"
       ],
       "stopAtEntry": false,
-      "cwd": "${workspaceFolder}/storage/dart",
+      "cwd": "${workspaceFolder}/storage",
       "MIMode": "gdb",
       "setupCommands": [
         {
@@ -58,7 +58,7 @@
         "--define=DEBUG=true"
       ],
       "cwd": "${workspaceFolder}/transport",
-      "program": "${workspaceFolder}/transport/dart/test/test.dart",
+      "program": "${workspaceFolder}/transport/test/test.dart",
       "preLaunchTask": "transport-native-build"
     },
     {
@@ -69,10 +69,10 @@
       "args": [
         "--enable-asserts",
         "-DDEBUG=true",
-        "${workspaceFolder}/transport/dart/test/test.dart"
+        "${workspaceFolder}/transport/test/test.dart"
       ],
       "stopAtEntry": false,
-      "cwd": "${workspaceFolder}/transport/dart",
+      "cwd": "${workspaceFolder}/transport",
       "MIMode": "gdb",
       "setupCommands": [
         {
@@ -124,7 +124,7 @@
         "--define=DEBUG=true"
       ],
       "cwd": "${workspaceFolder}/memory",
-      "program": "${workspaceFolder}/memory/dart/test/test.dart",
+      "program": "${workspaceFolder}/memory/test/test.dart",
       "preLaunchTask": "memory-native-build"
     },
     {
@@ -135,7 +135,7 @@
       "args": [
         "--enable-asserts",
         "-DDEBUG=true",
-        "${workspaceFolder}/memory/dart/test/test.dart"
+        "${workspaceFolder}/memory/test/test.dart"
       ],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}/memory",
@@ -158,6 +158,7 @@
       ],
       "cwd": "${workspaceFolder}/reactive",
       "program": "${workspaceFolder}/reactive/test/test.dart",
+      "preLaunchTask": "transport-native-build",
     },
     {
       "name": "reactive-test-gdb",
@@ -179,6 +180,7 @@
           "ignoreFailures": true
         }
       ],
+      "preLaunchTask": "transport-native-build"
     },
     {
       "name": "fiber-test-gdb",

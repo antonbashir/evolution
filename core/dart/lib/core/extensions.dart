@@ -1,5 +1,8 @@
 import 'dart:ffi';
+import 'dart:io';
 import 'dart:typed_data';
+
+import 'package:path/path.dart';
 
 import 'bindings.dart';
 import 'constants.dart';
@@ -90,6 +93,8 @@ extension StringExtensions on String {
     }
     return offset - startOffset;
   }
+
+  Directory asDirectory() => Directory(dirname(this));
 }
 
 extension StringNullableExtensions on String? {

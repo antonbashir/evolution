@@ -1,9 +1,12 @@
-name: transport
+name: transport_test
 publish_to: none
 version: 0.0.0
 
 environment:
   sdk: ">=3.3.0 <4.0.0"
+
+dev_dependencies:
+  test: ^1.24.6
 
 dependencies:
   ffi: ^2.1.0
@@ -13,3 +16,5 @@ dependencies:
     path: ../../memory/dart
   executor:
     path: ../../executor/dart
+  transport:
+    path: ../dart
