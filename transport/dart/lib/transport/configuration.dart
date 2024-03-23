@@ -21,32 +21,22 @@ class TransportModuleConfiguration implements ModuleConfiguration {
 }
 
 class TransportConfiguration {
-  final MemoryConfiguration memoryConfiguration;
-  final ExecutorConfiguration executorConfiguration;
   final Duration timeoutCheckerPeriod;
 
   Pointer<transport_configuration> toNative(Arena arena) {
     final native = arena<transport_configuration>();
-    native.ref.memory_instance_configuration = memoryConfiguration.toNative(arena).ref;
-    native.ref.executor_instance_configuration = executorConfiguration.toNative(arena).ref;
     native.ref.timeout_checker_period_milliseconds = timeoutCheckerPeriod.inMilliseconds;
     return native;
   }
 
   const TransportConfiguration({
-    required this.executorConfiguration,
-    required this.memoryConfiguration,
     required this.timeoutCheckerPeriod,
   });
 
   TransportConfiguration copyWith({
-    MemoryConfiguration? memoryConfiguration,
-    ExecutorConfiguration? executorConfiguration,
     Duration? timeoutCheckerPeriod,
   }) =>
       TransportConfiguration(
-        memoryConfiguration: memoryConfiguration ?? this.memoryConfiguration,
-        executorConfiguration: executorConfiguration ?? this.executorConfiguration,
         timeoutCheckerPeriod: timeoutCheckerPeriod ?? this.timeoutCheckerPeriod,
       );
 }

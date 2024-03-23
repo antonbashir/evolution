@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io' as io;
 import 'dart:typed_data';
 
+import 'package:executor/executor.dart';
 import 'package:test/test.dart';
 import 'package:transport/transport.dart';
 import 'package:transport/transport/bindings.dart';
@@ -176,8 +177,14 @@ void testBuffersOverflow() {
   test(
     "(overflow)",
     () => runTest(
+      overrides: [
+        CoreModule(),
+        MemoryModule(configuration: MemoryDefaults.module.copyWith(memoryConfiguration: MemoryDefaults.memory.copyWith(staticBuffersCapacity: 2))),
+        ExecutorModule(),
+        TransportModule(),
+      ],
       () async {
-        final transport = context().transport(configuration: TransportDefaults.transport.copyWith(memoryConfiguration: MemoryDefaults.memory.copyWith(staticBuffersCapacity: 2)));
+        final transport = context().transport();
         transport.initialize();
         transport.servers.tcp(io.InternetAddress("0.0.0.0"), 12345, (connection) {
           connection.stream().listen((value) {

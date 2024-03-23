@@ -1,5 +1,4 @@
 import 'package:executor/executor.dart';
-import 'package:memory/memory/defaults.dart';
 
 import 'client/configuration.dart';
 import 'configuration.dart';
@@ -11,8 +10,6 @@ class TransportDefaults {
   static const module = TransportModuleConfiguration(defaultExecutorConfiguration: ExecutorDefaults.executor);
 
   static const transport = TransportConfiguration(
-    memoryConfiguration: MemoryDefaults.memory,
-    executorConfiguration: ExecutorDefaults.executor,
     timeoutCheckerPeriod: Duration(milliseconds: 500),
   );
 

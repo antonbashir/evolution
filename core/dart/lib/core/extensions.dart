@@ -33,7 +33,6 @@ extension PointerExtensions<T extends NativeType> on Pointer<T> {
 }
 
 extension IntegerExtensions on int {
-  @inline
   int systemCheck([void Function()? finalizer]) {
     if (this == moduleErrorCode) {
       finalizer?.call();

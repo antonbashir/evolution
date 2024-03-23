@@ -2,9 +2,9 @@
 #define MEMORY_STATIC_BUFFERS_H
 
 #include <common/common.h>
+#include <events/events.h>
 #include <memory/memory.h>
 #include <system/library.h>
-#include <events/events.h>
 #include "constants.h"
 #include "errors.h"
 #include "module.h"

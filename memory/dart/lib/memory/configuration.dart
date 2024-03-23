@@ -6,18 +6,26 @@ import 'bindings.dart';
 
 class MemoryModuleConfiguration implements ModuleConfiguration {
   final LibraryPackageMode libraryPackageMode;
+  final MemoryConfiguration memoryConfiguration;
 
-  const MemoryModuleConfiguration({required this.libraryPackageMode});
+  const MemoryModuleConfiguration({required this.libraryPackageMode, required this.memoryConfiguration});
 
   factory MemoryModuleConfiguration.fromNative(memory_module_configuration native) => MemoryModuleConfiguration(
         libraryPackageMode: LibraryPackageMode.values[native.library_package_mode],
+        memoryConfiguration: MemoryConfiguration.fromNative(native.memory_instance_configuration),
       );
 
   Pointer<memory_module_configuration> toNative(Arena arena) {
     final native = arena<memory_module_configuration>();
     native.ref.library_package_mode = libraryPackageMode.index;
+    native.ref.memory_instance_configuration = memoryConfiguration.toNative(arena).ref;
     return native;
   }
+
+  MemoryModuleConfiguration copyWith({MemoryConfiguration? memoryConfiguration}) => MemoryModuleConfiguration(
+        libraryPackageMode: libraryPackageMode,
+        memoryConfiguration: memoryConfiguration ?? this.memoryConfiguration,
+      );
 }
 
 class MemoryConfiguration {

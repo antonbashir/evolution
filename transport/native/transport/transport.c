@@ -1,5 +1,6 @@
 #include "transport.h"
 #include <liburing.h>
+#include <memory/module.h>
 #include "constants.h"
 #include "errors.h"
 #include "maps.h"
@@ -15,17 +16,18 @@ struct transport* transport_initialize(struct transport_configuration* configura
     {
         return NULL;
     }
-    simple_map_events_reserve(transport->events, configuration->memory_instance_configuration.static_buffers_capacity, 0);
+    struct memory_configuration* memory_configuration = &memory()->configuration.memory_instance_configuration;
+    simple_map_events_reserve(transport->events, memory_configuration->static_buffers_capacity, 0);
 
-    transport->inet_used_messages = transport_module_allocate(configuration->memory_instance_configuration.static_buffers_capacity, sizeof(struct msghdr));
-    transport->unix_used_messages = transport_module_allocate(configuration->memory_instance_configuration.static_buffers_capacity, sizeof(struct msghdr));
+    transport->inet_used_messages = transport_module_allocate(memory_configuration->static_buffers_capacity, sizeof(struct msghdr));
+    transport->unix_used_messages = transport_module_allocate(memory_configuration->static_buffers_capacity, sizeof(struct msghdr));
 
     if (transport->inet_used_messages == NULL || transport->unix_used_messages == NULL)
     {
         return NULL;
     }
 
-    for (size_t index = 0; index < configuration->memory_instance_configuration.static_buffers_capacity; index++)
+    for (size_t index = 0; index < memory_configuration->static_buffers_capacity; index++)
     {
         transport->inet_used_messages[index].msg_name = transport_module_new(sizeof(struct sockaddr_in));
         if (transport->inet_used_messages[index].msg_name == NULL)
@@ -47,9 +49,10 @@ struct transport* transport_initialize(struct transport_configuration* configura
 
 int16_t transport_setup(struct transport* transport, struct executor_instance* transport_executor)
 {
+    struct memory_configuration* memory_configuration = &memory()->configuration.memory_instance_configuration;
     transport->transport_executor = transport_executor;
     struct io_uring* ring = transport_executor->ring;
-    int32_t result = io_uring_register_buffers(transport->transport_executor->ring, transport->buffers, transport->configuration.memory_instance_configuration.static_buffers_capacity);
+    int32_t result = io_uring_register_buffers(transport->transport_executor->ring, transport->buffers, memory_configuration->static_buffers_capacity);
     if (result)
     {
         event_propagate_local(transport_error_system(-result));
@@ -316,7 +319,8 @@ void transport_remove_event(struct transport* transport, uint64_t data)
 
 void transport_destroy(struct transport* transport)
 {
-    for (size_t index = 0; index < transport->configuration.memory_instance_configuration.static_buffers_capacity; index++)
+    struct memory_configuration* memory_configuration = &memory()->configuration.memory_instance_configuration;
+    for (size_t index = 0; index < memory_configuration->static_buffers_capacity; index++)
     {
         transport_module_delete(transport->inet_used_messages[index].msg_name);
         transport_module_delete(transport->unix_used_messages[index].msg_name);

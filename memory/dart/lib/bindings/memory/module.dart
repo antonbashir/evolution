@@ -8,6 +8,7 @@ import '../../memory/bindings.dart';
 final class memory_module_configuration extends Struct {
   @Uint8()
   external int library_package_mode;
+  external memory_configuration memory_instance_configuration;
 }
 
 final class memory_module extends Struct {

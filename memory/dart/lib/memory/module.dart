@@ -13,7 +13,6 @@ import 'structures.dart';
 import 'tuples.dart';
 
 class MemoryModuleState implements ModuleState {
-  final MemoryConfiguration configuration;
   late final Pointer<memory_instance> instance;
   late final MemoryStaticBuffers staticBuffers;
   late final MemoryInputOutputBuffers inputOutputBuffers;
@@ -22,9 +21,10 @@ class MemoryModuleState implements ModuleState {
   late final MemoryStructurePool<Double> doubles;
   late final MemoryTuples tuples;
 
-  MemoryModuleState({this.configuration = MemoryDefaults.memory});
+  MemoryModuleState();
 
   void create() {
+    final configuration = context().memoryModule().configuration.memoryConfiguration;
     instance = memory_create(configuration.quotaSize, configuration.preallocationSize, configuration.slabSize).systemCheck();
     staticBuffers = MemoryStaticBuffers(memory_static_buffers_create(configuration.staticBuffersCapacity, configuration.staticBufferSize).systemCheck());
     final nativeBuffers = memory_io_buffers_create(instance).systemCheck();

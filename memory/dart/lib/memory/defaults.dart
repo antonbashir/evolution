@@ -6,6 +6,7 @@ class MemoryDefaults {
 
   static const module = MemoryModuleConfiguration(
     libraryPackageMode: LibraryPackageMode.static,
+    memoryConfiguration: memory,
   );
 
   static const memory = MemoryConfiguration(
