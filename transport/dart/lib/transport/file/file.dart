@@ -45,6 +45,7 @@ class TransportFileChannel {
     final bufferId = buffers.get() ?? await buffers.allocate();
     if (_closing) return Future.error(TransportClosedException.forFile());
     _channel.read(bufferId, transportEventRead | transportEventFile, offset: offset);
+    _channel.submit();
     _pending++;
   }
 
@@ -59,6 +60,7 @@ class TransportFileChannel {
     if (onError != null) _outboundErrorHandlers[bufferId] = onError;
     if (onDone != null) _outboundDoneHandlers[bufferId] = onDone;
     _channel.write(bytes, bufferId, transportEventWrite | transportEventFile, offset: offset);
+    _channel.submit();
     _pending++;
   }
 
@@ -81,6 +83,7 @@ class TransportFileChannel {
       transportEventRead | transportEventFile,
       offset: offset,
     );
+    _channel.submit();
     _pending += count;
   }
 
@@ -114,6 +117,7 @@ class TransportFileChannel {
     );
     if (onError != null) _outboundErrorHandlers[lastBufferId] = onError;
     if (onDone != null) _outboundDoneHandlers[lastBufferId] = onDone;
+    _channel.submit();
     _pending += bytes.length;
   }
 

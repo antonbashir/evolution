@@ -52,8 +52,8 @@ class TransportServerConnectionChannel {
     final bufferId = _buffers.get() ?? await _buffers.allocate();
     if (_closing || _server._closing) return Future.error(TransportClosedException.forServer());
     channel.read(bufferId, transportEventRead | transportEventServer, timeout: _readTimeout);
-    _pending++;
     channel.submit();
+    _pending++;
   }
 
   Future<void> writeSingle(Uint8List bytes, {void Function(Exception error)? onError, void Function()? onDone}) async {
@@ -62,8 +62,8 @@ class TransportServerConnectionChannel {
     if (onError != null) _outboundErrorHandlers[bufferId] = onError;
     if (onDone != null) _outboundDoneHandlers[bufferId] = onDone;
     channel.write(bytes, bufferId, transportEventWrite | transportEventServer, timeout: _writeTimeout);
-    _pending++;
     channel.submit();
+    _pending++;
   }
 
   Future<void> writeMany(List<Uint8List> bytes, {bool linked = true, void Function(Exception error)? onError, void Function()? onDone}) async {
@@ -90,8 +90,8 @@ class TransportServerConnectionChannel {
     );
     if (onError != null) _outboundErrorHandlers[lastBufferId] = onError;
     if (onDone != null) _outboundDoneHandlers[lastBufferId] = onDone;
-    _pending += bytes.length;
     channel.submit();
+    _pending += bytes.length;
   }
 
   void notify(int bufferId, int result, int event) {

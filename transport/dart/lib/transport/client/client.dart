@@ -54,6 +54,7 @@ class TransportClientChannel {
     final bufferId = _buffers.get() ?? await _buffers.allocate();
     if (_closing) return Future.error(TransportClosedException.forClient());
     _channel.read(bufferId, transportEventRead | transportEventClient, timeout: _readTimeout);
+    _channel.submit();
     _pending++;
   }
 
@@ -130,6 +131,7 @@ class TransportClientChannel {
       transportEventSendMessage | transportEventClient,
       timeout: _writeTimeout,
     );
+    _channel.submit();
     _pending++;
   }
 
