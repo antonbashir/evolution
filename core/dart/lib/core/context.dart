@@ -10,6 +10,67 @@ import 'errors.dart';
 import 'library.dart';
 import 'module.dart';
 
+final _defaultEnvironment = SystemEnvironment();
+final _context = _Context._();
+Completer? _blocker = null;
+var _initialized = false;
+
+ContextProvider context() => _context;
+
+SystemEnvironment environment() => _initialized ? _context._environment : _defaultEnvironment;
+
+Future<void> launch(List<Module> modules, FutureOr<void> Function() main, {SystemEnvironment Function(SystemEnvironment current)? environment}) async {
+  _context._environment = environment?.call(_context.environment) ?? _context._environment;
+  for (var module in modules) _context._create(module);
+  for (var module in _context._modules.values) module.validate();
+  for (var module in _context._modules.values) await Future.value(module.initialize());
+  await runZonedGuarded(
+      main,
+      (error, stack) => error is Error
+          ? context().coreModule().state.errorHandler(error, stack)
+          : error is Exception
+              ? context().coreModule().state.exceptionHandler(error, stack)
+              : context().coreModule().state.errorHandler(UnimplementedError(error.toString()), stack));
+  for (var module in _context._modules.values.toList().reversed) await Future.value(module.shutdown());
+  for (var module in _context._modules.values.toList().reversed) module.destroy();
+  _context._clear();
+}
+
+Future<void> fork(FutureOr<void> Function() main) async {
+  _context._restore();
+  for (var module in _context._modules.values) await Future.value(module.fork());
+  await runZonedGuarded(
+      main,
+      (error, stack) => error is Error
+          ? context().coreModule().state.errorHandler(error, stack)
+          : error is Exception
+              ? context().coreModule().state.exceptionHandler(error, stack)
+              : context().coreModule().state.errorHandler(UnimplementedError(error.toString()), stack));
+  for (var module in _context._modules.values.toList().reversed) await Future.value(module.unfork());
+  for (var module in _context._modules.values.toList().reversed) module.unload();
+}
+
+Future<void> block() async {
+  if (_blocker != null) {
+    await _blocker!.future;
+    _blocker = null;
+    return;
+  }
+  _blocker = Completer();
+  await _blocker!.future;
+  _blocker = null;
+}
+
+void unblock() {
+  if (_blocker == null) {
+    return;
+  }
+  if (_blocker!.isCompleted) {
+    return;
+  }
+  _blocker!.complete();
+}
+
 mixin ModuleProvider<Native extends NativeType, Configuration extends ModuleConfiguration, State extends ModuleState> {
   String get name;
   Configuration get configuration;
@@ -62,7 +123,7 @@ mixin ContextProvider {
 class _Context implements ContextProvider {
   var _modules = <String, Module>{};
   var _native = <String, Pointer<Void>>{};
-  var _environment = SystemEnvironment();
+  var _environment = _defaultEnvironment;
 
   _Context._() {
     final context = context_get();
@@ -120,65 +181,4 @@ class _Context implements ContextProvider {
 
   @override
   SystemEnvironment get environment => _environment;
-}
-
-final _environment = SystemEnvironment();
-final _context = _Context._();
-Completer? _blocker = null;
-var _initialized = false;
-
-ContextProvider context() => _context;
-
-SystemEnvironment environment() => _initialized ? _context._environment : _environment;
-
-Future<void> launch(List<Module> modules, FutureOr<void> Function() main, {SystemEnvironment Function(SystemEnvironment current)? environment}) async {
-  _context._environment = environment?.call(_context.environment) ?? _context._environment;
-  for (var module in modules) _context._create(module);
-  for (var module in _context._modules.values) module.validate();
-  for (var module in _context._modules.values) await Future.value(module.initialize());
-  await runZonedGuarded(
-      main,
-      (error, stack) => error is Error
-          ? context().coreModule().state.errorHandler(error, stack)
-          : error is Exception
-              ? context().coreModule().state.exceptionHandler(error, stack)
-              : context().coreModule().state.errorHandler(UnimplementedError(error.toString()), stack));
-  for (var module in _context._modules.values.toList().reversed) await Future.value(module.shutdown());
-  for (var module in _context._modules.values.toList().reversed) module.destroy();
-  _context._clear();
-}
-
-Future<void> fork(FutureOr<void> Function() main) async {
-  _context._restore();
-  for (var module in _context._modules.values) await Future.value(module.fork());
-  await runZonedGuarded(
-      main,
-      (error, stack) => error is Error
-          ? context().coreModule().state.errorHandler(error, stack)
-          : error is Exception
-              ? context().coreModule().state.exceptionHandler(error, stack)
-              : context().coreModule().state.errorHandler(UnimplementedError(error.toString()), stack));
-  for (var module in _context._modules.values.toList().reversed) await Future.value(module.unfork());
-  for (var module in _context._modules.values.toList().reversed) module.unload();
-}
-
-Future<void> block() async {
-  if (_blocker != null) {
-    await _blocker!.future;
-    _blocker = null;
-    return;
-  }
-  _blocker = Completer();
-  await _blocker!.future;
-  _blocker = null;
-}
-
-void unblock() {
-  if (_blocker == null) {
-    return;
-  }
-  if (_blocker!.isCompleted) {
-    return;
-  }
-  _blocker!.complete();
 }

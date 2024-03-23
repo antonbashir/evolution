@@ -19,15 +19,15 @@ FutureOr<void> runTest(FutureOr<void> Function() test, {List<Module>? overrides}
 }
 
 void main() {
-  final initialization = false;
-  final tcp = false;
-  final udp = false;
-  final unixStream = false;
-  final file = false;
-  final bulk = false;
-  final timeout = false;
+  final initialization = true;
+  final tcp = true;
+  final udp = true;
+  final unixStream = true;
+  final file = true;
+  final bulk = true;
+  final timeout = true;
   final buffers = true;
-  final shutdown = false;
+  final shutdown = true;
 
   group("[initialization]", timeout: Timeout(Duration(hours: 1)), skip: !initialization, () {
     testInitialization();
