@@ -6,7 +6,7 @@
 #include <stdint.h>
 
 #ifndef HASHING_MODE
-#define HASHING_MODE HASHING_XXHASH32
+#define HASHING_MODE HASHING_MURMUR32
 #endif
 
 #ifndef HASHING_STRING_SEED
