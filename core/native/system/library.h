@@ -1,5 +1,5 @@
-#ifndef CORE_COMMON_LIBRARY_H
-#define CORE_COMMON_LIBRARY_H
+#ifndef CORE_SYSTEM_LIBRARY_H
+#define CORE_SYSTEM_LIBRARY_H
 
 #include <arpa/inet.h>
 #include <asm-generic/errno-base.h>
