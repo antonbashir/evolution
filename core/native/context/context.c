@@ -1,4 +1,5 @@
 #include "context.h"
+#include <arrays/pointer.h>
 #include <dart_api.h>
 #include <panic/panic.h>
 #include <printer/printer.h>
@@ -18,8 +19,9 @@ void context_create()
         raise_panic(event_panic(event_field_message(PANIC_CONTEXT_CREATED)));
     }
     context_instance.modules = simple_map_modules_new();
+    context_instance.environment = simple_map_strings_new();
     context_instance.containers = calloc(MODULES_MAXIMUM, sizeof(struct module_container));
-    if (context_instance.modules == NULL || context_instance.containers == NULL)
+    if (context_instance.modules == NULL || context_instance.environment || context_instance.containers == NULL)
     {
         raise_panic(event_system_panic(ENOMEM));
     }
@@ -63,7 +65,7 @@ void context_remove_module(const char* name)
     context_instance.size--;
 }
 
-DART_LEAF_FUNCTION void context_load()
+void context_load()
 {
     Dart_EnterScope();
     for (int i = 0; i < context_instance.size; i++)
@@ -73,4 +75,35 @@ DART_LEAF_FUNCTION void context_load()
         dart_call_constructor(dart_find_class(container.type), DART_LOAD_FUNCTION, arguments);
     }
     Dart_ExitScope();
+}
+
+void context_set_environment(const char* key, const char* value)
+{
+    struct strings_pair pair = {
+        .key = strdup(key),
+        .value = strdup(value),
+    };
+    simple_map_strings_put_copy(context_instance.environment, &pair, NULL, NULL);
+}
+
+const char* context_get_environment(const char* key)
+{
+    simple_map_int_t slot = simple_map_strings_find(context_instance.environment, key, NULL);
+    if (slot != simple_map_end(context_instance.environment))
+    {
+        return simple_map_strings_node(context_instance.environment, slot)->value;
+    }
+    return NULL;
+}
+
+struct pointer_array* context_environment_entries()
+{
+    struct pointer_array* array = pointer_array_create_default();
+    simple_map_int_t slot;
+    simple_map_foreach(context_instance.environment, slot)
+    {
+        struct strings_pair* entry = simple_map_strings_node(context_instance.environment, slot);
+        pointer_array_add(array, entry);
+    }
+    return array;
 }

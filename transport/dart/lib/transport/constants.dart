@@ -2,7 +2,7 @@ import 'dart:ffi';
 
 import 'package:core/core.dart';
 
-final transportLibraryName = SystemEnvironment.debug ? "libtransport_debug_${Abi.current()}.so" : "libtransport_release_${Abi.current()}.so";
+final transportLibraryName = context().environment().debug ? "libtransport_debug_${Abi.current()}.so" : "libtransport_release_${Abi.current()}.so";
 const transportModuleName = "transport";
 
 const transportBufferUsed = -1;

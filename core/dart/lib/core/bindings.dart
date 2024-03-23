@@ -10,3 +10,4 @@ export '../bindings/collections/maps.dart';
 export '../bindings/events/event.dart';
 export '../bindings/events/field.dart';
 export '../bindings/stacktrace/stacktrace.dart';
+export '../bindings/arrays/pointer.dart';

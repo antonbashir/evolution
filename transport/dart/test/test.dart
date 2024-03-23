@@ -16,15 +16,16 @@ import 'unix.dart';
 void execute(FutureOr<void> Function() test) => launch([CoreModule(), MemoryModule(), ExecutorModule(), TransportModule()], test);
 
 void main() {
+  SystemEnvironment.debug = false;
   final initialization = true;
-  final shutdown = false;
-  final bulk = false;
-  final tcp = true;
-  final udp = false;
+  final tcp = false;
+  final udp = true;
   final unixStream = false;
   final file = false;
+  final bulk = false;
   final timeout = false;
   final buffers = false;
+  final shutdown = false;
 
   group("[initialization]", timeout: Timeout(Duration(hours: 1)), skip: !initialization, () {
     testInitialization();

@@ -18,6 +18,7 @@ DART_STRUCTURE struct context_structure
     DART_FIELD size_t size;
     DART_FIELD struct module_container* containers;
     DART_FIELD DART_TYPE struct simple_map_modules_t* modules;
+    DART_FIELD DART_TYPE struct simple_map_strings_t* environment;
 };
 
 DART_LEAF_FUNCTION struct context_structure* context_get();
@@ -25,7 +26,9 @@ DART_LEAF_FUNCTION void context_create();
 DART_LEAF_FUNCTION void* context_get_module(const char* name);
 DART_LEAF_FUNCTION void context_put_module(const char* name, void* module, const char* type);
 DART_LEAF_FUNCTION void context_remove_module(const char* name);
-DART_LEAF_FUNCTION void context_set_local_event(struct event* event);
+DART_LEAF_FUNCTION void context_set_environment(const char* key, const char* value);
+DART_LEAF_FUNCTION const char* context_get_environment(const char* key);
+DART_LEAF_FUNCTION struct pointer_array* context_environment_entries();
 DART_FUNCTION void context_load();
 
 #if defined(__cplusplus)

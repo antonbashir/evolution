@@ -4,8 +4,8 @@ import 'package:core/core.dart';
 
 const memoryBufferUsed = -1;
 
-final memoryLibraryName = SystemEnvironment.debug ? "libmemory_debug_${Abi.current()}.so" : "libmemory_release_${Abi.current()}.so";
-final memorySharedLibraryName = SystemEnvironment.debug ? "libmemory_debug_${Abi.current()}_shared.so" : "libmemory_release_${Abi.current()}_shared.so";
+final memoryLibraryName = context().environment().debug ? "libmemory_debug_${Abi.current()}.so" : "libmemory_release_${Abi.current()}.so";
+final memorySharedLibraryName = context().environment().debug ? "libmemory_debug_${Abi.current()}_shared.so" : "libmemory_release_${Abi.current()}_shared.so";
 const memoryModuleName = "memory";
 
 class MemoryErrors {

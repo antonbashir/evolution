@@ -57,20 +57,32 @@ abstract class Module<Native extends NativeType, Configuration extends ModuleCon
 mixin ContextProvider {
   dynamic get(String id);
   bool has(String id);
+  SystemEnvironment environment();
 }
 
 class _Context implements ContextProvider {
   var _modules = <String, Module>{};
   var _native = <String, Pointer<Void>>{};
+  var _environment = SystemEnvironment();
 
   _Context._() {
     final context = context_get();
     if (context.ref.initialized) {
       final modules = context.ref.containers;
       for (var i = 0; i < context.ref.size; i++) _native[modules[i].name.toDartString()] = modules[i].module;
+      final nativeEnvironment = context_environment_entries();
+      final loadedEnvironment = <String, String>{};
+      for (var i = 0; i < nativeEnvironment.ref.size; i++) {
+        Pointer<strings_pair> entry = nativeEnvironment.ref.memory[i].cast();
+        loadedEnvironment[entry.ref.key.toDartString()] = entry.ref.value.toDartString();
+      }
+      pointer_array_destroy(nativeEnvironment);
       return;
     }
     context_create();
+    _environment.entries.forEach((key, value) {
+      using((arena) => context_set_environment(key.toNativeUtf8(allocator: arena), value.toNativeUtf8(allocator: arena)));
+    });
   }
 
   void _clear() {
@@ -104,6 +116,9 @@ class _Context implements ContextProvider {
     if (module == null) throw CoreModuleError(CoreErrors.moduleNotFound(id));
     return module;
   }
+
+  @override
+  SystemEnvironment environment() => _environment;
 }
 
 Future<void> launch(List<Module> modules, FutureOr<void> Function() main) async {

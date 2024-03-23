@@ -42,4 +42,19 @@ DART_STRUCTURE struct system_library
 
 #include <maps/simple.h>
 
+#define simple_map_name _strings
+#define simple_map_key_t const char*
+DART_STRUCTURE struct strings_pair
+{
+    DART_FIELD const char* key;
+    DART_FIELD const char* value;
+};
+#define simple_map_node_t struct strings_pair
+#define simple_map_hash(node, _) (hash_string(node->key, strlen(node->key)))
+#define simple_map_hash_key(key, _) (hash_string(key, strlen(key)))
+#define simple_map_cmp(left_node, right_node, _) (strcmp(left_node->key, right_node->key))
+#define simple_map_cmp_key(key, node, _) (strcmp(key, node->key))
+
+#include <maps/simple.h>
+
 #endif
