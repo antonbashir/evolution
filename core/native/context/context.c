@@ -30,12 +30,7 @@ void context_create()
 
 void* context_get_module(const char* name)
 {
-    simple_map_int_t slot = simple_map_modules_find(context_instance.modules, name, NULL);
-    if (slot != simple_map_end(context_instance.modules))
-    {
-        return simple_map_modules_node(context_instance.modules, slot)->module;
-    }
-    return NULL;
+    return safe_field(simple_map_modules_find_value(context_instance.modules, name), module);
 }
 
 void context_put_module(const char* name, void* module, const char* type)
@@ -87,7 +82,7 @@ void context_set_environment(const char* key, const char* value)
 
 const char* context_get_environment(const char* key)
 {
-    return simple_map_string_values_find_value(context_instance.environment, key)->value;
+    return safe_field(simple_map_string_values_find_value(context_instance.environment, key), value);
 }
 
 struct pointer_array* context_environment_entries()

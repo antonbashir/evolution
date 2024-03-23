@@ -66,6 +66,10 @@ extern "C"
 #define length_of(x) ((sizeof(x) / sizeof(0 [x])) / ((size_t)(!(sizeof(x) % sizeof(0 [x])))))
 #endif
 
+#ifndef safe_field
+#define safe_field(owner, member) ({owner == NULL ? NULL : owner->member;})
+#endif
+
 #define typecheck(type, x)             \
     ({                                 \
         type __dummy;                  \
