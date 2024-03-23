@@ -15,11 +15,13 @@ file(GLOB sources
 )
 
 add_library(transport_debug_linux_x64 SHARED ${sources})
+add_dependencies(transport_debug_linux_x64 executor_debug_linux_x64)
 target_link_libraries(transport_debug_linux_x64 PRIVATE ${EXECUTOR_LIBRARY})
 set_target_properties(transport_debug_linux_x64 PROPERTIES COMPILE_FLAGS ${COMPILER_C_FLAGS_DEBUG})
 copy_to_assets(transport_debug_linux_x64)
 
 add_library(transport_release_linux_x64 SHARED ${sources})
+add_dependencies(transport_release_linux_x64 executor_release_linux_x64)
 target_link_libraries(transport_release_linux_x64 PRIVATE ${EXECUTOR_LIBRARY})
 set_target_properties(transport_release_linux_x64 PROPERTIES COMPILE_FLAGS ${COMPILER_C_FLAGS_RELEASE})
 copy_to_assets(transport_release_linux_x64)
