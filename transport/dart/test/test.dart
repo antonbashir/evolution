@@ -13,13 +13,10 @@ import 'timeout.dart';
 import 'udp.dart';
 import 'unix.dart';
 
-void runTest(FutureOr<void> Function() test) => launch(
-      [CoreModule(), MemoryModule(), ExecutorModule(), TransportModule()],
-      () {
-        context().environment().debug = false;
-        return test();
-      },
-    );
+FutureOr<void> runTest(FutureOr<void> Function() test) {
+  environment().debug = false;
+  return launch([CoreModule(), MemoryModule(), ExecutorModule(), TransportModule()], test);
+}
 
 void main() {
   final initialization = true;

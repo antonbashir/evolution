@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
-
 import 'bindings.dart';
 import 'constants.dart';
 import 'environment.dart';
@@ -10,9 +9,6 @@ import 'errors.dart';
 import 'event.dart';
 import 'library.dart';
 import 'module.dart';
-
-final _context = _Context._();
-ContextProvider context() => _context;
 
 mixin ModuleProvider<Native extends NativeType, Configuration extends ModuleConfiguration, State extends ModuleState> {
   String get name;
@@ -60,7 +56,7 @@ abstract class Module<Native extends NativeType, Configuration extends ModuleCon
 mixin ContextProvider {
   dynamic get(String id);
   bool has(String id);
-  SystemEnvironment environment();
+  SystemEnvironment get environment;
 }
 
 class _Context implements ContextProvider {
@@ -80,12 +76,14 @@ class _Context implements ContextProvider {
         loadedEnvironment[entry.ref.key.toDartString()] = entry.ref.value.toDartString();
       }
       pointer_array_destroy(nativeEnvironment);
+      _initialized = true;
       return;
     }
     context_create();
     _environment.entries.forEach((key, value) {
       using((arena) => context_set_environment(key.toNativeUtf8(allocator: arena), value.toNativeUtf8(allocator: arena)));
     });
+    _initialized = true;
   }
 
   void _clear() {
@@ -121,10 +119,20 @@ class _Context implements ContextProvider {
   }
 
   @override
-  SystemEnvironment environment() => _environment;
+  SystemEnvironment get environment => _environment;
 }
 
-Future<void> launch(List<Module> modules, FutureOr<void> Function() main) async {
+final _environment = SystemEnvironment();
+final _context = _Context._();
+Completer? _blocker = null;
+var _initialized = false;
+
+ContextProvider context() => _context;
+
+SystemEnvironment environment() => _initialized ? _context._environment : _environment;
+
+Future<void> launch(List<Module> modules, FutureOr<void> Function() main, {SystemEnvironment Function(SystemEnvironment current)? environment}) async {
+  _context._environment = environment?.call(_context.environment) ?? _context._environment;
   for (var module in modules) _context._create(module);
   for (var module in _context._modules.values) module.validate();
   Event.information((event) => event.message(CoreEvents.modulesCreated(_context._modules.keys))).print();
@@ -158,7 +166,6 @@ Future<void> fork(FutureOr<void> Function() main) async {
   Event.information((event) => event.message(CoreEvents.modulesUnloaded(_context._modules.keys))).print();
 }
 
-Completer? _blocker = null;
 Future<void> block() async {
   if (_blocker != null) {
     await _blocker!.future;
