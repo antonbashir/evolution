@@ -107,6 +107,14 @@ struct simple_map_default_node_t
 #define simple_map_hash(a, arg) (a->key)
 #endif
 
+#ifndef simple_map_hash_key
+#define simple_map_hash_key(a, arg) (1)
+#endif
+
+#ifndef simple_map_cmp_key
+#define simple_map_cmp_key(a, b, arg) (true)
+#endif
+
 #ifndef simple_map_cmp
 #define simple_map_cmp(a, b, arg) ((a->key) != (a->key))
 #endif
