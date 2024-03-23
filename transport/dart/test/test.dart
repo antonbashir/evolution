@@ -20,13 +20,13 @@ FutureOr<void> runTest(FutureOr<void> Function() test) {
 
 void main() {
   final initialization = true;
-  final tcp = false;
+  final tcp = true;
   final udp = true;
-  final unixStream = false;
-  final file = false;
-  final bulk = false;
-  final timeout = false;
-  final buffers = false;
+  final unixStream = true;
+  final file = true;
+  final bulk = true;
+  final timeout = true;
+  final buffers = true;
   final shutdown = false;
 
   group("[initialization]", timeout: Timeout(Duration(hours: 1)), skip: !initialization, () {

@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
+
 import 'bindings.dart';
 import 'constants.dart';
 import 'environment.dart';
 import 'errors.dart';
-import 'event.dart';
 import 'library.dart';
 import 'module.dart';
 
@@ -135,7 +135,6 @@ Future<void> launch(List<Module> modules, FutureOr<void> Function() main, {Syste
   _context._environment = environment?.call(_context.environment) ?? _context._environment;
   for (var module in modules) _context._create(module);
   for (var module in _context._modules.values) module.validate();
-  Event.information((event) => event.message(CoreEvents.modulesCreated(_context._modules.keys))).print();
   for (var module in _context._modules.values) await Future.value(module.initialize());
   await runZonedGuarded(
       main,
@@ -146,13 +145,11 @@ Future<void> launch(List<Module> modules, FutureOr<void> Function() main, {Syste
               : context().coreModule().state.errorHandler(UnimplementedError(error.toString()), stack));
   for (var module in _context._modules.values.toList().reversed) await Future.value(module.shutdown());
   for (var module in _context._modules.values.toList().reversed) module.destroy();
-  Event.information((event) => event.message(CoreEvents.modulesDestroyed(_context._modules.keys))).print();
   _context._clear();
 }
 
 Future<void> fork(FutureOr<void> Function() main) async {
   _context._restore();
-  Event.information((event) => event.message(CoreEvents.modulesLoaded(_context._modules.keys))).print();
   for (var module in _context._modules.values) await Future.value(module.fork());
   await runZonedGuarded(
       main,
@@ -163,7 +160,6 @@ Future<void> fork(FutureOr<void> Function() main) async {
               : context().coreModule().state.errorHandler(UnimplementedError(error.toString()), stack));
   for (var module in _context._modules.values.toList().reversed) await Future.value(module.unfork());
   for (var module in _context._modules.values.toList().reversed) module.unload();
-  Event.information((event) => event.message(CoreEvents.modulesUnloaded(_context._modules.keys))).print();
 }
 
 Future<void> block() async {

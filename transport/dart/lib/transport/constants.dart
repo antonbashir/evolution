@@ -165,7 +165,7 @@ class TransportMessages {
   static fileOpenError(String path) => "[file] open file failed: $path";
   static fileError(int result) => "[file] code = $result, message = ${SystemErrors.of(result)}";
 
-  static internalError(TransportEvent event, int code) => "[$event] code = $code, message = ${SystemErrors.of(code)}";
+  static internalError(TransportEvent event, int result) => "[$event] code = $result, message = ${SystemErrors.of(-result)}";
   static canceledError(TransportEvent event) => "[$event] canceled";
   static zeroDataError(TransportEvent event) => "[$event] completed with zero result (no data)";
 }

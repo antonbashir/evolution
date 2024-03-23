@@ -38,11 +38,11 @@ const modulesMaximum = 64;
 
 enum EventLevel {
   unknown(-1, "(unknown)"),
-  panic(0, "(unknown)"),
-  error(1, "(unknown)"),
-  warning(2, "(unknown)"),
-  information(3, "(unknown)"),
-  trace(4, "(unknown)");
+  panic(0, "(panic)"),
+  error(1, "(error)"),
+  warning(2, "(warning)"),
+  information(3, "(information)"),
+  trace(4, "(trace)");
 
   final int level;
   final String label;
@@ -124,10 +124,6 @@ class CoreErrors {
 class CoreEvents {
   CoreEvents._();
 
-  static String modulesCreated(Iterable<String> modules) => "Modules created: (${modules.join(",")})";
-  static String modulesDestroyed(Iterable<String> modules) => "Modules destroyed: (${modules.join(",")})";
-  static String modulesLoaded(Iterable<String> modules) => "Modules loaded: (${modules.join(",")})";
-  static String modulesUnloaded(Iterable<String> modules) => "Modules unloaded: (${modules.join(",")})";
 }
 
 class CoreFormatters {
