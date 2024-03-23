@@ -430,7 +430,7 @@ _simple_map(remove)(struct _simple_map(t) * h, const simple_map_node_t* node, si
 
 static inline simple_map_node_t* _simple_map(find_value)(struct _simple_map(t) * map, simple_map_key_t key)
 {
-    simple_map_int_t slot = _simple_map(find)(map, key, NULL);
+    simple_map_int_t slot = _simple_map(find)(map, key, (simple_map_arg_t)NULL);
     return slot != simple_map_end(map) ? _simple_map(node)(map, slot) : NULL;
 }
 

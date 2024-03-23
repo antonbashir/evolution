@@ -34,6 +34,7 @@
       "request": "launch",
       "program": "/usr/bin/dart",
       "args": [
+        "--enable-asserts",
         "-DDEBUG=true",
         "${workspaceFolder}/storage/dart/test/test.dart"
       ],
@@ -66,6 +67,7 @@
       "request": "launch",
       "program": "/usr/bin/dart",
       "args": [
+        "--enable-asserts",
         "-DDEBUG=true",
         "${workspaceFolder}/transport/dart/test/test.dart"
       ],
@@ -98,6 +100,7 @@
       "request": "launch",
       "program": "/usr/bin/dart",
       "args": [
+        "--enable-asserts",
         "-DDEBUG=true",
         "${workspaceFolder}/executor/test/dart/lib/test.dart"
       ],
@@ -130,6 +133,7 @@
       "request": "launch",
       "program": "/usr/bin/dart",
       "args": [
+        "--enable-asserts",
         "-DDEBUG=true",
         "${workspaceFolder}/memory/dart/test/test.dart"
       ],
@@ -156,11 +160,33 @@
       "program": "${workspaceFolder}/reactive/test/test.dart",
     },
     {
+      "name": "reactive-test-gdb",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "/usr/bin/dart",
+      "args": [
+        "--enable-asserts",
+        "-DDEBUG=true",
+        "${workspaceFolder}/reactive/test/test.dart"
+      ],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}/reactive",
+      "MIMode": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ],
+    },
+    {
       "name": "fiber-test-gdb",
       "type": "cppdbg",
       "request": "launch",
       "program": "/usr/bin/dart",
       "args": [
+        "--enable-asserts",
         "-DDEBUG=true",
         "${workspaceFolder}/fiber/dart/lib/fiber/main.dart"
       ],

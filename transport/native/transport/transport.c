@@ -268,7 +268,7 @@ int16_t transport_cancel_by_fd(struct transport* transport, int32_t fd)
     {
         simple_map_events_del(transport->events, to_delete[index], 0);
     }
-    executor_submit(transport->transport_executor);
+    io_uring_submit(transport->transport_executor->ring);
     return 0;
 }
 

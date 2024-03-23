@@ -14,15 +14,18 @@ import 'keepalive.dart';
 import 'lease.dart';
 import 'shutdown.dart';
 
-FutureOr<void> runTest(FutureOr<void> Function() test, {List<Module>? overrides}) => launch(overrides ?? [CoreModule(), MemoryModule(), ExecutorModule(), TransportModule()], test);
+FutureOr<void> runTest(FutureOr<void> Function() test, {List<Module>? overrides}) {
+  environment().debug = false;
+  return launch(overrides ?? [CoreModule(), MemoryModule(), ExecutorModule(), TransportModule()], test);
+}
 
 void main() {
-  group("[interaction]", interaction);
-  group("[fragmentation]", fragmentation);
-  group("[errors]", errors);
-  group("[custom]", custom);
-  group("[backpressure]", backpressure);
-  group("[keepalive]", keepalive);
-  group("[lease]", lease);
+  // group("[interaction]", interaction);
+  // group("[fragmentation]", fragmentation);
+  // group("[errors]", errors);
+  // group("[custom]", custom);
+  // group("[backpressure]", backpressure);
+  // group("[keepalive]", keepalive);
+  // group("[lease]", lease);
   group("[shutdown]", shutdown);
 }

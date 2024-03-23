@@ -41,7 +41,7 @@ static void* executor_scheduler_listen(void* input)
     struct io_uring_cqe* cqe;
     unsigned head;
     unsigned count = 0;
-    while (true)
+    for (;;)
     {
         count = 0;
         io_uring_submit_and_wait(ring, 1);

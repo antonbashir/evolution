@@ -158,7 +158,6 @@ class ReactiveRequester {
       }
       _connection.writeMany(chunks, false, onDone: _fragmentate);
       _pending -= _buffer.count;
-      if (_requested != reactiveInfinityRequestsCount) _requested -= _buffer.count;
       _buffer.clear();
       return;
     }
