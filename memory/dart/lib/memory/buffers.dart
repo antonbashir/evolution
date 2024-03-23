@@ -43,10 +43,7 @@ class MemoryStaticBuffers {
   }
 
   @inline
-  int? get() {
-    if (native.ref.available == 0) return null;
-    return ids[--native.ref.available];
-  }
+  int? get() => native.ref.available == 0 ? null : ids[--native.ref.available];
 
   Future<int> allocate() async {
     var bufferId = get();
