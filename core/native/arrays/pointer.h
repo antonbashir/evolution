@@ -1,8 +1,8 @@
-#ifndef ARRAYS_SIMPLE
-#define ARRAYS_SIMPLE
+#ifndef CORE_ARRAYS_POINTER
+#define CORE_ARRAYS_POINTER
 
-#include <bits/bits.h>
 #include <common/common.h>
+#include <numbers/numbers.h>
 #include <system/library.h>
 
 DART_STRUCTURE struct pointer_array
@@ -43,11 +43,11 @@ DART_INLINE_LEAF_FUNCTION void pointer_array_destroy(struct pointer_array* array
 DART_INLINE_LEAF_FUNCTION struct pointer_array* pointer_array_resize(struct pointer_array* array)
 {
     size_t new_capacity = round_up_to_power_of_two(array->resize_factor * array->capacity);
-    struct pointer_array* temp = pointer_array_create(new_capacity, array->resize_factor);
-    memcpy(temp->memory, array->memory, array->capacity * sizeof(void*));
-    temp->size = array->size;
+    struct pointer_array* resized = pointer_array_create(new_capacity, array->resize_factor);
+    memcpy(resized->memory, array->memory, array->capacity * sizeof(void*));
+    resized->size = array->size;
     pointer_array_destroy(array);
-    return temp;
+    return resized;
 }
 
 DART_INLINE_LEAF_FUNCTION void* pointer_array_get(struct pointer_array* array, size_t index)

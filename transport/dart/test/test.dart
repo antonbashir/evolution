@@ -13,10 +13,15 @@ import 'timeout.dart';
 import 'udp.dart';
 import 'unix.dart';
 
-void execute(FutureOr<void> Function() test) => launch([CoreModule(), MemoryModule(), ExecutorModule(), TransportModule()], test);
+void runTest(FutureOr<void> Function() test) => launch(
+      [CoreModule(), MemoryModule(), ExecutorModule(), TransportModule()],
+      () {
+        context().environment().debug = false;
+        return test();
+      },
+    );
 
 void main() {
-  SystemEnvironment.debug = false;
   final initialization = true;
   final tcp = false;
   final udp = true;
@@ -93,7 +98,7 @@ void main() {
 
 void testInitialization() => test(
       "(initialize)",
-      () => execute(() async {
+      () => runTest(() async {
         final transport = context().transport()..initialize();
         await transport.shutdown();
       }),

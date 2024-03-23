@@ -3,10 +3,13 @@ import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
 
-import '../core.dart';
 import 'bindings.dart';
+import 'constants.dart';
+import 'environment.dart';
 import 'errors.dart';
 import 'event.dart';
+import 'library.dart';
+import 'module.dart';
 
 final _context = _Context._();
 ContextProvider context() => _context;

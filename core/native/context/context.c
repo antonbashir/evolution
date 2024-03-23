@@ -21,7 +21,7 @@ void context_create()
     context_instance.modules = simple_map_modules_new();
     context_instance.environment = simple_map_strings_new();
     context_instance.containers = calloc(MODULES_MAXIMUM, sizeof(struct module_container));
-    if (context_instance.modules == NULL || context_instance.environment || context_instance.containers == NULL)
+    if (context_instance.modules == NULL || context_instance.environment == NULL || context_instance.containers == NULL)
     {
         raise_panic(event_system_panic(ENOMEM));
     }

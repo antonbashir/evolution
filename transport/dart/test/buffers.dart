@@ -173,7 +173,7 @@ void testFileBuffers() {
 void testBuffersOverflow() {
   test(
     "(overflow)",
-    () => execute(
+    () => runTest(
       () async {
         final transport = context().transport(configuration: TransportDefaults.transport.copyWith(memoryConfiguration: MemoryDefaults.memory.copyWith(staticBuffersCapacity: 2)));
         final worker = transport;

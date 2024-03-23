@@ -13,7 +13,7 @@ import 'validators.dart';
 void testTcpSingle({required int index, required int clientsPool}) {
   test(
     "(single) [clients = $clientsPool]",
-    () => execute(() async {
+    () => runTest(() async {
       final transport = context().transport();
       transport.initialize();
       transport.servers.tcp(
@@ -44,7 +44,7 @@ void testTcpSingle({required int index, required int clientsPool}) {
 void testTcpMany({required int index, required int clientsPool, required int count}) {
   test(
     "(many) [clients = $clientsPool, count = $count]",
-    () => execute(() async {
+    () => runTest(() async {
       final transport = context().transport();
       transport.initialize();
       transport.servers.tcp(

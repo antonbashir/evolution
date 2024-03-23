@@ -1,7 +1,6 @@
 import 'dart:ffi';
 import 'dart:typed_data';
 
-import 'context.dart';
 import 'errors.dart';
 
 const inline = pragma("vm:prefer-inline");
@@ -10,7 +9,7 @@ const entry = pragma("vm:entry-point");
 
 const coreModuleName = "core";
 const corePackageName = "core";
-final coreLibraryName = context().environment().debug ? "libcore_debug_${Abi.current()}.so" : "libcore_release_${Abi.current()}.so";
+final coreLibraryName = bool.fromEnvironment("DEBUG") ? "libcore_debug_${Abi.current()}.so" : "libcore_release_${Abi.current()}.so";
 
 const empty = "";
 final emptyBytes = Uint8List(0);
