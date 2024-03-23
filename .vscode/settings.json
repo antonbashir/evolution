@@ -161,6 +161,8 @@
     "wyhash.h": "c",
     "wyhash32.h": "c",
     "xxhash.h": "c",
-    "memory": "c"
+    "memory": "c",
+    "map": "c",
+    "numbers.h": "c"
   },
 }

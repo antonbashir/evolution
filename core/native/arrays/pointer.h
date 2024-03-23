@@ -20,9 +20,9 @@ DART_STRUCTURE struct pointer_array
 
 DART_INLINE_LEAF_FUNCTION struct pointer_array* pointer_array_create(size_t initial_capacity, size_t resize_factor)
 {
-    struct pointer_array* array = calloc(1, sizeof(struct pointer_array));
+    struct pointer_array* array = (struct pointer_array*)calloc(1, sizeof(struct pointer_array));
     array->capacity = initial_capacity;
-    array->memory = calloc(array->capacity, sizeof(void*));
+    array->memory = (void**)calloc(array->capacity, sizeof(void*));
     array->capacity = initial_capacity;
     array->resize_factor = resize_factor;
     array->size = 0;

@@ -7,7 +7,7 @@ import '../../core/bindings.dart';
 
 final class simple_map_modules_t extends Opaque {}
 
-final class simple_map_strings_t extends Opaque {}
+final class simple_map_string_values_t extends Opaque {}
 
 final class context_structure extends Struct {
   @Bool()
@@ -16,7 +16,7 @@ final class context_structure extends Struct {
   external int size;
   external Pointer<module_container> containers;
   external Pointer<simple_map_modules_t> modules;
-  external Pointer<simple_map_strings_t> environment;
+  external Pointer<simple_map_string_values_t> environment;
 }
 
 @Native<Pointer<context_structure> Function()>(isLeaf: true)

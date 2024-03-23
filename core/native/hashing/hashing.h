@@ -3,7 +3,6 @@
 
 #include <common/common.h>
 #include <common/constants.h>
-#include <stdint.h>
 
 #ifndef HASHING_MODE
 #define HASHING_MODE HASHING_WYHASH
@@ -37,7 +36,6 @@ static FORCEINLINE uint64_t CONST hash_string(const char* string, uint64_t lengt
 #endif
 
 #if HASHING_MODE == HASHING_WYHASH
-#define WYTRNG
 #include "wyhash.h"
 static FORCEINLINE uint64_t CONST hash_string(const char* string, uint64_t length)
 {

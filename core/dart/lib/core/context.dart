@@ -133,8 +133,8 @@ class _Context implements ContextProvider {
       final nativeEnvironment = context_environment_entries();
       final loadedEnvironment = <String, String>{};
       for (var i = 0; i < nativeEnvironment.ref.size; i++) {
-        Pointer<strings_pair> entry = nativeEnvironment.ref.memory[i].cast();
-        loadedEnvironment[entry.ref.key.toDartString()] = entry.ref.value.toDartString();
+        Pointer<string_value_pair> entry = nativeEnvironment.ref.memory[i].cast();
+        loadedEnvironment[entry.ref.key.toDartString()] = entry.ref.value.cast<Utf8>().toDartString();
       }
       pointer_array_destroy(nativeEnvironment);
       _initialized = true;

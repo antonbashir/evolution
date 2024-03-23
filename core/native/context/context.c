@@ -1,5 +1,4 @@
 #include "context.h"
-#include <arrays/pointer.h>
 #include <dart_api.h>
 #include <panic/panic.h>
 #include <printer/printer.h>
@@ -19,7 +18,7 @@ void context_create()
         raise_panic(event_panic(event_field_message(PANIC_CONTEXT_CREATED)));
     }
     context_instance.modules = simple_map_modules_new();
-    context_instance.environment = simple_map_strings_new();
+    context_instance.environment = simple_map_string_values_new();
     context_instance.containers = calloc(MODULES_MAXIMUM, sizeof(struct module_container));
     if (context_instance.modules == NULL || context_instance.environment == NULL || context_instance.containers == NULL)
     {
@@ -79,31 +78,19 @@ void context_load()
 
 void context_set_environment(const char* key, const char* value)
 {
-    struct strings_pair pair = {
+    struct string_value_pair pair = {
         .key = strdup(key),
         .value = strdup(value),
     };
-    simple_map_strings_put_copy(context_instance.environment, &pair, NULL, NULL);
+    simple_map_string_values_put_copy(context_instance.environment, &pair, NULL, NULL);
 }
 
 const char* context_get_environment(const char* key)
 {
-    simple_map_int_t slot = simple_map_strings_find(context_instance.environment, key, NULL);
-    if (slot != simple_map_end(context_instance.environment))
-    {
-        return simple_map_strings_node(context_instance.environment, slot)->value;
-    }
-    return NULL;
+    return simple_map_string_values_find_value(context_instance.environment, key)->value;
 }
 
 struct pointer_array* context_environment_entries()
 {
-    struct pointer_array* array = pointer_array_create_default();
-    simple_map_int_t slot;
-    simple_map_foreach(context_instance.environment, slot)
-    {
-        struct strings_pair* entry = simple_map_strings_node(context_instance.environment, slot);
-        pointer_array_add(array, entry);
-    }
-    return array;
+    return simple_map_string_values_keys(context_instance.environment);
 }

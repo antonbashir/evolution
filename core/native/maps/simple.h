@@ -61,6 +61,7 @@
 #define SIMPLE_MAP_INCREMENTAL_RESIZE 1
 #endif
 
+#include <arrays/pointer.h>
 #include <common/common.h>
 #include <system/library.h>
 
@@ -417,6 +418,23 @@ _simple_map(remove)(struct _simple_map(t) * h, const simple_map_node_t* node, si
     simple_map_int_t k = _simple_map(get)(h, node, arg);
     if (k != simple_map_end(h))
         _simple_map(del)(h, k, arg);
+}
+
+static inline simple_map_node_t* _simple_map(find_value)(struct _simple_map(t) * map, simple_map_key_t key)
+{
+    simple_map_int_t slot = _simple_map(find)(map, key, NULL);
+    return slot != simple_map_end(map) ? _simple_map(node)(map, slot) : NULL;
+}
+
+static inline struct pointer_array* _simple_map(keys)(struct _simple_map(t) * map)
+{
+    struct pointer_array* array = pointer_array_create(map->size, POINTER_ARRAY_DEFAULT_RESIZE_FACTOR);
+    simple_map_int_t slot;
+    simple_map_foreach(map, slot)
+    {
+        pointer_array_add(array, _simple_map(node)(map, slot));
+    }
+    return array;
 }
 
 #ifdef SIMPLE_MAP_SOURCE

@@ -3,3 +3,4 @@
 #include "static_buffers.h"
 #include "memory.h"
 #include "tuple.h"
+#include "module.h"

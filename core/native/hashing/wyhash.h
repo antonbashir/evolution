@@ -311,7 +311,7 @@ static inline unsigned long long pow_mod(unsigned long long a, unsigned long lon
     }
     return r;
 }
-unsigned sprp(unsigned long long n, unsigned long long a)
+static unsigned sprp(unsigned long long n, unsigned long long a)
 {
     unsigned long long d = n - 1;
     unsigned char s = 0;
@@ -346,7 +346,7 @@ unsigned sprp(unsigned long long n, unsigned long long a)
     }
     return 0;
 }
-unsigned is_prime(unsigned long long n)
+static unsigned is_prime(unsigned long long n)
 {
     if (n < 2 || !(n & 1)) return 0;
     if (n < 4) return 1;

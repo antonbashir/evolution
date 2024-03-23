@@ -19,7 +19,7 @@ final class system_library extends Struct {
   external Pointer<Void> handle;
 }
 
-final class strings_pair extends Struct {
+final class string_value_pair extends Struct {
   external Pointer<Utf8> key;
-  external Pointer<Utf8> value;
+  external Pointer<Void> value;
 }

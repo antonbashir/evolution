@@ -108,7 +108,7 @@ extern "C"
         time_add(_timeout##__LINE__, _timeout_add##__LINE__);                          \
     })
 
-#define time_measure(runs, call)                                                                                     \
+#define time_measure(runs, call)                                                                                           \
     ({                                                                                                                     \
         struct timespec measure_start_time##__LINE__, measure_estimated_time##__LINE__;                                    \
         measure_start_time##__LINE__ = time_now_monotonic();                                                               \
@@ -120,7 +120,7 @@ extern "C"
         time_normalize(measure_start_time##__LINE__);                                                                      \
         time_normalize(measure_estimated_time##__LINE__);                                                                  \
         struct timespec elapsed_time##__LINE__ = time_sub(measure_estimated_time##__LINE__, measure_start_time##__LINE__); \
-        double elapsed##__LINE__ = time_to_microseconds(elapsed_time##__LINE__);                                             \
+        double elapsed##__LINE__ = time_to_microseconds(elapsed_time##__LINE__);                                           \
         elapsed##__LINE__ / runs;                                                                                          \
     })
 
