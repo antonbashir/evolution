@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import '../bindings.dart';
 import '../channel.dart';
+import '../constants.dart';
 import 'server.dart';
 
 class TransportServerDatagramResponderPool {
@@ -51,7 +52,7 @@ class TransportServerDatagramResponder {
   TransportServerDatagramResponder(this._bufferId, this._pool);
 
   @inline
-  void respondSingle(Uint8List bytes, {int? flags, void Function(Exception error)? onError, void Function()? onDone}) {
+  void respondSingle(Uint8List bytes, {TransportDatagramMessageFlag? flags, void Function(Exception error)? onError, void Function()? onDone}) {
     unawaited(
       _server
           .respondSingle(
@@ -67,7 +68,7 @@ class TransportServerDatagramResponder {
   }
 
   @inline
-  void respondMany(List<Uint8List> bytes, {int? flags, bool linked = true, void Function(Exception error)? onError, void Function()? onDone}) {
+  void respondMany(List<Uint8List> bytes, {TransportDatagramMessageFlag? flags, bool linked = true, void Function(Exception error)? onError, void Function()? onDone}) {
     var doneCounter = 0;
     var errorCounter = 0;
     unawaited(_server.respondMany(_channel, _destination, bytes, flags: flags, linked: linked, onError: (error) {

@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:core/core.dart';
 
+import '../constants.dart';
 import '../payload.dart';
 import 'responder.dart';
 import 'server.dart';
@@ -65,7 +66,7 @@ class TransportServerDatagramReceiver {
   bool get active => _server.active;
 
   @inline
-  Stream<TransportServerDatagramResponder> stream({int? flags}) {
+  Stream<TransportServerDatagramResponder> stream({TransportDatagramMessageFlag? flags}) {
     final out = StreamController<TransportServerDatagramResponder>(sync: true);
     out.onListen = () => unawaited(_server.receive(flags: flags).onError((error, stackTrace) => out.addError(error!)));
     _server.inbound.listen(

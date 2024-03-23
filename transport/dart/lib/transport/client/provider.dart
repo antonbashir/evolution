@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:core/core.dart';
 
+import '../constants.dart';
 import '../payload.dart';
 import 'client.dart';
 
@@ -60,10 +61,10 @@ class TransportDatagramClient {
   Stream<TransportPayload> get inbound => _client.inbound;
 
   @inline
-  Future<void> receive({int? flags}) => _client.receive(flags: flags);
+  Future<void> receive({TransportDatagramMessageFlag? flags}) => _client.receive(flags: flags);
 
   @inline
-  Stream<TransportPayload> stream({int? flags}) {
+  Stream<TransportPayload> stream({TransportDatagramMessageFlag? flags}) {
     final out = StreamController<TransportPayload>(sync: true);
     out.onListen = () => unawaited(_client.receive(flags: flags).onError((error, stackTrace) => out.addError(error!)));
     _client.inbound.listen(
@@ -83,7 +84,7 @@ class TransportDatagramClient {
   @inline
   void sendSingle(
     Uint8List bytes, {
-    int? flags,
+    TransportDatagramMessageFlag? flags,
     void Function(Exception error)? onError,
     void Function()? onDone,
   }) {
@@ -93,7 +94,7 @@ class TransportDatagramClient {
   @inline
   void sendMany(
     List<Uint8List> bytes, {
-    int? flags,
+    TransportDatagramMessageFlag? flags,
     bool linked = false,
     void Function(Exception error)? onError,
     void Function()? onDone,

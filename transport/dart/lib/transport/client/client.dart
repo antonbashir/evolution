@@ -95,14 +95,14 @@ class TransportClientChannel {
     _pending += bytes.length;
   }
 
-  Future<void> receive({int? flags}) async {
-    flags = flags ?? TransportDatagramMessageFlag.trunc.flag;
+  Future<void> receive({TransportDatagramMessageFlag? flags}) async {
+    flags = flags ?? TransportDatagramMessageFlag.trunc;
     final bufferId = _buffers.get() ?? await _buffers.allocate();
     if (_closing) return Future.error(TransportClosedException.forClient());
     _channel.receiveMessage(
       bufferId,
       _pointer.ref.family,
-      flags,
+      flags.flag,
       transportEventReceiveMessage | transportEventClient,
       timeout: _readTimeout,
     );
@@ -111,11 +111,11 @@ class TransportClientChannel {
 
   Future<void> sendSingle(
     Uint8List bytes, {
-    int? flags,
+    TransportDatagramMessageFlag? flags,
     void Function(Exception error)? onError,
     void Function()? onDone,
   }) async {
-    flags = flags ?? TransportDatagramMessageFlag.trunc.flag;
+    flags = flags ?? TransportDatagramMessageFlag.trunc;
     final bufferId = _buffers.get() ?? await _buffers.allocate();
     if (_closing) return Future.error(TransportClosedException.forClient());
     if (onError != null) _outboundErrorHandlers[bufferId] = onError;
@@ -125,7 +125,7 @@ class TransportClientChannel {
       bufferId,
       _pointer.ref.family,
       _destination,
-      flags,
+      flags.flag,
       transportEventSendMessage | transportEventClient,
       timeout: _writeTimeout,
     );
@@ -134,12 +134,12 @@ class TransportClientChannel {
 
   Future<void> sendMany(
     List<Uint8List> bytes, {
-    int? flags,
+    TransportDatagramMessageFlag? flags,
     bool linked = false,
     void Function(Exception error)? onError,
     void Function()? onDone,
   }) async {
-    flags = flags ?? TransportDatagramMessageFlag.trunc.flag;
+    flags = flags ?? TransportDatagramMessageFlag.trunc;
     final bufferIds = await _buffers.allocateArray(bytes.length);
     if (_closing) return Future.error(TransportClosedException.forClient());
     final lastBufferId = bufferIds.last;
@@ -150,7 +150,7 @@ class TransportClientChannel {
         bufferId,
         _pointer.ref.family,
         _destination,
-        flags,
+        flags.flag,
         transportEventSendMessage | transportEventClient,
         sqeFlags: linked ? ringIosqeIoLink : 0,
         timeout: _writeTimeout,
@@ -163,7 +163,7 @@ class TransportClientChannel {
       lastBufferId,
       _pointer.ref.family,
       _destination,
-      flags,
+      flags.flag,
       transportEventSendMessage | transportEventClient,
       sqeFlags: linked ? ringIosqeIoLink : 0,
       timeout: _writeTimeout,

@@ -210,14 +210,14 @@ class TransportServerChannel implements TransportServer {
     transport_accept(_workerPointer, pointer);
   }
 
-  Future<void> receive({int? flags}) async {
-    flags = flags ?? TransportDatagramMessageFlag.trunc.flag;
+  Future<void> receive({TransportDatagramMessageFlag? flags}) async {
+    flags = flags ?? TransportDatagramMessageFlag.trunc;
     final bufferId = _buffers.get() ?? await _buffers.allocate();
     if (_closing) return Future.error(TransportClosedException.forServer());
     _datagramChannel!.receiveMessage(
       bufferId,
       pointer.ref.family,
-      flags,
+      flags.flag,
       transportEventReceiveMessage | transportEventServer,
       timeout: _readTimeout,
     );
@@ -228,11 +228,11 @@ class TransportServerChannel implements TransportServer {
     TransportChannel channel,
     Pointer<sockaddr> destination,
     Uint8List bytes, {
-    int? flags,
+    TransportDatagramMessageFlag? flags,
     void Function(Exception error)? onError,
     void Function()? onDone,
   }) async {
-    flags = flags ?? TransportDatagramMessageFlag.trunc.flag;
+    flags = flags ?? TransportDatagramMessageFlag.trunc;
     final bufferId = _buffers.get() ?? await _buffers.allocate();
     if (_closing) return Future.error(TransportClosedException.forServer());
     if (onError != null) _outboundErrorHandlers[bufferId] = onError;
@@ -242,7 +242,7 @@ class TransportServerChannel implements TransportServer {
       bufferId,
       pointer.ref.family,
       destination,
-      flags,
+      flags.flag,
       transportEventSendMessage | transportEventServer,
       timeout: _writeTimeout,
     );
@@ -253,12 +253,12 @@ class TransportServerChannel implements TransportServer {
     TransportChannel channel,
     Pointer<sockaddr> destination,
     List<Uint8List> bytes, {
-    int? flags,
+    TransportDatagramMessageFlag? flags,
     bool linked = false,
     void Function(Exception error)? onError,
     void Function()? onDone,
   }) async {
-    flags = flags ?? TransportDatagramMessageFlag.trunc.flag;
+    flags = flags ?? TransportDatagramMessageFlag.trunc;
     final bufferIds = await _buffers.allocateArray(bytes.length);
     if (_closing) return Future.error(TransportClosedException.forServer());
     final lastBufferId = bufferIds.last;
@@ -269,7 +269,7 @@ class TransportServerChannel implements TransportServer {
         bufferId,
         pointer.ref.family,
         destination,
-        flags,
+        flags.flag,
         transportEventSendMessage | transportEventServer,
         sqeFlags: linked ? ringIosqeIoLink : 0,
         timeout: _writeTimeout,
@@ -282,7 +282,7 @@ class TransportServerChannel implements TransportServer {
       lastBufferId,
       pointer.ref.family,
       destination,
-      flags,
+      flags.flag,
       transportEventSendMessage | transportEventServer,
       sqeFlags: linked ? ringIosqeIoLink : 0,
       timeout: _writeTimeout,
