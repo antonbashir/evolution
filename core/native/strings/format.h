@@ -65,6 +65,22 @@ extern "C"
         _buffer_pointer##__LINE__;                                                                                                                      \
     })
 
+static inline char* unsigned_to_string(unsigned long long int val)
+{
+    static __thread char buf[22];
+    snprintf(buf, sizeof(buf), "%lld", val);
+    return buf;
+}
+
+static inline char* signed_to_string(long long int val)
+{
+    static __thread char buf[22];
+    snprintf(buf, sizeof(buf), "%lld", val);
+    return buf;
+}
+
+
+
 #if defined(__cplusplus)
 }
 #endif

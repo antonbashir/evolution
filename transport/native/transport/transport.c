@@ -262,13 +262,14 @@ int16_t transport_cancel_by_fd(struct transport* transport, int32_t fd)
             io_uring_prep_cancel(sqe, (void*)node->data, IORING_ASYNC_CANCEL_ALL);
             sqe->flags |= IOSQE_CQE_SKIP_SUCCESS;
             to_delete[to_delete_count++] = index;
+            print_event(executor_module_event(event_trace(event_field_message("cancel by fd"), event_field("data", node->data), event_field("fd", node->fd))));
         }
     }
     for (int32_t index = 0; index < to_delete_count; index++)
     {
         simple_map_events_del(transport->events, to_delete[index], 0);
     }
-    io_uring_submit(transport->transport_executor->ring);
+    executor_submit(transport->transport_executor);
     return 0;
 }
 

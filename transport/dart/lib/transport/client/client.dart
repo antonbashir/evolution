@@ -209,6 +209,7 @@ class TransportClientChannel {
       );
       return;
     }
+    if (_pending == 0 && !_closer.isCompleted) _closer.complete();
     _connector.completeError(TransportClosedException.forClient());
   }
 
@@ -264,7 +265,7 @@ class TransportClientChannel {
       return;
     }
     _buffers.release(bufferId);
-    if (_pending == 0 && _closing && !_closer.isCompleted) _closer.complete();
+    if (_pending == 0 && !_closer.isCompleted) _closer.complete();
   }
 
   Future<void> close({Duration? gracefulTimeout}) async {
