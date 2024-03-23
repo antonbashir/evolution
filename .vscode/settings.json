@@ -159,6 +159,8 @@
     "dart.h": "c",
     "bits.h": "c",
     "wyhash.h": "c",
-    "wyhash32.h": "c"
+    "wyhash32.h": "c",
+    "xxhash.h": "c",
+    "memory": "c"
   },
 }

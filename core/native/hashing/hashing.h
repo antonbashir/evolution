@@ -6,7 +6,7 @@
 #include <stdint.h>
 
 #ifndef HASHING_MODE
-#define HASHING_MODE HASHING_MURMUR32
+#define HASHING_MODE HASHING_WYHASH
 #endif
 
 #ifndef HASHING_STRING_SEED
@@ -19,7 +19,7 @@
 
 #if HASHING_MODE == HASHING_MURMUR32
 #include "murmur32.h"
-static FORCEINLINE uint32_t CONST hash_string(const char* string, uint32_t length)
+static FORCEINLINE uint64_t CONST hash_string(const char* string, uint32_t length)
 {
     uint32_t hash = HASHING_STRING_SEED;
     uint32_t carry = 0;
@@ -30,7 +30,7 @@ static FORCEINLINE uint32_t CONST hash_string(const char* string, uint32_t lengt
 
 #if HASHING_MODE == HASHING_WYHASH32
 #include "wyhash32.h"
-static FORCEINLINE uint32_t CONST hash_string(const char* string, uint32_t length)
+static FORCEINLINE uint64_t CONST hash_string(const char* string, uint64_t length)
 {
     return wyhash32(string, length, HASHING_STRING_SEED);
 }
@@ -39,7 +39,7 @@ static FORCEINLINE uint32_t CONST hash_string(const char* string, uint32_t lengt
 #if HASHING_MODE == HASHING_WYHASH
 #define WYTRNG
 #include "wyhash.h"
-static FORCEINLINE uint32_t CONST hash_string(const char* string, uint32_t length)
+static FORCEINLINE uint64_t CONST hash_string(const char* string, uint64_t length)
 {
     return wyhash(string, length, HASHING_STRING_SEED, _wyp);
 }
@@ -47,7 +47,7 @@ static FORCEINLINE uint32_t CONST hash_string(const char* string, uint32_t lengt
 
 #if HASHING_MODE == HASHING_XXHASH32
 #include "xxhash.h"
-static FORCEINLINE uint32_t CONST hash_string(const char* string, uint32_t length)
+static FORCEINLINE uint64_t CONST hash_string(const char* string, uint64_t length)
 {
     return XXH32(string, length, HASHING_STRING_SEED);
 }
@@ -55,13 +55,13 @@ static FORCEINLINE uint32_t CONST hash_string(const char* string, uint32_t lengt
 
 #if HASHING_MODE == HASHING_XXHASH64
 #include "xxhash.h"
-static FORCEINLINE uint32_t CONST hash_string(const char* string, uint32_t length)
+static FORCEINLINE uint64_t CONST hash_string(const char* string, uint64_t length)
 {
     return XXH64(string, length, HASHING_STRING_SEED);
 }
 #endif
 
-static FORCEINLINE uint32_t CONST hash_unsigned(uint64_t a, unsigned int bits)
+static FORCEINLINE uint32_t CONST hash_unsigned(uint64_t a, uint32_t bits)
 {
     uint64_t b, c, d;
 
