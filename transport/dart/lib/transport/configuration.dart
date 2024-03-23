@@ -24,14 +24,12 @@ class TransportConfiguration {
   final MemoryConfiguration memoryConfiguration;
   final ExecutorConfiguration executorConfiguration;
   final Duration timeoutCheckerPeriod;
-  final bool trace;
 
   Pointer<transport_configuration> toNative(Arena arena) {
     final native = arena<transport_configuration>();
     native.ref.memory_instance_configuration = memoryConfiguration.toNative(arena).ref;
     native.ref.executor_instance_configuration = executorConfiguration.toNative(arena).ref;
     native.ref.timeout_checker_period_milliseconds = timeoutCheckerPeriod.inMilliseconds;
-    native.ref.trace = trace;
     return native;
   }
 
@@ -39,20 +37,17 @@ class TransportConfiguration {
     required this.executorConfiguration,
     required this.memoryConfiguration,
     required this.timeoutCheckerPeriod,
-    required this.trace,
   });
 
   TransportConfiguration copyWith({
     MemoryConfiguration? memoryConfiguration,
     ExecutorConfiguration? executorConfiguration,
     Duration? timeoutCheckerPeriod,
-    bool? trace,
   }) =>
       TransportConfiguration(
         memoryConfiguration: memoryConfiguration ?? this.memoryConfiguration,
         executorConfiguration: executorConfiguration ?? this.executorConfiguration,
         timeoutCheckerPeriod: timeoutCheckerPeriod ?? this.timeoutCheckerPeriod,
-        trace: trace ?? this.trace,
       );
 }
 

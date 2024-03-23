@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ffi';
 
+import 'package:core/core/assertion.dart';
 import 'package:meta/meta.dart';
 
 import 'bindings.dart';
@@ -100,7 +101,7 @@ class Transport {
       var event = data & 0xffff;
       final fd = (data >> 32) & 0xffffffff;
       final bufferId = (data >> 16) & 0xffff;
-      if (_native.ref.configuration.trace) {
+      assert(assertTrue(() {
         final server = event & transportEventServer != 0;
         final client = event & transportEventClient != 0;
         final parsed = server
@@ -109,8 +110,7 @@ class Transport {
                 ? TransportEvent.clientEvent(event & ~transportEventClient)
                 : TransportEvent.fileEvent(event & ~transportEventFile);
         print(TransportMessages.workerTrace(parsed, result, data, fd));
-      }
-
+      }));
       if (event & transportEventClient != 0) {
         event &= ~transportEventClient;
         if (event == transportEventConnect) {

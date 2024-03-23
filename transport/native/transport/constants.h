@@ -54,11 +54,8 @@ extern "C"
 #define TRANSPORT_SOCKET_OPTION_TCP_NODELAY ((uint64_t)1 << 28)
 #define TRANSPORT_SOCKET_OPTION_TCP_SYNCNT ((uint64_t)1 << 29)
 
-typedef enum transport_socket_family
-{
-    INET = 0,
-    UNIX,
-} transport_socket_family_t;
+#define TRANSPORT_SOCKET_FAMILY_INET 0
+#define TRANSPORT_SOCKET_FAMILY_UNIX 0
 
 #if defined(__cplusplus)
 }

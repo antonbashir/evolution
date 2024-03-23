@@ -31,7 +31,7 @@ DART_STRUCTURE struct transport_server_configuration
 DART_STRUCTURE struct transport_server
 {
     DART_FIELD int32_t fd;
-    DART_FIELD DART_SUBSTITUTE(int16_t) transport_socket_family_t family;
+    DART_FIELD uint8_t family;
     DART_FIELD struct sockaddr_in* inet_server_address;
     DART_FIELD struct sockaddr_un* unix_server_address;
     DART_FIELD DART_SUBSTITUTE(int32_t) __socklen_t server_address_length;

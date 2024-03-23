@@ -5,10 +5,15 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import '../../transport/bindings.dart';
 
+final class simple_map_events_t extends Opaque {}
+
 final class transport extends Struct {
   external Pointer<iovec> buffers;
   external Pointer<executor_instance> transport_executor;
   external transport_configuration configuration;
+  external Pointer<msghdr> inet_used_messages;
+  external Pointer<msghdr> unix_used_messages;
+  external Pointer<simple_map_events_t> events;
 }
 
 @Native<Pointer<transport> Function(Pointer<transport_configuration> configuration)>(isLeaf: true)
@@ -17,25 +22,25 @@ external Pointer<transport> transport_initialize(Pointer<transport_configuration
 @Native<Int32 Function(Pointer<transport> transport, Pointer<executor_instance> executor)>(isLeaf: true)
 external int transport_setup(Pointer<transport> transport, Pointer<executor_instance> executor);
 
-@Native<Int8 Function(Pointer<transport> transport, Uint32 fd, Uint16 buffer_id, Uint32 offset, Int64 timeout, Uint16 event, Uint8 sqe_flags)>(isLeaf: true)
+@Native<Int16 Function(Pointer<transport> transport, Uint32 fd, Uint16 buffer_id, Uint32 offset, Int64 timeout, Uint16 event, Uint8 sqe_flags)>(isLeaf: true)
 external int transport_write(Pointer<transport> transport, int fd, int buffer_id, int offset, int timeout, int event, int sqe_flags);
 
-@Native<Int8 Function(Pointer<transport> transport, Uint32 fd, Uint16 buffer_id, Uint32 offset, Int64 timeout, Uint16 event, Uint8 sqe_flags)>(isLeaf: true)
+@Native<Int16 Function(Pointer<transport> transport, Uint32 fd, Uint16 buffer_id, Uint32 offset, Int64 timeout, Uint16 event, Uint8 sqe_flags)>(isLeaf: true)
 external int transport_read(Pointer<transport> transport, int fd, int buffer_id, int offset, int timeout, int event, int sqe_flags);
 
-@Native<Int8 Function(Pointer<transport> transport, Uint32 fd, Uint16 buffer_id, Pointer<sockaddr> address, Uint8 socket_family, Int32 message_flags, Int64 timeout, Uint16 event, Uint8 sqe_flags)>(isLeaf: true)
+@Native<Int16 Function(Pointer<transport> transport, Uint32 fd, Uint16 buffer_id, Pointer<sockaddr> address, Uint8 socket_family, Int32 message_flags, Int64 timeout, Uint16 event, Uint8 sqe_flags)>(isLeaf: true)
 external int transport_send_message(Pointer<transport> transport, int fd, int buffer_id, Pointer<sockaddr> address, int socket_family, int message_flags, int timeout, int event, int sqe_flags);
 
-@Native<Int8 Function(Pointer<transport> transport, Uint32 fd, Uint16 buffer_id, Uint8 socket_family, Int32 message_flags, Int64 timeout, Uint16 event, Uint8 sqe_flags)>(isLeaf: true)
+@Native<Int16 Function(Pointer<transport> transport, Uint32 fd, Uint16 buffer_id, Uint8 socket_family, Int32 message_flags, Int64 timeout, Uint16 event, Uint8 sqe_flags)>(isLeaf: true)
 external int transport_receive_message(Pointer<transport> transport, int fd, int buffer_id, int socket_family, int message_flags, int timeout, int event, int sqe_flags);
 
-@Native<Int8 Function(Pointer<transport> transport, Pointer<transport_client> client, Int64 timeout)>(isLeaf: true)
+@Native<Int16 Function(Pointer<transport> transport, Pointer<transport_client> client, Int64 timeout)>(isLeaf: true)
 external int transport_connect(Pointer<transport> transport, Pointer<transport_client> client, int timeout);
 
-@Native<Int8 Function(Pointer<transport> transport, Pointer<transport_server> server)>(isLeaf: true)
+@Native<Int16 Function(Pointer<transport> transport, Pointer<transport_server> server)>(isLeaf: true)
 external int transport_accept(Pointer<transport> transport, Pointer<transport_server> server);
 
-@Native<Int8 Function(Pointer<transport> transport, Int32 fd)>(isLeaf: true)
+@Native<Int16 Function(Pointer<transport> transport, Int32 fd)>(isLeaf: true)
 external int transport_cancel_by_fd(Pointer<transport> transport, int fd);
 
 @Native<Void Function(Pointer<transport> transport)>(isLeaf: true)

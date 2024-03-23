@@ -6,7 +6,7 @@
 struct transport_server* transport_server_initialize_tcp(struct transport_server_configuration* configuration, const char* ip, int32_t port)
 {
     struct transport_server* server = transport_module_new(sizeof(struct transport_server));
-    server->family = INET;
+    server->family = TRANSPORT_SOCKET_FAMILY_INET;
     server->inet_server_address = transport_module_new(sizeof(struct sockaddr_in));
     server->inet_server_address->sin_addr.s_addr = inet_addr(ip);
     server->inet_server_address->sin_port = htons(port);
@@ -48,7 +48,7 @@ struct transport_server* transport_server_initialize_tcp(struct transport_server
 struct transport_server* transport_server_initialize_udp(struct transport_server_configuration* configuration, const char* ip, int32_t port)
 {
     struct transport_server* server = transport_module_new(sizeof(struct transport_server));
-    server->family = INET;
+    server->family = TRANSPORT_SOCKET_FAMILY_INET;
     server->inet_server_address = transport_module_new(sizeof(struct sockaddr_in));
     server->inet_server_address->sin_addr.s_addr = inet_addr(ip);
     server->inet_server_address->sin_port = htons(port);
@@ -81,7 +81,7 @@ struct transport_server* transport_server_initialize_udp(struct transport_server
 struct transport_server* transport_server_initialize_unix_stream(struct transport_server_configuration* configuration, const char* path)
 {
     struct transport_server* server = transport_module_new(sizeof(struct transport_server));
-    server->family = UNIX;
+    server->family = TRANSPORT_SOCKET_FAMILY_UNIX;
     server->unix_server_address = transport_module_new(sizeof(struct sockaddr_un));
     server->unix_server_address->sun_family = AF_UNIX;
     strcpy(server->unix_server_address->sun_path, path);
@@ -115,11 +115,11 @@ struct transport_server* transport_server_initialize_unix_stream(struct transpor
 
 void transport_server_destroy(struct transport_server* server)
 {
-    if (server->family == INET)
+    if (server->family == TRANSPORT_SOCKET_FAMILY_INET)
     {
         transport_module_delete(server->inet_server_address);
     }
-    if (server->family == UNIX)
+    if (server->family == TRANSPORT_SOCKET_FAMILY_UNIX)
     {
         unlink(server->unix_server_address->sun_path);
         transport_module_delete(server->unix_server_address);

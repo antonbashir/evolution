@@ -38,7 +38,7 @@ final class transport_server_configuration extends Struct {
 final class transport_server extends Struct {
   @Int32()
   external int fd;
-  @Int16()
+  @Uint8()
   external int family;
   external Pointer<sockaddr_in> inet_server_address;
   external Pointer<sockaddr_un> unix_server_address;

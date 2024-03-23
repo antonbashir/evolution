@@ -6,7 +6,7 @@
 struct transport_client* transport_client_initialize_tcp(struct transport_client_configuration* configuration, const char* ip, int32_t port)
 {
     struct transport_client* client = transport_module_new(sizeof(struct transport_client));
-    client->family = INET;
+    client->family = TRANSPORT_SOCKET_FAMILY_INET;
     client->inet_destination_address = transport_module_new(sizeof(struct sockaddr_in));
     client->inet_destination_address->sin_addr.s_addr = inet_addr(ip);
     client->inet_destination_address->sin_port = htons(port);
@@ -36,7 +36,7 @@ struct transport_client* transport_client_initialize_tcp(struct transport_client
 struct transport_client* transport_client_initialize_udp(struct transport_client_configuration* configuration, const char* destination_ip, int32_t destination_port, const char* source_ip, int32_t source_port)
 {
     struct transport_client* client = transport_module_new(sizeof(struct transport_client));
-    client->family = INET;
+    client->family = TRANSPORT_SOCKET_FAMILY_INET;
     client->client_address_length = sizeof(struct sockaddr_in);
 
     client->inet_destination_address = transport_module_new(sizeof(struct sockaddr_in));
@@ -76,7 +76,7 @@ struct transport_client* transport_client_initialize_udp(struct transport_client
 struct transport_client* transport_client_initialize_unix_stream(struct transport_client_configuration* configuration, const char* path)
 {
     struct transport_client* client = transport_module_new(sizeof(struct transport_client));
-    client->family = UNIX;
+    client->family = TRANSPORT_SOCKET_FAMILY_UNIX;
     client->unix_destination_address = transport_module_new(sizeof(struct sockaddr_un));
     client->unix_destination_address->sun_family = AF_UNIX;
     strcpy(client->unix_destination_address->sun_path, path);
@@ -98,7 +98,7 @@ struct transport_client* transport_client_initialize_unix_stream(struct transpor
 
 void transport_client_destroy(struct transport_client* client)
 {
-    if (client->family == INET)
+    if (client->family == TRANSPORT_SOCKET_FAMILY_INET)
     {
         if (client->inet_destination_address)
         {
@@ -110,7 +110,7 @@ void transport_client_destroy(struct transport_client* client)
             transport_module_delete(client->inet_source_address);
         }
     }
-    if (client->family == UNIX)
+    if (client->family == TRANSPORT_SOCKET_FAMILY_UNIX)
     {
         unlink(client->unix_destination_address->sun_path);
         transport_module_delete(client->unix_destination_address);

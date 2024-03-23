@@ -12,3 +12,5 @@ final class sockaddr extends Opaque {}
 final class sockaddr_in extends Opaque {}
 
 final class sockaddr_un extends Opaque {}
+
+final class msghdr extends Opaque {}

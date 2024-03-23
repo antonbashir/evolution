@@ -125,7 +125,7 @@ int16_t transport_send_message(struct transport* transport,
                                uint32_t fd,
                                uint16_t buffer_id,
                                struct sockaddr* address,
-                               transport_socket_family_t socket_family,
+                               uint8_t socket_family,
                                int32_t message_flags,
                                int64_t timeout,
                                uint16_t event,
@@ -140,12 +140,12 @@ int16_t transport_send_message(struct transport* transport,
     }
     uint64_t data = (((uint64_t)(fd) << 32) | (uint64_t)(buffer_id) << 16) | ((uint64_t)event);
     struct msghdr* message;
-    if (socket_family == INET)
+    if (socket_family == TRANSPORT_SOCKET_FAMILY_INET)
     {
         message = &transport->inet_used_messages[buffer_id];
         memcpy(message->msg_name, address, message->msg_namelen);
     }
-    if (socket_family == UNIX)
+    if (socket_family == TRANSPORT_SOCKET_FAMILY_UNIX)
     {
         message = &transport->unix_used_messages[buffer_id];
         message->msg_namelen = SUN_LEN((struct sockaddr_un*)address);
@@ -167,7 +167,7 @@ int16_t transport_send_message(struct transport* transport,
 int16_t transport_receive_message(struct transport* transport,
                                   uint32_t fd,
                                   uint16_t buffer_id,
-                                  transport_socket_family_t socket_family,
+                                  uint8_t socket_family,
                                   int32_t message_flags,
                                   int64_t timeout,
                                   uint16_t event,
@@ -182,12 +182,12 @@ int16_t transport_receive_message(struct transport* transport,
     }
     uint64_t data = (((uint64_t)(fd) << 32) | (uint64_t)(buffer_id) << 16) | ((uint64_t)event);
     struct msghdr* message;
-    if (socket_family == INET)
+    if (socket_family == TRANSPORT_SOCKET_FAMILY_INET)
     {
         message = &transport->inet_used_messages[buffer_id];
         message->msg_namelen = sizeof(struct sockaddr_in);
     }
-    if (socket_family == UNIX)
+    if (socket_family == TRANSPORT_SOCKET_FAMILY_UNIX)
     {
         message = &transport->unix_used_messages[buffer_id];
         message->msg_namelen = sizeof(struct sockaddr_un);
@@ -216,7 +216,7 @@ int16_t transport_connect(struct transport* transport, struct transport_client* 
         return MODULE_ERROR_CODE;
     }
     uint64_t data = ((uint64_t)(client->fd) << 32) | ((uint64_t)TRANSPORT_EVENT_CONNECT | (uint64_t)TRANSPORT_EVENT_CLIENT);
-    struct sockaddr* address = client->family == INET
+    struct sockaddr* address = client->family == TRANSPORT_SOCKET_FAMILY_INET
                                    ? (struct sockaddr*)client->inet_destination_address
                                    : (struct sockaddr*)client->unix_destination_address;
     io_uring_prep_connect(sqe, client->fd, address, client->client_address_length);
@@ -236,7 +236,7 @@ int16_t transport_accept(struct transport* transport, struct transport_server* s
         return MODULE_ERROR_CODE;
     }
     uint64_t data = ((uint64_t)(server->fd) << 32) | ((uint64_t)TRANSPORT_EVENT_ACCEPT | (uint64_t)TRANSPORT_EVENT_SERVER);
-    struct sockaddr* address = server->family == INET
+    struct sockaddr* address = server->family == TRANSPORT_SOCKET_FAMILY_INET
                                    ? (struct sockaddr*)server->inet_server_address
                                    : (struct sockaddr*)server->unix_server_address;
     io_uring_prep_accept(sqe, server->fd, address, &server->server_address_length, 0);

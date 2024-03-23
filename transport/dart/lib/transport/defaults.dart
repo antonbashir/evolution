@@ -13,7 +13,6 @@ class TransportDefaults {
   static const transport = TransportConfiguration(
     memoryConfiguration: MemoryDefaults.memory,
     executorConfiguration: ExecutorDefaults.executor,
-    trace: false,
     timeoutCheckerPeriod: Duration(milliseconds: 500),
   );
 

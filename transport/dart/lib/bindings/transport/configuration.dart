@@ -10,6 +10,4 @@ final class transport_configuration extends Struct {
   external executor_configuration executor_instance_configuration;
   @Uint64()
   external int timeout_checker_period_milliseconds;
-  @Bool()
-  external bool trace;
 }
