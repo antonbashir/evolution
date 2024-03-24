@@ -47,31 +47,33 @@ static FORCEINLINE struct system* system_get()
     return &system_instance;
 }
 
-static inline void system_print(const char* format, ...)
-{
-    va_list arguments;
-    va_start(arguments, format);
-    system_get()->configuration.on_print(format, arguments);
-    va_end(arguments);
-}
+#define system_print(format, ...)                                  \
+    do                                                             \
+    {                                                              \
+        system_get()->configuration.on_print(format, __VA_ARGS__); \
+    }                                                              \
+    while (0);
 
-static inline void system_print_error(const char* format, ...)
-{
-    va_list arguments;
-    va_start(arguments, format);
-    system_get()->configuration.on_print_error(format, arguments);
-    va_end(arguments);
-}
+#define system_print_error(format, ...)                                  \
+    do                                                                   \
+    {                                                                    \
+        system_get()->configuration.on_print_error(format, __VA_ARGS__); \
+    }                                                                    \
+    while (0);
 
-static FORCEINLINE void system_print_event(struct event* event)
-{
-    system_get()->configuration.on_event_print(event);
-}
+#define system_print_event(event)                          \
+    do                                                     \
+    {                                                      \
+        system_get()->configuration.on_event_print(event); \
+    }                                                      \
+    while (0);
 
-static FORCEINLINE void system_raise_event(struct event* event)
-{
-    system_get()->configuration.on_event_raise(event);
-}
+#define system_raise_event(event)                          \
+    do                                                     \
+    {                                                      \
+        system_get()->configuration.on_event_raise(event); \
+    }                                                      \
+    while (0);
 
 DART_LEAF_FUNCTION struct system_library* system_library_load(const char* path, const char* module);
 DART_LEAF_FUNCTION void system_library_put(struct system_library* library);

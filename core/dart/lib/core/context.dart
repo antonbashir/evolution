@@ -3,7 +3,6 @@ import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
 
-import '../core.dart';
 import 'bindings.dart';
 import 'configuration.dart';
 import 'constants.dart';
@@ -72,14 +71,17 @@ class _Context implements ContextProvider {
   var _modules = <String, Module>{};
   var _native = <String, Pointer<Void>>{};
 
-  _Context._() {
-    final context = context_get();
-    if (context.ref.initialized) {
-      final modules = context.ref.containers;
-      for (var i = 0; i < context.ref.size; i++) _native[modules[i].name.toDartString()] = modules[i].module;
-      return;
-    }
+  _Context._create() {
     context_create();
+    _context = this;
+  }
+
+  _Context._restore() {
+    final context = context_get();
+    final modules = context.ref.containers;
+    for (var i = 0; i < context.ref.size; i++) _native[modules[i].name.toDartString()] = modules[i].module;
+    _context = this;
+    context_load();
   }
 
   void _clear() {
@@ -100,10 +102,6 @@ class _Context implements ContextProvider {
   void _load(Module module) {
     if (_native[module.name] == null) throw CoreModuleError(CoreErrors.moduleNotLoaded(module.name));
     _modules[module.name] = module;
-  }
-
-  void _restore() {
-    context_load();
   }
 
   @override

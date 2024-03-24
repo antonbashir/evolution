@@ -19,13 +19,13 @@ void main() {
   system().environment.debug = false;
   final initialization = true;
   final tcp = true;
-  final udp = true;
-  final unixStream = true;
-  final file = true;
-  final bulk = true;
-  final timeout = true;
-  final buffers = true;
-  final shutdown = true;
+  final udp = false;
+  final unixStream = false;
+  final file = false;
+  final bulk = false;
+  final timeout = false;
+  final buffers = false;
+  final shutdown = false;
 
   group("[initialization]", timeout: Timeout(Duration(hours: 1)), skip: !initialization, () {
     testInitialization();

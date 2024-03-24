@@ -14,10 +14,7 @@ struct context_structure* context_get()
 
 void context_create()
 {
-    if (context_instance.initialized)
-    {
-        raise_panic(event_panic(event_field_message(PANIC_CONTEXT_CREATED)));
-    }
+    if (context_instance.initialized) return;
     context_instance.modules = simple_map_modules_new();
     context_instance.containers = calloc(MODULES_MAXIMUM, sizeof(struct module_container));
     if (context_instance.modules == NULL || context_instance.containers == NULL)

@@ -9,18 +9,18 @@ struct system system_instance;
 
 void system_default_printer(const char* format, ...)
 {
-    va_list args;
-    va_start(args, format);
-    vfprintf(stdout, format, args);
-    va_end(args);
+    va_list arguments;
+    va_start(arguments, format);
+    vfprintf(stdout, format, arguments);
+    va_end(arguments);
 }
 
 void system_default_error_printer(const char* format, ...)
 {
-    va_list args;
-    va_start(args, format);
-    vfprintf(stderr, format, args);
-    va_end(args);
+    va_list arguments;
+    va_start(arguments, format);
+    vfprintf(stderr, format, arguments);
+    va_end(arguments);
 }
 
 void system_default_event_printer(struct event* event)
