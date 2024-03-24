@@ -3,7 +3,11 @@ import 'dart:io';
 
 Future<void> main(List<String> args) async {
   final current = Platform.script.path.substring(0, Platform.script.path.lastIndexOf('/'));
-  final build = Process.runSync("/usr/bin/cmake", ["--build", "${current}", "--config", "RelWithDebInfo", "--target", "natives", "-j", "34", "--"], workingDirectory: current);
+  final build = Process.runSync(
+    "/usr/bin/cmake",
+    ["--build", "${current}", "--config", "RelWithDebInfo", "--target", "natives", "-j", Platform.numberOfProcessors.toString(), "--"],
+    workingDirectory: current,
+  );
   stdout.writeln(build.stdout);
   stderr.writeln(build.stderr);
   final tests = {
