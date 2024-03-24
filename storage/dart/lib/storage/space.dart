@@ -83,14 +83,14 @@ class StorageSpace {
 
   @inline
   StorageTuple _completeInsertSingle(Pointer<executor_task> message) {
-    final tuple = StorageTuple(Pointer<tarantool_tuple>.fromAddress(message.outputInt));
+    final tuple = StorageTuple(Pointer<storage_tuple>.fromAddress(message.outputInt));
     _factory.releaseSpace(message.getInputObject());
     return tuple;
   }
 
   @inline
-  Pointer<tarantool_tuple_port> _completeInsertMany(Pointer<executor_task> message) {
-    final tuple = Pointer<tarantool_tuple_port>.fromAddress(message.outputInt);
+  Pointer<storage_tuple_port> _completeInsertMany(Pointer<executor_task> message) {
+    final tuple = Pointer<storage_tuple_port>.fromAddress(message.outputInt);
     _factory.releaseSpace(message.getInputObject());
     return tuple;
   }
@@ -102,14 +102,14 @@ class StorageSpace {
   }
 
   @inline
-  Future<Pointer<tarantool_tuple_port>> insertMany(Pointer<Uint8> tuples, int tuplesCount) {
+  Future<Pointer<storage_tuple_port>> insertMany(Pointer<Uint8> tuples, int tuplesCount) {
     final request = _factory.createSpace(_id, tuples.cast(), tuplesCount);
     return _producer.spaceInsertMany(_descriptor, request).then(_completeInsertMany);
   }
 
   @inline
   StorageTuple _completePutSingle(Pointer<executor_task> message) {
-    final tuple = StorageTuple(Pointer<tarantool_tuple>.fromAddress(message.outputInt));
+    final tuple = StorageTuple(Pointer<storage_tuple>.fromAddress(message.outputInt));
     _factory.releaseSpace(message.getInputObject());
     return tuple;
   }
@@ -121,21 +121,21 @@ class StorageSpace {
   }
 
   @inline
-  Pointer<tarantool_tuple_port> _completePutMany(Pointer<executor_task> message) {
-    final tuple = Pointer<tarantool_tuple_port>.fromAddress(message.outputInt);
+  Pointer<storage_tuple_port> _completePutMany(Pointer<executor_task> message) {
+    final tuple = Pointer<storage_tuple_port>.fromAddress(message.outputInt);
     _factory.releaseSpace(message.getInputObject());
     return tuple;
   }
 
   @inline
-  Future<Pointer<tarantool_tuple_port>> putMany(Pointer<Uint8> tuples, int tuplesCount) {
+  Future<Pointer<storage_tuple_port>> putMany(Pointer<Uint8> tuples, int tuplesCount) {
     final request = _factory.createSpace(_id, tuples, tuplesCount);
     return _producer.spaceInsertMany(_descriptor, request).then(_completePutMany);
   }
 
   @inline
   StorageTuple _completeDeleteSingle(Pointer<executor_task> message) {
-    final tuple = StorageTuple(Pointer<tarantool_tuple>.fromAddress(message.outputInt));
+    final tuple = StorageTuple(Pointer<storage_tuple>.fromAddress(message.outputInt));
     _factory.releaseSpace(message.getInputObject());
     return tuple;
   }
@@ -147,21 +147,21 @@ class StorageSpace {
   }
 
   @inline
-  Pointer<tarantool_tuple_port> _completeDeleteMany(Pointer<executor_task> message) {
-    final tuple = Pointer<tarantool_tuple_port>.fromAddress(message.outputInt);
+  Pointer<storage_tuple_port> _completeDeleteMany(Pointer<executor_task> message) {
+    final tuple = Pointer<storage_tuple_port>.fromAddress(message.outputInt);
     _factory.releaseSpace(message.getInputObject());
     return tuple;
   }
 
   @inline
-  Future<Pointer<tarantool_tuple_port>> deleteSingleMany(Pointer<Uint8> keys, int keysCount) {
+  Future<Pointer<storage_tuple_port>> deleteSingleMany(Pointer<Uint8> keys, int keysCount) {
     final request = _factory.createSpace(_id, keys, keysCount);
     return _producer.spaceDeleteMany(_descriptor, request).then(_completeDeleteMany);
   }
 
   @inline
   StorageTuple _completeGet(Pointer<executor_task> message) {
-    final tuple = StorageTuple(Pointer<tarantool_tuple>.fromAddress(message.outputInt));
+    final tuple = StorageTuple(Pointer<storage_tuple>.fromAddress(message.outputInt));
     _factory.releaseSpace(message.getInputObject());
     return tuple;
   }
@@ -180,7 +180,7 @@ class StorageSpace {
 
   @inline
   StorageTuple _completeMin(Pointer<executor_task> message) {
-    final tuple = StorageTuple(Pointer<tarantool_tuple>.fromAddress(message.outputInt));
+    final tuple = StorageTuple(Pointer<storage_tuple>.fromAddress(message.outputInt));
     _factory.releaseSpace(message.getInputObject());
     return tuple;
   }
@@ -199,7 +199,7 @@ class StorageSpace {
 
   @inline
   StorageTuple _completeMax(Pointer<executor_task> message) {
-    final tuple = StorageTuple(Pointer<tarantool_tuple>.fromAddress(message.outputInt));
+    final tuple = StorageTuple(Pointer<storage_tuple>.fromAddress(message.outputInt));
     _factory.releaseSpace(message.getInputObject());
     return tuple;
   }
@@ -215,7 +215,7 @@ class StorageSpace {
 
   @inline
   StorageTuple _completeUpdateSingle(Pointer<executor_task> message) {
-    final tuple = StorageTuple(Pointer<tarantool_tuple>.fromAddress(message.outputInt));
+    final tuple = StorageTuple(Pointer<storage_tuple>.fromAddress(message.outputInt));
     _factory.releaseSpaceUpdate(message.getInputObject());
     return tuple;
   }
@@ -227,21 +227,21 @@ class StorageSpace {
   }
 
   @inline
-  Pointer<tarantool_tuple_port> _completeUpdateMany(Pointer<executor_task> message) {
-    final tuple = Pointer<tarantool_tuple_port>.fromAddress(message.outputInt);
+  Pointer<storage_tuple_port> _completeUpdateMany(Pointer<executor_task> message) {
+    final tuple = Pointer<storage_tuple_port>.fromAddress(message.outputInt);
     _factory.releaseSpaceUpdate(message.getInputObject());
     return tuple;
   }
 
   @inline
-  Future<Pointer<tarantool_tuple_port>> updateMany(Pointer<Uint8> keys, int keysCount, Pointer<Uint8> operations, int operationsCount) {
+  Future<Pointer<storage_tuple_port>> updateMany(Pointer<Uint8> keys, int keysCount, Pointer<Uint8> operations, int operationsCount) {
     final request = _factory.createSpaceUpdate(_id, keys, keysCount, operations, operationsCount);
     return _producer.spaceUpdateMany(_descriptor, request).then(_completeUpdateMany);
   }
 
   @inline
   StorageTuple _completeUpsert(Pointer<executor_task> message) {
-    final tuple = StorageTuple(Pointer<tarantool_tuple>.fromAddress(message.outputInt));
+    final tuple = StorageTuple(Pointer<storage_tuple>.fromAddress(message.outputInt));
     _factory.releaseSpaceUpsert(message.getInputObject());
     return tuple;
   }
@@ -253,14 +253,14 @@ class StorageSpace {
   }
 
   @inline
-  Pointer<tarantool_tuple_port> _completeSelect(Pointer<executor_task> message) {
-    final tuple = Pointer<tarantool_tuple_port>.fromAddress(message.outputInt);
+  Pointer<storage_tuple_port> _completeSelect(Pointer<executor_task> message) {
+    final tuple = Pointer<storage_tuple_port>.fromAddress(message.outputInt);
     _factory.releaseSpaceSelect(message.getInputObject());
     return tuple;
   }
 
   @inline
-  Future<Pointer<tarantool_tuple_port>> select({
+  Future<Pointer<storage_tuple_port>> select({
     int offset = 0,
     int limit = int32MaxValue,
     StorageIteratorType iteratorType = StorageIteratorType.eq,
@@ -270,7 +270,7 @@ class StorageSpace {
   }
 
   @inline
-  Future<Pointer<tarantool_tuple_port>> selectBy(
+  Future<Pointer<storage_tuple_port>> selectBy(
     Pointer<Uint8> key,
     int keySize, {
     int offset = 0,

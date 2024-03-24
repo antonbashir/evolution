@@ -9,6 +9,7 @@
 extern "C"
 {
 #endif
+
 typedef void (*executor_action)(struct executor_task*);
 
 DART_STRUCTURE struct storage_box
@@ -215,25 +216,26 @@ DART_LEAF_FUNCTION void storage_space_max(struct executor_task* task);
 DART_LEAF_FUNCTION void storage_space_select(struct executor_task* task);
 DART_LEAF_FUNCTION void storage_space_id_by_name(struct executor_task* task);
 
-void storage_index_iterator(struct executor_task* task);
-void storage_index_count(struct executor_task* task);
-void storage_index_length(struct executor_task* task);
-void storage_index_id_by_name(struct executor_task* task);
+DART_LEAF_FUNCTION void storage_index_iterator(struct executor_task* task);
+DART_LEAF_FUNCTION void storage_index_count(struct executor_task* task);
+DART_LEAF_FUNCTION void storage_index_length(struct executor_task* task);
+DART_LEAF_FUNCTION void storage_index_id_by_name(struct executor_task* task);
 
-void storage_index_get(struct executor_task* task);
-void storage_index_min(struct executor_task* task);
-void storage_index_max(struct executor_task* task);
-void storage_index_select(struct executor_task* task);
-void storage_index_update_single(struct executor_task* task);
-void storage_index_update_many(struct executor_task* task);
+DART_LEAF_FUNCTION void storage_index_get(struct executor_task* task);
+DART_LEAF_FUNCTION void storage_index_min(struct executor_task* task);
+DART_LEAF_FUNCTION void storage_index_max(struct executor_task* task);
+DART_LEAF_FUNCTION void storage_index_select(struct executor_task* task);
+DART_LEAF_FUNCTION void storage_index_update_single(struct executor_task* task);
+DART_LEAF_FUNCTION void storage_index_update_many(struct executor_task* task);
 
-void storage_iterator_next_single(struct executor_task* task);
-void storage_iterator_next_many(struct executor_task* task);
+DART_LEAF_FUNCTION void storage_iterator_next_single(struct executor_task* task);
+DART_LEAF_FUNCTION void storage_iterator_next_many(struct executor_task* task);
 
-void storage_iterator_destroy(struct executor_task* task);
-void storage_free_output_buffer(struct executor_task* task);
-void storage_free_output_port(struct executor_task* task);
-void storage_free_output_tuple(struct executor_task* task);
+DART_LEAF_FUNCTION void storage_iterator_destroy(struct executor_task* task);
+DART_LEAF_FUNCTION void storage_free_output_buffer(struct executor_task* task);
+DART_LEAF_FUNCTION void storage_free_output_port(struct executor_task* task);
+DART_LEAF_FUNCTION void storage_free_output_tuple(struct executor_task* task);
+
 #if defined(__cplusplus)
 }
 #endif

@@ -6,7 +6,7 @@ import 'package:ffi/ffi.dart';
 import '../../storage/bindings.dart';
 
 @Native<Void Function(Pointer<Utf8> binary_path)>(isLeaf: true)
-external void tarantool_launcher_launch(Pointer<Utf8> binary_path);
+external void storage_launcher_launch(Pointer<Utf8> binary_path);
 
 @Native<Void Function(Int32 code)>(isLeaf: true)
-external void tarantool_launcher_shutdown(int code);
+external void storage_launcher_shutdown(int code);

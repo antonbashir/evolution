@@ -69,56 +69,56 @@ class StorageIndex {
       _producer.indexIterator(_descriptor, _factory.createIndexIterator(_spaceId, _indexId, iteratorType.index, key, keySize)).then(_completeIteratorBy);
 
   @inline
-  Pointer<tarantool_tuple> _completeGet(Pointer<executor_task> message) {
-    final tuple = Pointer<tarantool_tuple>.fromAddress(message.outputInt);
+  Pointer<storage_tuple> _completeGet(Pointer<executor_task> message) {
+    final tuple = Pointer<storage_tuple>.fromAddress(message.outputInt);
     _factory.releaseIndex(message.getInputObject());
     return tuple;
   }
 
   @inline
-  Future<Pointer<tarantool_tuple>> get(Pointer<Uint8> key, int keySize) => _producer.indexGet(_descriptor, _factory.createIndex(_spaceId, _indexId, key, keySize)).then(_completeGet);
+  Future<Pointer<storage_tuple>> get(Pointer<Uint8> key, int keySize) => _producer.indexGet(_descriptor, _factory.createIndex(_spaceId, _indexId, key, keySize)).then(_completeGet);
 
   @inline
-  Future<Pointer<tarantool_tuple>> min() {
+  Future<Pointer<storage_tuple>> min() {
     final (:Pointer<Uint8> value, :int size) = _tuples.emptyList;
     return minBy(value, size);
   }
 
   @inline
-  Pointer<tarantool_tuple> _completeMin(Pointer<executor_task> message) {
-    final tuple = Pointer<tarantool_tuple>.fromAddress(message.outputInt);
+  Pointer<storage_tuple> _completeMin(Pointer<executor_task> message) {
+    final tuple = Pointer<storage_tuple>.fromAddress(message.outputInt);
     _factory.releaseIndex(message.getInputObject());
     return tuple;
   }
 
   @inline
-  Future<Pointer<tarantool_tuple>> minBy(Pointer<Uint8> key, int keySize) => _producer.indexMin(_descriptor, _factory.createIndex(_spaceId, _indexId, key, keySize)).then(_completeMin);
+  Future<Pointer<storage_tuple>> minBy(Pointer<Uint8> key, int keySize) => _producer.indexMin(_descriptor, _factory.createIndex(_spaceId, _indexId, key, keySize)).then(_completeMin);
 
   @inline
-  Future<Pointer<tarantool_tuple>> max() {
+  Future<Pointer<storage_tuple>> max() {
     final (:Pointer<Uint8> value, :int size) = _tuples.emptyList;
     return maxBy(value, size);
   }
 
   @inline
-  Pointer<tarantool_tuple> _completeMax(Pointer<executor_task> message) {
-    final tuple = Pointer<tarantool_tuple>.fromAddress(message.outputInt);
+  Pointer<storage_tuple> _completeMax(Pointer<executor_task> message) {
+    final tuple = Pointer<storage_tuple>.fromAddress(message.outputInt);
     _factory.releaseIndex(message.getInputObject());
     return tuple;
   }
 
   @inline
-  Future<Pointer<tarantool_tuple>> maxBy(Pointer<Uint8> key, int keySize) => _producer.indexMax(_descriptor, _factory.createIndex(_spaceId, _indexId, key, keySize)).then(_completeMax);
+  Future<Pointer<storage_tuple>> maxBy(Pointer<Uint8> key, int keySize) => _producer.indexMax(_descriptor, _factory.createIndex(_spaceId, _indexId, key, keySize)).then(_completeMax);
 
   @inline
-  Pointer<tarantool_tuple> _completeUpdateSingle(Pointer<executor_task> message) {
-    final tuple = Pointer<tarantool_tuple>.fromAddress(message.outputInt);
+  Pointer<storage_tuple> _completeUpdateSingle(Pointer<executor_task> message) {
+    final tuple = Pointer<storage_tuple>.fromAddress(message.outputInt);
     _factory.releaseIndexUpdate(message.getInputObject());
     return tuple;
   }
 
   @inline
-  Future<Pointer<tarantool_tuple>> updateSingle(
+  Future<Pointer<storage_tuple>> updateSingle(
     Pointer<Uint8> key,
     int keySize,
     Pointer<Uint8> operations,
@@ -127,14 +127,14 @@ class StorageIndex {
       _producer.indexUpdateSingle(_descriptor, _factory.createIndexUpdate(_spaceId, _indexId, key, keySize, operations, operationsSize)).then(_completeUpdateSingle);
 
   @inline
-  Pointer<tarantool_tuple_port> _completeUpdateMany(Pointer<executor_task> message) {
-    final tuple = Pointer<tarantool_tuple_port>.fromAddress(message.outputInt);
+  Pointer<storage_tuple_port> _completeUpdateMany(Pointer<executor_task> message) {
+    final tuple = Pointer<storage_tuple_port>.fromAddress(message.outputInt);
     _factory.releaseIndexUpdate(message.getInputObject());
     return tuple;
   }
 
   @inline
-  Future<Pointer<tarantool_tuple_port>> updateMany(
+  Future<Pointer<storage_tuple_port>> updateMany(
     Pointer<Uint8> keys,
     int keysCount,
     Pointer<Uint8> operations,
@@ -143,14 +143,14 @@ class StorageIndex {
       _producer.indexUpdateMany(_descriptor, _factory.createIndexUpdate(_spaceId, _indexId, keys, keysCount, operations, operationsCount)).then(_completeUpdateMany);
 
   @inline
-  Pointer<tarantool_tuple_port> _completeSelect(Pointer<executor_task> message) {
-    final tuple = Pointer<tarantool_tuple_port>.fromAddress(message.outputInt);
+  Pointer<storage_tuple_port> _completeSelect(Pointer<executor_task> message) {
+    final tuple = Pointer<storage_tuple_port>.fromAddress(message.outputInt);
     _factory.releaseIndexSelect(message.getInputObject());
     return tuple;
   }
 
   @inline
-  Future<Pointer<tarantool_tuple_port>> select({
+  Future<Pointer<storage_tuple_port>> select({
     int offset = 0,
     int limit = int32MaxValue,
     StorageIteratorType iteratorType = StorageIteratorType.eq,
@@ -160,7 +160,7 @@ class StorageIndex {
   }
 
   @inline
-  Future<Pointer<tarantool_tuple_port>> selectBy(
+  Future<Pointer<storage_tuple_port>> selectBy(
     Pointer<Uint8> key,
     int keySize, {
     int offset = 0,

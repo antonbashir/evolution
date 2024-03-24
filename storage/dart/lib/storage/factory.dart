@@ -8,69 +8,69 @@ class StorageFactory {
 
   late final MemoryObjects<Pointer<executor_task>> _messages;
 
-  final _spaceMessageOffset = sizeOf<tarantool_space_request>() - executorMessageSize;
-  late final MemoryObjects<Pointer<tarantool_space_request>> _spaceRequests;
+  final _spaceMessageOffset = sizeOf<storage_space_request>() - executorMessageSize;
+  late final MemoryObjects<Pointer<storage_space_request>> _spaceRequests;
 
-  final _spaceCountMessageOffset = sizeOf<tarantool_space_count_request>() - executorMessageSize;
-  late final MemoryObjects<Pointer<tarantool_space_count_request>> _spaceCountRequests;
+  final _spaceCountMessageOffset = sizeOf<storage_space_count_request>() - executorMessageSize;
+  late final MemoryObjects<Pointer<storage_space_count_request>> _spaceCountRequests;
 
-  final _spaceSelectMessageOffset = sizeOf<tarantool_space_select_request>() - executorMessageSize;
-  late final MemoryObjects<Pointer<tarantool_space_select_request>> _spaceSelectRequests;
+  final _spaceSelectMessageOffset = sizeOf<storage_space_select_request>() - executorMessageSize;
+  late final MemoryObjects<Pointer<storage_space_select_request>> _spaceSelectRequests;
 
-  final _spaceUpdateMessageOffset = sizeOf<tarantool_space_update_request>() - executorMessageSize;
-  late final MemoryObjects<Pointer<tarantool_space_update_request>> _spaceUpdateRequests;
+  final _spaceUpdateMessageOffset = sizeOf<storage_space_update_request>() - executorMessageSize;
+  late final MemoryObjects<Pointer<storage_space_update_request>> _spaceUpdateRequests;
 
-  final _spaceUpsertMessageOffset = sizeOf<tarantool_space_upsert_request>() - executorMessageSize;
-  late final MemoryObjects<Pointer<tarantool_space_upsert_request>> _spaceUpsertRequests;
+  final _spaceUpsertMessageOffset = sizeOf<storage_space_upsert_request>() - executorMessageSize;
+  late final MemoryObjects<Pointer<storage_space_upsert_request>> _spaceUpsertRequests;
 
-  final _spaceIteratorMessageOffset = sizeOf<tarantool_space_iterator_request>() - executorMessageSize;
-  late final MemoryObjects<Pointer<tarantool_space_iterator_request>> _spaceIteratorRequests;
+  final _spaceIteratorMessageOffset = sizeOf<storage_space_iterator_request>() - executorMessageSize;
+  late final MemoryObjects<Pointer<storage_space_iterator_request>> _spaceIteratorRequests;
 
-  final _indexMessageOffset = sizeOf<tarantool_index_request>() - executorMessageSize;
-  late final MemoryObjects<Pointer<tarantool_index_request>> _indexRequests;
+  final _indexMessageOffset = sizeOf<storage_index_request>() - executorMessageSize;
+  late final MemoryObjects<Pointer<storage_index_request>> _indexRequests;
 
-  final _indexCountMessageOffset = sizeOf<tarantool_index_count_request>() - executorMessageSize;
-  late final MemoryObjects<Pointer<tarantool_index_count_request>> _indexCountRequests;
+  final _indexCountMessageOffset = sizeOf<storage_index_count_request>() - executorMessageSize;
+  late final MemoryObjects<Pointer<storage_index_count_request>> _indexCountRequests;
 
-  final _indexIdByNameMessageOffset = sizeOf<tarantool_index_id_by_name_request>() - executorMessageSize;
-  late final MemoryObjects<Pointer<tarantool_index_id_by_name_request>> _indexIdByNameRequests;
+  final _indexIdByNameMessageOffset = sizeOf<storage_index_id_by_name_request>() - executorMessageSize;
+  late final MemoryObjects<Pointer<storage_index_id_by_name_request>> _indexIdByNameRequests;
 
-  final _indexUpdateMessageOffset = sizeOf<tarantool_index_update_request>() - executorMessageSize;
-  late final MemoryObjects<Pointer<tarantool_index_update_request>> _indexUpdateRequests;
+  final _indexUpdateMessageOffset = sizeOf<storage_index_update_request>() - executorMessageSize;
+  late final MemoryObjects<Pointer<storage_index_update_request>> _indexUpdateRequests;
 
-  final _indexIteratorMessageOffset = sizeOf<tarantool_index_iterator_request>() - executorMessageSize;
-  late final MemoryObjects<Pointer<tarantool_index_iterator_request>> _indexIteratorRequests;
+  final _indexIteratorMessageOffset = sizeOf<storage_index_iterator_request>() - executorMessageSize;
+  late final MemoryObjects<Pointer<storage_index_iterator_request>> _indexIteratorRequests;
 
-  final _callMessageOffset = sizeOf<tarantool_call_request>() - executorMessageSize;
-  late final MemoryObjects<Pointer<tarantool_call_request>> _callRequests;
+  final _callMessageOffset = sizeOf<storage_call_request>() - executorMessageSize;
+  late final MemoryObjects<Pointer<storage_call_request>> _callRequests;
 
-  final _evaluateMessageOffset = sizeOf<tarantool_evaluate_request>() - executorMessageSize;
-  late final MemoryObjects<Pointer<tarantool_evaluate_request>> _evaluateRequests;
+  final _evaluateMessageOffset = sizeOf<storage_evaluate_request>() - executorMessageSize;
+  late final MemoryObjects<Pointer<storage_evaluate_request>> _evaluateRequests;
 
-  final _indexSelectMessageOffset = sizeOf<tarantool_index_select_request>() - executorMessageSize;
-  late final MemoryObjects<Pointer<tarantool_index_select_request>> _indexSelectRequests;
+  final _indexSelectMessageOffset = sizeOf<storage_index_select_request>() - executorMessageSize;
+  late final MemoryObjects<Pointer<storage_index_select_request>> _indexSelectRequests;
 
-  final _indexIdMessageOffset = sizeOf<tarantool_index_id_request>() - executorMessageSize;
-  late final MemoryObjects<Pointer<tarantool_index_id_request>> _indexIdRequests;
+  final _indexIdMessageOffset = sizeOf<storage_index_id_request>() - executorMessageSize;
+  late final MemoryObjects<Pointer<storage_index_id_request>> _indexIdRequests;
 
   StorageFactory(this._strings) {
     MemoryStructurePools pools = context().structures();
     _messages = pools.register<executor_task>(sizeOf<executor_task>()).asObjectPool();
-    _spaceRequests = pools.register<tarantool_space_request>(sizeOf<tarantool_space_request>()).asObjectPool();
-    _spaceCountRequests = pools.register<tarantool_space_count_request>(sizeOf<tarantool_space_count_request>()).asObjectPool();
-    _spaceSelectRequests = pools.register<tarantool_space_select_request>(sizeOf<tarantool_space_select_request>()).asObjectPool();
-    _spaceUpdateRequests = pools.register<tarantool_space_update_request>(sizeOf<tarantool_space_update_request>()).asObjectPool();
-    _spaceUpsertRequests = pools.register<tarantool_space_upsert_request>(sizeOf<tarantool_space_upsert_request>()).asObjectPool();
-    _spaceIteratorRequests = pools.register<tarantool_space_iterator_request>(sizeOf<tarantool_space_iterator_request>()).asObjectPool();
-    _indexRequests = pools.register<tarantool_index_request>(sizeOf<tarantool_index_request>()).asObjectPool();
-    _indexCountRequests = pools.register<tarantool_index_count_request>(sizeOf<tarantool_index_count_request>()).asObjectPool();
-    _indexIdByNameRequests = pools.register<tarantool_index_id_by_name_request>(sizeOf<tarantool_index_id_by_name_request>()).asObjectPool();
-    _indexUpdateRequests = pools.register<tarantool_index_update_request>(sizeOf<tarantool_index_update_request>()).asObjectPool();
-    _indexIteratorRequests = pools.register<tarantool_index_iterator_request>(sizeOf<tarantool_index_iterator_request>()).asObjectPool();
-    _callRequests = pools.register<tarantool_call_request>(sizeOf<tarantool_call_request>()).asObjectPool();
-    _evaluateRequests = pools.register<tarantool_evaluate_request>(sizeOf<tarantool_evaluate_request>()).asObjectPool();
-    _indexSelectRequests = pools.register<tarantool_index_select_request>(sizeOf<tarantool_index_select_request>()).asObjectPool();
-    _indexIdRequests = pools.register<tarantool_index_id_request>(sizeOf<tarantool_index_id_request>()).asObjectPool();
+    _spaceRequests = pools.register<storage_space_request>(sizeOf<storage_space_request>()).asObjectPool();
+    _spaceCountRequests = pools.register<storage_space_count_request>(sizeOf<storage_space_count_request>()).asObjectPool();
+    _spaceSelectRequests = pools.register<storage_space_select_request>(sizeOf<storage_space_select_request>()).asObjectPool();
+    _spaceUpdateRequests = pools.register<storage_space_update_request>(sizeOf<storage_space_update_request>()).asObjectPool();
+    _spaceUpsertRequests = pools.register<storage_space_upsert_request>(sizeOf<storage_space_upsert_request>()).asObjectPool();
+    _spaceIteratorRequests = pools.register<storage_space_iterator_request>(sizeOf<storage_space_iterator_request>()).asObjectPool();
+    _indexRequests = pools.register<storage_index_request>(sizeOf<storage_index_request>()).asObjectPool();
+    _indexCountRequests = pools.register<storage_index_count_request>(sizeOf<storage_index_count_request>()).asObjectPool();
+    _indexIdByNameRequests = pools.register<storage_index_id_by_name_request>(sizeOf<storage_index_id_by_name_request>()).asObjectPool();
+    _indexUpdateRequests = pools.register<storage_index_update_request>(sizeOf<storage_index_update_request>()).asObjectPool();
+    _indexIteratorRequests = pools.register<storage_index_iterator_request>(sizeOf<storage_index_iterator_request>()).asObjectPool();
+    _callRequests = pools.register<storage_call_request>(sizeOf<storage_call_request>()).asObjectPool();
+    _evaluateRequests = pools.register<storage_evaluate_request>(sizeOf<storage_evaluate_request>()).asObjectPool();
+    _indexSelectRequests = pools.register<storage_index_select_request>(sizeOf<storage_index_select_request>()).asObjectPool();
+    _indexIdRequests = pools.register<storage_index_id_request>(sizeOf<storage_index_id_request>()).asObjectPool();
   }
 
   @inline
@@ -90,7 +90,7 @@ class StorageFactory {
   }
 
   @inline
-  void releaseSpace(Pointer<tarantool_space_request> request) => _spaceRequests.release(request);
+  void releaseSpace(Pointer<storage_space_request> request) => _spaceRequests.release(request);
 
   @inline
   Pointer<executor_task> createSpaceCount(int spaceId, int iteratorType, Pointer<Uint8> key, int keySize) {
@@ -104,7 +104,7 @@ class StorageFactory {
   }
 
   @inline
-  void releaseSpaceCount(Pointer<tarantool_space_count_request> request) => _spaceCountRequests.release(request);
+  void releaseSpaceCount(Pointer<storage_space_count_request> request) => _spaceCountRequests.release(request);
 
   @inline
   Pointer<executor_task> createSpaceSelect(int spaceId, Pointer<Uint8> key, int keySize, int offset, int limit, int iteratorType) {
@@ -120,7 +120,7 @@ class StorageFactory {
   }
 
   @inline
-  void releaseSpaceSelect(Pointer<tarantool_space_select_request> request) => _spaceSelectRequests.release(request);
+  void releaseSpaceSelect(Pointer<storage_space_select_request> request) => _spaceSelectRequests.release(request);
 
   @inline
   Pointer<executor_task> createSpaceUpdate(int spaceId, Pointer<Uint8> key, int keySize, Pointer<Uint8> operations, int operationsSize) {
@@ -135,7 +135,7 @@ class StorageFactory {
   }
 
   @inline
-  void releaseSpaceUpdate(Pointer<tarantool_space_update_request> request) => _spaceUpdateRequests.release(request);
+  void releaseSpaceUpdate(Pointer<storage_space_update_request> request) => _spaceUpdateRequests.release(request);
 
   @inline
   Pointer<executor_task> createSpaceUpsert(int spaceId, Pointer<Uint8> tuple, int tupleSize, Pointer<Uint8> operations, int operationsSize) {
@@ -150,7 +150,7 @@ class StorageFactory {
   }
 
   @inline
-  void releaseSpaceUpsert(Pointer<tarantool_space_upsert_request> request) => _spaceUpsertRequests.release(request);
+  void releaseSpaceUpsert(Pointer<storage_space_upsert_request> request) => _spaceUpsertRequests.release(request);
 
   @inline
   Pointer<executor_task> createSpaceIterator(int spaceId, int type, Pointer<Uint8> key, int keySize) {
@@ -164,7 +164,7 @@ class StorageFactory {
   }
 
   @inline
-  void releaseSpaceIterator(Pointer<tarantool_space_iterator_request> request) => _spaceIteratorRequests.release(request);
+  void releaseSpaceIterator(Pointer<storage_space_iterator_request> request) => _spaceIteratorRequests.release(request);
 
   @inline
   Pointer<executor_task> createIndex(int spaceId, int indexId, Pointer<Uint8> tuple, int tupleSize) {
@@ -178,7 +178,7 @@ class StorageFactory {
   }
 
   @inline
-  void releaseIndex(Pointer<tarantool_index_request> request) => _indexRequests.release(request);
+  void releaseIndex(Pointer<storage_index_request> request) => _indexRequests.release(request);
 
   @inline
   Pointer<executor_task> createIndexCount(int spaceId, int indexId, Pointer<Uint8> key, int keySize, int iteratorType) {
@@ -193,7 +193,7 @@ class StorageFactory {
   }
 
   @inline
-  void releaseIndexCount(Pointer<tarantool_index_count_request> request) => _indexCountRequests.release(request);
+  void releaseIndexCount(Pointer<storage_index_count_request> request) => _indexCountRequests.release(request);
 
   @inline
   Pointer<executor_task> createIndexIdByName(int spaceId, String name) {
@@ -207,7 +207,7 @@ class StorageFactory {
   }
 
   @inline
-  void releaseIndexIdByName(Pointer<tarantool_index_id_by_name_request> request) {
+  void releaseIndexIdByName(Pointer<storage_index_id_by_name_request> request) {
     _strings.free(request.ref.name, request.ref.name_length);
     _indexIdByNameRequests.release(request);
   }
@@ -221,7 +221,7 @@ class StorageFactory {
   }
 
   @inline
-  void releaseIndexId(Pointer<tarantool_index_id_request> request) => _indexIdRequests.release(request);
+  void releaseIndexId(Pointer<storage_index_id_request> request) => _indexIdRequests.release(request);
 
   @inline
   Pointer<executor_task> createIndexUpdate(int spaceId, int indexId, Pointer<Uint8> key, int keySize, Pointer<Uint8> operations, int operationsSize) {
@@ -235,7 +235,7 @@ class StorageFactory {
   }
 
   @inline
-  void releaseIndexUpdate(Pointer<tarantool_index_update_request> request) => _indexUpdateRequests.release(request);
+  void releaseIndexUpdate(Pointer<storage_index_update_request> request) => _indexUpdateRequests.release(request);
 
   @inline
   Pointer<executor_task> createCall(String function, Pointer<Uint8> input, int inputSize) {
@@ -250,7 +250,7 @@ class StorageFactory {
   }
 
   @inline
-  void releaseCall(Pointer<tarantool_call_request> request) {
+  void releaseCall(Pointer<storage_call_request> request) {
     _strings.free(request.ref.function, request.ref.function_length);
     _callRequests.release(request);
   }
@@ -268,7 +268,7 @@ class StorageFactory {
   }
 
   @inline
-  void releaseEvaluate(Pointer<tarantool_evaluate_request> request) {
+  void releaseEvaluate(Pointer<storage_evaluate_request> request) {
     _strings.free(request.ref.expression, request.ref.expression_length);
     _evaluateRequests.release(request);
   }
@@ -286,7 +286,7 @@ class StorageFactory {
   }
 
   @inline
-  void releaseIndexIterator(Pointer<tarantool_index_iterator_request> request) => _indexIteratorRequests.release(request);
+  void releaseIndexIterator(Pointer<storage_index_iterator_request> request) => _indexIteratorRequests.release(request);
 
   @inline
   Pointer<executor_task> createIndexSelect(int spaceId, int indexId, Pointer<Uint8> key, int keySize, int offset, int limit, int type) {
@@ -303,7 +303,7 @@ class StorageFactory {
   }
 
   @inline
-  void releaseIndexSelect(Pointer<tarantool_index_select_request> request) => _indexSelectRequests.release(request);
+  void releaseIndexSelect(Pointer<storage_index_select_request> request) => _indexSelectRequests.release(request);
 
   Pointer<executor_task> createString(String string) {
     final (nativeString, nativeStringLength) = _strings.allocate(string);

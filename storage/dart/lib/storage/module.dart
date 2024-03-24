@@ -17,7 +17,7 @@ class StorageModule {
   final SystemLibrary _library;
   final _executor = ExecutorModule();
 
-  late final _box = calloc<tarantool_box>(sizeOf<tarantool_box>());
+  late final _box = calloc<storage_box>(sizeOf<storage_box>());
 
   late StorageExecutor _executor;
   late bool _hasStorageLuaModule;
@@ -31,11 +31,11 @@ class StorageModule {
   Future<void> boot(StorageBootstrapScript script, StorageExecutorConfiguration executorConfiguration, {StorageBootConfiguration? bootConfiguration, activateReloader = false}) async {
     if (initialized()) return;
     _hasStorageLuaModule = script.hasStorageLuaModule;
-    if (!using((Arena allocator) => tarantool_initialize(executorConfiguration.native(_library.path, script.write(), allocator), _box))) {
-      throw StorageLauncherException(tarantool_initialization_error().cast<Utf8>().toDartString());
+    if (!using((Arena allocator) => storage_initialize(executorConfiguration.native(_library.path, script.write(), allocator), _box))) {
+      throw StorageLauncherException(storage_initialization_error().cast<Utf8>().toDartString());
     }
     if (!initialized()) {
-      throw StorageLauncherException(tarantool_initialization_error().cast<Utf8>().toDartString());
+      throw StorageLauncherException(storage_initialization_error().cast<Utf8>().toDartString());
     }
     _executor.initialize();
     _executor = StorageExecutor(_box);
@@ -46,11 +46,11 @@ class StorageModule {
     if (activateReloader) _reloadListener = ProcessSignal.sighup.watch().listen((event) async => await reload());
   }
 
-  bool initialized() => tarantool_initialized();
+  bool initialized() => storage_initialized();
 
-  bool mutable() => tarantool_is_read_only() == 0;
+  bool mutable() => storage_is_read_only() == 0;
 
-  bool immutable() => tarantool_is_read_only() == 1;
+  bool immutable() => storage_is_read_only() == 1;
 
   Future<void> waitInitialized() => Future.doWhile(() => Future.delayed(awaitStateDuration).then((value) => !initialized()));
 
@@ -63,8 +63,8 @@ class StorageModule {
   Future<void> shutdown() async {
     _reloadListener?.cancel();
     _executor.stop();
-    if (!tarantool_shutdown()) {
-      throw StorageLauncherException(tarantool_shutdown_error().cast<Utf8>().toDartString());
+    if (!storage_shutdown()) {
+      throw StorageLauncherException(storage_shutdown_error().cast<Utf8>().toDartString());
     }
     await _executor.shutdown();
     await _executor.destroy();

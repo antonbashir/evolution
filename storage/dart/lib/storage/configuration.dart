@@ -234,8 +234,8 @@ class StorageExecutorConfiguration {
         shutdownTimeout: shutdownTimeout ?? this.shutdownTimeout,
       );
 
-  Pointer<tarantool_configuration> native(String libraryPath, String script, Allocator allocator) {
-    Pointer<tarantool_configuration> configuration = allocator<tarantool_configuration>();
+  Pointer<storage_configuration> native(String libraryPath, String script, Allocator allocator) {
+    Pointer<storage_configuration> configuration = allocator<storage_configuration>();
     configuration.ref.box_output_buffer_capacity = boxOutputBufferCapacity;
     configuration.ref.binary_path = Platform.executable.toNativeUtf8().cast();
     configuration.ref.library_path = libraryPath.toNativeUtf8(allocator: allocator).cast();

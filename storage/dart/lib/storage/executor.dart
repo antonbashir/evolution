@@ -13,7 +13,7 @@ import 'schema.dart';
 import 'strings.dart';
 
 class StorageProducer implements ExecutorProducer {
-  final Pointer<tarantool_box> _box;
+  final Pointer<storage_box> _box;
 
   StorageProducer(this._box);
 
@@ -53,39 +53,39 @@ class StorageProducer implements ExecutorProducer {
 
   @override
   void initialize(ExecutorProducerRegistrat registrat) {
-    evaluate = registrat.register(Pointer.fromAddress(_box.ref.tarantool_evaluate_address));
-    call = registrat.register(Pointer.fromAddress(_box.ref.tarantool_call_address));
-    iteratorNextSingle = registrat.register(Pointer.fromAddress(_box.ref.tarantool_iterator_next_single_address));
-    iteratorNextMany = registrat.register(Pointer.fromAddress(_box.ref.tarantool_iterator_next_many_address));
-    iteratorDestroy = registrat.register(Pointer.fromAddress(_box.ref.tarantool_iterator_destroy_address));
-    freeOutputBuffer = registrat.register(Pointer.fromAddress(_box.ref.tarantool_free_output_buffer_address));
-    spaceIdByName = registrat.register(Pointer.fromAddress(_box.ref.tarantool_space_id_by_name_address));
-    spaceCount = registrat.register(Pointer.fromAddress(_box.ref.tarantool_space_count_address));
-    spaceLength = registrat.register(Pointer.fromAddress(_box.ref.tarantool_space_length_address));
-    spaceIterator = registrat.register(Pointer.fromAddress(_box.ref.tarantool_space_iterator_address));
-    spaceInsertSingle = registrat.register(Pointer.fromAddress(_box.ref.tarantool_space_insert_single_address));
-    spaceInsertMany = registrat.register(Pointer.fromAddress(_box.ref.tarantool_space_insert_many_address));
-    spacePutSingle = registrat.register(Pointer.fromAddress(_box.ref.tarantool_space_put_single_address));
-    spacePutMany = registrat.register(Pointer.fromAddress(_box.ref.tarantool_space_put_many_address));
-    spaceDeleteSingle = registrat.register(Pointer.fromAddress(_box.ref.tarantool_space_delete_single_address));
-    spaceDeleteMany = registrat.register(Pointer.fromAddress(_box.ref.tarantool_space_delete_many_address));
-    spaceUpdateSingle = registrat.register(Pointer.fromAddress(_box.ref.tarantool_space_update_single_address));
-    spaceUpdateMany = registrat.register(Pointer.fromAddress(_box.ref.tarantool_space_update_many_address));
-    spaceGet = registrat.register(Pointer.fromAddress(_box.ref.tarantool_space_get_address));
-    spaceMin = registrat.register(Pointer.fromAddress(_box.ref.tarantool_space_min_address));
-    spaceMax = registrat.register(Pointer.fromAddress(_box.ref.tarantool_space_max_address));
-    spaceTruncate = registrat.register(Pointer.fromAddress(_box.ref.tarantool_space_truncate_address));
-    spaceUpsert = registrat.register(Pointer.fromAddress(_box.ref.tarantool_space_upsert_address));
-    indexCount = registrat.register(Pointer.fromAddress(_box.ref.tarantool_index_count_address));
-    indexLength = registrat.register(Pointer.fromAddress(_box.ref.tarantool_index_length_address));
-    indexIterator = registrat.register(Pointer.fromAddress(_box.ref.tarantool_index_iterator_address));
-    indexGet = registrat.register(Pointer.fromAddress(_box.ref.tarantool_index_get_address));
-    indexMax = registrat.register(Pointer.fromAddress(_box.ref.tarantool_index_max_address));
-    indexMin = registrat.register(Pointer.fromAddress(_box.ref.tarantool_index_min_address));
-    indexUpdateSingle = registrat.register(Pointer.fromAddress(_box.ref.tarantool_index_update_single_address));
-    indexUpdateMany = registrat.register(Pointer.fromAddress(_box.ref.tarantool_index_update_many_address));
-    indexSelect = registrat.register(Pointer.fromAddress(_box.ref.tarantool_index_select_address));
-    indexIdByName = registrat.register(Pointer.fromAddress(_box.ref.tarantool_index_id_by_name_address));
+    evaluate = registrat.register(Pointer.fromAddress(_box.ref.storage_evaluate_address));
+    call = registrat.register(Pointer.fromAddress(_box.ref.storage_call_address));
+    iteratorNextSingle = registrat.register(Pointer.fromAddress(_box.ref.storage_iterator_next_single_address));
+    iteratorNextMany = registrat.register(Pointer.fromAddress(_box.ref.storage_iterator_next_many_address));
+    iteratorDestroy = registrat.register(Pointer.fromAddress(_box.ref.storage_iterator_destroy_address));
+    freeOutputBuffer = registrat.register(Pointer.fromAddress(_box.ref.storage_free_output_buffer_address));
+    spaceIdByName = registrat.register(Pointer.fromAddress(_box.ref.storage_space_id_by_name_address));
+    spaceCount = registrat.register(Pointer.fromAddress(_box.ref.storage_space_count_address));
+    spaceLength = registrat.register(Pointer.fromAddress(_box.ref.storage_space_length_address));
+    spaceIterator = registrat.register(Pointer.fromAddress(_box.ref.storage_space_iterator_address));
+    spaceInsertSingle = registrat.register(Pointer.fromAddress(_box.ref.storage_space_insert_single_address));
+    spaceInsertMany = registrat.register(Pointer.fromAddress(_box.ref.storage_space_insert_many_address));
+    spacePutSingle = registrat.register(Pointer.fromAddress(_box.ref.storage_space_put_single_address));
+    spacePutMany = registrat.register(Pointer.fromAddress(_box.ref.storage_space_put_many_address));
+    spaceDeleteSingle = registrat.register(Pointer.fromAddress(_box.ref.storage_space_delete_single_address));
+    spaceDeleteMany = registrat.register(Pointer.fromAddress(_box.ref.storage_space_delete_many_address));
+    spaceUpdateSingle = registrat.register(Pointer.fromAddress(_box.ref.storage_space_update_single_address));
+    spaceUpdateMany = registrat.register(Pointer.fromAddress(_box.ref.storage_space_update_many_address));
+    spaceGet = registrat.register(Pointer.fromAddress(_box.ref.storage_space_get_address));
+    spaceMin = registrat.register(Pointer.fromAddress(_box.ref.storage_space_min_address));
+    spaceMax = registrat.register(Pointer.fromAddress(_box.ref.storage_space_max_address));
+    spaceTruncate = registrat.register(Pointer.fromAddress(_box.ref.storage_space_truncate_address));
+    spaceUpsert = registrat.register(Pointer.fromAddress(_box.ref.storage_space_upsert_address));
+    indexCount = registrat.register(Pointer.fromAddress(_box.ref.storage_index_count_address));
+    indexLength = registrat.register(Pointer.fromAddress(_box.ref.storage_index_length_address));
+    indexIterator = registrat.register(Pointer.fromAddress(_box.ref.storage_index_iterator_address));
+    indexGet = registrat.register(Pointer.fromAddress(_box.ref.storage_index_get_address));
+    indexMax = registrat.register(Pointer.fromAddress(_box.ref.storage_index_max_address));
+    indexMin = registrat.register(Pointer.fromAddress(_box.ref.storage_index_min_address));
+    indexUpdateSingle = registrat.register(Pointer.fromAddress(_box.ref.storage_index_update_single_address));
+    indexUpdateMany = registrat.register(Pointer.fromAddress(_box.ref.storage_index_update_many_address));
+    indexSelect = registrat.register(Pointer.fromAddress(_box.ref.storage_index_select_address));
+    indexIdByName = registrat.register(Pointer.fromAddress(_box.ref.storage_index_id_by_name_address));
   }
 }
 
@@ -97,14 +97,14 @@ class StorageConsumer implements ExecutorConsumer {
 }
 
 class StorageExecutor {
-  final Pointer<tarantool_box> _box;
+  final Pointer<storage_box> _box;
 
   late final StorageSchema _schema;
   late final Executor _executor;
   late final int _descriptor;
   late final MemoryTuples _tuples;
   late final StorageProducer _producer;
-  late final Pointer<tarantool_factory> _nativeFactory;
+  late final Pointer<storage_factory> _nativeFactory;
   late final StorageStrings _strings;
   late final StorageFactory _factory;
 
@@ -116,14 +116,14 @@ class StorageExecutor {
   Future<void> initialize() async {
     _executor = context().executor();
     await _executor.initialize();
-    _descriptor = tarantool_executor_descriptor();
-    _nativeFactory = calloc<tarantool_factory>(sizeOf<tarantool_factory>());
+    _descriptor = storage_executor_descriptor();
+    _nativeFactory = calloc<storage_factory>(sizeOf<storage_factory>());
     using((Arena arena) {
-      final configuration = arena<tarantool_factory_configuration>();
+      final configuration = arena<storage_factory_configuration>();
       configuration.ref.quota_size = MemoryDefaults.memory.quotaSize;
       configuration.ref.preallocation_size = MemoryDefaults.memory.preallocationSize;
       configuration.ref.slab_size = MemoryDefaults.memory.slabSize;
-      tarantool_factory_initialize(_nativeFactory, configuration);
+      storage_factory_initialize(_nativeFactory, configuration);
     });
     _executor.consumer(StorageConsumer());
     _producer = _executor.producer(StorageProducer(_box));
@@ -137,7 +137,7 @@ class StorageExecutor {
   void stop() => _executor.deactivate();
 
   Future<void> destroy() async {
-    tarantool_factory_destroy(_nativeFactory);
+    storage_factory_destroy(_nativeFactory);
     calloc.free(_nativeFactory.cast());
   }
 
@@ -163,8 +163,8 @@ class StorageExecutor {
     if (input != null) {
       return _producer.evaluate(_descriptor, _factory.createEvaluate(expression, input, inputSize)).then(_parseLuaEvaluate);
     }
-    (input, inputSize) = _tuples.emptyList;
-    return _producer.evaluate(_descriptor, _factory.createEvaluate(expression, input, inputSize)).then(_parseLuaEvaluate);
+    final (:Pointer<Uint8> value, :int size) = _tuples.emptyList;
+    return _producer.evaluate(_descriptor, _factory.createEvaluate(expression, value, size)).then(_parseLuaEvaluate);
   }
 
   @inline
@@ -172,8 +172,9 @@ class StorageExecutor {
     if (input != null) {
       return _producer.call(_descriptor, _factory.createCall(function, input, inputSize)).then(_parseLuaCall);
     }
-    (input, inputSize) = _tuples.emptyList;
-    return _producer.call(_descriptor, _factory.createCall(function, input, inputSize)).then(_parseLuaCall);
+
+    final (:Pointer<Uint8> value, :int size) = _tuples.emptyList;
+    return _producer.call(_descriptor, _factory.createCall(function, value, size)).then(_parseLuaCall);
   }
 
   @inline

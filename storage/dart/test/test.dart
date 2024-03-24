@@ -60,7 +60,7 @@ Future<void> main() async {
 
 
 //
-//Future<void> testExecuteNative() async => expect((await _executor.native.call(_storage.bindings.addresses.tarantool_is_read_only.cast())).address, equals(0));
+//Future<void> testExecuteNative() async => expect((await _executor.native.call(_storage.bindings.addresses.storage_is_read_only.cast())).address, equals(0));
 //
 //Future<void> testIterator() async {
 //  await Future.wait(testMultipleData.map(_space.insertSingle));

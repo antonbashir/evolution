@@ -6,7 +6,7 @@ import 'package:test/scaffolding.dart';
 
 void main(List<String> args) => test("test replica ${args[0]}", () async {
       final storage = StorageModule();
-      final workDirectory = Directory(Directory.current.path + "/test/tarantool_${int.parse(args[0].toString())}");
+      final workDirectory = Directory(Directory.current.path + "/test/storage_${int.parse(args[0].toString())}");
       final bootConfiguration = StorageDefaults.boot();
       final configuration = StorageDefaults.storage.copyWith(
         listen: args[0].toString(),
