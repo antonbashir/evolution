@@ -52,7 +52,7 @@ void hasher_initialize_default()
     hasher_initialize_wyhash(&default_hasher_64, HASHING_DEFAULT_STRING_SEED, _wyp);
 #endif
 #if HASHING_DEFAULT_MODE == HASHING_MURMUR
-    hasher_initialize_murmur(&default_hasher_32, HASHING_DEFAULT_STRING_SEED);
+    hasher_initialize_murmur32(&default_hasher_32, HASHING_DEFAULT_STRING_SEED);
 #endif
 #if HASHING_DEFAULT_MODE == HASHING_XXHASH
     hasher_initialize_xxhash32(&default_hasher_32, HASHING_DEFAULT_STRING_SEED);
