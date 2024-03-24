@@ -19,13 +19,13 @@ void main() {
   system().environment.debug = false;
   final initialization = true;
   final tcp = true;
-  final udp = false;
-  final unixStream = false;
-  final file = false;
-  final bulk = false;
-  final timeout = false;
-  final buffers = false;
-  final shutdown = false;
+  final udp = true;
+  final unixStream = true;
+  final file = true;
+  final bulk = true;
+  final timeout = true;
+  final buffers = true;
+  final shutdown = true;
 
   group("[initialization]", timeout: Timeout(Duration(hours: 1)), skip: !initialization, () {
     testInitialization();
@@ -81,9 +81,9 @@ void main() {
     testUdpTimeout(serverRead: Duration(seconds: 5), clientRead: Duration(seconds: 3));
   });
   group("[buffers]", timeout: Timeout(Duration(hours: 1)), skip: !buffers, () {
-    //testTcpBuffers();
-    //testUdpBuffers();
-    //testFileBuffers();
+    testTcpBuffers();
+    testUdpBuffers();
+    testFileBuffers();
     testBuffersOverflow();
   });
   group("[bulk]", timeout: Timeout(Duration(hours: 1)), skip: !bulk, () {
@@ -96,5 +96,6 @@ void testInitialization() => test(
       () => runTest(() async {
         final transport = context().transport()..initialize();
         await transport.shutdown();
+        print("shutdown");
       }),
     );

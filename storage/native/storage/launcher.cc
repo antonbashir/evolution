@@ -32,7 +32,6 @@
 #include "cfg.h"
 #include "coio_task.h"
 #include "coll/coll.h"
-#include "core/crash.h"
 #include "core/errinj.h"
 #include "core/event.h"
 #include "core/popen.h"
@@ -127,7 +126,6 @@ static void signal_reset(void)
         say_syserror("sigaction");
 
     fiber_signal_reset();
-    crash_signal_reset();
 
     sigset_t sigset;
     sigfillset(&sigset);
@@ -171,7 +169,6 @@ static void signal_init(void)
         panic_syserror("sigaction");
 
     fiber_signal_init();
-    crash_signal_init();
 
     ev_signal_init(&ev_sigs[0], sig_checkpoint, SIGUSR1);
     ev_signal_init(&ev_sigs[1], signal_sigint_cb, SIGINT);
