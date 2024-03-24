@@ -7,22 +7,18 @@
 
 struct context_structure context_instance;
 
-void bootstrap()
-{
-  system_initialize_default();
-}
-
 struct context_structure* context_get()
 {
     return &context_instance;
 }
 
-void context_create()
+void context_create(struct bootstrap_configuration* configuration)
 {
     if (context_instance.initialized)
     {
         raise_panic(event_panic(event_field_message(PANIC_CONTEXT_CREATED)));
     }
+    context_instance.configuration = configuration;
     context_instance.modules = simple_map_modules_new();
     context_instance.environment = simple_map_string_values_new();
     context_instance.containers = calloc(MODULES_MAXIMUM, sizeof(struct module_container));

@@ -6,26 +6,39 @@ import 'bindings.dart';
 import 'constants.dart';
 import 'context.dart';
 
-class CoreModuleConfiguration with ModuleConfiguration {
+class BootstrapConfiguration {
   final bool silent;
   final EventLevel printLevel;
 
-  const CoreModuleConfiguration({required this.printLevel, required this.silent});
+  const BootstrapConfiguration({required this.printLevel, required this.silent});
 
-  Pointer<core_module_configuration> toNative(Arena arena) {
-    final native = arena<core_module_configuration>();
+  Pointer<bootstrap_configuration> toNative(Arena arena) {
+    final native = arena<bootstrap_configuration>();
     native.ref.print_level = printLevel.level;
     native.ref.silent = native.ref.silent;
     return native;
   }
 
-  factory CoreModuleConfiguration.fromNative(core_module_configuration native) => CoreModuleConfiguration(
+  factory BootstrapConfiguration.fromNative(bootstrap_configuration native) => BootstrapConfiguration(
         printLevel: EventLevel.ofLevel(native.print_level),
         silent: native.silent,
       );
 
-  CoreModuleConfiguration copyWith({bool? silent, EventLevel? printLevel, String? component}) => CoreModuleConfiguration(
+  BootstrapConfiguration copyWith({bool? silent, EventLevel? printLevel, String? component}) => BootstrapConfiguration(
         silent: silent ?? this.silent,
         printLevel: printLevel ?? this.printLevel,
       );
+}
+
+class CoreModuleConfiguration with ModuleConfiguration {
+  const CoreModuleConfiguration();
+
+    Pointer<core_module_configuration> toNative(Arena arena) {
+    final native = arena<core_module_configuration>();
+    return native;
+  }
+
+  factory CoreModuleConfiguration.fromNative(core_module_configuration native) => CoreModuleConfiguration(
+      );
+
 }

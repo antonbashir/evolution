@@ -14,8 +14,7 @@ extern "C"
 #define module_name core
 DART_STRUCTURE struct core_module_configuration
 {
-    DART_FIELD bool silent;
-    DART_FIELD uint8_t print_level;
+  DART_FIELD uint8_t unused;
 };
 #define module_configuration struct core_module_configuration
 DART_STRUCTURE struct core_module

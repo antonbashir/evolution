@@ -17,16 +17,14 @@ final class context_structure extends Struct {
   external Pointer<module_container> containers;
   external Pointer<simple_map_modules_t> modules;
   external Pointer<simple_map_string_values_t> environment;
+  external Pointer<bootstrap_configuration> configuration;
 }
-
-@Native<Void Function()>(isLeaf: true)
-external void bootstrap();
 
 @Native<Pointer<context_structure> Function()>(isLeaf: true)
 external Pointer<context_structure> context_get();
 
-@Native<Void Function()>(isLeaf: true)
-external void context_create();
+@Native<Void Function(Pointer<bootstrap_configuration> configuration)>(isLeaf: true)
+external void context_create(Pointer<bootstrap_configuration> configuration);
 
 @Native<Pointer<Void> Function(Pointer<Utf8> name)>(isLeaf: true)
 external Pointer<Void> context_get_module(Pointer<Utf8> name);

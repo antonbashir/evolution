@@ -48,6 +48,7 @@ class CoreModuleState implements ModuleState {
 
 class CoreModule extends Module<core_module, CoreModuleConfiguration, CoreModuleState> {
   final name = coreModuleName;
+
   final state = CoreModuleState(
     outPrinter: stdout.writeln,
     errorPrinter: stderr.writeln,

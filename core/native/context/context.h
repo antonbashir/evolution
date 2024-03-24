@@ -1,6 +1,7 @@
 #ifndef CORE_CONTEXT_H
 #define CORE_CONTEXT_H
 
+#include <bootstrap/bootstrap.h>
 #include <collections/maps.h>
 #include <common/common.h>
 #include <common/constants.h>
@@ -19,11 +20,11 @@ DART_STRUCTURE struct context_structure
     DART_FIELD struct module_container* containers;
     DART_FIELD DART_TYPE struct simple_map_modules_t* modules;
     DART_FIELD DART_TYPE struct simple_map_string_values_t* environment;
+    DART_FIELD struct bootstrap_configuration* configuration;
 };
 
-DART_LEAF_FUNCTION void bootstrap();
 DART_LEAF_FUNCTION struct context_structure* context_get();
-DART_LEAF_FUNCTION void context_create();
+DART_LEAF_FUNCTION void context_create(struct bootstrap_configuration* configuration);
 DART_LEAF_FUNCTION void* context_get_module(const char* name);
 DART_LEAF_FUNCTION void context_put_module(const char* name, void* module, const char* type);
 DART_LEAF_FUNCTION void context_remove_module(const char* name);

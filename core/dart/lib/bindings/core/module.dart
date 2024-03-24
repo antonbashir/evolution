@@ -5,12 +5,7 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import '../../core/bindings.dart';
 
-final class core_module_configuration extends Struct {
-  @Bool()
-  external bool silent;
-  @Uint8()
-  external int print_level;
-}
+final class core_module_configuration extends Opaque {}
 
 final class core_module extends Struct {
   external Pointer<Utf8> name;

@@ -29,7 +29,7 @@ static FORCEINLINE struct hasher* hasher_get_default_32()
 
 static FORCEINLINE struct hasher* hasher_get_default_64()
 {
-    return &default_hasher_32;
+    return &default_hasher_64;
 }
 
 #endif

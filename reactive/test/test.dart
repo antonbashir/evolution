@@ -16,7 +16,7 @@ import 'shutdown.dart';
 
 FutureOr<void> runTest(FutureOr<void> Function() test, {List<Module>? overrides}) {
   environment().debug = false;
-  return launch(overrides ?? [CoreModule(), MemoryModule(), ExecutorModule(), TransportModule()], test);
+  return launch(overrides ?? [CoreModule.new, MemoryModule.new, ExecutorModule.new, TransportModule.new], test);
 }
 
 void main() {

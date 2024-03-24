@@ -178,10 +178,10 @@ void testBuffersOverflow() {
     "(overflow)",
     () => runTest(
       overrides: [
-        CoreModule(),
+        CoreModule.new,
         MemoryModule(configuration: MemoryDefaults.module.copyWith(memoryConfiguration: MemoryDefaults.memory.copyWith(staticBuffersCapacity: 2))),
-        ExecutorModule(),
-        TransportModule(),
+        ExecutorModule.new,
+        TransportModule.new,
       ],
       () async {
         final transport = context().transport();

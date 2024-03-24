@@ -13,10 +13,10 @@ Future<void> main(List<String> args) async {
 
 Future<void> _benchMyTcp() async => await launch(
       [
-        CoreModule(),
-        MemoryModule(),
-        ExecutorModule(),
-        TransportModule(),
+        CoreModule.new,
+        MemoryModule.new,
+        ExecutorModule.new,
+        TransportModule.new,
       ],
       () async {
         final encoder = Utf8Encoder();

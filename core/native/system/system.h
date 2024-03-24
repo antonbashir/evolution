@@ -40,6 +40,10 @@ extern struct system system_instance;
 
 void system_initialize_default();
 void system_initialize(struct system_configuration configuration);
+void system_default_printer(const char* format, ...);
+void system_default_error_printer(const char* format, ...);
+void system_default_event_printer(struct event* event);
+void system_default_event_raiser(struct event* event);
 
 DART_LEAF_FUNCTION struct system_library* system_library_load(const char* path, const char* module);
 DART_LEAF_FUNCTION void system_library_put(struct system_library* library);
