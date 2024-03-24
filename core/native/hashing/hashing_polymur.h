@@ -27,4 +27,8 @@ static FORCEINLINE uint64_t hash_bytes_64(const uint8_t* bytes, size_t length)
     PolymurHashParams* parameters = hasher_get_default_64()->polymur_parameters;
     return hash_bytes_polymur_configured(parameters, bytes, length, 0);
 }
+static FORCEINLINE uint32_t hash_bytes_32(const uint8_t* bytes, size_t length)
+{
+    unreachable();
+}
 #endif

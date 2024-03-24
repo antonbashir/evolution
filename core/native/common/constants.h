@@ -56,6 +56,8 @@ extern "C"
 #define EVENT_FIELD_STACK_TRACE "stack-trace"
 #define EVENT_FIELD_SIGNAL_INFORMATION "signal-information"
 
+#define UNIMPLEMENTED "unimplemented"
+
 #define EVENT_ERROR_KIND_MODULE "module"
 #define EVENT_ERROR_KIND_SYSTEM "system"
 

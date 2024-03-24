@@ -15,4 +15,8 @@ static FORCEINLINE uint32_t hash_bytes_32(const uint8_t* bytes, size_t length)
 {
     return hash_bytes_murmur32(bytes, length, HASHING_DEFAULT_STRING_SEED);
 }
+static FORCEINLINE uint64_t hash_bytes_64(const uint8_t* bytes, size_t length)
+{
+    unreachable();
+}
 #endif

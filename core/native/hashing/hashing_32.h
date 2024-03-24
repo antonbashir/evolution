@@ -5,6 +5,7 @@
 #include <common/constants.h>
 #include "hasher.h"
 #include "hashing_murmur32.h"
+#include "hashing_polymur.h"
 #include "hashing_wyhash.h"
 #include "hashing_xxhash.h"
 
@@ -23,7 +24,7 @@ static FORCEINLINE uint32_t hasher_hash_32(struct hasher* hasher, const uint8_t*
         case HASHING_XXHASH:
             return hash_bytes_xxh32(bytes, length, hasher->seed_32);
     }
-    return 0;
+    unreachable();
 }
 
 static FORCEINLINE uint32_t hash_string_32(const char* string, size_t length)

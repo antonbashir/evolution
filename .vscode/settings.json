@@ -170,6 +170,7 @@
     "hashing_xxhash.h": "c",
     "hashing_murmur_32.h": "c",
     "hashing_murmur32.h": "c",
-    "hasher.h": "c"
+    "hasher.h": "c",
+    "hashing_wyhash.h": "c"
   },
 }
