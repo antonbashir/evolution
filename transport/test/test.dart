@@ -96,6 +96,5 @@ void testInitialization() => test(
       () => runTest(() async {
         final transport = context().transport()..initialize();
         await transport.shutdown();
-        print("shutdown");
       }),
     );
