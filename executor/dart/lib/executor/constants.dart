@@ -2,7 +2,7 @@ import 'dart:ffi';
 
 import 'package:core/core.dart';
 
-final executorLibraryName = environment().debug ? "libexecutor_debug_${Abi.current()}.so" : "libexecutor_release_${Abi.current()}.so";
+final executorLibraryName = system().environment.debug ? "libexecutor_debug_${Abi.current()}.so" : "libexecutor_release_${Abi.current()}.so";
 const executorModuleName = "executor";
 
 const maximumExecutors = 1 << 16;

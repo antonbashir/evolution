@@ -15,7 +15,7 @@ class StorageModule {
   final Map<String, SystemLibrary> _loadedModulesByName = {};
   final Map<String, SystemLibrary> _loadedModulesByPath = {};
   final SystemLibrary _library;
-  final _executor = ExecutorModule.new;
+  final _executor = ExecutorModule();
 
   late final _box = calloc<tarantool_box>(sizeOf<tarantool_box>());
 

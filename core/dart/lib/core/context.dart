@@ -3,6 +3,7 @@ import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
 
+import '../core.dart';
 import 'bindings.dart';
 import 'configuration.dart';
 import 'constants.dart';

@@ -14,10 +14,10 @@ import 'package:path/path.dart' as path;
 import 'bindings.dart';
 
 void _execute(FutureOr<void> Function() test) => launch(
-      [
-        CoreModule.new,
-        MemoryModule.new,
-        ExecutorModule.new,
+      () => [
+        CoreModule(),
+        MemoryModule(),
+        ExecutorModule(),
       ],
       () async {
         SystemLibrary.loadByPath("${Directory(path.dirname(Platform.script.toFilePath())).parent.path}/assets/libexecutor_test.so", "executor_test");

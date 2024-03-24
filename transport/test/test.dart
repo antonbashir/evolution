@@ -13,10 +13,10 @@ import 'timeout.dart';
 import 'udp.dart';
 import 'unix.dart';
 
-FutureOr<void> runTest(FutureOr<void> Function() test, {List<Module>? overrides}) => launch(overrides ?? [CoreModule.new, MemoryModule.new, ExecutorModule.new, TransportModule.new], test);
+FutureOr<void> runTest(FutureOr<void> Function() test, {List<Module>? overrides}) => launch(() => overrides ?? [CoreModule(), MemoryModule(), ExecutorModule(), TransportModule()], test);
 
 void main() {
-  environment().debug = false;
+  system().environment.debug = false;
   final initialization = true;
   final tcp = true;
   final udp = true;

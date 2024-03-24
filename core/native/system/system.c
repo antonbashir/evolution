@@ -48,7 +48,8 @@ void system_default_event_raiser(struct event* event)
 void system_initialize(struct system_configuration configuration)
 {
     if (system_instance.initialized) return;
-    system_instance.system_libraries = simple_map_system_libraries_new();
+    system_instance.libraries = simple_map_system_libraries_new();
+    system_instance.environment = simple_map_string_values_new();
     system_instance.configuration = configuration;
     crash_initialize();
     hasher_initialize_default();
@@ -74,28 +75,28 @@ struct system_library* system_library_load(const char* path, const char* module)
     new->handle = handle;
     new->path = strdup(path);
     new->module = strdup(module);
-    simple_map_system_libraries_put(system_instance.system_libraries, new, NULL, NULL);
+    simple_map_system_libraries_put(system_instance.libraries, new, NULL, NULL);
     return new;
 }
 
 DART_LEAF_FUNCTION void system_library_put(struct system_library* library)
 {
-    simple_map_system_libraries_put(system_instance.system_libraries, library, NULL, NULL);
+    simple_map_system_libraries_put(system_instance.libraries, library, NULL, NULL);
 }
 
 struct system_library* system_library_get(const char* path)
 {
-    return safe_pointer(simple_map_system_libraries_find_value(system_instance.system_libraries, path));
+    return safe_pointer(simple_map_system_libraries_find_value(system_instance.libraries, path));
 }
 
 struct system_library* system_library_by_module(const char* module)
 {
     simple_map_int_t slot;
-    simple_map_foreach(system_instance.system_libraries, slot)
+    simple_map_foreach(system_instance.libraries, slot)
     {
-        if (slot != simple_map_end(system_instance.system_libraries))
+        if (slot != simple_map_end(system_instance.libraries))
         {
-            struct system_library* library = *simple_map_system_libraries_node(system_instance.system_libraries, slot);
+            struct system_library* library = *simple_map_system_libraries_node(system_instance.libraries, slot);
             if (strcmp(library->module, module) == 0) return library;
         }
     }
@@ -116,7 +117,7 @@ void system_library_unload(const struct system_library* library)
     {
         dlclose(library->handle);
     }
-    simple_map_system_libraries_remove(system_instance.system_libraries, &library, NULL);
+    simple_map_system_libraries_remove(system_instance.libraries, &library, NULL);
     free((void*)library->module);
     free((void*)library->path);
     free((void*)library);

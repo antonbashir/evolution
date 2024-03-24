@@ -3,17 +3,13 @@ part of 'context.dart';
 var _launched = false;
 var _forked = false;
 
-Future<void> launch(
-  List<Module Function()> factories,
-  FutureOr<void> Function() main, {
-  SystemConfiguration configuration = CoreDefaults.bootstrap,
-  SystemEnvironment Function(SystemEnvironment current)? environment,
-}) async {
+Future<void> launch(List<Module> Function() factory, FutureOr<void> Function() main, {SystemConfiguration? configuration, SystemEnvironment? environment}) async {
   if (_launched) return;
   _launched = true;
-  _system._bootstrap();
+  _system._bootstrap(configurationOverrides: configuration, environmentOverrides: environment);
   _context = _Context._();
-  for (var module in factories) _context._create(module());
+  final modules = factory();
+  for (var module in modules) _context._create(module);
   for (var module in _context._modules.values) module.validate();
   for (var module in _context._modules.values) await Future.value(module.initialize());
   await runZonedGuarded(

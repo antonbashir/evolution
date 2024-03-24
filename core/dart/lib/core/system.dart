@@ -10,9 +10,11 @@ class System {
   SystemEnvironment get environment => _environment;
   SystemConfiguration get configuration => _configuration;
 
-  System._() {}
+  System._();
 
-  void _bootstrap() {
+  void _bootstrap({SystemEnvironment? environmentOverrides, SystemConfiguration? configurationOverrides}) {
+    _environment = environmentOverrides ?? _environment;
+    _configuration = configurationOverrides ?? _configuration;
     SystemLibrary.loadCore();
     using((arena) => bootstrap_system(_configuration.toNative(arena)));
     using((arena) => _environment.entries.forEach(((key, value) => system_set_environment(key.toNativeUtf8(allocator: arena), value.toNativeUtf8(allocator: arena)))));
