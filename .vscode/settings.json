@@ -163,6 +163,13 @@
     "xxhash.h": "c",
     "memory": "c",
     "map": "c",
-    "numbers.h": "c"
+    "numbers.h": "c",
+    "tarantool_box.h": "c",
+    "xmmintrin.h": "c",
+    "polymur.h": "c",
+    "hashing_xxhash.h": "c",
+    "hashing_murmur_32.h": "c",
+    "hashing_murmur32.h": "c",
+    "hasher.h": "c"
   },
 }

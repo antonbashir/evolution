@@ -1,10 +1,16 @@
 #include "context.h"
 #include <dart_api.h>
+#include <hashing/hashing_64.h>
 #include <panic/panic.h>
 #include <printer/printer.h>
 #include "dart/dart.h"
 
 struct context_structure context_instance;
+
+void bootstrap()
+{
+  system_initialize_default();
+}
 
 struct context_structure* context_get()
 {

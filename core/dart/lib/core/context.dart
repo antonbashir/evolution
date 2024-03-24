@@ -20,6 +20,7 @@ ContextProvider context() => _context;
 SystemEnvironment environment() => _initialized ? _context._environment : _defaultEnvironment;
 
 Future<void> launch(List<Module> modules, FutureOr<void> Function() main, {SystemEnvironment Function(SystemEnvironment current)? environment}) async {
+  bootstrap();
   _context._environment = environment?.call(_context.environment) ?? _context._environment;
   for (var module in modules) _context._create(module);
   for (var module in _context._modules.values) module.validate();

@@ -3,9 +3,13 @@ import 'dart:io';
 
 import 'package:ffi/ffi.dart';
 
-import '../core.dart';
 import 'bindings.dart';
 import 'configuration.dart';
+import 'constants.dart';
+import 'context.dart';
+import 'defaults.dart';
+import 'exceptions.dart';
+import 'library.dart';
 import 'printer.dart';
 
 void _defaultErrorHandler(Error error, StackTrace stack) {

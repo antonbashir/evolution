@@ -19,6 +19,9 @@ final class context_structure extends Struct {
   external Pointer<simple_map_string_values_t> environment;
 }
 
+@Native<Void Function()>(isLeaf: true)
+external void bootstrap();
+
 @Native<Pointer<context_structure> Function()>(isLeaf: true)
 external Pointer<context_structure> context_get();
 

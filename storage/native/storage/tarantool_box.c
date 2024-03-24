@@ -1,4 +1,3 @@
-#include "tarantool_box.h"
 #include <lauxlib.h>
 #include <lua.h>
 #include "box/box.h"
@@ -14,6 +13,7 @@
 #include "port.h"
 #include "small.h"
 #include "small/obuf.h"
+#include "tarantool_box.h"
 
 #define TARANTOOL_PRIMARY_INDEX_ID 0
 #define TARANTOOL_INDEX_BASE_C 0
@@ -115,20 +115,20 @@ void tarantool_space_iterator(struct executor_task* task)
 {
     struct tarantool_space_iterator_request* request = (struct tarantool_space_iterator_request*)task->input;
     task->output = (void*)box_index_iterator(request->space_id,
-                                                TARANTOOL_PRIMARY_INDEX_ID,
-                                                request->type,
-                                                (const char*)request->key,
-                                                (const char*)(request->key + request->key_size));
+                                             TARANTOOL_PRIMARY_INDEX_ID,
+                                             request->type,
+                                             (const char*)request->key,
+                                             (const char*)(request->key + request->key_size));
 }
 
 void tarantool_space_count(struct executor_task* task)
 {
     struct tarantool_space_count_request* request = (struct tarantool_space_count_request*)task->input;
     task->output = (void*)box_index_count(request->space_id,
-                                             TARANTOOL_PRIMARY_INDEX_ID,
-                                             request->iterator_type,
-                                             (const char*)request->key,
-                                             (const char*)(request->key + request->key_size));
+                                          TARANTOOL_PRIMARY_INDEX_ID,
+                                          request->iterator_type,
+                                          (const char*)request->key,
+                                          (const char*)(request->key + request->key_size));
 }
 
 void tarantool_space_length(struct executor_task* task)
@@ -470,7 +470,9 @@ void tarantool_space_select(struct executor_task* task)
                             request->limit,
                             (const char*)request->key,
                             (const char*)(request->key + request->key_size),
-                            NULL, NULL, false,
+                            NULL,
+                            NULL,
+                            false,
                             port) < 0))
     {
         return;
@@ -493,19 +495,20 @@ void tarantool_index_iterator(struct executor_task* task)
 {
     struct tarantool_index_iterator_request* request = (struct tarantool_index_iterator_request*)task->input;
     task->output = (void*)box_index_iterator(request->space_id,
-                                                request->index_id,
-                                                request->type,
-                                                (const char*)request->key, (const char*)(request->key + request->key_size));
+                                             request->index_id,
+                                             request->type,
+                                             (const char*)request->key,
+                                             (const char*)(request->key + request->key_size));
 }
 
 void tarantool_index_count(struct executor_task* task)
 {
     struct tarantool_index_count_request* request = (struct tarantool_index_count_request*)task->input;
     task->output = (void*)box_index_count(request->space_id,
-                                             request->index_id,
-                                             request->iterator_type,
-                                             (const char*)request->key,
-                                             (const char*)(request->key + request->key_size));
+                                          request->index_id,
+                                          request->iterator_type,
+                                          (const char*)request->key,
+                                          (const char*)(request->key + request->key_size));
 }
 
 void tarantool_index_length(struct executor_task* task)
@@ -579,7 +582,9 @@ void tarantool_index_select(struct executor_task* task)
                             request->limit,
                             (const char*)request->key,
                             (const char*)(request->key + request->key_size),
-                            NULL, NULL, false,
+                            NULL,
+                            NULL,
+                            false,
                             port) < 0))
     {
         return;

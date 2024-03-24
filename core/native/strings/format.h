@@ -79,8 +79,6 @@ static inline char* signed_to_string(long long int val)
     return buf;
 }
 
-
-
 #if defined(__cplusplus)
 }
 #endif

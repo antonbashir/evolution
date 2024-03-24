@@ -2,7 +2,7 @@
 #define CORE_COLLECTIONS_MAPS_H
 
 #include <common/common.h>
-#include <hashing/hashing.h>
+#include <hashing/hashing_64.h>
 #include <system/library.h>
 
 #ifndef SIMPLE_MAP_SOURCE
@@ -19,8 +19,8 @@ DART_STRUCTURE struct module_container
     DART_FIELD const char* type;
 };
 #define simple_map_node_t struct module_container
-#define simple_map_hash(node, _) (hash_string(node->name, strlen(node->name)))
-#define simple_map_hash_key(key, _) (hash_string(key, strlen(key)))
+#define simple_map_hash(node, _) (hash_string_64(node->name, strlen(node->name)))
+#define simple_map_hash_key(key, _) (hash_string_64(key, strlen(key)))
 #define simple_map_cmp(left_node, right_node, _) (strcmp(left_node->name, right_node->name))
 #define simple_map_cmp_key(key, node, _) (strcmp(key, node->name))
 
@@ -35,8 +35,8 @@ DART_STRUCTURE struct system_library
     DART_FIELD void* handle;
 };
 #define simple_map_node_t struct system_library*
-#define simple_map_hash(node, _) (hash_string((*node)->path, strlen((*node)->path)))
-#define simple_map_hash_key(key, _) (hash_string(key, strlen(key)))
+#define simple_map_hash(node, _) (hash_string_64((*node)->path, strlen((*node)->path)))
+#define simple_map_hash_key(key, _) (hash_string_64(key, strlen(key)))
 #define simple_map_cmp(left_node, right_node, _) (strcmp((*left_node)->path, (*right_node)->path))
 #define simple_map_cmp_key(key, node, _) (strcmp(key, (*node)->path))
 
@@ -50,8 +50,8 @@ DART_STRUCTURE struct string_value_pair
     DART_FIELD const void* value;
 };
 #define simple_map_node_t struct string_value_pair
-#define simple_map_hash(node, _) (hash_string(node->key, strlen(node->key)))
-#define simple_map_hash_key(key, _) (hash_string(key, strlen(key)))
+#define simple_map_hash(node, _) (hash_string_64(node->key, strlen(node->key)))
+#define simple_map_hash_key(key, _) (hash_string_64(key, strlen(key)))
 #define simple_map_cmp(left_node, right_node, _) (strcmp(left_node->key, right_node->key))
 #define simple_map_cmp_key(key, node, _) (strcmp(key, node->key))
 
@@ -60,8 +60,8 @@ DART_STRUCTURE struct string_value_pair
 #define simple_map_name _string_value_pointers
 #define simple_map_key_t const char*
 #define simple_map_node_t struct string_value_pair*
-#define simple_map_hash(node, _) (hash_string((*node)->key, strlen((*node)->key)))
-#define simple_map_hash_key(key, _) (hash_string(key, strlen(key)))
+#define simple_map_hash(node, _) (hash_string_64((*node)->key, strlen((*node)->key)))
+#define simple_map_hash_key(key, _) (hash_string_64(key, strlen(key)))
 #define simple_map_cmp(left_node, right_node, _) (strcmp((*left_node)->key, (*right_node)->key))
 #define simple_map_cmp_key(key, node, _) (strcmp(key, (*node)->key))
 

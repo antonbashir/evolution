@@ -76,13 +76,3 @@ static inline unsigned wy32x32(unsigned a, unsigned b)
     _wymix32(&a, &b);
     return a ^ b;
 }
-static inline float wy2u01(unsigned r)
-{
-    const float _wynorm = 1.0f / (1ull << 23);
-    return (r >> 9) * _wynorm;
-}
-static inline float wy2gau(unsigned r)
-{
-    const float _wynorm = 1.0f / (1ull << 9);
-    return ((r & 0x3ff) + ((r >> 10) & 0x3ff) + ((r >> 20) & 0x3ff)) * _wynorm - 3.0f;
-}

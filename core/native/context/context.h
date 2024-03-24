@@ -21,6 +21,7 @@ DART_STRUCTURE struct context_structure
     DART_FIELD DART_TYPE struct simple_map_string_values_t* environment;
 };
 
+DART_LEAF_FUNCTION void bootstrap();
 DART_LEAF_FUNCTION struct context_structure* context_get();
 DART_LEAF_FUNCTION void context_create();
 DART_LEAF_FUNCTION void* context_get_module(const char* name);

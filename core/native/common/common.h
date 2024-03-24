@@ -67,7 +67,7 @@ extern "C"
 #endif
 
 #ifndef safe_field
-#define safe_field(owner, member) ({owner == NULL ? NULL : owner->member;})
+#define safe_field(owner, member) ({ owner == NULL ? NULL : owner->member; })
 #endif
 
 #define typecheck(type, x)             \
@@ -243,10 +243,17 @@ extern "C"
 #define DART_TYPE
 
 #define HASHING_WYHASH 0
-#define HASHING_WYHASH32 1
-#define HASHING_MURMUR32 2
-#define HASHING_XXHASH64 3
-#define HASHING_XXHASH32 4
+#define HASHING_MURMUR 1
+#define HASHING_XXHASH 2
+#define HASHING_POLYMUR 3
+
+#ifndef HASHING_DEFAULT_MODE
+#define HASHING_DEFAULT_MODE HASHING_POLYMUR
+#endif
+
+#ifndef HASHING_DEFAULT_STRING_SEED
+#define HASHING_DEFAULT_STRING_SEED 0
+#endif
 
 #if defined(__cplusplus)
 }

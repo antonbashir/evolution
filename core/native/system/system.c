@@ -5,13 +5,6 @@
 #include <printer/printer.h>
 #include <stacktrace/stacktrace.h>
 
-struct system system_instance = {
-    .on_print = system_default_printer,
-    .on_print_error = system_default_error_printer,
-    .on_event_raise = system_default_event_raiser,
-    .on_event_print = system_default_event_printer,
-};
-
 void system_default_printer(const char* format, ...)
 {
     va_list args;
@@ -50,6 +43,13 @@ void system_default_event_raiser(struct event* event)
     unreachable();
 }
 
+struct system system_instance = {
+    .on_print = system_default_printer,
+    .on_print_error = system_default_error_printer,
+    .on_event_raise = system_default_event_raiser,
+    .on_event_print = system_default_event_printer,
+};
+
 void system_initialize(struct system_configuration configuration)
 {
     if (system_instance.initialized) return;
@@ -60,6 +60,7 @@ void system_initialize(struct system_configuration configuration)
     system_instance.on_event_print = configuration.on_event_print;
     system_instance.print_level = configuration.print_level;
     crash_initialize();
+    hasher_initialize_default();
     system_instance.initialized = true;
 }
 
