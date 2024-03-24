@@ -1,3 +1,3 @@
 #!/bin/bash
 
-dart run tests.dart
+dart run tests.dart $@

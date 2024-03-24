@@ -16,6 +16,9 @@ Future<void> main(List<String> args) async {
     "transport": "$current/transport/test/test.dart",
     "reactive": "$current/reactive/test/test.dart",
   };
+  if (args.isNotEmpty) {
+    tests.removeWhere((key, value) => key != args.first);
+  }
   final results = tests.map((key, value) => MapEntry(key, false));
   if (build.exitCode == 0) {
     for (var entry in tests.entries) {

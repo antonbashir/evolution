@@ -20,7 +20,7 @@ void testFileSingle({required int index}) {
         var nativeFile = File("file-${worker.descriptor}");
         if (nativeFile.existsSync()) nativeFile.deleteSync();
         if (!nativeFile.existsSync()) nativeFile.createSync();
-        final file = worker.files.open(nativeFile.path, create: true);
+        final file = worker.files.open(nativeFile.absolute.path, create: true);
         file.writeSingle(Generators.request());
         Validators.request(await file.load());
         if (nativeFile.existsSync()) nativeFile.deleteSync();
@@ -40,7 +40,7 @@ void testFileLoad({required int index, required int count}) {
       var nativeFile = File("file-${worker.descriptor}");
       if (nativeFile.existsSync()) nativeFile.deleteSync();
       if (!nativeFile.existsSync()) nativeFile.createSync();
-      final file = worker.files.open(nativeFile.path, create: true);
+      final file = worker.files.open(nativeFile.absolute.path, create: true);
       final data = Generators.requestsOrdered(count * count);
       final completer = Completer();
       file.writeMany(data, onDone: () async {
