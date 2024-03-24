@@ -214,7 +214,7 @@ static inline void polymur_init_params(PolymurHashParams* p, uint64_t k_seed, ui
         POLYMUR_POW37[i + 33] = polymur_extrared611(polymur_red611(polymur_mul128(POLYMUR_POW37[i + 32], POLYMUR_POW37[i + 32])));
     }
 
-    while (1)
+    for (;;)
     {
         // Choose a random exponent coprime to 2^61 - 2. ~35.3% success rate.
         k_seed += POLYMUR_ARBITRARY2;
