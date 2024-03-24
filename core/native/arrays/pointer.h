@@ -44,7 +44,6 @@ DART_INLINE_LEAF_FUNCTION void pointer_array_grow(struct pointer_array* array)
     array->capacity = new_capacity;
 }
 
-
 DART_INLINE_LEAF_FUNCTION void* pointer_array_get(struct pointer_array* array, size_t index)
 {
     if (index >= array->size) return NULL;

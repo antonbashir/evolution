@@ -4,7 +4,7 @@ import 'constants.dart';
 class CoreDefaults {
   CoreDefaults._();
 
-  static const BootstrapConfiguration bootstrap = BootstrapConfiguration(
+  static const SystemConfiguration bootstrap = SystemConfiguration(
     printLevel: EventLevel.information,
     silent: false,
   );

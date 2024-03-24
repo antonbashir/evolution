@@ -9,7 +9,7 @@ extern "C"
 {
 #endif
 
-#define raise_panic(event) system_get()->on_event_raise(event);
+#define raise_panic(event) system_raise_event(event);
 
 #if defined(__cplusplus)
 }

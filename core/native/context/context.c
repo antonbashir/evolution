@@ -12,17 +12,15 @@ struct context_structure* context_get()
     return &context_instance;
 }
 
-void context_create(struct bootstrap_configuration* configuration)
+void context_create()
 {
     if (context_instance.initialized)
     {
         raise_panic(event_panic(event_field_message(PANIC_CONTEXT_CREATED)));
     }
-    context_instance.configuration = configuration;
     context_instance.modules = simple_map_modules_new();
-    context_instance.environment = simple_map_string_values_new();
     context_instance.containers = calloc(MODULES_MAXIMUM, sizeof(struct module_container));
-    if (context_instance.modules == NULL || context_instance.environment == NULL || context_instance.containers == NULL)
+    if (context_instance.modules == NULL || context_instance.containers == NULL)
     {
         raise_panic(event_system_panic(ENOMEM));
     }
@@ -71,23 +69,4 @@ void context_load()
         dart_call_constructor(dart_find_class(container.type), DART_LOAD_FUNCTION, arguments);
     }
     Dart_ExitScope();
-}
-
-void context_set_environment(const char* key, const char* value)
-{
-    struct string_value_pair pair = {
-        .key = strdup(key),
-        .value = strdup(value),
-    };
-    simple_map_string_values_put_copy(context_instance.environment, &pair, NULL, NULL);
-}
-
-const char* context_get_environment(const char* key)
-{
-    return safe_field(simple_map_string_values_find_value(context_instance.environment, key), value);
-}
-
-struct pointer_array* context_environment_entries()
-{
-    return simple_map_string_values_keys(context_instance.environment);
 }

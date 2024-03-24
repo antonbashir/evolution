@@ -14,7 +14,7 @@ void empty_event_printer(struct event* event)
     event_destroy(event);
 }
 
-void bootstrap(struct bootstrap_configuration* configuration)
+void bootstrap_system(struct bootstrap_configuration* configuration)
 {
     system_initialize((struct system_configuration){
         .on_print = configuration->silent ? empty_printer : system_default_printer,
@@ -23,4 +23,9 @@ void bootstrap(struct bootstrap_configuration* configuration)
         .on_event_raise = system_default_event_raiser,
         .print_level = configuration->print_level,
     });
+}
+
+struct bootstrap_configuration* bootstrap_configuration_get()
+{
+    return &system_get()->configuration.bootstrap_configuration;
 }

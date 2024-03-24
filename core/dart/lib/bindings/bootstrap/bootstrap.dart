@@ -13,4 +13,7 @@ final class bootstrap_configuration extends Struct {
 }
 
 @Native<Void Function(Pointer<bootstrap_configuration> configuration)>(isLeaf: true)
-external void bootstrap(Pointer<bootstrap_configuration> configuration);
+external void bootstrap_system(Pointer<bootstrap_configuration> configuration);
+
+@Native<Pointer<bootstrap_configuration> Function()>(isLeaf: true)
+external Pointer<bootstrap_configuration> bootstrap_configuration_get();

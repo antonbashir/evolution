@@ -70,6 +70,10 @@ extern "C"
 #define safe_field(owner, member) ({ owner == NULL ? NULL : owner->member; })
 #endif
 
+#ifndef safe_pointer
+#define safe_pointer(owner) ({ owner == NULL ? NULL : *owner; })
+#endif
+
 #define typecheck(type, x)             \
     ({                                 \
         type __dummy;                  \

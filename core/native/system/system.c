@@ -5,6 +5,8 @@
 #include <printer/printer.h>
 #include <stacktrace/stacktrace.h>
 
+struct system system_instance;
+
 void system_default_printer(const char* format, ...)
 {
     va_list args;
@@ -23,9 +25,9 @@ void system_default_error_printer(const char* format, ...)
 
 void system_default_event_printer(struct event* event)
 {
-    if (system_get()->print_level < event->level) return;
+    if (system_get()->configuration.print_level < event->level) return;
     const char* buffer = event_format(event);
-    system_get()->on_print(STRING_FORMAT NEW_LINE, buffer);
+    system_get()->configuration.on_print(STRING_FORMAT NEW_LINE, buffer);
     free((void*)buffer);
     if (event->level <= EVENT_LEVEL_ERROR)
     {
@@ -36,53 +38,21 @@ void system_default_event_printer(struct event* event)
 
 void system_default_event_raiser(struct event* event)
 {
-    if (system_get()->print_level < event->level) return;
-    system_get()->on_print(STRING_FORMAT NEW_LINE, event_format(event));
+    if (system_get()->configuration.print_level < event->level) return;
+    system_get()->configuration.on_print(STRING_FORMAT NEW_LINE, event_format(event));
     stacktrace_print(0);
     exit(event_has_field(event, EVENT_FIELD_CODE) ? event_get_unsigned(event, EVENT_FIELD_CODE) : -1);
     unreachable();
 }
 
-struct system system_instance = {
-    .on_print = system_default_printer,
-    .on_print_error = system_default_error_printer,
-    .on_event_raise = system_default_event_raiser,
-    .on_event_print = system_default_event_printer,
-};
-
 void system_initialize(struct system_configuration configuration)
 {
     if (system_instance.initialized) return;
     system_instance.system_libraries = simple_map_system_libraries_new();
-    system_instance.on_print = configuration.on_print;
-    system_instance.on_print_error = configuration.on_print_error;
-    system_instance.on_event_raise = configuration.on_event_raise;
-    system_instance.on_event_print = configuration.on_event_print;
-    system_instance.print_level = configuration.print_level;
+    system_instance.configuration = configuration;
     crash_initialize();
     hasher_initialize_default();
     system_instance.initialized = true;
-}
-
-void system_initialize_default()
-{
-#ifdef TRACE
-    system_initialize((struct system_configuration){
-        .on_print = system_default_printer,
-        .on_print_error = system_default_error_printer,
-        .on_event_raise = system_default_event_raiser,
-        .on_event_print = system_default_event_printer,
-        .print_level = SYSTEM_PRINT_LEVEL_TRACE,
-    });
-#else
-    system_initialize((struct system_configuration){
-        .on_print = system_default_printer,
-        .on_print_error = system_default_error_printer,
-        .on_event_raise = system_default_event_raiser,
-        .on_event_print = system_default_event_printer,
-        .print_level = SYSTEM_PRINT_LEVEL_ERROR,
-    });
-#endif
 }
 
 struct system_library* system_library_load(const char* path, const char* module)
@@ -97,7 +67,7 @@ struct system_library* system_library_load(const char* path, const char* module)
     {
         return NULL;
     }
-#ifdef DEBUG
+#ifdef TRACE
     trace_message(LOADING_LIBRARY_MESSAGE, path);
 #endif
     struct system_library* new = calloc(1, sizeof(struct system_library));
@@ -115,12 +85,7 @@ DART_LEAF_FUNCTION void system_library_put(struct system_library* library)
 
 struct system_library* system_library_get(const char* path)
 {
-    simple_map_int_t slot = simple_map_system_libraries_find(system_instance.system_libraries, path, NULL);
-    if (slot != simple_map_end(system_instance.system_libraries))
-    {
-        return *simple_map_system_libraries_node(system_instance.system_libraries, slot);
-    }
-    return NULL;
+    return safe_pointer(simple_map_system_libraries_find_value(system_instance.system_libraries, path));
 }
 
 struct system_library* system_library_by_module(const char* module)
@@ -155,4 +120,23 @@ void system_library_unload(const struct system_library* library)
     free((void*)library->module);
     free((void*)library->path);
     free((void*)library);
+}
+
+void system_set_environment(const char* key, const char* value)
+{
+    struct string_value_pair pair = {
+        .key = strdup(key),
+        .value = strdup(value),
+    };
+    simple_map_string_values_put_copy(system_instance.environment, &pair, NULL, NULL);
+}
+
+const char* system_get_environment(const char* key)
+{
+    return safe_field(simple_map_string_values_find_value(system_instance.environment, key), value);
+}
+
+struct pointer_array* system_environment_entries()
+{
+    return simple_map_string_values_keys(system_instance.environment);
 }

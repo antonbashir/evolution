@@ -15,7 +15,8 @@ DART_STRUCTURE struct bootstrap_configuration
     DART_FIELD uint8_t print_level;
 };
 
-DART_LEAF_FUNCTION void bootstrap(struct bootstrap_configuration* configuration);
+DART_LEAF_FUNCTION void bootstrap_system(struct bootstrap_configuration* configuration);
+DART_LEAF_FUNCTION struct bootstrap_configuration* bootstrap_configuration_get();
 
 #if defined(__cplusplus)
 }
