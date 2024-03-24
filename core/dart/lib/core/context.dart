@@ -135,7 +135,12 @@ class _Context implements ContextProvider {
   var _native = <String, Pointer<Void>>{};
   SystemEnvironment _environment;
   BootstrapConfiguration _configuration;
+
+  @override
   BootstrapConfiguration get configuration => _configuration;
+
+  @override
+  SystemEnvironment get environment => _environment;
 
   _Context._(BootstrapConfiguration configuration, SystemEnvironment? environment)
       : _configuration = configuration,
@@ -195,7 +200,4 @@ class _Context implements ContextProvider {
     if (module == null) throw CoreModuleError(CoreErrors.moduleNotFound(id));
     return module;
   }
-
-  @override
-  SystemEnvironment get environment => _environment;
 }
