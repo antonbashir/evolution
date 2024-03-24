@@ -27,7 +27,7 @@ static FORCEINLINE uint32_t hasher_hash_64(struct hasher* hasher, const uint8_t*
     unreachable();
 }
 
-static FORCEINLINE uint32_t CONST hash_64(uint64_t a, uint32_t bits)
+static FORCEINLINE uint32_t CONST hash_unsigned_64(uint64_t a, uint32_t bits)
 {
     uint64_t b, c, d;
 

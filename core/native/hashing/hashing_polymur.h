@@ -3,7 +3,7 @@
 #include "hasher.h"
 #include "polymur.h"
 
-static FORCEINLINE uint64_t CONST hash_bytes_polymur_initialize(PolymurHashParams* parameters, const uint8_t* bytes, uint64_t length, uint64_t seed, uint64_t tweak)
+static FORCEINLINE uint64_t CONST hash_bytes_polymur_inigtialize(PolymurHashParams* parameters, const uint8_t* bytes, uint64_t length, uint64_t seed, uint64_t tweak)
 {
     polymur_init_params_from_seed(parameters, seed);
     return polymur_hash(bytes, length, parameters, 0);

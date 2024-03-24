@@ -31,4 +31,12 @@ static FORCEINLINE uint32_t hash_string_32(const char* string, size_t length)
 {
     return hash_bytes_32((const uint8_t*)string, length);
 }
+
+static inline uint32_t hash_pointer_32(const void* pointer)
+{
+    uint64_t value = (uint64_t)pointer;
+    value ^= (value >> 32);
+    return (uint32_t)value;
+}
+
 #endif
