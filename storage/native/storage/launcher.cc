@@ -1,4 +1,4 @@
-#include "tarantool_launcher.h"
+#include "launcher.h"
 #include <getopt.h>
 #include <grp.h>
 #include <libgen.h>
@@ -63,10 +63,10 @@ static struct fiber* on_shutdown_fiber = NULL;
 static bool shutdown_started = false;
 static bool shutdown_finished = false;
 static int exit_code = 0;
-char tarantool_path[PATH_MAX];
-long tarantool_start_time;
+char storage_path[PATH_MAX];
+long storage_start_time;
 
-static void tarantool_exit(int code)
+static void storage_exit(int code)
 {
     start_loop = false;
     if (shutdown_started)
@@ -86,7 +86,7 @@ static void signal_cb(ev_loop* loop, struct ev_signal* w, int revents)
     (void)revents;
 
     say_warn("got signal %d - %s", w->signum, strsignal(w->signum));
-    tarantool_exit(0);
+    storage_exit(0);
 }
 static sigint_cb_t signal_sigint_cb = signal_cb;
 
@@ -192,7 +192,7 @@ static void free_readline_state(void)
     }
 }
 
-static void tarantool_atexit(void)
+static void storage_atexit(void)
 {
     if (getpid() != master_pid)
         return;
@@ -203,7 +203,7 @@ static void tarantool_atexit(void)
     free_readline_state();
 }
 
-static void tarantool_free(void)
+static void storage_free(void)
 {
     if (getpid() != master_pid)
         return;
@@ -259,7 +259,7 @@ static int on_shutdown_f(va_list ap)
     return 0;
 }
 
-extern "C" double tarantool_uptime(void)
+extern "C" double storage_uptime(void)
 {
     return ev_monotonic_now(loop()) - start_time;
 }
@@ -334,7 +334,7 @@ extern "C" sigint_cb_t set_sigint_cb(sigint_cb_t new_sigint_cb)
     return old_cb;
 }
 
-void tarantool_launcher_launch(char* binary_path)
+void storage_launcher_launch(char* binary_path)
 {
     if (setlocale(LC_CTYPE, "C.UTF-8") == NULL &&
         setlocale(LC_CTYPE, "en_US.UTF-8") == NULL &&
@@ -344,9 +344,9 @@ void tarantool_launcher_launch(char* binary_path)
 
     char** argv = new char*[1];
     argv[0] = (char*)binary_path;
-    const char* tarantool_bin = find_path(binary_path);
-    if (!tarantool_bin)
-        tarantool_bin = binary_path;
+    const char* storage_bin = find_path(binary_path);
+    if (!storage_bin)
+        storage_bin = binary_path;
 
     random_init();
     crc32_init();
@@ -364,8 +364,8 @@ void tarantool_launcher_launch(char* binary_path)
     coll_init();
     memtx_tx_manager_init();
     module_init();
-	  ssl_init();
-	  event_init();
+    ssl_init();
+    event_init();
 
     const int override_cert_paths_env_vars = 0;
     if (tnt_ssl_cert_paths_discover(override_cert_paths_env_vars) != 0)
@@ -374,7 +374,7 @@ void tarantool_launcher_launch(char* binary_path)
 #ifndef NDEBUG
     errinj_set_with_environment_vars();
 #endif
-    tarantool_lua_init_deferred(tarantool_bin, main_argc, main_argv);
+    tarantool_lua_init_deferred(storage_bin, main_argc, main_argv);
 
     start_time = ev_monotonic_time();
 
@@ -389,7 +389,7 @@ void tarantool_launcher_launch(char* binary_path)
         if (on_shutdown_fiber == NULL)
             diag_raise();
 
-        atexit(tarantool_atexit);
+        atexit(storage_atexit);
 
         if (!loop())
             panic("%s", "can't init event loop");
@@ -407,7 +407,7 @@ void tarantool_launcher_launch(char* binary_path)
     }
 }
 
-void tarantool_launcher_shutdown(int32_t code)
+void storage_launcher_shutdown(int32_t code)
 {
     if (start_loop)
     {
@@ -415,7 +415,7 @@ void tarantool_launcher_shutdown(int32_t code)
     }
     if (!shutdown_started)
     {
-        tarantool_exit(code);
+        storage_exit(code);
     }
-    tarantool_free();
+    storage_free();
 }

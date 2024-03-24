@@ -43,7 +43,6 @@ copy_file_to_assets(storage_debug_linux_x64 ${storage_tarantool_SOURCE_DIR}/thir
 copy_file_to_assets(storage_debug_linux_x64 ${storage_tarantool_SOURCE_DIR}/third_party/luajit/src/lua.h ${CMAKE_CURRENT_SOURCE_DIR}/../dart/assets/lua.h)
 copy_file_to_assets(storage_debug_linux_x64 ${storage_tarantool_SOURCE_DIR}/third_party/luajit/src/luaconf.h ${CMAKE_CURRENT_SOURCE_DIR}/../dart/assets/luaconf.h)
 copy_file_to_assets(storage_debug_linux_x64 ${storage_tarantool_SOURCE_DIR}/src/lib/msgpuck/msgpuck.h ${CMAKE_CURRENT_SOURCE_DIR}/../dart/assets/msgpuck.h)
-copy_file_to_assets(storage_debug_linux_x64 ${CMAKE_CURRENT_SOURCE_DIR}/src/storage_extension.h ${CMAKE_CURRENT_SOURCE_DIR}/../dart/assets/module.h)
 
 add_library(storage_release_linux_x64 SHARED ${sources})
 add_dependencies(storage_release_linux_x64 storage_tarantool executor_release_linux_x64)
@@ -56,17 +55,5 @@ copy_file_to_assets(storage_release_linux_x64 ${storage_tarantool_SOURCE_DIR}/th
 copy_file_to_assets(storage_release_linux_x64 ${storage_tarantool_SOURCE_DIR}/third_party/luajit/src/luaconf.h ${CMAKE_CURRENT_SOURCE_DIR}/../dart/assets/luaconf.h)
 copy_file_to_assets(storage_release_linux_x64 ${storage_tarantool_SOURCE_DIR}/src/lib/msgpuck/msgpuck.h ${CMAKE_CURRENT_SOURCE_DIR}/../dart/assets/msgpuck.h)
 copy_file_to_assets(storage_release_linux_x64 ${storage_tarantool_SOURCE_DIR}/src/lib/msgpuck/msgpuck.h ${CMAKE_CURRENT_SOURCE_DIR}/../dart/assets/msgpuck.h)
-copy_file_to_assets(storage_release_linux_x64 ${CMAKE_CURRENT_SOURCE_DIR}/src/storage_extension.h ${CMAKE_CURRENT_SOURCE_DIR}/../dart/assets/module.h)
 
 add_custom_target(storage_native DEPENDS "storage_release_linux_x64;storage_debug_linux_x64")
-
-add_executable(storage_test ${tests})
-add_dependencies(storage_test storage_debug_linux_x64 executor_debug_linux_x64)
-target_include_directories(storage_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/test ${STORAGE_INCLUDES})
-set_target_properties(storage_test PROPERTIES COMPILE_FLAGS ${COMPILER_C_FLAGS_DEBUG})
-target_link_libraries(storage_test PRIVATE storage_debug_linux_x64 executor_debug_linux_x64 -lstdc++ -lm)
-set_target_properties(storage_test PROPERTIES
-  ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin/test"
-  LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin/test"
-  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin/test"
-)

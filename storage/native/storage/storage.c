@@ -1,35 +1,35 @@
-#include "tarantool.h"
+#include "storage.h"
 #include <dlfcn.h>
 #include <errno.h>
-#include <fcntl.h>
 #include <executor/executor.h>
+#include <fcntl.h>
 #include <lauxlib.h>
 #include <lua.h>
 #include <luajit.h>
 #include <stdbool.h>
 #include <string.h>
 #include <unistd.h>
+#include "box.h"
 #include "box/box.h"
 #include "cbus.h"
+#include "executor.h"
+#include "launcher.h"
 #include "lib/core/fiber.h"
 #include "lua/init.h"
 #include "on_shutdown.h"
-#include "tarantool_box.h"
-#include "tarantool_executor.h"
-#include "tarantool_launcher.h"
 
-#define TARANTOOL_EXECUTOR_FIBER "executor"
+#define STORAGE_EXECUTOR_FIBER "executor"
 
-#define TARANTOOL_LUA_ERROR "Failed to execute initial Lua script"
+#define STORAGE_LUA_ERROR "Failed to execute initial Lua script"
 
-static struct tarantool_executor_configuration executor;
+static struct storage_executor_configuration executor;
 
 static struct storage
 {
-    struct tarantool_configuration configuration;
+    struct storage_configuration configuration;
     char* initialization_error;
     char* shutdown_error;
-    struct tarantool_box* box;
+    struct storage_box* box;
     pthread_t main_thread_id;
     pthread_mutex_t initialization_mutex;
     pthread_cond_t initialization_condition;
@@ -38,71 +38,71 @@ static struct storage
     bool initialized;
 } storage;
 
-struct tarantool_initialization_args
+struct storage_initialization_args
 {
     const char* binary_path;
     const char* script;
 };
 
-static int32_t tarantool_shutdown_trigger(void* ignore)
+static int32_t storage_shutdown_trigger(void* ignore)
 {
     (void)ignore;
-    tarantool_executor_stop();
+    storage_executor_stop();
     ev_break(loop(), EVBREAK_ALL);
     return 0;
 }
 
-static int32_t tarantool_fiber(va_list args)
+static int32_t storage_fiber(va_list args)
 {
     (void)args;
     int32_t error;
-    if (error = tarantool_executor_initialize(&executor))
+    if (error = storage_executor_initialize(&executor))
     {
-        tarantool_executor_destroy();
+        storage_executor_destroy();
         storage.initialization_error = strerror(error);
         return 0;
     }
     if (error = pthread_mutex_lock(&storage.initialization_mutex))
     {
-        tarantool_executor_destroy();
+        storage_executor_destroy();
         storage.initialization_error = strerror(error);
         return 0;
     }
     storage.initialized = true;
     if (error = pthread_cond_broadcast(&storage.initialization_condition))
     {
-        tarantool_executor_destroy();
+        storage_executor_destroy();
         storage.initialized = false;
         storage.initialization_error = strerror(error);
         return 0;
     }
     if (error = pthread_mutex_unlock(&storage.initialization_mutex))
     {
-        tarantool_executor_destroy();
+        storage_executor_destroy();
         storage.initialized = false;
         storage.initialization_error = strerror(error);
         return 0;
     }
-    tarantool_initialize_box(storage.box);
-    tarantool_executor_start(&executor);
-    tarantool_destroy_box(storage.box);
-    tarantool_executor_destroy();
+    storage_initialize_box(storage.box);
+    storage_executor_start(&executor);
+    storage_destroy_box(storage.box);
+    storage_executor_destroy();
     ev_break(loop(), EVBREAK_ALL);
     return 0;
 }
 
-static void* tarantool_process_initialization(void* input)
+static void* storage_process_initialization(void* input)
 {
-    struct tarantool_initialization_args* args = (struct tarantool_initialization_args*)input;
+    struct storage_initialization_args* args = (struct storage_initialization_args*)input;
 
-    tarantool_launcher_launch((char*)args->binary_path);
+    storage_launcher_launch((char*)args->binary_path);
 
     int32_t events = ev_activecnt(loop());
 
-    if (tarantool_lua_run_string((char*)args->script) != 0)
+    if (storage_lua_run_string((char*)args->script) != 0)
     {
         diag_log();
-        storage.initialization_error = TARANTOOL_LUA_ERROR;
+        storage.initialization_error = STORAGE_LUA_ERROR;
         return NULL;
     }
 
@@ -110,14 +110,14 @@ static void* tarantool_process_initialization(void* input)
 
     region_free(&fiber()->gc);
 
-    if (box_on_shutdown(NULL, tarantool_shutdown_trigger, NULL) != 0)
+    if (box_on_shutdown(NULL, storage_shutdown_trigger, NULL) != 0)
     {
         storage.initialization_error = strerror(errno);
         return NULL;
     }
 
     ev_now_update(loop());
-    fiber_start(fiber_new(TARANTOOL_EXECUTOR_FIBER, tarantool_fiber));
+    fiber_start(fiber_new(STORAGE_EXECUTOR_FIBER, storage_fiber));
     ev_run(loop(), 0);
 
     if (storage.initialized)
@@ -128,7 +128,7 @@ static void* tarantool_process_initialization(void* input)
             storage.shutdown_error = strerror(error);
             return NULL;
         }
-        tarantool_launcher_shutdown(0);
+        storage_launcher_shutdown(0);
         storage.initialized = false;
         if (error = pthread_cond_broadcast(&storage.shutdown_condition))
         {
@@ -146,7 +146,7 @@ static void* tarantool_process_initialization(void* input)
     return NULL;
 }
 
-bool tarantool_initialize(struct tarantool_configuration* configuration, struct tarantool_box* box)
+bool storage_initialize(struct storage_configuration* configuration, struct storage_box* box)
 {
     if (storage.initialized)
     {
@@ -156,12 +156,12 @@ bool tarantool_initialize(struct tarantool_configuration* configuration, struct 
     storage.configuration = *configuration;
     storage.initialization_error = "";
     storage.box = box;
-    
+
     executor.configuration = &storage.configuration;
     executor.executor_ring_size = configuration->executor_ring_size;
     executor.executor_id = 0;
 
-    struct tarantool_initialization_args* args = calloc(1, sizeof(struct tarantool_initialization_args));
+    struct storage_initialization_args* args = calloc(1, sizeof(struct storage_initialization_args));
     if (args == NULL)
     {
         storage.initialization_error = strerror(ENOMEM);
@@ -175,7 +175,7 @@ bool tarantool_initialize(struct tarantool_configuration* configuration, struct 
     timespec_get(&timeout, TIME_UTC);
     timeout.tv_sec += configuration->initialization_timeout_seconds;
     int32_t error;
-    if (error = pthread_create(&storage.main_thread_id, NULL, tarantool_process_initialization, args))
+    if (error = pthread_create(&storage.main_thread_id, NULL, storage_process_initialization, args))
     {
         storage.initialization_error = strerror(error);
         return false;
@@ -211,13 +211,13 @@ bool tarantool_initialize(struct tarantool_configuration* configuration, struct 
     return strlen(storage.initialization_error) == 0;
 }
 
-bool tarantool_shutdown()
+bool storage_shutdown()
 {
     if (!storage.initialized)
     {
         return true;
     }
-    tarantool_executor_stop();
+    storage_executor_stop();
     int32_t error;
     if (error = pthread_mutex_lock(&storage.shutdown_mutex))
     {
@@ -253,27 +253,27 @@ bool tarantool_shutdown()
     return true;
 }
 
-bool tarantool_initialized()
+bool storage_initialized()
 {
     return storage.initialized;
 }
 
-const char* tarantool_status()
+const char* storage_status()
 {
     return box_status();
 }
 
-int32_t tarantool_is_read_only()
+int32_t storage_is_read_only()
 {
     return box_is_ro() ? 1 : 0;
 }
 
-const char* tarantool_initialization_error()
+const char* storage_initialization_error()
 {
     return storage.initialization_error;
 }
 
-const char* tarantool_shutdown_error()
+const char* storage_shutdown_error()
 {
     return storage.shutdown_error;
 }
