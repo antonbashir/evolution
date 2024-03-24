@@ -5,7 +5,10 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import '../../core/bindings.dart';
 
-final class core_module_configuration extends Opaque {}
+final class core_module_configuration extends Struct {
+  @Uint8()
+  external int unused;
+}
 
 final class core_module extends Struct {
   external Pointer<Utf8> name;

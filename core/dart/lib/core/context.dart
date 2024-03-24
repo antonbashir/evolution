@@ -3,7 +3,6 @@ import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
 
-import '../core.dart';
 import 'bindings.dart';
 import 'configuration.dart';
 import 'constants.dart';
@@ -14,7 +13,7 @@ import 'library.dart';
 import 'module.dart';
 
 final _defaultEnvironment = SystemEnvironment();
-late final _Context _context;
+late _Context _context;
 Completer? _blocker = null;
 var _initialized = false;
 
