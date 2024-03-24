@@ -41,7 +41,7 @@ Uri findPackageRoot(Uri dotDartTool, String packageName) {
 
 String? findProjectRoot() {
   var directory = Directory.current.path;
-  while (true) {
+  for (;;) {
     if (File(directory + slash + pubspecYamlFile).existsSync() || File(directory + slash + pubspecYmlFile).existsSync()) return directory;
     final String parent = Directory(directory).parent.path;
     if (directory == parent) return null;

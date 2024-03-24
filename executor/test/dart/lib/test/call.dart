@@ -183,7 +183,7 @@ void testCallDart() {
 }
 
 Future<void> _awaitDartCall(Pointer<test_executor> native) async {
-  while (true) {
+  for (;;) {
     final result = test_call_dart_check(native);
     if (result == nullptr) {
       await Future.delayed(Duration(milliseconds: 10));
