@@ -290,7 +290,6 @@ class StorageBootConfiguration implements Tuple {
   StorageBootConfiguration copyWith({
     String? user,
     String? password,
-    Duration? delay,
   }) =>
       StorageBootConfiguration(
         user ?? this.user,
@@ -302,6 +301,13 @@ class StorageBootConfiguration implements Tuple {
     offset = tupleWriteList(data, 2, offset);
     offset = tupleWriteString(buffer, data, user, offset);
     return tupleWriteString(buffer, data, password, offset);
+  }
+
+  factory StorageBootConfiguration.deserialize(Uint8List buffer, ByteData data, int offset) {
+    final tuple = tupleReadList(data, offset);
+    final user = tupleReadString(buffer, data, tuple.offset);
+    final password = tupleReadString(buffer, data, user.offset);
+    return StorageBootConfiguration(user.value!, password.value!);
   }
 
   @override
