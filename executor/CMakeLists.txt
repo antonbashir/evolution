@@ -16,7 +16,7 @@ add_custom_command(
   OUTPUT ${executor_liburing_SOURCE_DIR}/config.log
   WORKING_DIRECTORY ${executor_liburing_SOURCE_DIR}
   COMMAND AR=${CMAKE_AR} CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER} CFLAGS=${LIBURING_CFLAGS} CXXFLAGS=${LIBURING_CXXFLAGS}
-  ./configure --prefix=${executor_liburing_BINARY_DIR}
+  ./configure
 )
 
 add_custom_target(executor_liburing_build
