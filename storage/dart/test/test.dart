@@ -9,8 +9,7 @@ import 'data.dart';
 import 'lua.dart';
 import 'schema.dart';
 
-late final Storage executor;
-late final StorageModule storage;
+late final Storage storage;
 late final StorageSpace space;
 late final StorageIndex index;
 
@@ -22,21 +21,15 @@ Future<void> main() async {
   Directory.current.listSync().forEach((element) {
     if (element.path.contains("00000")) element.deleteSync();
   });
-  storage = StorageModule();
-  await storage.boot(
-    StorageBootstrapScript(StorageDefaults.storage)..file(File("test/test.lua")),
-    StorageDefaults.executor,
-    bootConfiguration: StorageDefaults.boot(),
-  );
+
   setUpAll(() async {
-    executor = storage.executor;
-    final spaceId = await executor.schema.spaceId("test");
-    space = executor.schema.spaceById(spaceId);
-    index = executor.schema.indexById(spaceId, await executor.schema.indexId(spaceId, "test"));
+    storage = context().storage();
+    final spaceId = await storage.schema.spaceId("test");
+    space = storage.schema.spaceById(spaceId);
+    index = storage.schema.indexById(spaceId, await storage.schema.indexId(spaceId, "test"));
   });
   setUp(() async => await space.truncate());
   tearDownAll(() async {
-    await storage.shutdown();
     Directory.current.listSync().forEach((element) {
       if (element.path.contains("00000")) element.deleteSync();
     });

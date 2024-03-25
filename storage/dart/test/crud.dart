@@ -9,7 +9,7 @@ import 'test.dart';
 
 Future<({Pointer<Uint8> tuple, int size, void Function() cleaner})> _writeData() => Future.value(context().tuples().fixed.toInput(testSingleData.tupleSize, testSingleData.serialize));
 Future<({Pointer<Uint8> tuple, int size, void Function() cleaner})> _writeKey() => Future.value(context().tuples().fixed.toInput(testSingleData.tupleSize, testKey.serializeToTuple));
-Future<TestData> _readData(Future<StorageTuple> response, void Function() requestCleaner) => response.whenComplete(requestCleaner).then((value) => readTestData(executor.tuples, value));
+Future<TestData> _readData(Future<StorageTuple> response, void Function() requestCleaner) => response.whenComplete(requestCleaner).then((value) => readTestData(storage.tuples, value));
 
 Future<void> _insert() async => expect(await _writeData().then((value) => _readData(space.insertSingle(value.tuple, value.size), value.cleaner)), equals(testSingleData));
 Future<void> _put() async => expect(await _writeData().then((value) => _readData(space.putSingle(value.tuple, value.size), value.cleaner)), equals(testSingleData));
