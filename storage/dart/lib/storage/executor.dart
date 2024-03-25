@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:executor/executor/broker.dart';
 import 'package:ffi/ffi.dart';
 
 import 'bindings.dart';
@@ -96,9 +97,9 @@ class StorageConsumer implements ExecutorConsumer {
   List<ExecutorCallback> callbacks() => [];
 }
 
-class StorageExecutor {
+class Storage {
   final Pointer<storage_box> _box;
-  final Executor _executor;
+  final ExecutorBroker _broker;
 
   late final StorageSchema _schema;
   late final int _descriptor;
@@ -108,13 +109,13 @@ class StorageExecutor {
   late final StorageStrings _strings;
   late final StorageFactory _factory;
 
-  StorageExecutor(this._box, this._executor);
+  Storage(this._box, this._broker);
 
   StorageSchema get schema => _schema;
   MemoryTuples get tuples => _tuples;
 
   Future<void> initialize() async {
-    _executor.initialize();
+    final broker = context().broker()..initialize();
     _descriptor = storage_executor_descriptor();
     _nativeFactory = calloc<storage_factory>(sizeOf<storage_factory>());
     using((Arena arena) {
@@ -124,16 +125,16 @@ class StorageExecutor {
       configuration.ref.slab_size = MemoryDefaults.memory.slabSize;
       storage_factory_initialize(_nativeFactory, configuration);
     });
-    _executor.consumer(StorageConsumer());
-    _producer = _executor.producer(StorageProducer(_box));
+    broker.consumer(StorageConsumer());
+    _producer = broker.producer(StorageProducer(_box));
     _tuples = context().tuples();
     _strings = StorageStrings(_nativeFactory);
     _factory = StorageFactory(_strings);
     _schema = StorageSchema(_descriptor, this, _tuples, _producer, _factory);
-    _executor.activate();
+    _broker.activate();
   }
 
-  void stop() => _executor.deactivate();
+  void stop() => _broker.deactivate();
 
   Future<void> destroy() async {
     storage_factory_destroy(_nativeFactory);

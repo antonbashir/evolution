@@ -9,7 +9,7 @@ import 'data.dart';
 import 'lua.dart';
 import 'schema.dart';
 
-late final StorageExecutor executor;
+late final Storage executor;
 late final StorageModule storage;
 late final StorageSpace space;
 late final StorageIndex index;

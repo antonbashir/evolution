@@ -7,9 +7,33 @@ import 'package:ffi/ffi.dart';
 import 'bindings.dart';
 import 'constants.dart';
 import 'extensions.dart';
+import 'script.dart';
 
 class StorageModuleConfiguration implements ModuleConfiguration {
-  const StorageModuleConfiguration();
+  final StorageBootstrapScript script;
+  final StorageExecutorConfiguration executorConfiguration;
+  final StorageBootConfiguration? bootConfiguration;
+  final bool activateReloader;
+
+  const StorageModuleConfiguration({
+    required this.script,
+    required this.executorConfiguration,
+    required this.bootConfiguration,
+    required this.activateReloader,
+  });
+
+  StorageModuleConfiguration copyWith({
+    StorageBootstrapScript? script,
+    StorageExecutorConfiguration? executorConfiguration,
+    StorageBootConfiguration? bootConfiguration,
+    bool? activateReloader,
+  }) =>
+      StorageModuleConfiguration(
+        script: script ?? this.script,
+        executorConfiguration: executorConfiguration ?? this.executorConfiguration,
+        bootConfiguration: bootConfiguration ?? this.bootConfiguration,
+        activateReloader: activateReloader ?? this.activateReloader,
+      );
 
   Pointer<storage_module_configuration> toNative(Arena arena) {
     return arena();

@@ -79,7 +79,7 @@ class StorageIndexPart {
 class StorageSchema {
   final int _descriptor;
   final MemoryTuples _tuples;
-  final StorageExecutor _executor;
+  final Storage _executor;
   final StorageProducer _producer;
   final StorageFactory _factory;
 

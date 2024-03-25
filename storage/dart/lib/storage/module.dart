@@ -18,18 +18,24 @@ class StorageModuleState implements ModuleState {
   final Map<String, SystemLibrary> _loadedModulesByName = {};
   final Map<String, SystemLibrary> _loadedModulesByPath = {};
   late final _box = calloc<storage_box>(sizeOf<storage_box>());
-  late final StorageExecutor _executor;
+  late final Storage storage;
 
   late bool _hasStorageLuaModule;
-
   StreamSubscription<ProcessSignal>? _reloadListener = null;
-
-  StorageExecutor get executor => _executor;
 
   StorageModuleState(this._library);
 
-  Future<void> boot(StorageBootstrapScript script, StorageExecutorConfiguration executorConfiguration, {StorageBootConfiguration? bootConfiguration, activateReloader = false}) async {
+  void _create() {
+    storage = Storage(_box, context().broker());
+  }
+
+  Future<void> _destroy() async {
+    await storage.destroy();
+  }
+
+  Future<void> _boot(StorageBootstrapScript script, StorageExecutorConfiguration executorConfiguration, {StorageBootConfiguration? bootConfiguration, activateReloader = false}) async {
     if (initialized()) return;
+    _create();
     _hasStorageLuaModule = script.hasStorageLuaModule;
     if (!using((Arena allocator) => storage_initialize(executorConfiguration.native(_library.path, script.write(), allocator), _box))) {
       throw StorageLauncherException(storage_initialization_error().cast<Utf8>().toDartString());
@@ -37,20 +43,19 @@ class StorageModuleState implements ModuleState {
     if (!initialized()) {
       throw StorageLauncherException(storage_initialization_error().cast<Utf8>().toDartString());
     }
-    _executor = StorageExecutor(_box, context().executor());
     if (_hasStorageLuaModule && bootConfiguration != null) {
-      await executor.boot(bootConfiguration);
+      await storage.boot(bootConfiguration);
     }
     if (activateReloader) _reloadListener = ProcessSignal.sighup.watch().listen((event) async => await reload());
   }
 
-  Future<void> shutdown() async {
+  Future<void> _shutdown() async {
     _reloadListener?.cancel();
-    _executor.stop();
+    storage.stop();
     if (!storage_shutdown()) {
       throw StorageLauncherException(storage_shutdown_error().cast<Utf8>().toDartString());
     }
-    await _executor.destroy();
+    await storage.destroy();
     calloc.free(_box.cast());
   }
 
@@ -85,7 +90,7 @@ class StorageModuleState implements ModuleState {
   Future<void> reload() async {
     _loadedModulesByName.entries.toList().forEach((entry) => _loadedModulesByName[entry.key] = entry.value.reload());
     _loadedModulesByPath.entries.toList().forEach((entry) => _loadedModulesByPath[entry.key] = entry.value.reload());
-    if (_hasStorageLuaModule) await executor.call(LuaExpressions.reload);
+    if (_hasStorageLuaModule) await storage.call(LuaExpressions.reload);
   }
 }
 
@@ -110,16 +115,28 @@ class StorageModule extends Module<storage_module, StorageModuleConfiguration, S
         );
 
   @override
-  FutureOr<void> initialize() {
-    state.boot();
+  FutureOr<void> initialize() => state._boot(
+        configuration.script,
+        configuration.executorConfiguration,
+        bootConfiguration: configuration.bootConfiguration,
+        activateReloader: configuration.activateReloader,
+      );
+
+  @override
+  FutureOr<void> fork() {
+    state._create();
   }
 
   @override
-  void unfork() => state.shutdown();
+  FutureOr<void> unfork() async {
+    await state._destroy();
+  }
 
   @override
-  Future<void> shutdown() => state.shutdown();
+  Future<void> shutdown() => state._shutdown();
+}
 
-  @override
-  void destroy() {}
+extension StorageContextExtensions on ContextProvider {
+  ModuleProvider<storage_module, StorageModuleConfiguration, StorageModuleState> storageModule() => get(storageModuleName);
+  Storage storage({ExecutorConfiguration configuration = ExecutorDefaults.executor}) => storageModule().state.storage;
 }

@@ -1,5 +1,5 @@
 export "storage/module.dart" show StorageModule;
-export 'storage/executor.dart' show StorageExecutor;
+export 'storage/executor.dart' show Storage;
 
 export "storage/space.dart" show StorageSpace;
 export "storage/index.dart" show StorageIndex;

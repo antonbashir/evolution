@@ -89,7 +89,7 @@ class MemoryModule extends Module<memory_module, MemoryModuleConfiguration, Memo
   }
 }
 
-extension MemoryExtensions on ContextProvider {
+extension MemoryContextExtensions on ContextProvider {
   ModuleProvider<memory_module, MemoryModuleConfiguration, MemoryModuleState> memoryModule() => get(memoryModuleName);
   MemoryStaticBuffers staticBuffers() => memoryModule().state.staticBuffers;
   MemoryInputOutputBuffers inputOutputBuffers() => memoryModule().state.inputOutputBuffers;
