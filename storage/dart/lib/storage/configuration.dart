@@ -2,12 +2,23 @@ import 'dart:ffi';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:core/core.dart';
 import 'package:ffi/ffi.dart';
-import 'package:memory/memory.dart';
+
 import 'bindings.dart';
 import 'constants.dart';
 import 'extensions.dart';
+
+class StorageModuleConfiguration implements ModuleConfiguration {
+  const StorageModuleConfiguration();
+
+  Pointer<storage_module_configuration> toNative(Arena arena) {
+    return arena();
+  }
+
+  factory StorageModuleConfiguration.fromNative(storage_module_configuration configuration) {
+    return StorageModuleConfiguration();
+  }
+}
 
 class StorageConfiguration {
   final Map<String, dynamic> _configurationMap;

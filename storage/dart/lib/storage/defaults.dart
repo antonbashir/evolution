@@ -3,6 +3,8 @@ import 'configuration.dart';
 class StorageDefaults {
   const StorageDefaults._();
 
+  static const module = StorageModuleConfiguration();
+
   static const executor = StorageExecutorConfiguration(
     boxOutputBufferCapacity: 16536,
     executorRingSize: 16384,

@@ -3,30 +3,30 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:ffi/ffi.dart';
+import 'package:memory/memory/constants.dart';
 
 import 'bindings.dart';
 import 'configuration.dart';
 import 'constants.dart';
+import 'defaults.dart';
 import 'exception.dart';
 import 'executor.dart';
 import 'script.dart';
 
-class StorageModule {
+class StorageModuleState implements ModuleState {
+  final SystemLibrary _library;
   final Map<String, SystemLibrary> _loadedModulesByName = {};
   final Map<String, SystemLibrary> _loadedModulesByPath = {};
-  final SystemLibrary _library;
-  final _executor = ExecutorModule();
-
   late final _box = calloc<storage_box>(sizeOf<storage_box>());
+  late final StorageExecutor _executor;
 
-  late StorageExecutor _executor;
   late bool _hasStorageLuaModule;
 
   StreamSubscription<ProcessSignal>? _reloadListener = null;
 
-  StorageModule({String? libraryPath}) : _library = libraryPath == null ? SystemLibrary.loadByName(storageLibraryName, storagePackageName) : SystemLibrary.loadByPath(libraryPath);
-
   StorageExecutor get executor => _executor;
+
+  StorageModuleState(this._library);
 
   Future<void> boot(StorageBootstrapScript script, StorageExecutorConfiguration executorConfiguration, {StorageBootConfiguration? bootConfiguration, activateReloader = false}) async {
     if (initialized()) return;
@@ -37,13 +37,21 @@ class StorageModule {
     if (!initialized()) {
       throw StorageLauncherException(storage_initialization_error().cast<Utf8>().toDartString());
     }
-    _executor.initialize();
-    _executor = StorageExecutor(_box);
-    await _executor.initialize(_executor);
+    _executor = StorageExecutor(_box, context().executor());
     if (_hasStorageLuaModule && bootConfiguration != null) {
       await executor.boot(bootConfiguration);
     }
     if (activateReloader) _reloadListener = ProcessSignal.sighup.watch().listen((event) async => await reload());
+  }
+
+  Future<void> shutdown() async {
+    _reloadListener?.cancel();
+    _executor.stop();
+    if (!storage_shutdown()) {
+      throw StorageLauncherException(storage_shutdown_error().cast<Utf8>().toDartString());
+    }
+    await _executor.destroy();
+    calloc.free(_box.cast());
   }
 
   bool initialized() => storage_initialized();
@@ -60,27 +68,16 @@ class StorageModule {
 
   Future<void> waitMutable() => Future.doWhile(() => Future.delayed(awaitStateDuration).then((value) => !mutable()));
 
-  Future<void> shutdown() async {
-    _reloadListener?.cancel();
-    _executor.stop();
-    if (!storage_shutdown()) {
-      throw StorageLauncherException(storage_shutdown_error().cast<Utf8>().toDartString());
-    }
-    await _executor.shutdown();
-    await _executor.destroy();
-    calloc.free(_box.cast());
-  }
-
   SystemLibrary loadModuleByPath(String libraryPath) {
     if (_loadedModulesByPath.containsKey(libraryPath)) return _loadedModulesByPath[libraryPath]!;
-    final module = SystemLibrary.loadByPath(libraryPath);
+    final module = SystemLibrary.loadByPath(libraryPath, storageModuleName);
     _loadedModulesByName[libraryPath] = module;
     return module;
   }
 
   SystemLibrary loadModuleByName(String libraryName) {
     if (_loadedModulesByName.containsKey(libraryName)) return _loadedModulesByName[libraryName]!;
-    final module = SystemLibrary.loadByName(libraryName, storagePackageName);
+    final module = SystemLibrary.loadByName(libraryName, storageModuleName);
     _loadedModulesByName[libraryName] = module;
     return module;
   }
@@ -90,4 +87,39 @@ class StorageModule {
     _loadedModulesByPath.entries.toList().forEach((entry) => _loadedModulesByPath[entry.key] = entry.value.reload());
     if (_hasStorageLuaModule) await executor.call(LuaExpressions.reload);
   }
+}
+
+class StorageModule extends Module<storage_module, StorageModuleConfiguration, StorageModuleState> {
+  final name = storageModuleName;
+  final dependencies = {executorModuleName, memoryModuleName, coreModuleName};
+  late final state = StorageModuleState(library);
+
+  StorageModule({StorageModuleConfiguration configuration = StorageDefaults.module})
+      : super(
+          configuration,
+          SystemLibrary.loadByName(storageLibraryName, storageModuleName),
+          using((arena) => storage_module_create(configuration.toNative(arena))),
+        );
+
+  @entry
+  StorageModule._load(int address)
+      : super.load(
+          address,
+          (native) => SystemLibrary.load(native.ref.library),
+          (native) => StorageModuleConfiguration.fromNative(native.ref.configuration),
+        );
+
+  @override
+  FutureOr<void> initialize() {
+    state.boot();
+  }
+
+  @override
+  void unfork() => state.shutdown();
+
+  @override
+  Future<void> shutdown() => state.shutdown();
+
+  @override
+  void destroy() {}
 }

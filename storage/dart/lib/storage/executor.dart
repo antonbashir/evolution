@@ -98,9 +98,9 @@ class StorageConsumer implements ExecutorConsumer {
 
 class StorageExecutor {
   final Pointer<storage_box> _box;
+  final Executor _executor;
 
   late final StorageSchema _schema;
-  late final Executor _executor;
   late final int _descriptor;
   late final MemoryTuples _tuples;
   late final StorageProducer _producer;
@@ -108,14 +108,13 @@ class StorageExecutor {
   late final StorageStrings _strings;
   late final StorageFactory _factory;
 
-  StorageExecutor(this._box);
+  StorageExecutor(this._box, this._executor);
 
   StorageSchema get schema => _schema;
   MemoryTuples get tuples => _tuples;
 
   Future<void> initialize() async {
-    _executor = context().executor();
-    await _executor.initialize();
+    _executor.initialize();
     _descriptor = storage_executor_descriptor();
     _nativeFactory = calloc<storage_factory>(sizeOf<storage_factory>());
     using((Arena arena) {
