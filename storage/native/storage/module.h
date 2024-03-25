@@ -17,6 +17,8 @@ DART_STRUCTURE struct storage_module_configuration
 {
     DART_FIELD uint8_t library_package_mode;
     DART_FIELD struct storage_configuration storage_instance_configuration;
+    DART_FIELD bool activate_reloader;
+    DART_FIELD const char* script;
 };
 #define module_configuration struct storage_module_configuration
 DART_STRUCTURE struct storage_module

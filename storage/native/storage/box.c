@@ -7,6 +7,7 @@
 #include "box/session.h"
 #include "box/tuple.h"
 #include "box/txn.h"
+#include "constants.h"
 #include "diag.h"
 #include "fiber.h"
 #include "mempool.h"
@@ -14,9 +15,6 @@
 #include "port.h"
 #include "small.h"
 #include "small/obuf.h"
-
-#define STORAGE_PRIMARY_INDEX_ID 0
-#define STORAGE_INDEX_BASE_C 0
 
 static struct small_alloc storage_box_output_buffers;
 static struct mempool storage_tuple_ports;
