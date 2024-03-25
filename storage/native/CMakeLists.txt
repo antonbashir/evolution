@@ -40,7 +40,6 @@ set_target_properties(storage_debug_linux_x64 PROPERTIES COMPILE_FLAGS ${COMPILE
 copy_to_assets(storage_debug_linux_x64)
 copy_file_to_assets(storage_debug_linux_x64 ${TARANTOOL_BINARY_DIRECTORY}/src/module.h ${CMAKE_CURRENT_SOURCE_DIR}/../dart/assets/library.h)
 copy_file_to_assets(storage_debug_linux_x64 ${TARANTOOL_SOURCE_DIRECTORY}/third_party/luajit/src/lua.h ${CMAKE_CURRENT_SOURCE_DIR}/../dart/assets/lua.h)
-copy_file_to_assets(storage_debug_linux_x64 ${TARANTOOL_SOURCE_DIRECTORY}/third_party/luajit/src/lua.h ${CMAKE_CURRENT_SOURCE_DIR}/../dart/assets/lua.h)
 copy_file_to_assets(storage_debug_linux_x64 ${TARANTOOL_SOURCE_DIRECTORY}/third_party/luajit/src/luaconf.h ${CMAKE_CURRENT_SOURCE_DIR}/../dart/assets/luaconf.h)
 copy_file_to_assets(storage_debug_linux_x64 ${TARANTOOL_SOURCE_DIRECTORY}/src/lib/msgpuck/msgpuck.h ${CMAKE_CURRENT_SOURCE_DIR}/../dart/assets/msgpuck.h)
 
@@ -53,7 +52,6 @@ copy_to_assets(storage_release_linux_x64)
 copy_file_to_assets(storage_release_linux_x64 ${TARANTOOL_BINARY_DIRECTORY}/src/module.h ${CMAKE_CURRENT_SOURCE_DIR}/../dart/assets/library.h)
 copy_file_to_assets(storage_release_linux_x64 ${TARANTOOL_SOURCE_DIRECTORY}/third_party/luajit/src/lua.h ${CMAKE_CURRENT_SOURCE_DIR}/../dart/assets/lua.h)
 copy_file_to_assets(storage_release_linux_x64 ${TARANTOOL_SOURCE_DIRECTORY}/third_party/luajit/src/luaconf.h ${CMAKE_CURRENT_SOURCE_DIR}/../dart/assets/luaconf.h)
-copy_file_to_assets(storage_release_linux_x64 ${TARANTOOL_SOURCE_DIRECTORY}/src/lib/msgpuck/msgpuck.h ${CMAKE_CURRENT_SOURCE_DIR}/../dart/assets/msgpuck.h)
 copy_file_to_assets(storage_release_linux_x64 ${TARANTOOL_SOURCE_DIRECTORY}/src/lib/msgpuck/msgpuck.h ${CMAKE_CURRENT_SOURCE_DIR}/../dart/assets/msgpuck.h)
 
 add_custom_target(storage_native DEPENDS "storage_release_linux_x64;storage_debug_linux_x64")
