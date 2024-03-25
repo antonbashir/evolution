@@ -1,9 +1,9 @@
 #ifndef STORAGE_BOX_H
 #define STORAGE_BOX_H
 
+#include <common/common.h>
 #include <executor/task.h>
 #include <system/library.h>
-#include <common/common.h>
 
 #if defined(__cplusplus)
 extern "C"

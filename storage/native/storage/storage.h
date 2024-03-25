@@ -2,8 +2,8 @@
 #define STORAGE_STORAGE_H
 
 #include <system/library.h>
-#include "configuration.h"
 #include "box.h"
+#include "configuration.h"
 
 #if defined(__cplusplus)
 extern "C"

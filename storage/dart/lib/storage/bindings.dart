@@ -9,3 +9,6 @@ export '../bindings/storage/executor.dart';
 export '../bindings/storage/storage.dart';
 export '../bindings/storage/factory.dart';
 export '../bindings/storage/box.dart';
+export '../bindings/storage/types.dart';
+export '../bindings/storage/configuration.dart';
+export '../bindings/storage/module.dart';
