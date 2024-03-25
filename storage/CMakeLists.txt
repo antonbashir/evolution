@@ -23,6 +23,7 @@ set(TARANTOOL_CMAKE_ARGUMENTS
   -DBUNDLED_LIBS_INSTALL_DIR=${storage_tarantool_BINARY_DIR}
   -DBUILD_STATIC_WITH_BUNDLED_LIBS=TRUE
   -DENABLE_DIST=TRUE
+  -DENABLE_GCOV=FALSE
   -DENABLE_LTO=FALSE
   -DENABLE_HARDENING=TRUE
   -DENABLE_BACKTRACE=FALSE
@@ -53,14 +54,16 @@ ExternalProject_Add_Step(storage_tarantool storage_tarantool_configure
   BYPRODUCTS ${storage_tarantool_SOURCE_DIR}/Makefile
 )
 ExternalProject_Add_Step(storage_tarantool storage_tarantool_build
-  COMMAND make -j build-tarantool-bundle
+  COMMAND make -j api build-tarantool-bundle
   WORKING_DIRECTORY <BINARY_DIR>
   EXCLUDE_FROM_MAIN FALSE
-  BYPRODUCTS ${storage_tarantool_BINARY_DIR}/src/lib/libtarantool-bundle.a
+  BYPRODUCTS ${storage_tarantool_BINARY_DIR}/src/libtarantool-bundle.a
   DEPENDEES storage_tarantool_configure
 )
 
 set(TARANTOOL_INSTALL_DIR ${storage_tarantool_BINARY_DIR})
-set(TARANTOOL_LIBRARY ${storage_tarantool_BINARY_DIR}/src/lib/libtarantool-bundle.a)
+set(TARANTOOL_LIBRARY ${storage_tarantool_BINARY_DIR}/src/libtarantool-bundle.a)
+set(TARANTOOL_SOURCE_DIRECTORY ${storage_tarantool_SOURCE_DIR})
+set(TARANTOOL_BINARY_DIRECTORY ${storage_tarantool_BINARY_DIR})
 
 add_subdirectory(native)

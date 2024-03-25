@@ -1,40 +1,61 @@
+// clang-format off
+#include "trivia/util.h"
 #include "executor.h"
+#include <events/events.h>
+#include <executor/constants.h>
+#include <executor/task.h>
 #include <liburing.h>
 #include <small/small.h>
 #include <system/library.h>
 #include "fiber.h"
+// clang-format on
 
-static struct executor_native* storage_executor;
-static bool active;
+struct storage_executor executor;
 
 int32_t storage_executor_initialize(struct storage_executor_configuration* configuration)
 {
-    storage_executor = calloc(1, sizeof(struct executor_native));
-    int32_t descriptor;
-    if ((descriptor = executor_native_initialize_default(storage_executor, configuration->executor_id)) < 0)
+    int32_t result;
+    if ((result = io_uring_queue_init(configuration->ring_size, &executor.ring, configuration->ring_flags)) != 0)
     {
-        return -descriptor;
+        event_propagate_local(event_system_error(-result));
     }
-    active = true;
+    executor.active = true;
+    executor.configuration = configuration;
+    executor.descriptor = executor.ring.ring_fd;
     return 0;
 }
-  
-void storage_executor_start(struct storage_executor_configuration* configuration)
+
+void storage_executor_start()
 {
-    struct io_uring* ring = storage_executor->ring;
+    struct io_uring* ring = &executor.ring;
     struct ev_io io;
     ev_init(&io, (ev_io_cb)fiber_schedule_cb);
     io.data = fiber();
-    ev_io_set(&io, storage_executor->descriptor, EV_READ);
+    ev_io_set(&io, executor.descriptor, EV_READ);
     ev_set_priority(&io, EV_MAXPRI);
     ev_io_start(loop(), &io);
-    while (likely(active))
+    struct io_uring_cqe* cqe;
+    unsigned head;
+    unsigned count = 0;
+    while (likely(executor.active))
     {
         io_uring_submit(ring);
         if (likely(io_uring_cq_ready(ring)))
         {
-            if (!active) break;
-            executor_native_process(storage_executor);
+            if (!executor.active) break;
+            io_uring_for_each_cqe(ring, head, cqe)
+            {
+                struct executor_task* task = (struct executor_task*)cqe->user_data;
+                void (*pointer)(struct executor_task*) = (void (*)(struct executor_task*))task->method;
+                pointer(task);
+                struct io_uring_sqe* sqe = io_uring_get_sqe(ring);
+                uint64_t target = task->source;
+                task->source = executor.descriptor;
+                task->target = target;
+                io_uring_prep_msg_ring(sqe, target, EXECUTOR_CALLBACK, (uint64_t)((intptr_t)task), 0);
+                sqe->flags |= IOSQE_CQE_SKIP_SUCCESS;
+            }
+            io_uring_cq_advance(ring, count);
             io_uring_submit(ring);
         }
         fiber_yield();
@@ -45,24 +66,24 @@ void storage_executor_start(struct storage_executor_configuration* configuration
 
 int32_t storage_executor_descriptor()
 {
-    return storage_executor->descriptor;
+    return executor.descriptor;
 }
 
 void storage_executor_stop()
 {
-    active = false;
-    struct io_uring_sqe* sqe = io_uring_get_sqe(storage_executor->ring);
+    executor.active = false;
+    struct io_uring_sqe* sqe = io_uring_get_sqe(&executor.ring);
     while (unlikely(sqe == NULL))
     {
         struct io_uring_cqe* unused;
-        io_uring_wait_cqe_nr(storage_executor->ring, &unused, 1);
-        sqe = io_uring_get_sqe(storage_executor->ring);
+        io_uring_wait_cqe_nr(&executor.ring, &unused, 1);
+        sqe = io_uring_get_sqe(&executor.ring);
     }
     io_uring_prep_nop(sqe);
-    io_uring_submit(storage_executor->ring);
+    io_uring_submit(&executor.ring);
 }
 
 void storage_executor_destroy()
 {
-    executor_native_destroy(storage_executor);
+    io_uring_queue_exit(&executor.ring);
 }

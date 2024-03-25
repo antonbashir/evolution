@@ -1,28 +1,21 @@
+// clang-format off
+#include "trivia/util.h"
 #include "storage.h"
-#include <dlfcn.h>
-#include <errno.h>
 #include <executor/executor.h>
-#include <fcntl.h>
 #include <lauxlib.h>
 #include <lua.h>
 #include <luajit.h>
-#include <stdbool.h>
-#include <string.h>
-#include <unistd.h>
+#include <system/library.h>
 #include "box.h"
 #include "box/box.h"
 #include "cbus.h"
+#include "constants.h"
 #include "executor.h"
 #include "launcher.h"
 #include "lib/core/fiber.h"
 #include "lua/init.h"
 #include "on_shutdown.h"
-
-#define STORAGE_EXECUTOR_FIBER "executor"
-
-#define STORAGE_LUA_ERROR "Failed to execute initial Lua script"
-
-static struct storage_executor_configuration executor;
+// clang-format on
 
 static struct storage
 {
@@ -56,7 +49,7 @@ static int32_t storage_fiber(va_list args)
 {
     (void)args;
     int32_t error;
-    if (error = storage_executor_initialize(&executor))
+    if (error = storage_executor_initialize(&storage.configuration.executor_configuration))
     {
         storage_executor_destroy();
         storage.initialization_error = strerror(error);
@@ -84,7 +77,7 @@ static int32_t storage_fiber(va_list args)
         return 0;
     }
     storage_initialize_box(storage.box);
-    storage_executor_start(&executor);
+    storage_executor_start();
     storage_destroy_box(storage.box);
     storage_executor_destroy();
     ev_break(loop(), EVBREAK_ALL);
@@ -99,10 +92,9 @@ static void* storage_process_initialization(void* input)
 
     int32_t events = ev_activecnt(loop());
 
-    if (storage_lua_run_string((char*)args->script) != 0)
+    if (tarantool_lua_run_string((char*)args->script) != 0)
     {
-        diag_log();
-        storage.initialization_error = STORAGE_LUA_ERROR;
+        storage.initialization_error = "STORAGE_LUA_ERROR";
         return NULL;
     }
 
@@ -156,10 +148,6 @@ bool storage_initialize(struct storage_configuration* configuration, struct stor
     storage.configuration = *configuration;
     storage.initialization_error = "";
     storage.box = box;
-
-    executor.configuration = &storage.configuration;
-    executor.executor_ring_size = configuration->executor_ring_size;
-    executor.executor_id = 0;
 
     struct storage_initialization_args* args = calloc(1, sizeof(struct storage_initialization_args));
     if (args == NULL)

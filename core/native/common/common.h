@@ -26,12 +26,14 @@ extern "C"
 #define __has_cpp_attribute(x) 0
 #endif
 
+#ifndef likely
 #if __has_builtin(__builtin_expect) || defined(__GNUC__)
 #define likely(x) __builtin_expect(!!(x), 1)
 #define unlikely(x) __builtin_expect(!!(x), 0)
 #else
 #define likely(x) (x)
 #define unlikely(x) (x)
+#endif
 #endif
 
 #if __has_builtin(__builtin_prefetch) || defined(__GNUC__)
@@ -166,6 +168,7 @@ extern "C"
 #define DEPRECATED(_msg)
 #endif
 
+#ifndef API_EXPORT
 #if defined(__cplusplus) && defined(__GNUC__)
 #define API_EXPORT extern "C" __attribute__((nothrow, visibility("default")))
 #elif defined(__cplusplus)
@@ -174,6 +177,7 @@ extern "C"
 #define API_EXPORT extern __attribute__((nothrow, visibility("default")))
 #else
 #define API_EXPORT extern
+#endif
 #endif
 
 #if __has_attribute(packed) || defined(__GNUC__)

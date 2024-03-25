@@ -1,10 +1,8 @@
 #ifndef EXECUTOR_TASK_H
 #define EXECUTOR_TASK_H
 
-#include <asm-generic/int-ll64.h>
-#include <stddef.h>
-#include <stdint.h>
-#include "common/common.h"
+#include <common/common.h>
+#include <system/library.h>
 
 #if defined(__cplusplus)
 extern "C"

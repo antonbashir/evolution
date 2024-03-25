@@ -173,6 +173,13 @@
     "hasher.h": "c",
     "hashing_wyhash.h": "c",
     "msgpuck.h": "c",
-    "storage.h": "c"
+    "storage.h": "c",
+    "configuration.h": "c",
+    "launcher.h": "c",
+    "on_shutdown.h": "c",
+    "dlfcn.h": "c",
+    "lauxlib.h": "c",
+    "luajit.h": "c",
+    "util.h": "c"
   },
 }

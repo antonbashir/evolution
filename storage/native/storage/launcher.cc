@@ -1,3 +1,5 @@
+// clang-format off
+#include "trivia/util.h"
 #include "launcher.h"
 #include <getopt.h>
 #include <grp.h>
@@ -45,9 +47,9 @@
 #include "small/small_features.h"
 #include "ssl_cert_paths_discover.h"
 #include "title.h"
-#include "trivia/util.h"
 #include "tt_pthread.h"
 #include "version.h"
+// clang-format on
 
 struct ev_loop;
 struct ev_signal;

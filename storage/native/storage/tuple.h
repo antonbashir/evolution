@@ -1,14 +1,18 @@
 #ifndef STORAGE_TUPLE_H
 #define STORAGE_TUPLE_H
 
-#include <stddef.h>
+// clang-format off
+#include "trivia/util.h"
+#include <common/common.h>
+#include <system/library.h>
 #include "box/port.h"
 #include "box/tuple.h"
-#include "common/common.h"
+// clang-format on
 
-DART_TYPE struct storage_tuple;
-DART_TYPE struct storage_port_vtab;
-DART_TYPE struct storage_tuple_iterator;
+typedef struct tuple storage_tuple;
+typedef struct port storage_tuple_port;
+typedef struct tuple_iterator storage_tuple_iterator;
+typedef struct port_c_entry storage_tuple_port_entry;
 
 DART_STRUCTURE struct storage_tuple_port_entry
 {
@@ -24,11 +28,6 @@ DART_STRUCTURE struct storage_tuple_port
     DART_FIELD struct storage_tuple_port_entry first_entry;
     DART_FIELD int size;
 };
-
-typedef struct tuple storage_tuple;
-typedef struct port storage_tuple_port;
-typedef struct tuple_iterator storage_tuple_iterator;
-typedef struct port_c_entry storage_tuple_port_entry;
 
 #if defined(__cplusplus)
 extern "C"
