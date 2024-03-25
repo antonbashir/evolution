@@ -11,3 +11,4 @@ export "storage/exception.dart";
 export "storage/bindings.dart";
 export "storage/lua.dart";
 export "storage/tuple.dart";
+export "storage/constants.dart" show StorageEngine, StorageFieldType, StorageIndexPartType, StorageIndexType, StorageIteratorType, StorageUpdateOperationType;

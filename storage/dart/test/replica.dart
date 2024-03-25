@@ -5,7 +5,6 @@ import 'package:test/expect.dart';
 import 'package:test/scaffolding.dart';
 
 void main(List<String> args) => test("test replica ${args[0]}", () async {
-      final storage = StorageModule();
       final workDirectory = Directory(Directory.current.path + "/test/storage_${int.parse(args[0].toString())}");
       final bootConfiguration = StorageDefaults.boot();
       final configuration = StorageDefaults.storage.copyWith(
@@ -21,14 +20,8 @@ void main(List<String> args) => test("test replica ${args[0]}", () async {
         workDirectory.deleteSync(recursive: true);
       }
       workDirectory.createSync();
-      await storage.boot(
-        StorageBootstrapScript(configuration)..includeStorageLuaModule(),
-        StorageDefaults.executor,
-        bootConfiguration: StorageDefaults.boot(randomizeDelay: true),
-      );
-      await storage.waitInitialized();
-      expect(storage.initialized(), equals(true));
+      await context().storageModule().state.waitInitialized();
+      expect(context().storageModule().state.initialized(), equals(true));
       await Future.delayed(Duration(seconds: 1));
-      storage.shutdown();
       workDirectory.deleteSync(recursive: true);
     });
