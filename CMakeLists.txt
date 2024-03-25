@@ -27,8 +27,8 @@ SET(CMAKE_SHARED_LINKER_FLAGS_RELEASE "-fPIC")
 SET(CMAKE_SHARED_LINKER_FLAGS_DEBUG "-fPIC")
 SET(CMAKE_SHARED_LINKER_FLAGS_RELWITHDEBINFO "-fPIC")
 
-SET(COMPILER_C_FLAGS_DEBUG "-fPIC -O0 -g -Wno-parentheses -fstrict-aliasing -fno-stack-protector -fkeep-inline-functions -DTRACE -DDEBUG")
-SET(COMPILER_C_FLAGS_RELEASE "-fPIC -O2 -Wno-parentheses -fstrict-aliasing -fno-stack-protector -fkeep-inline-functions -DNDEBUG")
+SET(COMPILER_C_FLAGS_DEBUG "-fPIC -O0 -g -Wno-parentheses -fstrict-aliasing -fno-stack-protector -DTRACE -DDEBUG")
+SET(COMPILER_C_FLAGS_RELEASE "-fPIC -O2 -Wno-parentheses -fstrict-aliasing -fno-stack-protector -DNDEBUG")
 SET(COMPILER_CXX_FLAGS_DEBUG "${COMPILER_C_FLAGS_DEBUG}")
 SET(COMPILER_CXX_FLAGS_RELEASE "${COMPILER_C_FLAGS_RELEASE}")
 
@@ -80,4 +80,4 @@ add_subdirectory(transport)
 add_subdirectory(storage)
 add_subdirectory(laboratory)
 
-add_custom_target(natives DEPENDS core_native memory_native executor_native transport_native)
+add_custom_target(natives DEPENDS core_native memory_native executor_native transport_native storage_native)
