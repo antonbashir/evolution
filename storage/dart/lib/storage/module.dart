@@ -11,25 +11,24 @@ import 'exception.dart';
 import 'executor.dart';
 
 class StorageModuleState implements ModuleState {
-  late final _box = calloc<storage_box>(sizeOf<storage_box>());
   late final Storage storage;
 
   Future<void> _boot() async {
     if (initialized()) return;
-    storage = Storage(_box, context().broker());
     final configuration = context().storageModule().configuration;
-    if (!using((Arena allocator) => storage_initialize(_box))) {
+    if (!storage_initialize()) {
       throw StorageLauncherException(storage_initialization_error().cast<Utf8>().toDartString());
     }
     if (!initialized()) {
       throw StorageLauncherException(storage_initialization_error().cast<Utf8>().toDartString());
     }
+    storage = Storage(storage_get_box(), context().broker());
     await storage.initialize();
     await storage.boot(configuration.bootConfiguration.launchConfiguration);
   }
 
   Future<void> _recreate() async {
-    storage = Storage(_box, context().broker());
+    storage = Storage(storage_get_box(), context().broker());
     await storage.initialize();
   }
 
@@ -43,7 +42,6 @@ class StorageModuleState implements ModuleState {
       throw StorageLauncherException(storage_shutdown_error().cast<Utf8>().toDartString());
     }
     await storage.destroy();
-    calloc.free(_box.cast());
   }
 
   bool initialized() => storage_initialized();

@@ -22,7 +22,7 @@ static struct storage_instance
 {
     char* initialization_error;
     char* shutdown_error;
-    struct storage_box* box;
+    struct storage_box box;
     pthread_t main_thread_id;
     pthread_mutex_t initialization_mutex;
     pthread_cond_t initialization_condition;
@@ -36,6 +36,11 @@ struct storage_initialization_args
     const char* binary_path;
     const char* script;
 };
+
+struct storage_box* storage_get_box()
+{
+    return &storage_instance.box;
+}
 
 static int32_t storage_shutdown_trigger(void* ignore)
 {
@@ -77,9 +82,9 @@ static int32_t storage_fiber(va_list args)
         storage_instance.initialization_error = strerror(error);
         return 0;
     }
-    storage_initialize_box(storage_instance.box);
+    storage_initialize_box(&storage_instance.box);
     storage_executor_start();
-    storage_destroy_box(storage_instance.box);
+    storage_destroy_box(&storage_instance.box);
     storage_executor_destroy();
     ev_break(loop(), EVBREAK_ALL);
     return 0;
@@ -139,7 +144,7 @@ static void* storage_process_initialization(void* input)
     return NULL;
 }
 
-bool storage_initialize(struct storage_box* box)
+bool storage_initialize()
 {
     struct storage_boot_configuration* configuration = &storage()->configuration.boot_configuration;
 
@@ -149,7 +154,6 @@ bool storage_initialize(struct storage_box* box)
     }
 
     storage_instance.initialization_error = "";
-    storage_instance.box = box;
 
     struct storage_initialization_args* args = calloc(1, sizeof(struct storage_initialization_args));
     if (args == NULL)
