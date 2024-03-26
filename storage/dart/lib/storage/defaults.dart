@@ -14,6 +14,7 @@ class StorageDefaults {
   static final module = StorageModuleConfiguration(
     bootConfiguration: boot,
     executorConfiguration: executor,
+    modules: {},
   );
 
   static final boot = StorageBootConfiguration(
