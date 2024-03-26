@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:storage/storage.dart';
+import 'package:storage/storage/module.dart';
 import 'package:test/test.dart';
 
 import 'crud.dart';
@@ -17,28 +18,32 @@ final testKey = [10];
 final testSingleData = TestData(10, "test", true);
 final testMultipleData = Iterable.generate(10, (index) => [index + 1, "key-${index}", "value"]).toList();
 
+FutureOr<void> runTest(FutureOr<void> Function() test, {List<Module>? overrides}) => launch(() => overrides ?? [CoreModule(), MemoryModule(), ExecutorModule(), StorageModule()], test);
+
 Future<void> main() async {
   Directory.current.listSync().forEach((element) {
     if (element.path.contains("00000")) element.deleteSync();
   });
 
-  setUpAll(() async {
-    storage = context().storage();
-    final spaceId = await storage.schema.spaceId("test");
-    space = storage.schema.spaceById(spaceId);
-    index = storage.schema.indexById(spaceId, await storage.schema.indexId(spaceId, "test"));
-  });
-  setUp(() async => await space.truncate());
-  tearDownAll(() async {
-    Directory.current.listSync().forEach((element) {
-      if (element.path.contains("00000")) element.deleteSync();
+  await runTest(() async {
+    setUpAll(() async {
+      storage = context().storage();
+      final spaceId = await storage.schema.spaceId("test");
+      space = storage.schema.spaceById(spaceId);
+      index = storage.schema.indexById(spaceId, await storage.schema.indexId(spaceId, "test"));
     });
-  });
+    setUp(() async => await space.truncate());
+    tearDownAll(() async {
+      Directory.current.listSync().forEach((element) {
+        if (element.path.contains("00000")) element.deleteSync();
+      });
+    });
 
-  test("[lua]", testLua);
-  group(["schema"], testSchema);
-  group("[crud]", testCrud);
-  await Future.delayed(Duration(days: 1));
+    test("[lua]", testLua);
+    group(["schema"], testSchema);
+    group("[crud]", testCrud);
+    await block();
+  });
 
   // // group("[isolate crud]", () {
   // //   test("multi isolate batch", testMultiIsolateInsert);
