@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:ffi';
-import 'dart:io';
 
 import 'package:ffi/ffi.dart';
 
@@ -17,8 +16,6 @@ class StorageModuleState implements ModuleState {
   late final _box = calloc<storage_box>(sizeOf<storage_box>());
   late final Storage storage;
 
-  StreamSubscription<ProcessSignal>? _reloadListener = null;
-
   Future<void> _boot() async {
     if (initialized()) return;
     storage = Storage(_box, context().broker());
@@ -31,7 +28,6 @@ class StorageModuleState implements ModuleState {
     }
     await storage.initialize();
     await storage.boot(configuration.bootConfiguration.launchConfiguration);
-    if (configuration.activateReloader) _reloadListener = ProcessSignal.sighup.watch().listen((event) async => await reloadModules());
   }
 
   Future<void> _recreate() async {
@@ -44,7 +40,6 @@ class StorageModuleState implements ModuleState {
   }
 
   Future<void> _shutdown() async {
-    _reloadListener?.cancel();
     storage.stop();
     if (!storage_shutdown()) {
       throw StorageLauncherException(storage_shutdown_error().cast<Utf8>().toDartString());
@@ -119,6 +114,11 @@ class StorageModule extends Module<storage_module, StorageModuleConfiguration, S
   @override
   FutureOr<void> unfork() async {
     await state._destroy();
+  }
+
+  @override
+  FutureOr<void> reload() async {
+    await state.reloadModules();
   }
 
   @override

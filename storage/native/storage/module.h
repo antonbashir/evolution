@@ -17,7 +17,6 @@ DART_STRUCTURE struct storage_module_configuration
 {
     DART_FIELD struct storage_boot_configuration boot_configuration;
     DART_FIELD struct storage_executor_configuration executor_configuration;
-    DART_FIELD bool activate_reloader;
 };
 #define module_configuration struct storage_module_configuration
 DART_STRUCTURE struct storage_module

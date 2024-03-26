@@ -6,6 +6,10 @@ var _forked = false;
 Future<void> launch(List<Module> Function() factory, FutureOr<void> Function() main, {SystemConfiguration? configuration, SystemEnvironment? environment}) async {
   if (_launched) return;
   _launched = true;
+  signals().reload.callback(() async {
+    for (var module in _context._modules.values) await module.reload();
+  });
+  signals().reload.system(ProcessSignal.sighup);
   _system._bootstrap(configurationOverrides: configuration, environmentOverrides: environment);
   _Context._create();
   final modules = factory();
@@ -19,6 +23,7 @@ Future<void> launch(List<Module> Function() factory, FutureOr<void> Function() m
           : error is Exception
               ? context().coreModule().state.exceptionHandler(error, stack)
               : context().coreModule().state.errorHandler(UnimplementedError(error.toString()), stack));
+  await signals().reload.destroy();
   for (var module in _context._modules.values.toList().reversed) await Future.value(module.shutdown());
   for (var module in _context._modules.values.toList().reversed) module.destroy();
   _context._clear();
@@ -28,6 +33,10 @@ Future<void> launch(List<Module> Function() factory, FutureOr<void> Function() m
 Future<void> fork(FutureOr<void> Function() main, {SystemEnvironment Function(SystemEnvironment current)? environment}) async {
   if (_forked) return;
   _forked = true;
+  signals().reload.callback(() async {
+    for (var module in _context._modules.values) await module.reload();
+  });
+  signals().reload.system(ProcessSignal.sighup);
   _system._restore();
   _Context._restore();
   for (var module in _context._modules.values) await Future.value(module.fork());
@@ -38,6 +47,7 @@ Future<void> fork(FutureOr<void> Function() main, {SystemEnvironment Function(Sy
           : error is Exception
               ? context().coreModule().state.exceptionHandler(error, stack)
               : context().coreModule().state.errorHandler(UnimplementedError(error.toString()), stack));
+  await signals().reload.destroy();
   for (var module in _context._modules.values.toList().reversed) await Future.value(module.unfork());
   for (var module in _context._modules.values.toList().reversed) module.unload();
   _forked = false;

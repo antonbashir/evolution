@@ -8,8 +8,6 @@ import '../../storage/bindings.dart';
 final class storage_module_configuration extends Struct {
   external storage_boot_configuration boot_configuration;
   external storage_executor_configuration executor_configuration;
-  @Bool()
-  external bool activate_reloader;
 }
 
 final class storage_module extends Struct {

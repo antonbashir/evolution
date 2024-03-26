@@ -11,28 +11,23 @@ import 'extensions.dart';
 class StorageModuleConfiguration implements ModuleConfiguration {
   final StorageBootConfiguration bootConfiguration;
   final StorageExecutorConfiguration executorConfiguration;
-  final bool activateReloader;
 
   const StorageModuleConfiguration({
     required this.bootConfiguration,
     required this.executorConfiguration,
-    required this.activateReloader,
   });
 
   StorageModuleConfiguration copyWith({
     StorageBootConfiguration? bootConfiguration,
     StorageExecutorConfiguration? executorConfiguration,
-    bool? activateReloader,
   }) =>
       StorageModuleConfiguration(
         bootConfiguration: bootConfiguration ?? this.bootConfiguration,
         executorConfiguration: executorConfiguration ?? this.executorConfiguration,
-        activateReloader: activateReloader ?? this.activateReloader,
       );
 
   Pointer<storage_module_configuration> toNative(Arena arena) {
     Pointer<storage_module_configuration> native = arena();
-    native.ref.activate_reloader = activateReloader;
     native.ref.boot_configuration = bootConfiguration.toNative(arena).ref;
     native.ref.executor_configuration = executorConfiguration.toNative(arena).ref;
     return native;
@@ -40,7 +35,6 @@ class StorageModuleConfiguration implements ModuleConfiguration {
 
   factory StorageModuleConfiguration.fromNative(storage_module_configuration configuration) {
     return StorageModuleConfiguration(
-      activateReloader: configuration.activate_reloader,
       bootConfiguration: StorageBootConfiguration.fromNative(configuration.boot_configuration),
       executorConfiguration: StorageExecutorConfiguration.fromNative(configuration.executor_configuration),
     );

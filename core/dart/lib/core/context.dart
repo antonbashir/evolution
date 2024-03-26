@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:ffi';
+import 'dart:io';
 
 import 'package:ffi/ffi.dart';
 
@@ -11,6 +12,7 @@ import 'environment.dart';
 import 'errors.dart';
 import 'library.dart';
 import 'module.dart';
+import 'signals.dart';
 
 part 'system.dart';
 part 'launcher.dart';
@@ -54,6 +56,8 @@ abstract class Module<Native extends NativeType, Configuration extends ModuleCon
   FutureOr<void> fork() {}
 
   FutureOr<void> unfork() {}
+
+  FutureOr<void> reload() {}
 
   void destroy() {}
 
