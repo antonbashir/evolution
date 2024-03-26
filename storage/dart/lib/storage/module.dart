@@ -19,17 +19,9 @@ class StorageModuleState implements ModuleState {
 
   StreamSubscription<ProcessSignal>? _reloadListener = null;
 
-  void _create() {
-    storage = Storage(_box, context().broker());
-  }
-
-  Future<void> _destroy() async {
-    await storage.destroy();
-  }
-
   Future<void> _boot() async {
     if (initialized()) return;
-    _create();
+    storage = Storage(_box, context().broker());
     final configuration = context().storageModule().configuration;
     if (!using((Arena allocator) => storage_initialize(_box))) {
       throw StorageLauncherException(storage_initialization_error().cast<Utf8>().toDartString());
@@ -37,8 +29,18 @@ class StorageModuleState implements ModuleState {
     if (!initialized()) {
       throw StorageLauncherException(storage_initialization_error().cast<Utf8>().toDartString());
     }
+    await storage.initialize();
     await storage.boot(configuration.bootConfiguration.launchConfiguration);
     if (configuration.activateReloader) _reloadListener = ProcessSignal.sighup.watch().listen((event) async => await reloadModules());
+  }
+
+  Future<void> _recreate() async {
+    storage = Storage(_box, context().broker());
+    await storage.initialize();
+  }
+
+  Future<void> _destroy() async {
+    await storage.destroy();
   }
 
   Future<void> _shutdown() async {
@@ -110,8 +112,8 @@ class StorageModule extends Module<storage_module, StorageModuleConfiguration, S
   FutureOr<void> initialize() => state._boot();
 
   @override
-  FutureOr<void> fork() {
-    state._create();
+  FutureOr<void> fork() async {
+    await state._recreate();
   }
 
   @override
