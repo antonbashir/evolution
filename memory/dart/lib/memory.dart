@@ -7,3 +7,4 @@ export 'memory/objects.dart';
 export 'memory/structures.dart';
 export 'memory/tuples.dart';
 export 'memory/defaults.dart';
+export 'memory/constants.dart' show memoryModuleName;

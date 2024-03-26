@@ -3,7 +3,6 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:ffi/ffi.dart';
-import 'package:memory/memory/constants.dart';
 
 import 'bindings.dart';
 import 'configuration.dart';
@@ -18,7 +17,6 @@ class StorageModuleState implements ModuleState {
   late final _box = calloc<storage_box>(sizeOf<storage_box>());
   late final Storage storage;
 
-  late bool _hasStorageLuaModule;
   StreamSubscription<ProcessSignal>? _reloadListener = null;
 
   void _create() {
@@ -40,7 +38,7 @@ class StorageModuleState implements ModuleState {
       throw StorageLauncherException(storage_initialization_error().cast<Utf8>().toDartString());
     }
     await storage.boot(configuration.bootConfiguration.launchConfiguration);
-    if (configuration.activateReloader) _reloadListener = ProcessSignal.sighup.watch().listen((event) async => await reload());
+    if (configuration.activateReloader) _reloadListener = ProcessSignal.sighup.watch().listen((event) async => await reloadModules());
   }
 
   Future<void> _shutdown() async {
@@ -81,10 +79,10 @@ class StorageModuleState implements ModuleState {
     return module;
   }
 
-  Future<void> reload() async {
+  Future<void> reloadModules() async {
     _loadedModulesByName.entries.toList().forEach((entry) => _loadedModulesByName[entry.key] = entry.value.reload());
     _loadedModulesByPath.entries.toList().forEach((entry) => _loadedModulesByPath[entry.key] = entry.value.reload());
-    if (_hasStorageLuaModule) await storage.call(LuaExpressions.reload);
+    await storage.call(LuaExpressions.reload);
   }
 }
 
