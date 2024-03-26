@@ -165,9 +165,7 @@ bool storage_initialize()
     args->binary_path = configuration->binary_path;
     args->script = configuration->initial_script;
 
-    struct timespec timeout;
-    timespec_get(&timeout, TIME_UTC);
-    timeout.tv_sec += configuration->initialization_timeout_seconds;
+    struct timespec timeout = timeout_seconds(configuration->initialization_timeout_seconds);
     int32_t error;
     if (error = pthread_create(&storage_instance.main_thread_id, NULL, storage_process_initialization, args))
     {
@@ -219,9 +217,7 @@ bool storage_shutdown()
         storage_instance.shutdown_error = strerror(error);
         return false;
     }
-    struct timespec timeout;
-    timespec_get(&timeout, TIME_UTC);
-    timeout.tv_sec += configuration->shutdown_timeout_seconds;
+    struct timespec timeout = timeout_seconds(configuration->shutdown_timeout_seconds);
     while (storage_instance.initialized)
     {
         if (error = pthread_cond_timedwait(&storage_instance.shutdown_condition, &storage_instance.shutdown_mutex, &timeout))
