@@ -5,8 +5,8 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import '../../storage/bindings.dart';
 
-@Native<Bool Function(Pointer<storage_configuration> configuration, Pointer<storage_box> box)>(isLeaf: true)
-external bool storage_initialize(Pointer<storage_configuration> configuration, Pointer<storage_box> box);
+@Native<Bool Function(Pointer<storage_box> box)>(isLeaf: true)
+external bool storage_initialize(Pointer<storage_box> box);
 
 @Native<Bool Function()>(isLeaf: true)
 external bool storage_initialized();

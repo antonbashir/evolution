@@ -151,7 +151,7 @@ class Storage {
   Future<void> configure(StorageConfiguration configuration) => evaluate(configuration.format());
 
   @inline
-  Future<void> boot(StorageBootConfiguration configuration) {
+  Future<void> boot(StorageLaunchConfiguration configuration) {
     final size = configuration.tupleSize;
     final small = _tuples.wrapSmall(size);
     configuration.serialize(small.buffer, small.data, 0);

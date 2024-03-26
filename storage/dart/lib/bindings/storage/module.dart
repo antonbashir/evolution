@@ -6,9 +6,10 @@ import 'package:ffi/ffi.dart';
 import '../../storage/bindings.dart';
 
 final class storage_module_configuration extends Struct {
-  @Uint8()
-  external int library_package_mode;
-  external storage_configuration storage_instance_configuration;
+  external storage_boot_configuration boot_configuration;
+  external storage_executor_configuration executor_configuration;
+  @Bool()
+  external bool activate_reloader;
 }
 
 final class storage_module extends Struct {

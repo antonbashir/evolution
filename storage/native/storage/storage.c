@@ -15,11 +15,11 @@
 #include "lib/core/fiber.h"
 #include "lua/init.h"
 #include "on_shutdown.h"
+#include "module.h"
 // clang-format on
 
-static struct storage
+static struct storage_instance
 {
-    struct storage_configuration configuration;
     char* initialization_error;
     char* shutdown_error;
     struct storage_box* box;
@@ -29,7 +29,7 @@ static struct storage
     pthread_mutex_t shutdown_mutex;
     pthread_cond_t shutdown_condition;
     bool initialized;
-} storage;
+} storage_instance;
 
 struct storage_initialization_args
 {
@@ -49,36 +49,37 @@ static int32_t storage_fiber(va_list args)
 {
     (void)args;
     int32_t error;
-    if (error = storage_executor_initialize(&storage.configuration.executor_configuration))
+    struct storage_executor_configuration* configuration = &storage()->configuration.executor_configuration;
+    if (error = storage_executor_initialize(configuration))
     {
         storage_executor_destroy();
-        storage.initialization_error = strerror(error);
+        storage_instance.initialization_error = strerror(error);
         return 0;
     }
-    if (error = pthread_mutex_lock(&storage.initialization_mutex))
+    if (error = pthread_mutex_lock(&storage_instance.initialization_mutex))
     {
         storage_executor_destroy();
-        storage.initialization_error = strerror(error);
+        storage_instance.initialization_error = strerror(error);
         return 0;
     }
-    storage.initialized = true;
-    if (error = pthread_cond_broadcast(&storage.initialization_condition))
+    storage_instance.initialized = true;
+    if (error = pthread_cond_broadcast(&storage_instance.initialization_condition))
     {
         storage_executor_destroy();
-        storage.initialized = false;
-        storage.initialization_error = strerror(error);
+        storage_instance.initialized = false;
+        storage_instance.initialization_error = strerror(error);
         return 0;
     }
-    if (error = pthread_mutex_unlock(&storage.initialization_mutex))
+    if (error = pthread_mutex_unlock(&storage_instance.initialization_mutex))
     {
         storage_executor_destroy();
-        storage.initialized = false;
-        storage.initialization_error = strerror(error);
+        storage_instance.initialized = false;
+        storage_instance.initialization_error = strerror(error);
         return 0;
     }
-    storage_initialize_box(storage.box);
+    storage_initialize_box(storage_instance.box);
     storage_executor_start();
-    storage_destroy_box(storage.box);
+    storage_destroy_box(storage_instance.box);
     storage_executor_destroy();
     ev_break(loop(), EVBREAK_ALL);
     return 0;
@@ -94,7 +95,7 @@ static void* storage_process_initialization(void* input)
 
     if (tarantool_lua_run_string((char*)args->script) != 0)
     {
-        storage.initialization_error = "STORAGE_LUA_ERROR";
+        storage_instance.initialization_error = "STORAGE_LUA_ERROR";
         return NULL;
     }
 
@@ -104,7 +105,7 @@ static void* storage_process_initialization(void* input)
 
     if (box_on_shutdown(NULL, storage_shutdown_trigger, NULL) != 0)
     {
-        storage.initialization_error = strerror(errno);
+        storage_instance.initialization_error = strerror(errno);
         return NULL;
     }
 
@@ -112,24 +113,24 @@ static void* storage_process_initialization(void* input)
     fiber_start(fiber_new(STORAGE_EXECUTOR_FIBER, storage_fiber));
     ev_run(loop(), 0);
 
-    if (storage.initialized)
+    if (storage_instance.initialized)
     {
         int32_t error;
-        if (error = pthread_mutex_lock(&storage.shutdown_mutex))
+        if (error = pthread_mutex_lock(&storage_instance.shutdown_mutex))
         {
-            storage.shutdown_error = strerror(error);
+            storage_instance.shutdown_error = strerror(error);
             return NULL;
         }
         storage_launcher_shutdown(0);
-        storage.initialized = false;
-        if (error = pthread_cond_broadcast(&storage.shutdown_condition))
+        storage_instance.initialized = false;
+        if (error = pthread_cond_broadcast(&storage_instance.shutdown_condition))
         {
-            storage.shutdown_error = strerror(error);
+            storage_instance.shutdown_error = strerror(error);
             return NULL;
         }
-        if (error = pthread_mutex_unlock(&storage.shutdown_mutex))
+        if (error = pthread_mutex_unlock(&storage_instance.shutdown_mutex))
         {
-            storage.shutdown_error = strerror(error);
+            storage_instance.shutdown_error = strerror(error);
             return NULL;
         }
     }
@@ -138,21 +139,22 @@ static void* storage_process_initialization(void* input)
     return NULL;
 }
 
-bool storage_initialize(struct storage_configuration* configuration, struct storage_box* box)
+bool storage_initialize(struct storage_box* box)
 {
-    if (storage.initialized)
+    struct storage_boot_configuration* configuration = &storage()->configuration.boot_configuration;
+
+    if (storage_instance.initialized)
     {
         return true;
     }
 
-    storage.configuration = *configuration;
-    storage.initialization_error = "";
-    storage.box = box;
+    storage_instance.initialization_error = "";
+    storage_instance.box = box;
 
     struct storage_initialization_args* args = calloc(1, sizeof(struct storage_initialization_args));
     if (args == NULL)
     {
-        storage.initialization_error = strerror(ENOMEM);
+        storage_instance.initialization_error = strerror(ENOMEM);
         return false;
     }
 
@@ -163,79 +165,80 @@ bool storage_initialize(struct storage_configuration* configuration, struct stor
     timespec_get(&timeout, TIME_UTC);
     timeout.tv_sec += configuration->initialization_timeout_seconds;
     int32_t error;
-    if (error = pthread_create(&storage.main_thread_id, NULL, storage_process_initialization, args))
+    if (error = pthread_create(&storage_instance.main_thread_id, NULL, storage_process_initialization, args))
     {
-        storage.initialization_error = strerror(error);
+        storage_instance.initialization_error = strerror(error);
         return false;
     }
-    if (error = pthread_mutex_lock(&storage.initialization_mutex))
+    if (error = pthread_mutex_lock(&storage_instance.initialization_mutex))
     {
-        storage.initialization_error = strerror(error);
+        storage_instance.initialization_error = strerror(error);
         return false;
     }
-    while (!storage.initialized)
+    while (!storage_instance.initialized)
     {
-        if (error = pthread_cond_timedwait(&storage.initialization_condition, &storage.initialization_mutex, &timeout))
+        if (error = pthread_cond_timedwait(&storage_instance.initialization_condition, &storage_instance.initialization_mutex, &timeout))
         {
-            storage.initialization_error = strerror(error);
+            storage_instance.initialization_error = strerror(error);
             return false;
         }
     }
-    if (error = pthread_mutex_unlock(&storage.initialization_mutex))
+    if (error = pthread_mutex_unlock(&storage_instance.initialization_mutex))
     {
-        storage.initialization_error = strerror(error);
+        storage_instance.initialization_error = strerror(error);
         return false;
     }
-    if (error = pthread_cond_destroy(&storage.initialization_condition))
+    if (error = pthread_cond_destroy(&storage_instance.initialization_condition))
     {
-        storage.initialization_error = strerror(error);
+        storage_instance.initialization_error = strerror(error);
         return false;
     }
-    if (error = pthread_mutex_destroy(&storage.initialization_mutex))
+    if (error = pthread_mutex_destroy(&storage_instance.initialization_mutex))
     {
-        storage.initialization_error = strerror(error);
+        storage_instance.initialization_error = strerror(error);
         return false;
     }
-    return strlen(storage.initialization_error) == 0;
+    return strlen(storage_instance.initialization_error) == 0;
 }
 
 bool storage_shutdown()
 {
-    if (!storage.initialized)
+    struct storage_boot_configuration* configuration = &storage()->configuration.boot_configuration;
+    if (!storage_instance.initialized)
     {
         return true;
     }
     storage_executor_stop();
     int32_t error;
-    if (error = pthread_mutex_lock(&storage.shutdown_mutex))
+    if (error = pthread_mutex_lock(&storage_instance.shutdown_mutex))
     {
-        storage.shutdown_error = strerror(error);
+        storage_instance.shutdown_error = strerror(error);
         return false;
     }
     struct timespec timeout;
     timespec_get(&timeout, TIME_UTC);
-    timeout.tv_sec += storage.configuration.shutdown_timeout_seconds;
-    while (storage.initialized)
+    timeout.tv_sec += configuration->shutdown_timeout_seconds;
+    while (storage_instance.initialized)
     {
-        if (error = pthread_cond_timedwait(&storage.shutdown_condition, &storage.shutdown_mutex, &timeout))
+        if (error = pthread_cond_timedwait(&storage_instance.shutdown_condition, &storage_instance.shutdown_mutex, &timeout))
         {
-            storage.shutdown_error = strerror(error);
+            storage_instance.shutdown_error = strerror(error);
             return false;
         }
     }
-    if (error = pthread_mutex_unlock(&storage.shutdown_mutex))
+    if (error = pthread_mutex_unlock(&storage_instance.shutdown_mutex))
     {
-        storage.shutdown_error = strerror(error);
+        storage_instance.shutdown_error = strerror(error);
         return false;
     }
-    if (error = pthread_cond_destroy(&storage.shutdown_condition))
+    if (error = pthread_cond_destroy(&storage_instance.shutdown_condition))
     {
-        storage.shutdown_error = strerror(error);
+        storage_instance.shutdown_error = strerror(error);
         return false;
     }
-    if (error = pthread_mutex_destroy(&storage.shutdown_mutex))
+    if (error = pthread_mutex_destroy(&storage_instance.shutdown_mutex))
     {
-        storage.shutdown_error = strerror(error);
+        storage_instance.shutdown_error = strerror(error);
         return false;
     }
     return true;
@@ -243,7 +246,7 @@ bool storage_shutdown()
 
 bool storage_initialized()
 {
-    return storage.initialized;
+    return storage_instance.initialized;
 }
 
 const char* storage_status()
@@ -258,10 +261,10 @@ int32_t storage_is_read_only()
 
 const char* storage_initialization_error()
 {
-    return storage.initialization_error;
+    return storage_instance.initialization_error;
 }
 
 const char* storage_shutdown_error()
 {
-    return storage.shutdown_error;
+    return storage_instance.shutdown_error;
 }

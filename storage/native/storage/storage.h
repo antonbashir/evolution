@@ -10,7 +10,7 @@ extern "C"
 {
 #endif
 
-DART_LEAF_FUNCTION bool storage_initialize(struct storage_configuration* configuration, struct storage_box* box);
+DART_LEAF_FUNCTION bool storage_initialize(struct storage_box* box);
 DART_LEAF_FUNCTION bool storage_initialized();
 DART_LEAF_FUNCTION const char* storage_status();
 DART_LEAF_FUNCTION int32_t storage_is_read_only();

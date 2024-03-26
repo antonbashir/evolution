@@ -7,41 +7,177 @@ import 'package:ffi/ffi.dart';
 import 'bindings.dart';
 import 'constants.dart';
 import 'extensions.dart';
-import 'script.dart';
 
 class StorageModuleConfiguration implements ModuleConfiguration {
-  final StorageBootstrapScript script;
+  final StorageBootConfiguration bootConfiguration;
   final StorageExecutorConfiguration executorConfiguration;
-  final StorageBootConfiguration? bootConfiguration;
   final bool activateReloader;
 
   const StorageModuleConfiguration({
-    required this.script,
-    required this.executorConfiguration,
     required this.bootConfiguration,
+    required this.executorConfiguration,
     required this.activateReloader,
   });
 
   StorageModuleConfiguration copyWith({
-    StorageBootstrapScript? script,
-    StorageExecutorConfiguration? executorConfiguration,
     StorageBootConfiguration? bootConfiguration,
+    StorageExecutorConfiguration? executorConfiguration,
     bool? activateReloader,
   }) =>
       StorageModuleConfiguration(
-        script: script ?? this.script,
-        executorConfiguration: executorConfiguration ?? this.executorConfiguration,
         bootConfiguration: bootConfiguration ?? this.bootConfiguration,
+        executorConfiguration: executorConfiguration ?? this.executorConfiguration,
         activateReloader: activateReloader ?? this.activateReloader,
       );
 
   Pointer<storage_module_configuration> toNative(Arena arena) {
-    return arena();
+    Pointer<storage_module_configuration> native = arena();
+    native.ref.activate_reloader = activateReloader;
+    native.ref.boot_configuration = bootConfiguration.toNative(arena).ref;
+    native.ref.executor_configuration = executorConfiguration.toNative(arena).ref;
+    return native;
   }
 
   factory StorageModuleConfiguration.fromNative(storage_module_configuration configuration) {
-    return StorageModuleConfiguration();
+    return StorageModuleConfiguration(
+      activateReloader: configuration.activate_reloader,
+      bootConfiguration: StorageBootConfiguration.fromNative(configuration.boot_configuration),
+      executorConfiguration: StorageExecutorConfiguration.fromNative(configuration.executor_configuration),
+    );
   }
+}
+
+class StorageExecutorConfiguration {
+  final int ringSize;
+  final int ringFlags;
+
+  const StorageExecutorConfiguration({
+    required this.ringSize,
+    required this.ringFlags,
+  });
+
+  StorageExecutorConfiguration copyWith({
+    int? ringSize,
+    int? ringFlags,
+  }) =>
+      StorageExecutorConfiguration(
+        ringSize: ringSize ?? this.ringSize,
+        ringFlags: ringFlags ?? this.ringFlags,
+      );
+
+  Pointer<storage_executor_configuration> toNative(Allocator allocator) {
+    Pointer<storage_executor_configuration> configuration = allocator<storage_executor_configuration>();
+    configuration.ref.ring_size = ringSize;
+    configuration.ref.ring_flags = ringFlags;
+    return configuration;
+  }
+
+  factory StorageExecutorConfiguration.fromNative(storage_executor_configuration native) => StorageExecutorConfiguration(
+        ringSize: native.ring_size,
+        ringFlags: native.ring_flags,
+      );
+}
+
+class StorageBootConfiguration {
+  final StorageLaunchConfiguration launchConfiguration;
+  final String initialScript;
+  final String binaryPath;
+  final Duration initializationTimeout;
+  final Duration shutdownTimeout;
+
+  const StorageBootConfiguration({
+    required this.launchConfiguration,
+    required this.initialScript,
+    required this.binaryPath,
+    required this.initializationTimeout,
+    required this.shutdownTimeout,
+  });
+
+  Pointer<storage_boot_configuration> toNative(Arena arena) {
+    Pointer<storage_boot_configuration> native = arena();
+    native.ref.binary_path = Platform.executable.toNativeUtf8(allocator: arena);
+    native.ref.initial_script = initialScript.toNativeUtf8(allocator: arena);
+    native.ref.initialization_timeout_seconds = initializationTimeout.inSeconds;
+    native.ref.shutdown_timeout_seconds = shutdownTimeout.inSeconds;
+    native.ref.launch_configuration = launchConfiguration.toNative(arena).ref;
+    return native;
+  }
+
+  factory StorageBootConfiguration.fromNative(storage_boot_configuration configuration) => StorageBootConfiguration(
+        launchConfiguration: StorageLaunchConfiguration.fromNative(configuration.launch_configuration),
+        initialScript: configuration.initial_script.toDartString(),
+        binaryPath: configuration.binary_path.toDartString(),
+        initializationTimeout: Duration(seconds: configuration.initialization_timeout_seconds),
+        shutdownTimeout: Duration(seconds: configuration.shutdown_timeout_seconds),
+      );
+}
+
+class StorageLaunchConfiguration implements Tuple {
+  final String username;
+  final String password;
+
+  StorageLaunchConfiguration({required this.username, required this.password});
+
+  StorageLaunchConfiguration copyWith({
+    String? username,
+    String? password,
+  }) =>
+      StorageLaunchConfiguration(
+        username: username ?? this.username,
+        password: password ?? this.password,
+      );
+
+  @override
+  int serialize(Uint8List buffer, ByteData data, int offset) {
+    offset = tupleWriteList(data, 2, offset);
+    offset = tupleWriteString(buffer, data, username, offset);
+    return tupleWriteString(buffer, data, password, offset);
+  }
+
+  factory StorageLaunchConfiguration.deserialize(Uint8List buffer, ByteData data, int offset) {
+    final tuple = tupleReadList(data, offset);
+    final username = tupleReadString(buffer, data, tuple.offset);
+    final password = tupleReadString(buffer, data, username.offset);
+    return StorageLaunchConfiguration(username: username.value!, password: password.value!);
+  }
+
+  Pointer<storage_launch_configuration> toNative(Allocator arena) {
+    Pointer<storage_launch_configuration> native = arena();
+    native.ref.username = username.toNativeUtf8(allocator: arena);
+    native.ref.password = password.toNativeUtf8(allocator: arena);
+    return native;
+  }
+
+  factory StorageLaunchConfiguration.fromNative(storage_launch_configuration native) => StorageLaunchConfiguration(
+        username: native.username.toDartString(),
+        password: native.password.toDartString(),
+      );
+
+  @override
+  int get tupleSize => tupleSizeOfList(2) + tupleSizeOfString(username.length) + tupleSizeOfString(password.length);
+}
+
+class StorageReplicationConfiguration {
+  final _replicas = <String>[];
+
+  StorageReplicationConfiguration addAddressReplica(String host, String port, {String? user, String? password}) {
+    if (user != null && user.isNotEmpty) {
+      if (password != null && password.isNotEmpty) {
+        addReplica("$user:$password@$host:$port");
+        return this;
+      }
+      addReplica("$user@$host:$port");
+      return this;
+    }
+    addReplica("$host:$port");
+    return this;
+  }
+
+  StorageReplicationConfiguration addPortReplica(int port) => addReplica(port.toString());
+
+  StorageReplicationConfiguration addReplica(String uri) => this.._replicas.add(uri.quoted);
+
+  String format() => "$openingBracket${_replicas.join(comma)}$closingBracket";
 }
 
 class StorageConfiguration {
@@ -111,68 +247,69 @@ class StorageConfiguration {
   int get logLevel => _configurationMap[ConfigurationKeys.logLevel];
   String get log => _configurationMap[ConfigurationKeys.log] ?? empty;
 
-  StorageConfiguration copyWith(
-      {String? listen,
-      int? memtxMemory,
-      bool? stripCore,
-      int? memtxMinTupleSize,
-      int? memtxMaxTupleSize,
-      int? slabAllocGranularity,
-      double? slabAllocFactor,
-      int? iprotoThreads,
-      String? workDir,
-      String? memtxDir,
-      String? walDir,
-      String? vinylDir,
-      int? vinylMemory,
-      int? vinylCache,
-      int? vinylMaxTupleSize,
-      int? vinylReadThreads,
-      int? vinylWriteThreads,
-      int? vinylTimeout,
-      int? vinylRunCountPerLevel,
-      double? vinylRunSizeRatio,
-      int? vinylRangeSize,
-      int? vinylPageSize,
-      double? vinylBloomFpr,
-      int? ioCollectInterval,
-      int? readahead,
-      int? snapIoRateLimit,
-      double? tooLongThreshold,
-      String? walMode,
-      int? walMaxSize,
-      int? walDirRescanDelay,
-      int? walQueueMaxSize,
-      int? walCleanupDelay,
-      bool? forceRecovery,
-      String? replication,
-      String? instanceUuid,
-      String? replicasetUuid,
-      bool? coredump,
-      bool? readOnly,
-      bool? hotStandby,
-      int? checkpointInterval,
-      double? checkpointWalThreshold,
-      int? checkpointCount,
-      int? workerPoolThreads,
-      String? electionMode,
-      int? electionTimeout,
-      int? replicationTimeout,
-      int? replicationSyncLag,
-      int? replicationSyncTimeout,
-      int? replicationSynchroQuorum,
-      int? replicationSynchroTimeout,
-      double? replicationConnectTimeout,
-      bool? replicationSkipConflict,
-      bool? replicationAnon,
-      bool? feedbackEnabled,
-      bool? feedbackCrashinfo,
-      String? feedbackHost,
-      int? feedbackInterval,
-      int? netMsgMax,
-      int? sqlCacheSize,
-      int? logLevel,
-      String? log}) {
+  StorageConfiguration copyWith({
+    String? listen,
+    int? memtxMemory,
+    bool? stripCore,
+    int? memtxMinTupleSize,
+    int? memtxMaxTupleSize,
+    int? slabAllocGranularity,
+    double? slabAllocFactor,
+    int? iprotoThreads,
+    String? workDir,
+    String? memtxDir,
+    String? walDir,
+    String? vinylDir,
+    int? vinylMemory,
+    int? vinylCache,
+    int? vinylMaxTupleSize,
+    int? vinylReadThreads,
+    int? vinylWriteThreads,
+    int? vinylTimeout,
+    int? vinylRunCountPerLevel,
+    double? vinylRunSizeRatio,
+    int? vinylRangeSize,
+    int? vinylPageSize,
+    double? vinylBloomFpr,
+    int? ioCollectInterval,
+    int? readahead,
+    int? snapIoRateLimit,
+    double? tooLongThreshold,
+    String? walMode,
+    int? walMaxSize,
+    int? walDirRescanDelay,
+    int? walQueueMaxSize,
+    int? walCleanupDelay,
+    bool? forceRecovery,
+    String? replication,
+    String? instanceUuid,
+    String? replicasetUuid,
+    bool? coredump,
+    bool? readOnly,
+    bool? hotStandby,
+    int? checkpointInterval,
+    double? checkpointWalThreshold,
+    int? checkpointCount,
+    int? workerPoolThreads,
+    String? electionMode,
+    int? electionTimeout,
+    int? replicationTimeout,
+    int? replicationSyncLag,
+    int? replicationSyncTimeout,
+    int? replicationSynchroQuorum,
+    int? replicationSynchroTimeout,
+    double? replicationConnectTimeout,
+    bool? replicationSkipConflict,
+    bool? replicationAnon,
+    bool? feedbackEnabled,
+    bool? feedbackCrashinfo,
+    String? feedbackHost,
+    int? feedbackInterval,
+    int? netMsgMax,
+    int? sqlCacheSize,
+    int? logLevel,
+    String? log,
+  }) {
     final copy = {..._configurationMap};
     copy[ConfigurationKeys.listen] = listen?.quoted ?? _configurationMap[ConfigurationKeys.listen];
     copy[ConfigurationKeys.memtxMemory] = memtxMemory ?? _configurationMap[ConfigurationKeys.memtxMemory];
@@ -241,98 +378,4 @@ class StorageConfiguration {
   String format() =>
       LuaExpressions.boxCfg +
       LuaArgument.singleTableArgument(_configurationMap.entries.where((entry) => entry.value != null).map((entry) => LuaField.stringField(entry.key, entry.value.toString())).join(comma));
-}
-
-class StorageExecutorConfiguration {
-  final int boxOutputBufferCapacity;
-  final Duration initializationTimeout;
-  final Duration shutdownTimeout;
-  final int executorRingSize;
-
-  const StorageExecutorConfiguration({
-    required this.boxOutputBufferCapacity,
-    required this.executorRingSize,
-    required this.initializationTimeout,
-    required this.shutdownTimeout,
-  });
-
-  StorageExecutorConfiguration copyWith({
-    int? boxOutputBufferCapacity,
-    int? executorRingSize,
-    Duration? initializationTimeout,
-    Duration? shutdownTimeout,
-  }) =>
-      StorageExecutorConfiguration(
-        boxOutputBufferCapacity: boxOutputBufferCapacity ?? this.boxOutputBufferCapacity,
-        executorRingSize: executorRingSize ?? this.executorRingSize,
-        initializationTimeout: initializationTimeout ?? this.initializationTimeout,
-        shutdownTimeout: shutdownTimeout ?? this.shutdownTimeout,
-      );
-
-  Pointer<storage_configuration> native(String libraryPath, String script, Allocator allocator) {
-    Pointer<storage_configuration> configuration = allocator<storage_configuration>();
-    configuration.ref.box_output_buffer_capacity = boxOutputBufferCapacity;
-    configuration.ref.binary_path = Platform.executable.toNativeUtf8().cast();
-    configuration.ref.library_path = libraryPath.toNativeUtf8(allocator: allocator).cast();
-    configuration.ref.initialization_timeout_seconds = initializationTimeout.inSeconds;
-    configuration.ref.shutdown_timeout_seconds = shutdownTimeout.inSeconds;
-    configuration.ref.initial_script = script.toNativeUtf8(allocator: allocator).cast();
-    return configuration;
-  }
-}
-
-class StorageBootConfiguration implements Tuple {
-  final String user;
-  final String password;
-
-  StorageBootConfiguration(this.user, this.password);
-
-  StorageBootConfiguration copyWith({
-    String? user,
-    String? password,
-  }) =>
-      StorageBootConfiguration(
-        user ?? this.user,
-        password ?? this.password,
-      );
-
-  @override
-  int serialize(Uint8List buffer, ByteData data, int offset) {
-    offset = tupleWriteList(data, 2, offset);
-    offset = tupleWriteString(buffer, data, user, offset);
-    return tupleWriteString(buffer, data, password, offset);
-  }
-
-  factory StorageBootConfiguration.deserialize(Uint8List buffer, ByteData data, int offset) {
-    final tuple = tupleReadList(data, offset);
-    final user = tupleReadString(buffer, data, tuple.offset);
-    final password = tupleReadString(buffer, data, user.offset);
-    return StorageBootConfiguration(user.value!, password.value!);
-  }
-
-  @override
-  int get tupleSize => tupleSizeOfList(2) + tupleSizeOfString(user.length) + tupleSizeOfString(password.length);
-}
-
-class StorageReplicationConfiguration {
-  final _replicas = <String>[];
-
-  StorageReplicationConfiguration addAddressReplica(String host, String port, {String? user, String? password}) {
-    if (user != null && user.isNotEmpty) {
-      if (password != null && password.isNotEmpty) {
-        addReplica("$user:$password@$host:$port");
-        return this;
-      }
-      addReplica("$user@$host:$port");
-      return this;
-    }
-    addReplica("$host:$port");
-    return this;
-  }
-
-  StorageReplicationConfiguration addPortReplica(int port) => addReplica(port.toString());
-
-  StorageReplicationConfiguration addReplica(String uri) => this.._replicas.add(uri.quoted);
-
-  String format() => "$openingBracket${_replicas.join(comma)}$closingBracket";
 }

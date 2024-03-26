@@ -1,15 +1,33 @@
+import 'dart:io';
+
 import 'configuration.dart';
+import 'script.dart';
 
 class StorageDefaults {
   const StorageDefaults._();
 
-  static const module = StorageModuleConfiguration();
+  static StorageLaunchConfiguration launch = StorageLaunchConfiguration(
+    username: "replicator",
+    password: "replicator",
+  );
 
-  static const executor = StorageExecutorConfiguration(
-    boxOutputBufferCapacity: 16536,
-    executorRingSize: 16384,
+  static final module = StorageModuleConfiguration(
+    bootConfiguration: boot,
+    executorConfiguration: executor,
+    activateReloader: false,
+  );
+
+  static final boot = StorageBootConfiguration(
+    launchConfiguration: launch,
+    initialScript: StorageBootstrapScript(storage).write(),
+    binaryPath: Platform.executable,
     initializationTimeout: Duration(seconds: 30),
     shutdownTimeout: Duration(seconds: 30),
+  );
+
+  static const executor = StorageExecutorConfiguration(
+    ringSize: 16384,
+    ringFlags: 0,
   );
 
   static const storage = StorageConfiguration({
@@ -74,6 +92,4 @@ class StorageDefaults {
     "sql_cache_size": 5 * 1024 * 1024,
     "log_level": 5,
   });
-
-  static StorageBootConfiguration boot({bool? randomizeDelay}) => StorageBootConfiguration("replicator", "replicator");
 }
