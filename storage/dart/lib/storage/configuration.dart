@@ -11,19 +11,23 @@ import 'extensions.dart';
 class StorageModuleConfiguration implements ModuleConfiguration {
   final StorageBootConfiguration bootConfiguration;
   final StorageExecutorConfiguration executorConfiguration;
+  final Set<String> modules;
 
   const StorageModuleConfiguration({
     required this.bootConfiguration,
     required this.executorConfiguration,
+    required this.modules,
   });
 
   StorageModuleConfiguration copyWith({
     StorageBootConfiguration? bootConfiguration,
     StorageExecutorConfiguration? executorConfiguration,
+    Set<String>? modules,
   }) =>
       StorageModuleConfiguration(
         bootConfiguration: bootConfiguration ?? this.bootConfiguration,
         executorConfiguration: executorConfiguration ?? this.executorConfiguration,
+        modules: modules ?? this.modules,
       );
 
   Pointer<storage_module_configuration> toNative(Arena arena) {
@@ -37,6 +41,7 @@ class StorageModuleConfiguration implements ModuleConfiguration {
     return StorageModuleConfiguration(
       bootConfiguration: StorageBootConfiguration.fromNative(configuration.boot_configuration),
       executorConfiguration: StorageExecutorConfiguration.fromNative(configuration.executor_configuration),
+      modules: {},
     );
   }
 }

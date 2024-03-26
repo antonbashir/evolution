@@ -11,8 +11,6 @@ import 'exception.dart';
 import 'executor.dart';
 
 class StorageModuleState implements ModuleState {
-  final Map<String, SystemLibrary> _loadedModulesByName = {};
-  final Map<String, SystemLibrary> _loadedModulesByPath = {};
   late final _box = calloc<storage_box>(sizeOf<storage_box>());
   late final Storage storage;
 
@@ -61,32 +59,13 @@ class StorageModuleState implements ModuleState {
   Future<void> waitImmutable() => Future.doWhile(() => Future.delayed(awaitStateDuration).then((value) => !immutable()));
 
   Future<void> waitMutable() => Future.doWhile(() => Future.delayed(awaitStateDuration).then((value) => !mutable()));
-
-  SystemLibrary loadModuleByPath(String libraryPath) {
-    if (_loadedModulesByPath.containsKey(libraryPath)) return _loadedModulesByPath[libraryPath]!;
-    final module = SystemLibrary.loadByPath(libraryPath, storageModuleName);
-    _loadedModulesByName[libraryPath] = module;
-    return module;
-  }
-
-  SystemLibrary loadModuleByName(String libraryName) {
-    if (_loadedModulesByName.containsKey(libraryName)) return _loadedModulesByName[libraryName]!;
-    final module = SystemLibrary.loadByName(libraryName, storageModuleName);
-    _loadedModulesByName[libraryName] = module;
-    return module;
-  }
-
-  Future<void> reloadModules() async {
-    _loadedModulesByName.entries.toList().forEach((entry) => _loadedModulesByName[entry.key] = entry.value.reload());
-    _loadedModulesByPath.entries.toList().forEach((entry) => _loadedModulesByPath[entry.key] = entry.value.reload());
-    await storage.call(LuaExpressions.reload);
-  }
 }
 
 class StorageModule extends Module<storage_module, StorageModuleConfiguration, StorageModuleState> {
   final name = storageModuleName;
   final dependencies = {executorModuleName, memoryModuleName, coreModuleName};
   final state = StorageModuleState();
+  final _libraries = <SystemLibrary>[];
 
   StorageModule({StorageModuleConfiguration? configuration})
       : super(
@@ -104,10 +83,14 @@ class StorageModule extends Module<storage_module, StorageModuleConfiguration, S
         );
 
   @override
-  FutureOr<void> initialize() => state._boot();
+  FutureOr<void> initialize() {
+    configuration.modules.forEach((module) => _libraries.add(SystemLibrary.loadByPath(module, storageModuleName)));
+    return state._boot();
+  }
 
   @override
   FutureOr<void> fork() async {
+    configuration.modules.forEach((module) => _libraries.add(SystemLibrary.loadByPath(module, storageModuleName)));
     await state._recreate();
   }
 
@@ -118,11 +101,16 @@ class StorageModule extends Module<storage_module, StorageModuleConfiguration, S
 
   @override
   FutureOr<void> reload() async {
-    await state.reloadModules();
+    final reloaded = _libraries.toList().map((library) => library.reload());
+    _libraries.clear();
+    _libraries.addAll(reloaded);
   }
 
   @override
-  Future<void> shutdown() => state._shutdown();
+  Future<void> shutdown() async {
+    await state._shutdown();
+    _libraries.forEach((library) => library.unload());
+  }
 }
 
 extension StorageContextExtensions on ContextProvider {
