@@ -2,7 +2,7 @@ import 'dart:ffi';
 
 import 'package:core/core.dart';
 
-final storageLibraryName = bool.fromEnvironment("DEBUG") ? "libstorage_debug_${Abi.current()}.so" : "libstorage_release_${Abi.current()}.so";
+final storageLibraryName = system().environment.debug ? "libstorage_debug_${Abi.current()}.so" : "libstorage_release_${Abi.current()}.so";
 const storageModuleName = "storage";
 const storageLuaModule = "storage";
 
