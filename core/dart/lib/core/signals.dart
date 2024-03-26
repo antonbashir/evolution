@@ -16,7 +16,7 @@ class Signal {
     _callbacks.add(listener);
   }
 
-  void system(ProcessSignal signal) {
+  void register(ProcessSignal signal) {
     _subscriptions.add(ProcessSignal.sighup.watch().listen((event) async => await notify()));
   }
 

@@ -9,7 +9,7 @@ Future<void> launch(List<Module> Function() factory, FutureOr<void> Function() m
   signals().reload.callback(() async {
     for (var module in _context._modules.values) await module.reload();
   });
-  signals().reload.system(ProcessSignal.sighup);
+  signals().reload.register(ProcessSignal.sighup);
   _system._bootstrap(configurationOverrides: configuration, environmentOverrides: environment);
   _Context._create();
   final modules = factory();
@@ -36,7 +36,7 @@ Future<void> fork(FutureOr<void> Function() main, {SystemEnvironment Function(Sy
   signals().reload.callback(() async {
     for (var module in _context._modules.values) await module.reload();
   });
-  signals().reload.system(ProcessSignal.sighup);
+  signals().reload.register(ProcessSignal.sighup);
   _system._restore();
   _Context._restore();
   for (var module in _context._modules.values) await Future.value(module.fork());
