@@ -23,7 +23,7 @@ extern "C"
 
 #define MODULE_ERROR_CODE -1997
 
-#define EVENT_BUFFER 2048
+#define EVENT_BUFFER 16 * 1024
 #define EVENT_FIELDS_MAXIMUM 20
 
 #define EVENT_LEVEL_PANIC 0

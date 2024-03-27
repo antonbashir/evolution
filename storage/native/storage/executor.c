@@ -35,25 +35,29 @@ void storage_executor_start()
     ev_set_priority(&io, EV_MAXPRI);
     ev_io_start(loop(), &io);
     struct io_uring_cqe* cqe;
-    unsigned head;
-    unsigned count = 0;
     while (likely(executor.active))
     {
         io_uring_submit(ring);
         if (likely(io_uring_cq_ready(ring)))
         {
             if (!executor.active) break;
+            unsigned head;
+            unsigned count = 0;
             io_uring_for_each_cqe(ring, head, cqe)
             {
+                ++count;
                 struct executor_task* task = (struct executor_task*)cqe->user_data;
-                void (*pointer)(struct executor_task*) = (void (*)(struct executor_task*))task->method;
-                pointer(task);
-                struct io_uring_sqe* sqe = io_uring_get_sqe(ring);
-                uint64_t target = task->source;
-                task->source = executor.descriptor;
-                task->target = target;
-                io_uring_prep_msg_ring(sqe, target, EXECUTOR_CALLBACK, (uint64_t)((intptr_t)task), 0);
-                sqe->flags |= IOSQE_CQE_SKIP_SUCCESS;
+                if (task != NULL)
+                {
+                    void (*pointer)(struct executor_task*) = (void (*)(struct executor_task*))task->method;
+                    pointer(task);
+                    struct io_uring_sqe* sqe = io_uring_get_sqe(ring);
+                    uint64_t target = task->source;
+                    task->source = executor.descriptor;
+                    task->target = target;
+                    io_uring_prep_msg_ring(sqe, target, EXECUTOR_CALLBACK, (uint64_t)((intptr_t)task), 0);
+                    sqe->flags |= IOSQE_CQE_SKIP_SUCCESS;
+                }
             }
             io_uring_cq_advance(ring, count);
             io_uring_submit(ring);

@@ -115,7 +115,7 @@ class Storage {
   MemoryTuples get tuples => _tuples;
 
   Future<void> initialize() async {
-    final broker = context().broker()..initialize();
+    _broker.initialize();
     _descriptor = storage_executor_descriptor();
     _nativeFactory = calloc<storage_factory>(sizeOf<storage_factory>());
     using((Arena arena) {
@@ -125,8 +125,8 @@ class Storage {
       configuration.ref.slab_size = MemoryDefaults.memory.slabSize;
       storage_factory_initialize(_nativeFactory, configuration);
     });
-    broker.consumer(StorageConsumer());
-    _producer = broker.producer(StorageProducer(_box));
+    _broker.consumer(StorageConsumer());
+    _producer = _broker.producer(StorageProducer(_box));
     _tuples = context().tuples();
     _strings = StorageStrings(_nativeFactory);
     _factory = StorageFactory(_strings);

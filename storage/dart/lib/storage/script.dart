@@ -27,6 +27,7 @@ class StorageBootstrapScript {
     if (Directory.current.listSync().whereType<Directory>().any((element) => element.path.endsWith(Directories.native))) {
       includeNativeModulePath(Directory.current.path + Directories.native);
     }
+    includeLuaModulePath(Directory(findPackageRoot(findDotDartTool()!, storageModuleName).toFilePath() + Directories.lua).absolute.path);
     code(LuaExpressions.require(storageLuaModule));
     return _configuration.format() + newLine + _content;
   }
