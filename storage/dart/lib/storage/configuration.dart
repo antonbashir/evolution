@@ -94,7 +94,7 @@ class StorageBootConfiguration {
 
   Pointer<storage_boot_configuration> toNative(Arena arena) {
     Pointer<storage_boot_configuration> native = arena();
-    native.ref.binary_path = Platform.executable.toNativeUtf8(allocator: arena);
+    native.ref.binary_path = Platform.resolvedExecutable.toNativeUtf8(allocator: arena);
     native.ref.initial_script = initialScript.toNativeUtf8(allocator: arena);
     native.ref.initialization_timeout_seconds = initializationTimeout.inSeconds;
     native.ref.shutdown_timeout_seconds = shutdownTimeout.inSeconds;

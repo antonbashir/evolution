@@ -60,9 +60,16 @@ ExternalProject_Add_Step(storage_tarantool storage_tarantool_build
   BYPRODUCTS ${storage_tarantool_BINARY_DIR}/src/libtarantool-bundle.a
   DEPENDEES storage_tarantool_configure
 )
+ExternalProject_Add_Step(storage_tarantool storage_tarantool_install
+  COMMAND make install
+  WORKING_DIRECTORY <BINARY_DIR>
+  EXCLUDE_FROM_MAIN FALSE
+  BYPRODUCTS ${storage_tarantool_BINARY_DIR}/src/libtarantool-bundle.a
+  DEPENDEES storage_tarantool_build
+)
 
 set(TARANTOOL_INSTALL_DIR ${storage_tarantool_BINARY_DIR})
-set(TARANTOOL_LIBRARY ${storage_tarantool_BINARY_DIR}/src/libtarantool-bundle.a)
+set(TARANTOOL_LIBRARY ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/libtarantool-prefix/lib/libtarantool-bundle.a)
 set(TARANTOOL_SOURCE_DIRECTORY ${storage_tarantool_SOURCE_DIR})
 set(TARANTOOL_BINARY_DIRECTORY ${storage_tarantool_BINARY_DIR})
 

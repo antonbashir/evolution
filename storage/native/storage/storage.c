@@ -1,5 +1,6 @@
 // clang-format off
 #include <msgpuck.h>
+#include "diag.h"
 #include "trivia/util.h"
 #include "storage.h"
 #include <executor/executor.h>
@@ -17,6 +18,8 @@
 #include "lua/init.h"
 #include "on_shutdown.h"
 #include "module.h"
+#include "diag.h"
+#include <system/library.h>
 // clang-format on
 
 static struct storage_instance
@@ -102,6 +105,7 @@ static void* storage_process_initialization(void* input)
     if (tarantool_lua_run_string((char*)args->script) != 0)
     {
         storage_instance.initialization_error = "STORAGE_LUA_ERROR";
+        diag_last_error(diag_get())->log(diag_last_error(diag_get()));
         return NULL;
     }
 
