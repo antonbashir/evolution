@@ -1,4 +1,5 @@
 // clang-format off
+#include <msgpuck.h>
 #include "trivia/util.h"
 #include "storage.h"
 #include <executor/executor.h>
@@ -267,4 +268,87 @@ const char* storage_initialization_error()
 const char* storage_shutdown_error()
 {
     return storage_instance.shutdown_error;
+}
+
+void storage_raiser(struct error* error)
+{
+    raise_panic(storage_convert_error(error));
+}
+
+void storage_say(int level, const char* filename, int line, const char* message)
+{
+    struct event* event;
+    switch (level)
+    {
+        case S_FATAL:
+        case S_SYSERROR:
+        case S_ERROR:
+        case S_CRIT:
+            event = storage_module_event(event_error(event_field_message(message)));
+            break;
+        case S_WARN:
+            event = storage_module_event(event_warning(event_field_message(message)));
+            break;
+        case S_INFO:
+            event = storage_module_event(event_information(event_field_message(message)));
+            break;
+        case S_VERBOSE:
+        case S_DEBUG:
+            event = storage_module_event(event_trace(event_field_message(message)));
+            break;
+    };
+    event->file = filename;
+    event->line = line;
+    system_print_event(event);
+}
+
+struct event* storage_convert_error(struct error* error)
+{
+    struct event* event = storage_module_event(event_panic(event_field_code(error->code), event_field_message(error->errmsg)));
+    event->file = error->file;
+    event->line = error->line;
+    for (size_t i = 0; i < error->payload.count; i++)
+    {
+        struct error_field* field = error->payload.fields[i];
+        const char* data = field->data;
+        if (field != NULL)
+        {
+            switch (mp_typeof(*data))
+            {
+                case MP_STR: {
+                    uint32_t length;
+                    const char* data = mp_decode_str(&data, &length);
+                    event_set_string(event, field->name, strdup(data));
+                    break;
+                }
+                case MP_UINT: {
+                    event_set_unsigned(event, field->name, mp_decode_uint(&data));
+                    break;
+                }
+                case MP_INT: {
+                    event_set_signed(event, field->name, mp_decode_int(&data));
+                    break;
+                }
+                case MP_BOOL: {
+                    event_set_boolean(event, field->name, mp_decode_bool(&data));
+                    break;
+                }
+                case MP_FLOAT: {
+                    event_set_double(event, field->name, mp_decode_float(&data));
+                    break;
+                }
+                case MP_DOUBLE: {
+                    event_set_double(event, field->name, mp_decode_double(&data));
+                    break;
+                }
+                case MP_NIL:
+                case MP_BIN:
+                case MP_ARRAY:
+                case MP_MAP:
+                case MP_EXT:
+                    break;
+            }
+        }
+    }
+    return event;
 }

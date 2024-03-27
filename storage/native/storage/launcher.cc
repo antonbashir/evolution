@@ -49,6 +49,7 @@
 #include "title.h"
 #include "tt_pthread.h"
 #include "version.h"
+#include "storage.h"
 // clang-format on
 
 struct ev_loop;
@@ -353,6 +354,9 @@ void storage_launcher_launch(char* binary_path)
 
     main_argc = 1;
     main_argv = argv;
+
+    diag_override_raiser(storage_raiser);
+    say_override(storage_say);
 
     fiber_init(fiber_cxx_invoke);
     popen_init();

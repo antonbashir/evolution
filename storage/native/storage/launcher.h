@@ -2,7 +2,7 @@
 #define STORAGE_LAUNCHER_H
 
 #include <common/common.h>
-#include <stdint.h>
+#include <system/library.h>
 
 #if defined(__cplusplus)
 extern "C"

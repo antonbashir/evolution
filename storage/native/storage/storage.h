@@ -10,6 +10,8 @@ extern "C"
 {
 #endif
 
+struct error;
+
 DART_LEAF_FUNCTION struct storage_box* storage_get_box();
 DART_LEAF_FUNCTION bool storage_initialize();
 DART_LEAF_FUNCTION bool storage_initialized();
@@ -18,6 +20,10 @@ DART_LEAF_FUNCTION int32_t storage_is_read_only();
 DART_LEAF_FUNCTION const char* storage_initialization_error();
 DART_LEAF_FUNCTION const char* storage_shutdown_error();
 DART_LEAF_FUNCTION bool storage_shutdown();
+
+void storage_raiser(struct error* error);
+void storage_say(int level, const char* filename, int line, const char* message);
+struct event* storage_convert_error(struct error* error);
 
 #if defined(__cplusplus)
 }

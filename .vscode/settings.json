@@ -180,6 +180,7 @@
     "dlfcn.h": "c",
     "lauxlib.h": "c",
     "luajit.h": "c",
-    "util.h": "c"
+    "util.h": "c",
+    "cerrno": "c"
   },
 }
