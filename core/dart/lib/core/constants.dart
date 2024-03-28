@@ -134,8 +134,8 @@ dart.isolate = ${isolate}
 dart.location = $location
 dart.caller = $caller(...)""";
 
-  static String formatEventField(String name, String value) => "$name = $value";
-  static String formatEventPrefix(String name, String value) => "$name = $value";
+  static String formatEventField(String name, dynamic value) => "$name = $value";
+  static String formatEventPrefix(String name, dynamic value) => "$name = $value";
 }
 
 class TupleErrors {

@@ -38,14 +38,16 @@ void testSchema() {
     await storage.schema.createUser("test-user", "test-password", ifNotExists: true);
     expect(await storage.schema.userExists("test-user"), isTrue);
     await storage.schema.grantUser("test-user", "read", objectType: "space", objectName: "test", ifNotExists: true);
-//  try {
-//    await executor.schema.grantUser("test-user", "write", objectType: "universe");
-//  } catch (error) {
-//    expect(
-//      error,
-//      predicate((exception) => exception is StorageExecutionException && exception.toString() == "User 'test-user' already has write access on universe"),
-//    );
-//  }
+    try {
+      await storage.schema.grantUser("test-user", "write", objectType: "universe");
+    } catch (error) {
+      expect(
+        error,
+        predicate(
+          (exception) => exception is ModuleException && exception.event.fields[CoreEventFields.message] == "User 'test-user' already has write access on universe",
+        ),
+      );
+    }
     await storage.schema.revokeUser("test-user", "read", objectType: "space", objectName: "test", ifNotExists: true);
     await storage.schema.revokeUser("test-user", "write", objectType: "universe", ifNotExists: true);
     await storage.schema.dropUser("test-user");
