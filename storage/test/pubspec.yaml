@@ -16,3 +16,4 @@ dependencies:
     path: ../../memory/dart
   storage:
     path: ../dart
+  path: ^1.9.0

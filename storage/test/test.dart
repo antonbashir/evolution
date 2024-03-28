@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:path/path.dart' as path;
 import 'package:storage/storage.dart';
-import 'package:storage/storage/module.dart';
 import 'package:test/test.dart';
 
 import 'crud.dart';
@@ -18,7 +18,23 @@ final testKey = [10];
 final testSingleData = TestData(10, "test", true);
 final testMultipleData = Iterable.generate(10, (index) => [index + 1, "key-${index}", "value"]).toList();
 
-FutureOr<void> runTest(FutureOr<void> Function() test, {List<Module>? overrides}) => launch(() => overrides ?? [CoreModule(), MemoryModule(), ExecutorModule(), StorageModule()], test);
+FutureOr<void> runTest(FutureOr<void> Function() test, {List<Module>? overrides}) => launch(
+      () =>
+          overrides ??
+          [
+            CoreModule(),
+            MemoryModule(),
+            ExecutorModule(),
+            StorageModule(
+              configuration: StorageDefaults.module.copyWith(
+                bootConfiguration: StorageDefaults.module.bootConfiguration.copyWith(
+                  initialScript: StorageBootstrapScript(StorageDefaults.storage).file(File(path.dirname(Platform.script.path) + '/test.lua')).write(),
+                ),
+              ),
+            ),
+          ],
+      test,
+    );
 
 Future<void> main() async {
   Directory.current.listSync().forEach((element) {

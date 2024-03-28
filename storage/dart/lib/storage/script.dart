@@ -12,13 +12,19 @@ class StorageBootstrapScript {
 
   StorageBootstrapScript(this._configuration);
 
-  void code(String expression) => _content += (expression + newLine);
+  StorageBootstrapScript code(String expression) {
+    _content += (expression + newLine);
+    return this;
+  }
 
-  void file(File file) => _content += (newLine + file.readAsStringSync() + newLine);
+  StorageBootstrapScript file(File file) {
+    _content += (newLine + file.readAsStringSync() + newLine);
+    return this;
+  }
 
-  void includeLuaModulePath(String directory) => code(LuaExpressions.extendPackagePath(directory));
+  StorageBootstrapScript includeLuaModulePath(String directory) => code(LuaExpressions.extendPackagePath(directory));
 
-  void includeNativeModulePath(String directory) => code(LuaExpressions.extendPackageNativePath(directory));
+  StorageBootstrapScript includeNativeModulePath(String directory) => code(LuaExpressions.extendPackageNativePath(directory));
 
   String write() {
     if (Directory.current.listSync().whereType<Directory>().any((element) => element.path.endsWith(Directories.lua))) {
@@ -27,7 +33,10 @@ class StorageBootstrapScript {
     if (Directory.current.listSync().whereType<Directory>().any((element) => element.path.endsWith(Directories.native))) {
       includeNativeModulePath(Directory.current.path + Directories.native);
     }
-    includeLuaModulePath(Directory(findPackageRoot(findDotDartTool()!, storageModuleName).toFilePath() + Directories.lua).absolute.path);
+    final dartTool = findDotDartTool();
+    if (dartTool != null) {
+      includeLuaModulePath(Directory(findPackageRoot(dartTool, storageModuleName).toFilePath() + Directories.lua).absolute.path);
+    }
     code(LuaExpressions.require(storageLuaModule));
     return _configuration.format() + newLine + _content;
   }

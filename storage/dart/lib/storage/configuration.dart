@@ -37,13 +37,11 @@ class StorageModuleConfiguration implements ModuleConfiguration {
     return native;
   }
 
-  factory StorageModuleConfiguration.fromNative(storage_module_configuration configuration) {
-    return StorageModuleConfiguration(
-      bootConfiguration: StorageBootConfiguration.fromNative(configuration.boot_configuration),
-      executorConfiguration: StorageExecutorConfiguration.fromNative(configuration.executor_configuration),
-      modules: {},
-    );
-  }
+  factory StorageModuleConfiguration.fromNative(storage_module_configuration configuration) => StorageModuleConfiguration(
+        bootConfiguration: StorageBootConfiguration.fromNative(configuration.boot_configuration),
+        executorConfiguration: StorageExecutorConfiguration.fromNative(configuration.executor_configuration),
+        modules: {},
+      );
 }
 
 class StorageExecutorConfiguration {
@@ -91,6 +89,21 @@ class StorageBootConfiguration {
     required this.initializationTimeout,
     required this.shutdownTimeout,
   });
+
+  StorageBootConfiguration copyWith({
+    StorageLaunchConfiguration? launchConfiguration,
+    String? initialScript,
+    String? binaryPath,
+    Duration? initializationTimeout,
+    Duration? shutdownTimeout,
+  }) =>
+      StorageBootConfiguration(
+        launchConfiguration: launchConfiguration ?? this.launchConfiguration,
+        initialScript: initialScript ?? this.initialScript,
+        binaryPath: binaryPath ?? this.binaryPath,
+        initializationTimeout: initializationTimeout ?? this.initializationTimeout,
+        shutdownTimeout: shutdownTimeout ?? this.shutdownTimeout,
+      );
 
   Pointer<storage_boot_configuration> toNative(Arena arena) {
     Pointer<storage_boot_configuration> native = arena();

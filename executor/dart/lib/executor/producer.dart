@@ -53,7 +53,6 @@ class ExecutorMethodImplementation implements ExecutorMethod {
   void callback(Pointer<executor_task> message) {
     final call = _calls[message.ref.id];
     if (message.ref.flags & executorTaskOutputEvent != 0) {
-      print(message.ref.flags);
       call?.completeError(ModuleException(Event.native(message.ref.output.cast())));
       return;
     }
