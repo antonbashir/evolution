@@ -16,6 +16,8 @@ const executorStateStopped = 1 << 4;
 const executorCall = 1 << 0;
 const executorCallback = 1 << 1;
 
+const executorTaskOutputEvent = 1 << 0;
+
 const ringSetupIopoll = 1 << 0;
 const ringSetupSqpoll = 1 << 1;
 const ringSetupSqAff = 1 << 2;

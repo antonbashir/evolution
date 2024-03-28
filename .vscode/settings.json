@@ -181,6 +181,9 @@
     "lauxlib.h": "c",
     "luajit.h": "c",
     "util.h": "c",
-    "cerrno": "c"
+    "cerrno": "c",
+    "iomanip": "c",
+    "istream": "c",
+    "ostream": "c"
   },
 }

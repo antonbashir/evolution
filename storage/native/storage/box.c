@@ -8,13 +8,14 @@
 #include "box/tuple.h"
 #include "box/txn.h"
 #include "constants.h"
-#include "diag.h"
+#include "executor/constants.h"
 #include "fiber.h"
 #include "mempool.h"
 #include "msgpuck.h"
 #include "port.h"
 #include "small.h"
 #include "small/obuf.h"
+#include "storage.h"
 
 static struct small_alloc storage_box_output_buffers;
 static struct mempool storage_tuple_ports;
@@ -66,7 +67,22 @@ void storage_evaluate(struct executor_task* task)
     struct obuf out_buffer;
     obuf_create(&out_buffer, cord_slab_cache(), 1);
     port_msgpack_create(&in_port, (const char*)request->input, request->input_size);
-    box_lua_eval(request->expression, request->expression_length, &in_port, &out_port);
+    if (unlikely(box_lua_eval(request->expression, request->expression_length, &in_port, &out_port) != 0))
+    {
+        if (diag_last_error(diag_get()) != NULL)
+        {
+            port_destroy(&out_port);
+            port_destroy(&in_port);
+            task->output = storage_get_diagnostic_event();
+            task->output_size = sizeof(task->output);
+            task->flags = EXECUTOR_TASK_OUTPUT_EVENT;
+            return;
+        }
+        task->output = storage_create_empty_error();
+        task->output_size = sizeof(task->output);
+        task->flags = EXECUTOR_TASK_OUTPUT_EVENT;
+        return;
+    }
     port_destroy(&in_port);
     size_t return_count = ((struct port_lua*)&out_port)->size;
     port_dump_msgpack(&out_port, &out_buffer);
@@ -91,7 +107,21 @@ void storage_call(struct executor_task* task)
     struct obuf out_buffer;
     obuf_create(&out_buffer, cord_slab_cache(), 1);
     port_msgpack_create(&in_port, (const char*)request->input, request->input_size);
-    box_lua_call(request->function, request->function_length, &in_port, &out_port);
+    if (unlikely(box_lua_call(request->function, request->function_length, &in_port, &out_port) != 0)) {
+        if (diag_last_error(diag_get()) != NULL)
+        {
+            port_destroy(&out_port);
+            port_destroy(&in_port);
+            task->output = storage_get_diagnostic_event();
+            task->output_size = sizeof(task->output);
+            task->flags = EXECUTOR_TASK_OUTPUT_EVENT;
+            return;
+        }
+        task->output = storage_create_empty_error();
+        task->output_size = sizeof(task->output);
+        task->flags = EXECUTOR_TASK_OUTPUT_EVENT;
+        return;
+    }
     port_destroy(&in_port);
     size_t return_count = ((struct port_lua*)&out_port)->size;
     port_dump_msgpack(&out_port, &out_buffer);

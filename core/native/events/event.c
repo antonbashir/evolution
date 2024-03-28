@@ -271,6 +271,15 @@ void event_set_local(struct event* event)
 void event_propagate_local(struct event* event)
 {
     Dart_EnterScope();
+    event_put_stack_trace(event);
+    Dart_Handle arguments[] = {dart_from_unsigned((intptr_t)event)};
+    if (dart_call_static(DART_CORE_LOCAL_FILE, DART_CORE_LOCAL_EVENT_CLASS, DART_PRODUCE_FUNCTION, arguments) != NULL) local = event;
+    Dart_ExitScope();
+    event_set_local(event);
+}
+
+void event_put_stack_trace(struct event* event)
+{
     char stack_trace_buffer[STACKTRACE_PRINT_BUFFER];
     struct stacktrace trace;
     stacktrace_collect_current(&trace, 1);
@@ -278,9 +287,6 @@ void event_propagate_local(struct event* event)
     {
         event_set_string(event, EVENT_FIELD_STACK_TRACE, strdupa(stack_trace_buffer));
     }
-    Dart_Handle arguments[] = {dart_from_unsigned((intptr_t)event)};
-    if (dart_call_static(DART_CORE_LOCAL_FILE, DART_CORE_LOCAL_EVENT_CLASS, DART_PRODUCE_FUNCTION, arguments) != NULL) local = event;
-    Dart_ExitScope();
 }
 
 struct event* event_get_local()

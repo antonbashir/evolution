@@ -103,7 +103,6 @@ void test_executor_call_dart(struct test_executor* executor, int32_t target, str
 {
     task->source = executor->descriptor;
     task->target = target;
-    task->flags |= EXECUTOR_CALL;
     struct io_uring_sqe* sqe = io_uring_get_sqe(executor->ring);
     io_uring_prep_msg_ring(sqe, target, EXECUTOR_CALL, (uint64_t)((intptr_t)task), 0);
     sqe->flags |= IOSQE_CQE_SKIP_SUCCESS;

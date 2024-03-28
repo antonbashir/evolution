@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ffi';
 
 import 'bindings.dart';
+import 'constants.dart';
 import 'declaration.dart';
 
 class ExecutorProducerImplementation implements ExecutorProducerRegistrat {
@@ -49,7 +50,15 @@ class ExecutorMethodImplementation implements ExecutorMethod {
   }
 
   @inline
-  void callback(Pointer<executor_task> message) => _calls[message.ref.id]?.complete(message);
+  void callback(Pointer<executor_task> message) {
+    final call = _calls[message.ref.id];
+    if (message.ref.flags & executorTaskOutputEvent != 0) {
+      print(message.ref.flags);
+      call?.completeError(ModuleException(Event.native(message.ref.output.cast())));
+      return;
+    }
+    call?.complete(message);
+  }
 
   @inline
   Pointer<executor_task> _onComplete(Pointer<executor_task> task) {

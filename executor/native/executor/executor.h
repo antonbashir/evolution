@@ -57,7 +57,6 @@ DART_INLINE_LEAF_FUNCTION int16_t executor_call_dart(struct io_uring* ring, int3
     }
     message->source = source_ring_fd;
     message->target = target_ring_fd;
-    message->flags |= EXECUTOR_CALL;
     io_uring_prep_msg_ring(sqe, target_ring_fd, EXECUTOR_CALL, (uint64_t)((uintptr_t)message), 0);
     sqe->flags |= IOSQE_CQE_SKIP_SUCCESS;
     return 0;
@@ -74,7 +73,6 @@ DART_INLINE_LEAF_FUNCTION int16_t executor_callback_to_dart(struct io_uring* rin
     uint64_t target = message->source;
     message->source = source_ring_fd;
     message->target = target;
-    message->flags |= EXECUTOR_CALLBACK;
     io_uring_prep_msg_ring(sqe, target, EXECUTOR_CALLBACK, (uint64_t)((uintptr_t)message), 0);
     sqe->flags |= IOSQE_CQE_SKIP_SUCCESS;
     return 0;

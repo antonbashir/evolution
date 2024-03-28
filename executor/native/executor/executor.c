@@ -86,7 +86,7 @@ int32_t executor_peek(struct executor_instance* executor)
     return io_uring_peek_batch_cqe(executor->ring, &executor->completions[0], configuration->ring_size);
 }
 
-int16_t executor_call_native(struct executor_instance* executor, int32_t target_ring_fd, struct executor_task* message)
+int16_t executor_call_native(struct executor_instance* executor, int32_t target_ring_fd, struct executor_task* task)
 {
     struct io_uring* ring = executor->ring;
     struct io_uring_sqe* sqe = io_uring_get_sqe(ring);
@@ -95,16 +95,15 @@ int16_t executor_call_native(struct executor_instance* executor, int32_t target_
         event_propagate_local(executor_error_ring_full());
         return MODULE_ERROR_CODE;
     }
-    message->source = executor->descriptor;
-    message->target = target_ring_fd;
-    message->flags |= EXECUTOR_CALL;
-    io_uring_prep_msg_ring(sqe, target_ring_fd, EXECUTOR_CALL, (uintptr_t)message, 0);
+    task->source = executor->descriptor;
+    task->target = target_ring_fd;
+    io_uring_prep_msg_ring(sqe, target_ring_fd, EXECUTOR_CALL, (uintptr_t)task, 0);
     sqe->flags |= IOSQE_CQE_SKIP_SUCCESS;
     executor_submit(executor);
     return 0;
 }
 
-int16_t executor_callback_to_native(struct executor_instance* executor, struct executor_task* message)
+int16_t executor_callback_to_native(struct executor_instance* executor, struct executor_task* task)
 {
     struct io_uring* ring = executor->ring;
     struct io_uring_sqe* sqe = io_uring_get_sqe(ring);
@@ -113,11 +112,10 @@ int16_t executor_callback_to_native(struct executor_instance* executor, struct e
         event_propagate_local(executor_error_ring_full());
         return MODULE_ERROR_CODE;
     }
-    uint64_t target = message->source;
-    message->source = executor->descriptor;
-    message->target = target;
-    message->flags |= EXECUTOR_CALLBACK;
-    io_uring_prep_msg_ring(sqe, target, EXECUTOR_CALLBACK, (uintptr_t)message, 0);
+    uint64_t target = task->source;
+    task->source = executor->descriptor;
+    task->target = target;
+    io_uring_prep_msg_ring(sqe, target, EXECUTOR_CALLBACK, (uintptr_t)task, 0);
     sqe->flags |= IOSQE_CQE_SKIP_SUCCESS;
     executor_submit(executor);
     return 0;

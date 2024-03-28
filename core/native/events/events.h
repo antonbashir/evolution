@@ -9,6 +9,7 @@ extern "C"
 {
 #endif
 
+#define event_of(level, ...) event_build(level, __FUNCTION__, __FILENAME__, __LINE__, VA_LENGTH(__VA_ARGS__), ##__VA_ARGS__)
 #define event_trace(...) event_build(EVENT_LEVEL_TRACE, __FUNCTION__, __FILENAME__, __LINE__, VA_LENGTH(__VA_ARGS__), ##__VA_ARGS__)
 #define event_information(...) event_build(EVENT_LEVEL_INFORMATION, __FUNCTION__, __FILENAME__, __LINE__, VA_LENGTH(__VA_ARGS__), ##__VA_ARGS__)
 #define event_warning(...) event_build(EVENT_LEVEL_WARNING, __FUNCTION__, __FILENAME__, __LINE__, VA_LENGTH(__VA_ARGS__), ##__VA_ARGS__)

@@ -30,6 +30,7 @@ DART_STRUCTURE struct executor_completion_event
     DART_FIELD __u32 flags;
     DART_FIELD __u64 big_cqe[2];
 };
+
 #if defined(__cplusplus)
 }
 #endif

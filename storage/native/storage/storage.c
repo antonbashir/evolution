@@ -20,6 +20,7 @@
 #include "module.h"
 #include "diag.h"
 #include <system/library.h>
+#include <events/field.h>
 // clang-format on
 
 static struct storage_instance
@@ -276,7 +277,7 @@ const char* storage_shutdown_error()
 
 void storage_raiser(struct error* error)
 {
-    raise_panic(storage_convert_error(error));
+    raise_panic(storage_convert_error(error, EVENT_LEVEL_PANIC));
 }
 
 void storage_say(int level, const char* filename, int line, const char* message)
@@ -289,6 +290,7 @@ void storage_say(int level, const char* filename, int line, const char* message)
         case S_ERROR:
         case S_CRIT:
             event = storage_module_event(event_error(event_field_message(message)));
+            event_put_stack_trace(event);
             break;
         case S_WARN:
             event = storage_module_event(event_warning(event_field_message(message)));
@@ -306,9 +308,9 @@ void storage_say(int level, const char* filename, int line, const char* message)
     system_print_event(event);
 }
 
-struct event* storage_convert_error(struct error* error)
+struct event* storage_convert_error(struct error* error, int32_t level)
 {
-    struct event* event = storage_module_event(event_panic(event_field_code(error->code), event_field_message(error->errmsg)));
+    struct event* event = storage_module_event(event_of(level, event_field_code(error->code), event_field_message(error->errmsg)));
     event->file = error->file;
     event->line = error->line;
     for (size_t i = 0; i < error->payload.count; i++)
@@ -354,5 +356,19 @@ struct event* storage_convert_error(struct error* error)
             }
         }
     }
+    event_put_stack_trace(event);
+    return event;
+}
+
+struct event* storage_get_diagnostic_event()
+{
+    struct error* error = diag_last_error(diag_get());
+    return storage_convert_error(error, EVENT_LEVEL_ERROR);
+}
+
+struct event* storage_create_error(const char* message)
+{
+    struct event* event = storage_module_event(event_error(event_field_message(message)));
+    event_put_stack_trace(event);
     return event;
 }

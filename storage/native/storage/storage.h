@@ -23,7 +23,11 @@ DART_LEAF_FUNCTION bool storage_shutdown();
 
 void storage_raiser(struct error* error);
 void storage_say(int level, const char* filename, int line, const char* message);
-struct event* storage_convert_error(struct error* error);
+struct event* storage_convert_error(struct error* error, int32_t level);
+struct event* storage_get_diagnostic_event();
+struct event* storage_create_error(const char* message);
+
+#define storage_create_empty_error() storage_create_error("");
 
 #if defined(__cplusplus)
 }
