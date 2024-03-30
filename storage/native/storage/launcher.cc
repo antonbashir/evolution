@@ -420,5 +420,5 @@ void storage_launcher_shutdown(int32_t code)
     {
         storage_exit(code);
     }
-    storage_free();
+    //storage_free();
 }

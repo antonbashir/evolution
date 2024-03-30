@@ -35,6 +35,5 @@ void storage_factory_destroy(struct storage_factory* factory)
 {
     small_alloc_destroy(&factory->storage_datas->allocator);
     memory_destroy(factory->memory);
-    free(factory->storage_datas);
-    free(factory->memory);
+    memory_module_delete(factory->storage_datas);
 }
