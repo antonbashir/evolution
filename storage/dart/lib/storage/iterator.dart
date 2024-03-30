@@ -103,9 +103,7 @@ class StorageIterator {
         }
         if (limit != null && index > limit) return;
         index += count;
-        for (StorageTuple tuple in tuples.iterate()) {
-          yield (map == null ? tuple : map(tuple));
-        }
+        yield* tuples.streamMap((tuple) => map!(tuple));
       }
       await destroy();
       return;
@@ -117,16 +115,11 @@ class StorageIterator {
         index += count;
         continue;
       }
-      List<StorageTuple> filtered = [];
-      for (StorageTuple tuple in tuples.iterate()) {
-        if (filter(tuple)) filtered.add(tuple);
-      }
+      List<StorageTuple> filtered = tuples.filter(filter).toList();
       if (filtered.isEmpty) continue;
       if (limit != null && index > limit) return;
       index += filtered.length;
-      for (StorageTuple tuple in tuples.iterate()) {
-        yield (map == null ? tuple : map(tuple));
-      }
+      yield* tuples.streamMap((tuple) => map!(tuple));
     }
     await destroy();
   }

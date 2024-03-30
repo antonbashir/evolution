@@ -58,10 +58,28 @@ extension type StorageTuplePort(Pointer<storage_tuple_port> port) {
   }
 
   @inline
+  Stream<T> streamMap<T>(T Function(StorageTuple tuple) mapper) async* {
+    var iterator = port.ref.first;
+    for (var i = 0; i < port.ref.size; i++) {
+      yield mapper(StorageTuple(iterator.ref.tuple));
+      iterator = iterator.ref.next;
+    }
+  }
+
+  @inline
   Iterable<StorageTuple> iterate() sync* {
     var iterator = port.ref.first;
     for (var i = 0; i < port.ref.size; i++) {
       yield StorageTuple(iterator.ref.tuple);
+      iterator = iterator.ref.next;
+    }
+  }
+
+  @inline
+  Iterable<StorageTuple> filter(bool Function(StorageTuple value) filter) sync* {
+    var iterator = port.ref.first;
+    for (var i = 0; i < port.ref.size; i++) {
+      if (filter(StorageTuple(iterator.ref.tuple))) yield StorageTuple(iterator.ref.tuple);
       iterator = iterator.ref.next;
     }
   }
