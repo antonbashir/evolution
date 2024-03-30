@@ -25,14 +25,14 @@ class ExecutorModuleState implements ModuleState {
     await Future.wait(_customs.map((executor) => executor.shutdown()));
   }
 
-  Executor executor({ExecutorConfiguration configuration = ExecutorDefaults.executor}) {
+  Executor _executor({ExecutorConfiguration configuration = ExecutorDefaults.executor}) {
     final native = using((arena) => executor_create(configuration.toNative(arena), _module.ref.scheduler, executor_next_id(_module))).systemCheck();
     final executor = Executor(native, _customs.remove);
     _customs.add(executor);
     return executor;
   }
 
-  ExecutorBroker broker({ExecutorConfiguration configuration = ExecutorDefaults.executor}) {
+  ExecutorBroker _broker({ExecutorConfiguration configuration = ExecutorDefaults.executor}) {
     final executor = using((arena) => executor_create(configuration.toNative(arena), _module.ref.scheduler, executor_next_id(_module))).systemCheck();
     final broker = ExecutorBroker(Executor(executor, _brokers.remove, configuration: configuration));
     _brokers.add(broker);
@@ -102,6 +102,6 @@ class ExecutorModule extends Module<executor_module, ExecutorModuleConfiguration
 
 extension ExecutorContextExtensions on ContextProvider {
   ModuleProvider<executor_module, ExecutorModuleConfiguration, ExecutorModuleState> executorModule() => get(executorModuleName);
-  Executor executor({ExecutorConfiguration configuration = ExecutorDefaults.executor}) => executorModule().state.executor(configuration: configuration);
-  ExecutorBroker broker({ExecutorConfiguration configuration = ExecutorDefaults.executor}) => executorModule().state.broker(configuration: configuration);
+  Executor executor({ExecutorConfiguration configuration = ExecutorDefaults.executor}) => executorModule().state._executor(configuration: configuration);
+  ExecutorBroker broker({ExecutorConfiguration configuration = ExecutorDefaults.executor}) => executorModule().state._broker(configuration: configuration);
 }

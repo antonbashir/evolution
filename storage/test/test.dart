@@ -64,6 +64,7 @@ Future<void> main() async {
 
   // group("[execution]", () {
   //   //   test("execute native", testExecuteNative);
+  //   test("execute lua", testExecuteLua);
   // });
 }
 
