@@ -36,6 +36,7 @@ class StorageProducer implements ExecutorProducer {
   late final ExecutorMethod spaceDeleteMany;
   late final ExecutorMethod spaceUpdateSingle;
   late final ExecutorMethod spaceUpdateMany;
+  late final ExecutorMethod spaceSelect;
   late final ExecutorMethod spaceGet;
   late final ExecutorMethod spaceMin;
   late final ExecutorMethod spaceMax;
@@ -72,6 +73,7 @@ class StorageProducer implements ExecutorProducer {
     spaceDeleteMany = registrat.register(Pointer.fromAddress(_box.ref.storage_space_delete_many_address));
     spaceUpdateSingle = registrat.register(Pointer.fromAddress(_box.ref.storage_space_update_single_address));
     spaceUpdateMany = registrat.register(Pointer.fromAddress(_box.ref.storage_space_update_many_address));
+    spaceSelect = registrat.register(Pointer.fromAddress(_box.ref.storage_space_select_address));
     spaceGet = registrat.register(Pointer.fromAddress(_box.ref.storage_space_get_address));
     spaceMin = registrat.register(Pointer.fromAddress(_box.ref.storage_space_min_address));
     spaceMax = registrat.register(Pointer.fromAddress(_box.ref.storage_space_max_address));

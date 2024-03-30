@@ -6,8 +6,12 @@ import 'package:test/test.dart';
 import 'data.dart';
 import 'test.dart';
 
-({Pointer<Uint8> tuple, int size, void Function() cleaner}) _data() {
+({Pointer<Uint8> tuple, int size, void Function() cleaner}) _singleData() {
   return context().tuples().fixed.toInput(testSingleData.tupleSize, testSingleData.serialize);
+}
+
+({Pointer<Uint8> tuple, int size, void Function() cleaner}) _multipleData() {
+  return context().tuples().fixed.toInput(testMultipleData.computeTupleSize(), testMultipleData.serializeToTuple);
 }
 
 ({Pointer<Uint8> tuple, int size, void Function() cleaner}) _key() {
@@ -18,31 +22,37 @@ import 'test.dart';
   return context().tuples().fixed.toInput(operation.computeTupleSize(), operation.serializeToTuple);
 }
 
-Future<TestData> _parse(Future<StorageTuple> response, [void Function()? requestCleaner]) {
+Future<TestData> _parseSingle(Future<StorageTuple> response, [void Function()? requestCleaner]) {
   return response.whenComplete(requestCleaner ?? () {}).then((value) => readTestData(storage.tuples, value));
 }
 
-Future<void> _insert() async {
-  final data = _data();
-  expect(await _parse(space.insertSingle(data.tuple, data.size), data.cleaner), equals(testSingleData));
+Future<List<TestData>> _parseMultiple(Future<StorageTuplePort> response, [void Function()? requestCleaner]) async {
+  final port = await response.whenComplete(requestCleaner ?? () {});
+  print(port.format());
+  return port.map((tuple) => readTestData(storage.tuples, tuple)).toList();
 }
 
-Future<void> _put() async {
-  final data = _data();
-  expect(await _parse(space.putSingle(data.tuple, data.size), data.cleaner), equals(testSingleData));
+Future<void> _insertSingle() async {
+  final data = _singleData();
+  expect(await _parseSingle(space.insertSingle(data.tuple, data.size), data.cleaner), equals(testSingleData));
+}
+
+Future<void> _putSingle() async {
+  final data = _singleData();
+  expect(await _parseSingle(space.putSingle(data.tuple, data.size), data.cleaner), equals(testSingleData));
 }
 
 Future<void> _get() async {
   final key = _key();
-  expect(await _insert().then((value) => _parse(space.get(key.tuple, key.size), key.cleaner)), equals(testSingleData));
+  expect(await _insertSingle().then((value) => _parseSingle(space.get(key.tuple, key.size), key.cleaner)), equals(testSingleData));
 }
 
 Future<void> _min() async {
-  expect(await _insert().then((value) => _parse(space.min())), equals(testSingleData));
+  expect(await _insertSingle().then((value) => _parseSingle(space.min())), equals(testSingleData));
 }
 
 Future<void> _max() async {
-  expect(await _insert().then((value) => _parse(space.max())), equals(testSingleData));
+  expect(await _insertSingle().then((value) => _parseSingle(space.max())), equals(testSingleData));
 }
 
 Future<void> _isEmpty() async {
@@ -50,21 +60,21 @@ Future<void> _isEmpty() async {
 }
 
 Future<void> _count() async {
-  expect(await _insert().then((value) => space.count()), equals(1));
+  expect(await _insertSingle().then((value) => space.count()), equals(1));
 }
 
-Future<void> _delete() async {
+Future<void> _deleteSingle() async {
   final key = _key();
-  expect(await _insert().then((value) => _parse(space.deleteSingle(key.tuple, key.size), key.cleaner)), equals(testSingleData));
+  expect(await _insertSingle().then((value) => _parseSingle(space.deleteSingle(key.tuple, key.size), key.cleaner)), equals(testSingleData));
   await _isEmpty();
 }
 
-Future<void> _update() async {
+Future<void> _updateSingle() async {
   final key = _key();
   final operation = _updateOperations([StorageUpdateOperation.assign(1, "updated")]);
   expect(
-    await _insert().then(
-      (value) => _parse(space.updateSingle(key.tuple, key.size, operation.tuple, operation.size), () {
+    await _insertSingle().then(
+      (value) => _parseSingle(space.updateSingle(key.tuple, key.size, operation.tuple, operation.size), () {
         key.cleaner();
         operation.cleaner();
       }),
@@ -73,22 +83,24 @@ Future<void> _update() async {
   );
 }
 
+Future<void> _select() async {
+  final data = _multipleData();
+  await space.insertMany(data.tuple, data.size);
+  expect(await _parseMultiple(space.select()), equals(testMultipleData));
+  expect(await _parseMultiple(index.select()), equals(testMultipleData));
+}
+
 void testCrud() {
-  test("insert", _insert);
-  test("put", _put);
+  test("insert", _insertSingle);
+  test("put", _putSingle);
   test("get", _get);
   test("min", _min);
   test("max", _max);
   test("isEmpty", _isEmpty);
   test("count", _count);
-  test("delete", _delete);
-  test("update", _update);
-
-  // test("select", () async {
-  //   await Future.wait(testMultipleData.map(_space.insert));
-  //   expect(await _space.select(), equals(testMultipleData));
-  //   expect(await _index.select(), equals(testMultipleData));
-  // });
+  test("delete", _deleteSingle);
+  test("update", _updateSingle);
+  test("select", _select);
 
   // test("get by index", () async {
   //   _space.insert(testSingleData);

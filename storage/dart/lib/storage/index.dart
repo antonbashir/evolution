@@ -6,6 +6,7 @@ import 'constants.dart';
 import 'executor.dart';
 import 'factory.dart';
 import 'iterator.dart';
+import 'tuple.dart';
 
 class StorageIndex {
   final int _spaceId;
@@ -127,14 +128,14 @@ class StorageIndex {
       _producer.indexUpdateSingle(_descriptor, _factory.createIndexUpdate(_spaceId, _indexId, key, keySize, operations, operationsSize)).then(_completeUpdateSingle);
 
   @inline
-  Pointer<storage_tuple_port> _completeUpdateMany(Pointer<executor_task> message) {
+  StorageTuplePort _completeUpdateMany(Pointer<executor_task> message) {
     final tuple = Pointer<storage_tuple_port>.fromAddress(message.outputInt);
     _factory.releaseIndexUpdate(message.getInputObject());
-    return tuple;
+    return StorageTuplePort(tuple);
   }
 
   @inline
-  Future<Pointer<storage_tuple_port>> updateMany(
+  Future<StorageTuplePort> updateMany(
     Pointer<Uint8> keys,
     int keysCount,
     Pointer<Uint8> operations,
@@ -143,14 +144,14 @@ class StorageIndex {
       _producer.indexUpdateMany(_descriptor, _factory.createIndexUpdate(_spaceId, _indexId, keys, keysCount, operations, operationsCount)).then(_completeUpdateMany);
 
   @inline
-  Pointer<storage_tuple_port> _completeSelect(Pointer<executor_task> message) {
+  StorageTuplePort _completeSelect(Pointer<executor_task> message) {
     final tuple = Pointer<storage_tuple_port>.fromAddress(message.outputInt);
     _factory.releaseIndexSelect(message.getInputObject());
-    return tuple;
+    return StorageTuplePort(tuple);
   }
 
   @inline
-  Future<Pointer<storage_tuple_port>> select({
+  Future<StorageTuplePort> select({
     int offset = 0,
     int limit = int32MaxValue,
     StorageIteratorType iteratorType = StorageIteratorType.eq,
@@ -160,7 +161,7 @@ class StorageIndex {
   }
 
   @inline
-  Future<Pointer<storage_tuple_port>> selectBy(
+  Future<StorageTuplePort> selectBy(
     Pointer<Uint8> key,
     int keySize, {
     int offset = 0,

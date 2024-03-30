@@ -16,7 +16,7 @@ late final StorageIndex index;
 
 final testKey = [10];
 final testSingleData = TestData(10, "test", true);
-final testMultipleData = Iterable.generate(10, (index) => [index + 1, "key-${index}", "value"]).toList();
+final testMultipleData = Iterable<TestData>.generate(10, (index) => TestData(index + 1, "key-${index}", true)).toList();
 
 FutureOr<void> runTest(FutureOr<void> Function() test, {List<Module>? overrides}) => launch(
       () =>

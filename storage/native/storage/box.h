@@ -32,6 +32,7 @@ DART_STRUCTURE struct storage_box
     DART_FIELD DART_SUBSTITUTE(uintptr_t) executor_action storage_space_delete_many_address;
     DART_FIELD DART_SUBSTITUTE(uintptr_t) executor_action storage_space_update_single_address;
     DART_FIELD DART_SUBSTITUTE(uintptr_t) executor_action storage_space_update_many_address;
+    DART_FIELD DART_SUBSTITUTE(uintptr_t) executor_action storage_space_select_address;
     DART_FIELD DART_SUBSTITUTE(uintptr_t) executor_action storage_space_get_address;
     DART_FIELD DART_SUBSTITUTE(uintptr_t) executor_action storage_space_min_address;
     DART_FIELD DART_SUBSTITUTE(uintptr_t) executor_action storage_space_max_address;

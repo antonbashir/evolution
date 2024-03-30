@@ -43,6 +43,8 @@ final class storage_box extends Struct {
   @Uint64()
   external int storage_space_update_many_address;
   @Uint64()
+  external int storage_space_select_address;
+  @Uint64()
   external int storage_space_get_address;
   @Uint64()
   external int storage_space_min_address;

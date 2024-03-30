@@ -117,7 +117,7 @@ class StorageSpace {
   @inline
   Future<StorageTuple> putSingle(Pointer<Uint8> tuple, int tupleSize) {
     final request = _factory.createSpace(_id, tuple, tupleSize);
-    return _producer.spaceInsertSingle(_descriptor, request).then(_completePutSingle);
+    return _producer.spacePutSingle(_descriptor, request).then(_completePutSingle);
   }
 
   @inline
@@ -253,14 +253,14 @@ class StorageSpace {
   }
 
   @inline
-  Pointer<storage_tuple_port> _completeSelect(Pointer<executor_task> message) {
-    final tuple = Pointer<storage_tuple_port>.fromAddress(message.outputInt);
+  StorageTuplePort _completeSelect(Pointer<executor_task> message) {
+    final port = Pointer<storage_tuple_port>.fromAddress(message.outputInt);
     _factory.releaseSpaceSelect(message.getInputObject());
-    return tuple;
+    return StorageTuplePort(port);
   }
 
   @inline
-  Future<Pointer<storage_tuple_port>> select({
+  Future<StorageTuplePort> select({
     int offset = 0,
     int limit = int32MaxValue,
     StorageIteratorType iteratorType = StorageIteratorType.eq,
@@ -270,7 +270,7 @@ class StorageSpace {
   }
 
   @inline
-  Future<Pointer<storage_tuple_port>> selectBy(
+  Future<StorageTuplePort> selectBy(
     Pointer<Uint8> key,
     int keySize, {
     int offset = 0,
@@ -278,6 +278,6 @@ class StorageSpace {
     StorageIteratorType iteratorType = StorageIteratorType.eq,
   }) {
     final request = _factory.createSpaceSelect(_id, key, keySize, offset, limit, iteratorType.index);
-    return _producer.spaceInsertSingle(_descriptor, request).then(_completeSelect);
+    return _producer.spaceSelect(_descriptor, request).then(_completeSelect);
   }
 }

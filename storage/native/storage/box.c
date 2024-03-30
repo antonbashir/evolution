@@ -48,6 +48,7 @@ void storage_initialize_box(struct storage_box* box)
     box->storage_space_max_address = &storage_space_max;
     box->storage_space_truncate_address = &storage_space_truncate;
     box->storage_space_upsert_address = &storage_space_upsert;
+    box->storage_space_select_address = &storage_space_select;
     box->storage_index_count_address = &storage_index_count;
     box->storage_index_length_address = &storage_index_length;
     box->storage_index_iterator_address = &storage_index_iterator;
@@ -502,6 +503,7 @@ void storage_space_select(struct executor_task* task)
 {
     struct storage_space_select_request* request = (struct storage_space_select_request*)task->input;
     struct port* port = mempool_alloc(&storage_tuple_ports);
+    const char *packed_pos = NULL, *packed_pos_end = NULL;
     if (unlikely(box_select(request->space_id,
                             STORAGE_PRIMARY_INDEX_ID,
                             request->iterator_type,
@@ -509,8 +511,8 @@ void storage_space_select(struct executor_task* task)
                             request->limit,
                             (const char*)request->key,
                             (const char*)(request->key + request->key_size),
-                            NULL,
-                            NULL,
+                            &packed_pos,
+                            &packed_pos_end,
                             false,
                             port) < 0))
     {
@@ -612,6 +614,7 @@ void storage_index_max(struct executor_task* task)
 
 void storage_index_select(struct executor_task* task)
 {
+    const char *packed_pos = NULL, *packed_pos_end = NULL;
     struct storage_index_select_request* request = (struct storage_index_select_request*)task->input;
     struct port* port = mempool_alloc(&storage_tuple_ports);
     if (unlikely(box_select(request->space_id,
@@ -621,8 +624,8 @@ void storage_index_select(struct executor_task* task)
                             request->limit,
                             (const char*)request->key,
                             (const char*)(request->key + request->key_size),
-                            NULL,
-                            NULL,
+                            &packed_pos,
+                            &packed_pos_end,
                             false,
                             port) < 0))
     {
