@@ -1,5 +1,5 @@
 export "storage/module.dart";
-export 'storage/executor.dart';
+export 'storage/storage.dart';
 export "storage/space.dart";
 export "storage/index.dart";
 export "storage/updater.dart";

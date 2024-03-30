@@ -8,7 +8,7 @@ import 'configuration.dart';
 import 'constants.dart';
 import 'defaults.dart';
 import 'exception.dart';
-import 'executor.dart';
+import 'storage.dart';
 
 class StorageModuleState implements ModuleState {
   late final Storage storage;

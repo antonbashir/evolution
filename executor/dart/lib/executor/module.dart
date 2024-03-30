@@ -10,7 +10,7 @@ import 'configuration.dart';
 import 'constants.dart';
 import 'defaults.dart';
 import 'error.dart';
-import 'executor.dart';
+import 'storage.dart';
 
 class ExecutorModuleState implements ModuleState {
   final List<ExecutorBroker> _brokers = [];

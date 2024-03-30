@@ -3,7 +3,7 @@ import 'dart:ffi';
 
 import 'bindings.dart';
 import 'constants.dart';
-import 'executor.dart';
+import 'storage.dart';
 import 'factory.dart';
 import 'iterator.dart';
 import 'tuple.dart';

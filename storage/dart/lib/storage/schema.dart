@@ -5,7 +5,7 @@ import 'package:executor/executor.dart';
 import 'package:memory/memory.dart';
 
 import 'constants.dart';
-import 'executor.dart';
+import 'storage.dart';
 import 'factory.dart';
 import 'index.dart';
 import 'lua.dart';
