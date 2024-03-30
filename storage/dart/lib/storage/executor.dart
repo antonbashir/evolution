@@ -191,7 +191,16 @@ class Storage {
     final bufferSize = message.outputSize;
     final result = buffer.cast<Uint8>().asTypedList(message.outputSize);
     _factory.releaseEvaluate(message.getInputObject());
-    return (result, () {});
+    return (
+      result,
+      () => _producer
+          .freeOutputBuffer(
+              _descriptor,
+              _factory.createMessage()
+                ..inputInt = buffer.address
+                ..inputSize = bufferSize)
+          .then(_factory.releaseMessage)
+    );
   }
 
   @inline
@@ -200,6 +209,15 @@ class Storage {
     final bufferSize = message.outputSize;
     final result = message.outputPointer.cast<Uint8>().asTypedList(message.outputSize);
     _factory.releaseCall(message.getInputObject());
-    return (result, () {});
+    return (
+      result,
+      () => _producer
+          .freeOutputBuffer(
+              _descriptor,
+              _factory.createMessage()
+                ..inputInt = buffer.address
+                ..inputSize = bufferSize)
+          .then(_factory.releaseMessage)
+    );
   }
 }
