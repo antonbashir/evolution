@@ -9,6 +9,7 @@ final class storage_tuple_port_entry extends Struct {
   external Pointer<storage_tuple_port_entry> next;
   external Pointer<storage_tuple> tuple;
   external Pointer<Uint32> message_pack_size;
+  external Pointer<storage_tuple_format> mp_format;
 }
 
 final class storage_tuple_port extends Struct {
@@ -30,4 +31,4 @@ external Pointer<Void> storage_tuple_data(Pointer<storage_tuple> tuple);
 external void storage_tuple_release(Pointer<storage_tuple> tuple);
 
 @Native<Pointer<Utf8> Function(Pointer<storage_tuple> tuple)>(isLeaf: true)
-external Pointer<Utf8> storage_tuple_format(Pointer<storage_tuple> tuple);
+external Pointer<Utf8> storage_tuple_to_string(Pointer<storage_tuple> tuple);

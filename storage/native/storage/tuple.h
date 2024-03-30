@@ -13,12 +13,14 @@ typedef struct tuple storage_tuple;
 typedef struct port storage_tuple_port;
 typedef struct tuple_iterator storage_tuple_iterator;
 typedef struct port_c_entry storage_tuple_port_entry;
+typedef struct tuple_format storage_tuple_format;
 
 DART_STRUCTURE struct storage_tuple_port_entry
 {
     DART_FIELD struct storage_tuple_port_entry* next;
     DART_FIELD struct storage_tuple* tuple;
     DART_FIELD uint32_t* message_pack_size;
+    DART_FIELD struct storage_tuple_format* mp_format;
 };
 DART_STRUCTURE struct storage_tuple_port
 {
@@ -64,7 +66,7 @@ DART_INLINE_LEAF_FUNCTION void storage_tuple_release(storage_tuple* tuple)
     tuple_unref(tuple);
 }
 
-DART_INLINE_LEAF_FUNCTION const char* storage_tuple_format(storage_tuple* tuple)
+DART_INLINE_LEAF_FUNCTION const char* storage_tuple_to_string(storage_tuple* tuple)
 {
     return tuple_str(tuple);
 }

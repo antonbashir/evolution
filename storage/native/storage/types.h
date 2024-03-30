@@ -12,6 +12,7 @@ extern "C"
 DART_TYPE struct storage_tuple;
 DART_TYPE struct storage_port_vtab;
 DART_TYPE struct storage_tuple_iterator;
+DART_TYPE struct storage_tuple_format;
 
 #if defined(__cplusplus)
 }

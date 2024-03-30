@@ -86,7 +86,7 @@ Future<void> _select() async {
   final data = _multipleData();
   await space.insertMany(data.tuple, data.size);
   expect(await _parseMultiple(space.select()), equals(testMultipleData));
-  expect(await _parseMultiple(index.select()), equals(testMultipleData));
+  expect(await _parseMultiple(index.select(), data.cleaner), equals(testMultipleData));
 }
 
 void testCrud() {

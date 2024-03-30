@@ -286,16 +286,15 @@ void storage_space_insert_many(struct executor_task* task)
     uint32_t count = mp_decode_array(&batch);
     const char* tuple_next = batch;
     const char* tuple_data = tuple_next;
-    const char* tuple_next_size = tuple_next;
     struct txn* transaction = txn_begin();
     while (count-- > 0)
     {
         tuple_data = tuple_next;
-        uint32_t tuple_size = mp_decode_array(&tuple_next_size);
+        mp_next(&tuple_next);
         box_tuple_t* tuple;
         if (unlikely(box_insert(request->space_id,
                                 tuple_data,
-                                tuple_data + tuple_size,
+                                tuple_next,
                                 &tuple) < 0))
         {
             port_destroy(port);
@@ -311,8 +310,6 @@ void storage_space_insert_many(struct executor_task* task)
             storage_send_error(task);
             return;
         }
-        mp_next(&tuple_next);
-        tuple_next_size = tuple_next;
     }
     if (txn_commit(transaction))
     {

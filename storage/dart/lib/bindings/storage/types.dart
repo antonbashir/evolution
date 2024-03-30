@@ -10,3 +10,5 @@ final class storage_tuple extends Opaque {}
 final class storage_port_vtab extends Opaque {}
 
 final class storage_tuple_iterator extends Opaque {}
+
+final class storage_tuple_format extends Opaque {}

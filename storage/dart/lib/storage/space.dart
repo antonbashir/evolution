@@ -263,7 +263,8 @@ class StorageSpace {
   Future<StorageTuplePort> select({
     int offset = 0,
     int limit = int32MaxValue,
-  }) => selectBy(nullptr, 0, limit: limit, offset: offset, iteratorType: StorageIteratorType.all);
+  }) =>
+      selectBy(nullptr, 0, limit: limit, offset: offset, iteratorType: StorageIteratorType.all);
 
   @inline
   Future<StorageTuplePort> selectBy(

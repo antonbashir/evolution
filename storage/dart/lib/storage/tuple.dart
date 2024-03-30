@@ -15,7 +15,7 @@ extension type StorageTuple(Pointer<storage_tuple> tuple) {
   void release() => storage_tuple_release(tuple);
 
   @inline
-  String format() => storage_tuple_format(tuple).toDartString();
+  String format() => storage_tuple_to_string(tuple).toDartString();
 }
 
 extension type StorageTuplePort(Pointer<storage_tuple_port> port) {
