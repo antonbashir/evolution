@@ -102,8 +102,8 @@ class StorageSpace {
   }
 
   @inline
-  Future<Pointer<storage_tuple_port>> insertMany(Pointer<Uint8> tuples, int tuplesCount) {
-    final request = _factory.createSpace(_id, tuples.cast(), tuplesCount);
+  Future<Pointer<storage_tuple_port>> insertMany(Pointer<Uint8> tuples, int tuplesSize) {
+    final request = _factory.createSpace(_id, tuples.cast(), tuplesSize);
     return _producer.spaceInsertMany(_descriptor, request).then(_completeInsertMany);
   }
 

@@ -6,17 +6,12 @@ import 'package:storage/storage.dart';
 import 'package:test/test.dart';
 
 import 'crud.dart';
-import 'data.dart';
 import 'lua.dart';
 import 'schema.dart';
 
 late final Storage storage;
 late final StorageSpace space;
 late final StorageIndex index;
-
-final testKey = [10];
-final testSingleData = TestData(10, "test", true);
-final testMultipleData = Iterable<TestData>.generate(10, (index) => TestData(index + 1, "key-${index}", true)).toList();
 
 FutureOr<void> runTest(FutureOr<void> Function() test, {List<Module>? overrides}) => launch(
       () =>
@@ -69,7 +64,6 @@ Future<void> main() async {
 
   // group("[execution]", () {
   //   //   test("execute native", testExecuteNative);
-  //   test("execute lua", testExecuteLua);
   // });
 }
 

@@ -28,7 +28,6 @@ Future<TestData> _parseSingle(Future<StorageTuple> response, [void Function()? r
 
 Future<List<TestData>> _parseMultiple(Future<StorageTuplePort> response, [void Function()? requestCleaner]) async {
   final port = await response.whenComplete(requestCleaner ?? () {});
-  print(port.format());
   return port.map((tuple) => readTestData(storage.tuples, tuple)).toList();
 }
 
@@ -121,12 +120,6 @@ void testCrud() {
   //   expect(await _index.update(["key"], [StorageUpdateOperation.assign(2, "updated by index")]), equals(data));
   // });
 
-  // test("batch insert", () async {
-  //   expect(await _space.batch((builder) => builder..insertMany(testMultipleData)), equals(testMultipleData));
-  // });
-  // test("batch put", () async {
-  //   expect(await _space.batch((builder) => builder..putMany(testMultipleData)), equals(testMultipleData));
-  // });
   // test("batch update", () async {
   //   await _space.batch((builder) => builder..insertMany(testMultipleData));
   //   final data = [];

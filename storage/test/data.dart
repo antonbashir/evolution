@@ -42,3 +42,7 @@ TestData readTestData(MemoryTuples tuples, StorageTuple tuple) {
   final data = ByteData.view(buffer.buffer, buffer.offsetInBytes);
   return TestData.deserialize(buffer, data, 0);
 }
+
+final testKey = [10];
+final testSingleData = TestData(10, "test", true);
+final testMultipleData = Iterable<TestData>.generate(10, (index) => TestData(index + 1, "key-${index}", true)).toList();
