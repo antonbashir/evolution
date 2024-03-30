@@ -103,7 +103,7 @@ class StorageIterator {
         }
         if (limit != null && index > limit) return;
         index += count;
-        yield* tuples.streamMap((tuple) => map!(tuple));
+        yield* tuples.stream().map((tuple) => map!(tuple));
       }
       await destroy();
       return;
@@ -115,11 +115,15 @@ class StorageIterator {
         index += count;
         continue;
       }
-      List<StorageTuple> filtered = tuples.filter(filter).toList();
+      List<StorageTuple> filtered = tuples.iterate().where(filter).toList();
       if (filtered.isEmpty) continue;
       if (limit != null && index > limit) return;
       index += filtered.length;
-      yield* tuples.streamMap((tuple) => map!(tuple));
+      if (map != null) {
+        for (var element in filtered) yield map(element);
+        continue;
+      }
+      for (var element in filtered) yield element;
     }
     await destroy();
   }

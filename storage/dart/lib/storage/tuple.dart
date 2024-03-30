@@ -24,7 +24,7 @@ extension type StorageTuplePort(Pointer<storage_tuple_port> port) {
 
   @inline
   bool get isEmpty => port.ref.size == 0;
-  
+
   @inline
   bool get isNotEmpty => port.ref.size != 0;
 
@@ -48,25 +48,6 @@ extension type StorageTuplePort(Pointer<storage_tuple_port> port) {
     }
   }
 
-  @inline
-  Iterable<T> map<T>(T Function(StorageTuple tuple) mapper) sync* {
-    var iterator = port.ref.first;
-    for (var i = 0; i < port.ref.size; i++) {
-      yield mapper(StorageTuple(iterator.ref.tuple));
-      iterator = iterator.ref.next;
-    }
-  }
-
-  @inline
-  Stream<T> streamMap<T>(T Function(StorageTuple tuple) mapper) async* {
-    var iterator = port.ref.first;
-    for (var i = 0; i < port.ref.size; i++) {
-      yield mapper(StorageTuple(iterator.ref.tuple));
-      iterator = iterator.ref.next;
-    }
-  }
-
-  @inline
   Iterable<StorageTuple> iterate() sync* {
     var iterator = port.ref.first;
     for (var i = 0; i < port.ref.size; i++) {
@@ -75,15 +56,14 @@ extension type StorageTuplePort(Pointer<storage_tuple_port> port) {
     }
   }
 
-  @inline
-  Iterable<StorageTuple> filter(bool Function(StorageTuple value) filter) sync* {
+  Stream<StorageTuple> stream() async* {
     var iterator = port.ref.first;
     for (var i = 0; i < port.ref.size; i++) {
-      if (filter(StorageTuple(iterator.ref.tuple))) yield StorageTuple(iterator.ref.tuple);
+      yield StorageTuple(iterator.ref.tuple);
       iterator = iterator.ref.next;
     }
   }
 
   @inline
-  String format() => map((tuple) => tuple.format()).join(comma);
+  String format() => iterate().map((tuple) => tuple.format()).join(comma);
 }
