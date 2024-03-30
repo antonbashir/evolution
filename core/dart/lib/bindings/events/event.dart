@@ -73,6 +73,9 @@ external void event_set_local(Pointer<event> event);
 @Native<Void Function(Pointer<event> event)>(isLeaf: true)
 external void event_propagate_local(Pointer<event> event);
 
+@Native<Void Function(Pointer<event> event)>(isLeaf: true)
+external void event_put_stack_trace(Pointer<event> event);
+
 @Native<Void Function(Bool propagate_to_dart)>(isLeaf: true)
 external void event_clear_local(bool propagate_to_dart);
 

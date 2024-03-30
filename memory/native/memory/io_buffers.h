@@ -45,13 +45,13 @@ DART_INLINE_LEAF_FUNCTION struct memory_io_buffers* memory_io_buffers_create(str
     }
     pool->instance = memory;
     pool->input_buffers = memory_pool_create(memory, sizeof(struct memory_input_buffer));
-    if (pool->input_buffers != NULL)
+    if (pool->input_buffers == NULL)
     {
         memory_module_delete(pool);
         return NULL;
     }
     pool->output_buffers = memory_pool_create(memory, sizeof(struct memory_output_buffer));
-    if (pool->output_buffers != NULL)
+    if (pool->output_buffers == NULL)
     {
         memory_module_delete(pool);
         return NULL;

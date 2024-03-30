@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:ffi';
 import 'dart:io';
 
@@ -72,8 +73,8 @@ mixin ContextProvider {
 }
 
 class _Context implements ContextProvider {
-  var _modules = <String, Module>{};
-  var _native = <String, Pointer<Void>>{};
+  var _modules = LinkedHashMap<String, Module>();
+  var _native = LinkedHashMap<String, Pointer<Void>>();
 
   _Context._create() {
     context_create();
@@ -90,8 +91,8 @@ class _Context implements ContextProvider {
 
   void _clear() {
     _modules.keys.forEach((module) => using((arena) => context_remove_module(module.toNativeUtf8(allocator: arena))));
-    _modules = {};
-    _native = {};
+    _modules.clear();
+    _native.clear();
   }
 
   void _create(Module module) {
