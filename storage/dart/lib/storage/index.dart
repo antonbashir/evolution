@@ -155,10 +155,8 @@ class StorageIndex {
     int offset = 0,
     int limit = int32MaxValue,
     StorageIteratorType iteratorType = StorageIteratorType.eq,
-  }) {
-    final (:Pointer<Uint8> value, :int size) = _tuples.emptyList;
-    return selectBy(value, size);
-  }
+  }) =>
+      selectBy(nullptr, 0, limit: limit, offset: offset, iteratorType: StorageIteratorType.all);
 
   @inline
   Future<StorageTuplePort> selectBy(
@@ -168,5 +166,18 @@ class StorageIndex {
     int limit = int32MaxValue,
     StorageIteratorType iteratorType = StorageIteratorType.eq,
   }) =>
-      _producer.indexSelect(_descriptor, _factory.createIndexSelect(_spaceId, _indexId, key, keySize, offset, limit, iteratorType.index)).then(_completeSelect);
+      _producer
+          .indexSelect(
+            _descriptor,
+            _factory.createIndexSelect(
+              _spaceId,
+              _indexId,
+              key,
+              keySize,
+              offset,
+              limit,
+              iteratorType.index,
+            ),
+          )
+          .then(_completeSelect);
 }

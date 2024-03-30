@@ -20,6 +20,20 @@
 static struct small_alloc storage_box_output_buffers;
 static struct mempool storage_tuple_ports;
 
+static FORCEINLINE void storage_send_error(struct executor_task* task)
+{
+    if (diag_last_error(diag_get()) != NULL)
+    {
+        task->output = storage_get_diagnostic_event();
+        task->output_size = sizeof(task->output);
+        task->flags = EXECUTOR_TASK_OUTPUT_EVENT;
+        return;
+    }
+    task->output = storage_create_empty_error();
+    task->output_size = sizeof(task->output);
+    task->flags = EXECUTOR_TASK_OUTPUT_EVENT;
+}
+
 void storage_initialize_box(struct storage_box* box)
 {
     float actual_alloc_factor;
@@ -70,18 +84,9 @@ void storage_evaluate(struct executor_task* task)
     port_msgpack_create(&in_port, (const char*)request->input, request->input_size);
     if (unlikely(box_lua_eval(request->expression, request->expression_length, &in_port, &out_port) != 0))
     {
-        if (diag_last_error(diag_get()) != NULL)
-        {
-            port_destroy(&out_port);
-            port_destroy(&in_port);
-            task->output = storage_get_diagnostic_event();
-            task->output_size = sizeof(task->output);
-            task->flags = EXECUTOR_TASK_OUTPUT_EVENT;
-            return;
-        }
-        task->output = storage_create_empty_error();
-        task->output_size = sizeof(task->output);
-        task->flags = EXECUTOR_TASK_OUTPUT_EVENT;
+        port_destroy(&out_port);
+        port_destroy(&in_port);
+        storage_send_error(task);
         return;
     }
     port_destroy(&in_port);
@@ -110,18 +115,9 @@ void storage_call(struct executor_task* task)
     port_msgpack_create(&in_port, (const char*)request->input, request->input_size);
     if (unlikely(box_lua_call(request->function, request->function_length, &in_port, &out_port) != 0))
     {
-        if (diag_last_error(diag_get()) != NULL)
-        {
-            port_destroy(&out_port);
-            port_destroy(&in_port);
-            task->output = storage_get_diagnostic_event();
-            task->output_size = sizeof(task->output);
-            task->flags = EXECUTOR_TASK_OUTPUT_EVENT;
-            return;
-        }
-        task->output = storage_create_empty_error();
-        task->output_size = sizeof(task->output);
-        task->flags = EXECUTOR_TASK_OUTPUT_EVENT;
+        port_destroy(&out_port);
+        port_destroy(&in_port);
+        storage_send_error(task);
         return;
     }
     port_destroy(&in_port);
@@ -175,6 +171,7 @@ void storage_space_put_single(struct executor_task* task)
                              (const char*)(request->tuple + request->tuple_size),
                              &result) < 0))
     {
+        storage_send_error(task);
         return;
     }
     tuple_ref(result);
@@ -190,7 +187,7 @@ void storage_space_insert_single(struct executor_task* task)
                             (const char*)(request->tuple + request->tuple_size),
                             &result) < 0))
     {
-        diag_log();
+        storage_send_error(task);
         return;
     }
     tuple_ref(result);
@@ -207,6 +204,7 @@ void storage_space_delete_single(struct executor_task* task)
                             (const char*)(request->tuple + request->tuple_size),
                             &result) < 0))
     {
+        storage_send_error(task);
         return;
     }
     tuple_ref(result);
@@ -226,16 +224,7 @@ void storage_space_update_single(struct executor_task* task)
                             STORAGE_INDEX_BASE_C,
                             &result) < 0))
     {
-        if (diag_last_error(diag_get()) != NULL)
-        {
-            task->output = storage_get_diagnostic_event();
-            task->output_size = sizeof(task->output);
-            task->flags = EXECUTOR_TASK_OUTPUT_EVENT;
-            return;
-        }
-        task->output = storage_create_empty_error();
-        task->output_size = sizeof(task->output);
-        task->flags = EXECUTOR_TASK_OUTPUT_EVENT;
+        storage_send_error(task);
         return;
     }
     tuple_ref(result);
@@ -265,6 +254,7 @@ void storage_space_put_many(struct executor_task* task)
         {
             port_destroy(port);
             txn_rollback(transaction);
+            storage_send_error(task);
             return;
         }
         tuple_ref(tuple);
@@ -272,6 +262,7 @@ void storage_space_put_many(struct executor_task* task)
         {
             port_destroy(port);
             txn_rollback(transaction);
+            storage_send_error(task);
             return;
         }
         mp_next(&tuple_next);
@@ -280,6 +271,7 @@ void storage_space_put_many(struct executor_task* task)
     if (txn_commit(transaction))
     {
         port_destroy(port);
+        storage_send_error(task);
         return;
     }
     task->output = port;
@@ -308,6 +300,7 @@ void storage_space_insert_many(struct executor_task* task)
         {
             port_destroy(port);
             txn_rollback(transaction);
+            storage_send_error(task);
             return;
         }
         tuple_ref(tuple);
@@ -315,6 +308,7 @@ void storage_space_insert_many(struct executor_task* task)
         {
             port_destroy(port);
             txn_rollback(transaction);
+            storage_send_error(task);
             return;
         }
         mp_next(&tuple_next);
@@ -323,6 +317,7 @@ void storage_space_insert_many(struct executor_task* task)
     if (txn_commit(transaction))
     {
         port_destroy(port);
+        storage_send_error(task);
         return;
     }
     task->output = port;
@@ -365,6 +360,7 @@ void storage_space_update_many(struct executor_task* task)
         {
             port_destroy(port);
             txn_rollback(transaction);
+            storage_send_error(task);
             return;
         }
         tuple_ref(tuple);
@@ -372,6 +368,7 @@ void storage_space_update_many(struct executor_task* task)
         {
             port_destroy(port);
             txn_rollback(transaction);
+            storage_send_error(task);
             return;
         }
         mp_next(&key_next);
@@ -382,6 +379,7 @@ void storage_space_update_many(struct executor_task* task)
     if (txn_commit(transaction))
     {
         port_destroy(port);
+        storage_send_error(task);
         return;
     }
     task->output = port;
@@ -411,6 +409,7 @@ void storage_space_delete_many(struct executor_task* task)
         {
             port_destroy(port);
             txn_rollback(transaction);
+            storage_send_error(task);
             return;
         }
         tuple_ref(tuple);
@@ -418,6 +417,7 @@ void storage_space_delete_many(struct executor_task* task)
         {
             port_destroy(port);
             txn_rollback(transaction);
+            storage_send_error(task);
             return;
         }
         mp_next(&tuple_next);
@@ -426,6 +426,7 @@ void storage_space_delete_many(struct executor_task* task)
     if (txn_commit(transaction))
     {
         port_destroy(port);
+        storage_send_error(task);
         return;
     }
     task->output = port;
@@ -444,6 +445,7 @@ void storage_space_upsert(struct executor_task* task)
                             STORAGE_INDEX_BASE_C,
                             &result) < 0))
     {
+        storage_send_error(task);
         return;
     }
     tuple_ref(result);
@@ -460,7 +462,7 @@ void storage_space_get(struct executor_task* task)
                                (const char*)(request->tuple + request->tuple_size),
                                &result) < 0))
     {
-        diag_log();
+        storage_send_error(task);
         return;
     }
     tuple_ref(result);
@@ -477,6 +479,7 @@ void storage_space_min(struct executor_task* task)
                                (const char*)(request->tuple + request->tuple_size),
                                &result) < 0))
     {
+        storage_send_error(task);
         return;
     }
     tuple_ref(result);
@@ -493,6 +496,7 @@ void storage_space_max(struct executor_task* task)
                                (const char*)(request->tuple + request->tuple_size),
                                &result) < 0))
     {
+        storage_send_error(task);
         return;
     }
     tuple_ref(result);
@@ -516,6 +520,7 @@ void storage_space_select(struct executor_task* task)
                             false,
                             port) < 0))
     {
+        storage_send_error(task);
         return;
     }
 
@@ -574,6 +579,7 @@ void storage_index_get(struct executor_task* task)
                                (const char*)(request->tuple + request->tuple_size),
                                &result) < 0))
     {
+        storage_send_error(task);
         return;
     }
     tuple_ref(result);
@@ -590,6 +596,7 @@ void storage_index_min(struct executor_task* task)
                                (const char*)(request->tuple + request->tuple_size),
                                &result) < 0))
     {
+        storage_send_error(task);
         return;
     }
     tuple_ref(result);
@@ -606,6 +613,7 @@ void storage_index_max(struct executor_task* task)
                                (const char*)(request->tuple + request->tuple_size),
                                &result) < 0))
     {
+        storage_send_error(task);
         return;
     }
     tuple_ref(result);
@@ -629,6 +637,7 @@ void storage_index_select(struct executor_task* task)
                             false,
                             port) < 0))
     {
+        storage_send_error(task);
         return;
     }
     task->output = port;
@@ -647,6 +656,7 @@ void storage_index_update_single(struct executor_task* task)
                             STORAGE_INDEX_BASE_C,
                             &result) < 0))
     {
+        storage_send_error(task);
         return;
     }
     tuple_ref(result);
@@ -658,6 +668,7 @@ void storage_iterator_next_single(struct executor_task* task)
     box_tuple_t* tuple;
     if (unlikely(box_iterator_next((box_iterator_t*)task->input, &tuple) < 0 || !tuple))
     {
+        storage_send_error(task);
         return;
     }
     tuple_ref(tuple);
@@ -701,6 +712,7 @@ void storage_index_update_many(struct executor_task* task)
         {
             port_destroy(port);
             txn_rollback(transaction);
+            storage_send_error(task);
             return;
         }
         tuple_ref(tuple);
@@ -708,6 +720,7 @@ void storage_index_update_many(struct executor_task* task)
         {
             port_destroy(port);
             txn_rollback(transaction);
+            storage_send_error(task);
             return;
         }
         mp_next(&key_next);
@@ -718,6 +731,7 @@ void storage_index_update_many(struct executor_task* task)
     if (txn_commit(transaction))
     {
         port_destroy(port);
+        storage_send_error(task);
         return;
     }
     task->output = port;
@@ -734,11 +748,13 @@ void storage_iterator_next_many(struct executor_task* task)
         if (unlikely(box_iterator_next((box_iterator_t*)task->input, &tuple) < 0 || !tuple))
         {
             port_destroy(port);
+            storage_send_error(task);
             return;
         }
         if (unlikely(port_c_add_tuple(port, tuple)))
         {
             port_destroy(port);
+            storage_send_error(task);
             return;
         }
         found++;

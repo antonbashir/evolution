@@ -16,13 +16,15 @@ Future<void> launch(List<Module> Function() factory, FutureOr<void> Function() m
   for (var module in modules) _context._create(module);
   for (var module in _context._modules.values) module.validate();
   for (var module in _context._modules.values) await Future.value(module.initialize());
+  final errorHandler = context().coreModule().state.errorHandler;
+  final exceptionHandler = context().coreModule().state.exceptionHandler;
   await runZonedGuarded(
       main,
       (error, stack) => error is Error
-          ? context().coreModule().state.errorHandler(error, stack)
+          ? errorHandler
           : error is Exception
-              ? context().coreModule().state.exceptionHandler(error, stack)
-              : context().coreModule().state.errorHandler(UnimplementedError(error.toString()), stack));
+              ? exceptionHandler
+              : errorHandler);
   await signals().reload.destroy();
   for (var module in _context._modules.values.toList().reversed) await Future.value(module.shutdown());
   for (var module in _context._modules.values.toList().reversed) module.destroy();
