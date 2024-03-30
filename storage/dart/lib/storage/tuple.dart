@@ -23,6 +23,12 @@ extension type StorageTuplePort(Pointer<storage_tuple_port> port) {
   int get length => port.ref.size;
 
   @inline
+  bool get isEmpty => port.ref.size == 0;
+  
+  @inline
+  bool get isNotEmpty => port.ref.size != 0;
+
+  @inline
   int get size {
     var size = 0;
     var iterator = port.ref.first;
@@ -47,6 +53,15 @@ extension type StorageTuplePort(Pointer<storage_tuple_port> port) {
     var iterator = port.ref.first;
     for (var i = 0; i < port.ref.size; i++) {
       yield mapper(StorageTuple(iterator.ref.tuple));
+      iterator = iterator.ref.next;
+    }
+  }
+
+  @inline
+  Iterable<StorageTuple> iterate() sync* {
+    var iterator = port.ref.first;
+    for (var i = 0; i < port.ref.size; i++) {
+      yield StorageTuple(iterator.ref.tuple);
       iterator = iterator.ref.next;
     }
   }

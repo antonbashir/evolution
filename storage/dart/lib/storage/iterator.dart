@@ -4,6 +4,7 @@ import 'dart:math';
 import 'bindings.dart';
 import 'executor.dart';
 import 'factory.dart';
+import 'tuple.dart';
 
 class StorageIterator {
   final int _iterator;
@@ -14,14 +15,14 @@ class StorageIterator {
   const StorageIterator(this._iterator, this._descriptor, this._factory, this._producer);
 
   @inline
-  Pointer<storage_tuple> _completeNextSingle(Pointer<executor_task> message) {
+  StorageTuple _completeNextSingle(Pointer<executor_task> message) {
     final tuple = Pointer<storage_tuple>.fromAddress(message.outputInt);
     _factory.releaseMessage(message);
-    return tuple;
+    return StorageTuple(tuple);
   }
 
   @inline
-  Future<Pointer<storage_tuple>> nextSingle() {
+  Future<StorageTuple> nextSingle() {
     final request = _factory.createMessage();
     request.inputInt = _iterator;
     request.inputSize = 1;
@@ -29,14 +30,14 @@ class StorageIterator {
   }
 
   @inline
-  Pointer<storage_tuple_port> _completeNextMany(Pointer<executor_task> message) {
+  StorageTuplePort _completeNextMany(Pointer<executor_task> message) {
     final tuple = Pointer<storage_tuple_port>.fromAddress(message.outputInt);
     _factory.releaseMessage(message);
-    return tuple;
+    return StorageTuplePort(tuple);
   }
 
   @inline
-  Future<Pointer<storage_tuple_port>> nextMany({int count = 1}) {
+  Future<StorageTuplePort> nextMany({int count = 1}) {
     final request = _factory.createMessage();
     request.inputInt = _iterator;
     request.inputSize = count;
@@ -53,9 +54,9 @@ class StorageIterator {
     return _producer.iteratorDestroy(_descriptor, request).then(_completeDestroy);
   }
 
-  Future<List<dynamic>> collect({
-    bool Function(List<dynamic> value)? filter,
-    dynamic Function(List<dynamic> value)? map,
+  Future<List<StorageTuple>> collect({
+    bool Function(StorageTuple value)? filter,
+    dynamic Function(StorageTuple value)? map,
     int? limit,
     int? offset,
     int count = 1,
@@ -69,9 +70,9 @@ class StorageIterator {
       ).toList();
 
   Future<void> forEach(
-    void Function(dynamic element) action, {
-    bool Function(List<dynamic> value)? filter,
-    dynamic Function(List<dynamic> value)? map,
+    void Function(StorageTuple element) action, {
+    bool Function(StorageTuple value)? filter,
+    dynamic Function(StorageTuple value)? map,
     int? limit,
     int? offset,
     int count = 1,
@@ -84,9 +85,9 @@ class StorageIterator {
         count: count,
       ).forEach(action);
 
-  Stream<dynamic> stream({
-    bool Function(List<dynamic> value)? filter,
-    dynamic Function(List<dynamic> value)? map,
+  Stream<StorageTuple> stream({
+    bool Function(StorageTuple value)? filter,
+    dynamic Function(StorageTuple value)? map,
     int? limit,
     int? offset,
     int count = 1,
@@ -94,38 +95,39 @@ class StorageIterator {
     var index = 0;
     if (limit != null) count = min(count, limit);
     if (filter == null) {
-      List<List<dynamic>>? tuples;
-      //while ((tuples = await nextMany(count: count)) != null) {
-      //  if (offset != null && index <= offset) {
-      //    index += count;
-      //    continue;
-      //  }
-      //  if (limit != null && index > limit) return;
-      //  index += count;
-      //  for (List<dynamic> tuple in tuples!) {
-      //    yield (map == null ? tuple : map(tuple));
-      //  }
-      //}
+      StorageTuplePort tuples;
+      while ((tuples = await nextMany(count: count)).isNotEmpty) {
+        if (offset != null && index <= offset) {
+          index += count;
+          continue;
+        }
+        if (limit != null && index > limit) return;
+        index += count;
+        for (StorageTuple tuple in tuples.iterate()) {
+          yield (map == null ? tuple : map(tuple));
+        }
+      }
       await destroy();
       return;
     }
-    List<List<dynamic>>? tuples;
-    // while ((tuples = await nextMany(count: count)) != null) {
-    //   if (offset != null && index <= offset) {
-    //     index += count;
-    //     continue;
-    //   }
-    //   List<dynamic> filtered = [];
-    //   for (List<dynamic> tuple in tuples!) {
-    //     if (filter(tuple)) filtered.add(tuple);
-    //   }
-    //   if (filtered.isEmpty) continue;
-    //   if (limit != null && index > limit) return;
-    //   index += filtered.length;
-    //   for (List<dynamic> tuple in tuples) {
-    //     yield (map == null ? tuple : map(tuple));
-    //   }
-    // }
+
+    StorageTuplePort tuples;
+    while ((tuples = await nextMany(count: count)).isNotEmpty) {
+      if (offset != null && index <= offset) {
+        index += count;
+        continue;
+      }
+      List<StorageTuple> filtered = [];
+      for (StorageTuple tuple in tuples.iterate()) {
+        if (filter(tuple)) filtered.add(tuple);
+      }
+      if (filtered.isEmpty) continue;
+      if (limit != null && index > limit) return;
+      index += filtered.length;
+      for (StorageTuple tuple in tuples.iterate()) {
+        yield (map == null ? tuple : map(tuple));
+      }
+    }
     await destroy();
   }
 }
