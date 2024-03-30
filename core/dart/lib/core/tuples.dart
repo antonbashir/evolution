@@ -432,6 +432,9 @@ int tupleDynamicSize(dynamic value) {
   if (value is Tuple) {
     return value.tupleSize;
   }
+  if (value is Serializable) {
+    return value.tupleSize;
+  }
   throw ArgumentError(TupleErrors.unknownType(value.runtimeType));
 }
 
@@ -463,12 +466,23 @@ int tupleDynamicSerialize(dynamic value, Uint8List buffer, ByteData data, int of
   if (value is Tuple) {
     return value.serialize(buffer, data, offset);
   }
+  if (value is Serializable) {
+    return value.serialize(buffer, data, offset);
+  }
   throw ArgumentError(TupleErrors.unknownType(value.runtimeType));
 }
 
 abstract mixin class Tuple {
   int get tupleSize;
   int serialize(Uint8List buffer, ByteData data, int offset);
+}
+
+extension type Serializable(dynamic value) {
+  @inline
+  int get tupleSize => tupleDynamicSize(value);
+
+  @inline
+  int serialize(Uint8List buffer, ByteData data, int offset) => tupleDynamicSerialize(value, buffer, data, offset);
 }
 
 extension TupleIntExtension on int {

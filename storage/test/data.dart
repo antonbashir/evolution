@@ -5,9 +5,9 @@ import 'package:memory/memory.dart';
 import 'package:storage/storage/tuple.dart';
 
 class TestData implements Tuple {
-  final int a;
-  final String b;
-  final bool c;
+  int a;
+  String b;
+  bool c;
 
   TestData(this.a, this.b, this.c);
 

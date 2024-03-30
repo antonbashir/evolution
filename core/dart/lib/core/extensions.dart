@@ -65,6 +65,8 @@ extension IterableExtension<T> on Iterable<T> {
 }
 
 extension StringExtensions on String {
+  get quoted => "'$this'";
+
   @inline
   DateTime? parseUtc() => DateTime.tryParse(this)?.toUtc();
 

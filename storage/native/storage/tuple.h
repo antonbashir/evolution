@@ -64,6 +64,11 @@ DART_INLINE_LEAF_FUNCTION void storage_tuple_release(storage_tuple* tuple)
     tuple_unref(tuple);
 }
 
+DART_INLINE_LEAF_FUNCTION const char* storage_tuple_format(storage_tuple* tuple)
+{
+    return tuple_str(tuple);
+}
+
 #if defined(__cplusplus)
 }
 #endif

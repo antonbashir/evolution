@@ -16,15 +16,19 @@ const nil = "nil";
 const tarantoolIdNil = 2147483647;
 
 enum StorageUpdateOperationType {
-  add,
-  subtract,
-  bitwiseAnd,
-  bitwiseOr,
-  bitwiseXor,
-  stringSplice,
-  insert,
-  delete,
-  assign,
+  add("+"),
+  subtract("_"),
+  bitwiseAnd("&"),
+  bitwiseOr("|"),
+  bitwiseXor("^"),
+  stringSplice(":"),
+  insert("!"),
+  delete("#"),
+  assign("=");
+
+  final String operation;
+
+  const StorageUpdateOperationType(this.operation);
 }
 
 enum StorageIteratorType {

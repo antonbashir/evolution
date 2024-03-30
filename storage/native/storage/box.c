@@ -107,7 +107,8 @@ void storage_call(struct executor_task* task)
     struct obuf out_buffer;
     obuf_create(&out_buffer, cord_slab_cache(), 1);
     port_msgpack_create(&in_port, (const char*)request->input, request->input_size);
-    if (unlikely(box_lua_call(request->function, request->function_length, &in_port, &out_port) != 0)) {
+    if (unlikely(box_lua_call(request->function, request->function_length, &in_port, &out_port) != 0))
+    {
         if (diag_last_error(diag_get()) != NULL)
         {
             port_destroy(&out_port);
@@ -224,6 +225,16 @@ void storage_space_update_single(struct executor_task* task)
                             STORAGE_INDEX_BASE_C,
                             &result) < 0))
     {
+        if (diag_last_error(diag_get()) != NULL)
+        {
+            task->output = storage_get_diagnostic_event();
+            task->output_size = sizeof(task->output);
+            task->flags = EXECUTOR_TASK_OUTPUT_EVENT;
+            return;
+        }
+        task->output = storage_create_empty_error();
+        task->output_size = sizeof(task->output);
+        task->flags = EXECUTOR_TASK_OUTPUT_EVENT;
         return;
     }
     tuple_ref(result);

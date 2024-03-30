@@ -6,20 +6,71 @@ import 'package:test/test.dart';
 import 'data.dart';
 import 'test.dart';
 
-Future<({Pointer<Uint8> tuple, int size, void Function() cleaner})> _writeData() => Future.value(context().tuples().fixed.toInput(testSingleData.tupleSize, testSingleData.serialize));
-Future<({Pointer<Uint8> tuple, int size, void Function() cleaner})> _writeKey() => Future.value(context().tuples().fixed.toInput(testSingleData.tupleSize, testKey.serializeToTuple));
-Future<TestData> _readData(Future<StorageTuple> response, void Function() requestCleaner) => response.whenComplete(requestCleaner).then((value) => readTestData(storage.tuples, value));
+({Pointer<Uint8> tuple, int size, void Function() cleaner}) _data() {
+  return context().tuples().fixed.toInput(testSingleData.tupleSize, testSingleData.serialize);
+}
 
-Future<void> _insert() async => expect(await _writeData().then((value) => _readData(space.insertSingle(value.tuple, value.size), value.cleaner)), equals(testSingleData));
-Future<void> _put() async => expect(await _writeData().then((value) => _readData(space.putSingle(value.tuple, value.size), value.cleaner)), equals(testSingleData));
-Future<void> _get() async => expect(await _insert().then((value) => _writeKey().then((key) => _readData(space.get(key.tuple, key.size), key.cleaner))), equals(testSingleData));
-Future<void> _min() async => expect(await _insert().then((value) => _writeKey().then((key) => _readData(space.min(), key.cleaner))), equals(testSingleData));
-Future<void> _max() async => expect(await _insert().then((value) => _writeKey().then((key) => _readData(space.max(), key.cleaner))), equals(testSingleData));
-Future<void> _isEmpty() async => expect(await space.isEmpty(), isTrue);
-Future<void> _count() async => expect(await _insert().then((value) => space.count()), equals(1));
+({Pointer<Uint8> tuple, int size, void Function() cleaner}) _key() {
+  return context().tuples().fixed.toInput(testSingleData.tupleSize, testKey.serializeToTuple);
+}
+
+({Pointer<Uint8> tuple, int size, void Function() cleaner}) _updateOperations(List<StorageUpdateOperation> operation) {
+  return context().tuples().fixed.toInput(operation.computeTupleSize(), operation.serializeToTuple);
+}
+
+Future<TestData> _parse(Future<StorageTuple> response, [void Function()? requestCleaner]) {
+  return response.whenComplete(requestCleaner ?? () {}).then((value) => readTestData(storage.tuples, value));
+}
+
+Future<void> _insert() async {
+  final data = _data();
+  expect(await _parse(space.insertSingle(data.tuple, data.size), data.cleaner), equals(testSingleData));
+}
+
+Future<void> _put() async {
+  final data = _data();
+  expect(await _parse(space.putSingle(data.tuple, data.size), data.cleaner), equals(testSingleData));
+}
+
+Future<void> _get() async {
+  final key = _key();
+  expect(await _insert().then((value) => _parse(space.get(key.tuple, key.size), key.cleaner)), equals(testSingleData));
+}
+
+Future<void> _min() async {
+  expect(await _insert().then((value) => _parse(space.min())), equals(testSingleData));
+}
+
+Future<void> _max() async {
+  expect(await _insert().then((value) => _parse(space.max())), equals(testSingleData));
+}
+
+Future<void> _isEmpty() async {
+  expect(await space.isEmpty(), isTrue);
+}
+
+Future<void> _count() async {
+  expect(await _insert().then((value) => space.count()), equals(1));
+}
+
 Future<void> _delete() async {
-  expect(await _insert().then((value) => _writeKey().then((key) => _readData(space.deleteSingle(key.tuple, key.size), key.cleaner))), equals(testSingleData));
+  final key = _key();
+  expect(await _insert().then((value) => _parse(space.deleteSingle(key.tuple, key.size), key.cleaner)), equals(testSingleData));
   await _isEmpty();
+}
+
+Future<void> _update() async {
+  final key = _key();
+  final operation = _updateOperations([StorageUpdateOperation.assign(1, "updated")]);
+  expect(
+    await _insert().then(
+      (value) => _parse(space.updateSingle(key.tuple, key.size, operation.tuple, operation.size), () {
+        key.cleaner();
+        operation.cleaner();
+      }),
+    ),
+    equals(testSingleData..b = "updated"),
+  );
 }
 
 void testCrud() {
@@ -31,13 +82,7 @@ void testCrud() {
   test("isEmpty", _isEmpty);
   test("count", _count);
   test("delete", _delete);
-
-  // test("update", () async {
-  //   final data = [...testSingleData];
-  //   _space.insert(data);
-  //   data[2] = "updated";
-  //   expect(await _space.update([1], [StorageUpdateOperation.assign(2, "updated")]), equals(data));
-  // });
+  test("update", _update);
 
   // test("select", () async {
   //   await Future.wait(testMultipleData.map(_space.insert));

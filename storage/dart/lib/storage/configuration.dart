@@ -6,7 +6,6 @@ import 'package:ffi/ffi.dart';
 
 import 'bindings.dart';
 import 'constants.dart';
-import 'extensions.dart';
 
 class StorageModuleConfiguration implements ModuleConfiguration {
   final StorageBootConfiguration bootConfiguration;

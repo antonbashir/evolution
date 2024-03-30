@@ -1,13 +1,11 @@
 import 'dart:ffi';
 import 'dart:typed_data';
 
-import 'package:core/core.dart';
 import 'package:executor/executor.dart';
 import 'package:memory/memory.dart';
 
 import 'constants.dart';
 import 'executor.dart';
-import 'extensions.dart';
 import 'factory.dart';
 import 'index.dart';
 import 'lua.dart';

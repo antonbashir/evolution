@@ -28,3 +28,6 @@ external Pointer<Void> storage_tuple_data(Pointer<storage_tuple> tuple);
 
 @Native<Void Function(Pointer<storage_tuple> tuple)>(isLeaf: true)
 external void storage_tuple_release(Pointer<storage_tuple> tuple);
+
+@Native<Pointer<Utf8> Function(Pointer<storage_tuple> tuple)>(isLeaf: true)
+external Pointer<Utf8> storage_tuple_format(Pointer<storage_tuple> tuple);
