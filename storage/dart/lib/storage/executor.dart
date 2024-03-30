@@ -137,6 +137,8 @@ class Storage {
   void stop() => _broker.deactivate();
 
   Future<void> destroy() async {
+    print("shutdown");
+    await _broker.shutdown();
     storage_factory_destroy(_nativeFactory);
     calloc.free(_nativeFactory.cast());
   }

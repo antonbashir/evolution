@@ -414,7 +414,7 @@ void storage_launcher_shutdown(int32_t code)
 {
     if (start_loop)
     {
-        say_crit("exiting the event loop");
+        say_info("exiting the event loop");
     }
     if (!shutdown_started)
     {

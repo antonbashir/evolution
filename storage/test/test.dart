@@ -53,6 +53,7 @@ Future<void> main() async {
       Directory.current.listSync().forEach((element) {
         if (element.path.contains("00000")) element.deleteSync();
       });
+      unblock();
     });
 
     test("[lua]", testLua);
