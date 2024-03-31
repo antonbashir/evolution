@@ -174,6 +174,10 @@ void storage_space_put_single(struct executor_task* task)
         storage_send_error(task);
         return;
     }
+    if (result == NULL)
+    {
+        return;
+    }
     tuple_ref(result);
     task->output = result;
 }
@@ -225,6 +229,10 @@ void storage_space_update_single(struct executor_task* task)
                             &result) < 0))
     {
         storage_send_error(task);
+        return;
+    }
+    if (result == NULL)
+    {
         return;
     }
     tuple_ref(result);
@@ -445,6 +453,10 @@ void storage_space_upsert(struct executor_task* task)
         storage_send_error(task);
         return;
     }
+    if (result == NULL)
+    {
+        return;
+    }
     tuple_ref(result);
     task->output = result;
 }
@@ -460,6 +472,10 @@ void storage_space_get(struct executor_task* task)
                                &result) < 0))
     {
         storage_send_error(task);
+        return;
+    }
+    if (result == NULL)
+    {
         return;
     }
     tuple_ref(result);
@@ -479,6 +495,10 @@ void storage_space_min(struct executor_task* task)
         storage_send_error(task);
         return;
     }
+    if (result == NULL)
+    {
+        return;
+    }
     tuple_ref(result);
     task->output = result;
 }
@@ -494,6 +514,10 @@ void storage_space_max(struct executor_task* task)
                                &result) < 0))
     {
         storage_send_error(task);
+        return;
+    }
+    if (result == NULL)
+    {
         return;
     }
     tuple_ref(result);
@@ -579,6 +603,10 @@ void storage_index_get(struct executor_task* task)
         storage_send_error(task);
         return;
     }
+    if (result == NULL)
+    {
+        return;
+    }
     tuple_ref(result);
     task->output = result;
 }
@@ -596,6 +624,10 @@ void storage_index_min(struct executor_task* task)
         storage_send_error(task);
         return;
     }
+    if (result == NULL)
+    {
+        return;
+    }
     tuple_ref(result);
     task->output = result;
 }
@@ -611,6 +643,10 @@ void storage_index_max(struct executor_task* task)
                                &result) < 0))
     {
         storage_send_error(task);
+        return;
+    }
+    if (result == NULL)
+    {
         return;
     }
     tuple_ref(result);
@@ -656,6 +692,10 @@ void storage_index_update_single(struct executor_task* task)
         storage_send_error(task);
         return;
     }
+    if (result == NULL)
+    {
+        return;
+    }
     tuple_ref(result);
     task->output = result;
 }
@@ -666,6 +706,10 @@ void storage_iterator_next_single(struct executor_task* task)
     if (unlikely(box_iterator_next((box_iterator_t*)task->input, &tuple) < 0 || !tuple))
     {
         storage_send_error(task);
+        return;
+    }
+    if (tuple == NULL)
+    {
         return;
     }
     tuple_ref(tuple);

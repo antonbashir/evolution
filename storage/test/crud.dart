@@ -107,6 +107,20 @@ Future<void> _updateSingleSpace() async {
   );
 }
 
+Future<void> _updateSingleIndex() async {
+  final key = _secondaryKey();
+  final operation = _updateOperations([StorageUpdateOperation.assign(1, "updated")]);
+  expect(
+    await _insertSingle().then(
+      (value) => _parseSingle(index.updateSingle(key.tuple, key.size, operation.tuple, operation.size), () {
+        key.cleaner();
+        operation.cleaner();
+      }),
+    ),
+    equals(testSingleData..b = "updated"),
+  );
+}
+
 Future<void> _selectSpace() async {
   final data = _multipleData();
   await space.insertMany(data.tuple, data.size);
@@ -115,21 +129,23 @@ Future<void> _selectSpace() async {
 }
 
 void testCrud() {
-  test("insert", _insertSingle);
-  test("put", _putSingle);
+  test("[space] insert", _insertSingle);
+  test("[space] put", _putSingle);
   test("[space] get", _getSpace);
   test("[space] min", _minSpace);
   test("[space] max", _maxSpace);
   test("[space] isEmpty", _isEmptySpace);
   test("[space] count", _countSpace);
+  test("[space] delete", _deleteSingle);
+  test("[space] update", _updateSingleSpace);
+  test("[space] select", _selectSpace);
+
   test("[index] get", _getIndex);
   test("[index] min", _minIndex);
   test("[index] max", _maxIndex);
   test("[index] isEmpty", _isEmptyIndex);
   test("[index] count", _countIndex);
-  test("delete", _deleteSingle);
-  test("update", _updateSingleSpace);
-  test("select", _selectSpace);
+  //test("[index] update", _updateSingleIndex);
 
   // test("update by index", () async {
   //   final data = [...testSingleData];
