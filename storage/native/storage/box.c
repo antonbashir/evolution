@@ -215,6 +215,10 @@ void storage_space_delete_single(struct executor_task* task)
         storage_send_error(task);
         return;
     }
+    if (result == NULL)
+    {
+        return;
+    }
     tuple_ref(result);
     task->output = result;
 }
