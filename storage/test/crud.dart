@@ -14,8 +14,12 @@ import 'test.dart';
   return context().tuples().fixed.toInput(testMultipleData.computeTupleSize(), testMultipleData.serializeToTuple);
 }
 
-({Pointer<Uint8> tuple, int size, void Function() cleaner}) _key() {
-  return context().tuples().fixed.toInput(testSingleData.tupleSize, testKey.serializeToTuple);
+({Pointer<Uint8> tuple, int size, void Function() cleaner}) _primaryKey() {
+  return context().tuples().fixed.toInput(testSingleData.tupleSize, testPrimaryKey.serializeToTuple);
+}
+
+({Pointer<Uint8> tuple, int size, void Function() cleaner}) _secondaryKey() {
+  return context().tuples().fixed.toInput(testSecondaryKey.computeTupleSize(), testSecondaryKey.serializeToTuple);
 }
 
 ({Pointer<Uint8> tuple, int size, void Function() cleaner}) _updateOperations(List<StorageUpdateOperation> operation) {
@@ -42,7 +46,7 @@ Future<void> _putSingle() async {
 }
 
 Future<void> _getSpace() async {
-  final key = _key();
+  final key = _primaryKey();
   expect(await _insertSingle().then((value) => _parseSingle(space.get(key.tuple, key.size), key.cleaner)), equals(testSingleData));
 }
 
@@ -63,7 +67,7 @@ Future<void> _countSpace() async {
 }
 
 Future<void> _getIndex() async {
-  final key = _key();
+  final key = _secondaryKey();
   expect(await _insertSingle().then((value) => _parseSingle(index.get(key.tuple, key.size), key.cleaner)), equals(testSingleData));
 }
 
@@ -84,13 +88,13 @@ Future<void> _countIndex() async {
 }
 
 Future<void> _deleteSingle() async {
-  final key = _key();
+  final key = _primaryKey();
   expect(await _insertSingle().then((value) => _parseSingle(space.deleteSingle(key.tuple, key.size), key.cleaner)), equals(testSingleData));
   await _isEmptySpace();
 }
 
 Future<void> _updateSingleSpace() async {
-  final key = _key();
+  final key = _primaryKey();
   final operation = _updateOperations([StorageUpdateOperation.assign(1, "updated")]);
   expect(
     await _insertSingle().then(

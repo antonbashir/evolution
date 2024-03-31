@@ -43,6 +43,7 @@ TestData readTestData(MemoryTuples tuples, StorageTuple tuple) {
   return TestData.deserialize(buffer, data, 0);
 }
 
-final testKey = [10];
+final testPrimaryKey = [10];
+final testSecondaryKey = ["test"];
 final testSingleData = TestData(10, "test", true);
 final testMultipleData = Iterable<TestData>.generate(10, (index) => TestData(index + 1, "key-${index}", true)).toList();
