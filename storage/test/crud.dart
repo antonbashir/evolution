@@ -28,7 +28,7 @@ Future<TestData> _parseSingle(Future<StorageTuple> response, [void Function()? r
 
 Future<List<TestData>> _parseMultiple(Future<StorageTuplePort> response, [void Function()? requestCleaner]) async {
   final port = await response.whenComplete(requestCleaner ?? () {});
-  return port.map((tuple) => readTestData(storage.tuples, tuple)).toList();
+  return port.iterate().map((tuple) => readTestData(storage.tuples, tuple)).toList();
 }
 
 Future<void> _insertSingle() async {
@@ -41,34 +41,55 @@ Future<void> _putSingle() async {
   expect(await _parseSingle(space.putSingle(data.tuple, data.size), data.cleaner), equals(testSingleData));
 }
 
-Future<void> _get() async {
+Future<void> _getSpace() async {
   final key = _key();
   expect(await _insertSingle().then((value) => _parseSingle(space.get(key.tuple, key.size), key.cleaner)), equals(testSingleData));
 }
 
-Future<void> _min() async {
+Future<void> _minSpace() async {
   expect(await _insertSingle().then((value) => _parseSingle(space.min())), equals(testSingleData));
 }
 
-Future<void> _max() async {
+Future<void> _maxSpace() async {
   expect(await _insertSingle().then((value) => _parseSingle(space.max())), equals(testSingleData));
 }
 
-Future<void> _isEmpty() async {
+Future<void> _isEmptySpace() async {
   expect(await space.isEmpty(), isTrue);
 }
 
-Future<void> _count() async {
+Future<void> _countSpace() async {
   expect(await _insertSingle().then((value) => space.count()), equals(1));
+}
+
+Future<void> _getIndex() async {
+  final key = _key();
+  expect(await _insertSingle().then((value) => _parseSingle(index.get(key.tuple, key.size), key.cleaner)), equals(testSingleData));
+}
+
+Future<void> _minIndex() async {
+  expect(await _insertSingle().then((value) => _parseSingle(index.min())), equals(testSingleData));
+}
+
+Future<void> _maxIndex() async {
+  expect(await _insertSingle().then((value) => _parseSingle(index.max())), equals(testSingleData));
+}
+
+Future<void> _isEmptyIndex() async {
+  expect(await index.isEmpty(), isTrue);
+}
+
+Future<void> _countIndex() async {
+  expect(await _insertSingle().then((value) => index.count()), equals(1));
 }
 
 Future<void> _deleteSingle() async {
   final key = _key();
   expect(await _insertSingle().then((value) => _parseSingle(space.deleteSingle(key.tuple, key.size), key.cleaner)), equals(testSingleData));
-  await _isEmpty();
+  await _isEmptySpace();
 }
 
-Future<void> _updateSingle() async {
+Future<void> _updateSingleSpace() async {
   final key = _key();
   final operation = _updateOperations([StorageUpdateOperation.assign(1, "updated")]);
   expect(
@@ -82,7 +103,7 @@ Future<void> _updateSingle() async {
   );
 }
 
-Future<void> _select() async {
+Future<void> _selectSpace() async {
   final data = _multipleData();
   await space.insertMany(data.tuple, data.size);
   expect(await _parseMultiple(space.select()), equals(testMultipleData));
@@ -92,27 +113,20 @@ Future<void> _select() async {
 void testCrud() {
   test("insert", _insertSingle);
   test("put", _putSingle);
-  test("get", _get);
-  test("min", _min);
-  test("max", _max);
-  test("isEmpty", _isEmpty);
-  test("count", _count);
+  test("[space] get", _getSpace);
+  test("[space] min", _minSpace);
+  test("[space] max", _maxSpace);
+  test("[space] isEmpty", _isEmptySpace);
+  test("[space] count", _countSpace);
+  test("[index] get", _getIndex);
+  test("[index] min", _minIndex);
+  test("[index] max", _maxIndex);
+  test("[index] isEmpty", _isEmptyIndex);
+  test("[index] count", _countIndex);
   test("delete", _deleteSingle);
-  test("update", _updateSingle);
-  test("select", _select);
+  test("update", _updateSingleSpace);
+  test("select", _selectSpace);
 
-  // test("get by index", () async {
-  //   _space.insert(testSingleData);
-  //   expect(await _index.get(["key"]), equals(testSingleData));
-  // });
-  // test("min by index", () async {
-  //   _space.insert(testSingleData);
-  //   expect(await _index.min(), equals(testSingleData));
-  // });
-  // test("max by index", () async {
-  //   _space.insert(testSingleData);
-  //   expect(await _index.min(), equals(testSingleData));
-  // });
   // test("update by index", () async {
   //   final data = [...testSingleData];
   //   _space.insert(data);

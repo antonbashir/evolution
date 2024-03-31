@@ -18,10 +18,14 @@ class StorageIndex {
 
   StorageIndex(this._spaceId, this._indexId, this._descriptor, this._tuples, this._factory, this._producer);
 
+  @inline
   Future<int> count({List<dynamic> key = const [], StorageIteratorType iteratorType = StorageIteratorType.eq}) {
     final (:Pointer<Uint8> value, :int size) = _tuples.emptyList;
     return countBy(value, size, iteratorType: iteratorType);
   }
+
+  @inline
+  Future<bool> isEmpty() => count().then((value) => value == 0);
 
   @inline
   int _completeCountBy(Pointer<executor_task> message) {
@@ -70,56 +74,56 @@ class StorageIndex {
       _producer.indexIterator(_descriptor, _factory.createIndexIterator(_spaceId, _indexId, iteratorType.index, key, keySize)).then(_completeIteratorBy);
 
   @inline
-  Pointer<storage_tuple> _completeGet(Pointer<executor_task> message) {
+  StorageTuple _completeGet(Pointer<executor_task> message) {
     final tuple = Pointer<storage_tuple>.fromAddress(message.outputInt);
     _factory.releaseIndex(message.getInputObject());
-    return tuple;
+    return StorageTuple(tuple);
   }
 
   @inline
-  Future<Pointer<storage_tuple>> get(Pointer<Uint8> key, int keySize) => _producer.indexGet(_descriptor, _factory.createIndex(_spaceId, _indexId, key, keySize)).then(_completeGet);
+  Future<StorageTuple> get(Pointer<Uint8> key, int keySize) => _producer.indexGet(_descriptor, _factory.createIndex(_spaceId, _indexId, key, keySize)).then(_completeGet);
 
   @inline
-  Future<Pointer<storage_tuple>> min() {
+  Future<StorageTuple> min() {
     final (:Pointer<Uint8> value, :int size) = _tuples.emptyList;
     return minBy(value, size);
   }
 
   @inline
-  Pointer<storage_tuple> _completeMin(Pointer<executor_task> message) {
+  StorageTuple _completeMin(Pointer<executor_task> message) {
     final tuple = Pointer<storage_tuple>.fromAddress(message.outputInt);
     _factory.releaseIndex(message.getInputObject());
-    return tuple;
+    return StorageTuple(tuple);
   }
 
   @inline
-  Future<Pointer<storage_tuple>> minBy(Pointer<Uint8> key, int keySize) => _producer.indexMin(_descriptor, _factory.createIndex(_spaceId, _indexId, key, keySize)).then(_completeMin);
+  Future<StorageTuple> minBy(Pointer<Uint8> key, int keySize) => _producer.indexMin(_descriptor, _factory.createIndex(_spaceId, _indexId, key, keySize)).then(_completeMin);
 
   @inline
-  Future<Pointer<storage_tuple>> max() {
+  Future<StorageTuple> max() {
     final (:Pointer<Uint8> value, :int size) = _tuples.emptyList;
     return maxBy(value, size);
   }
 
   @inline
-  Pointer<storage_tuple> _completeMax(Pointer<executor_task> message) {
+  StorageTuple _completeMax(Pointer<executor_task> message) {
     final tuple = Pointer<storage_tuple>.fromAddress(message.outputInt);
     _factory.releaseIndex(message.getInputObject());
-    return tuple;
+    return StorageTuple(tuple);
   }
 
   @inline
-  Future<Pointer<storage_tuple>> maxBy(Pointer<Uint8> key, int keySize) => _producer.indexMax(_descriptor, _factory.createIndex(_spaceId, _indexId, key, keySize)).then(_completeMax);
+  Future<StorageTuple> maxBy(Pointer<Uint8> key, int keySize) => _producer.indexMax(_descriptor, _factory.createIndex(_spaceId, _indexId, key, keySize)).then(_completeMax);
 
   @inline
-  Pointer<storage_tuple> _completeUpdateSingle(Pointer<executor_task> message) {
+  StorageTuple _completeUpdateSingle(Pointer<executor_task> message) {
     final tuple = Pointer<storage_tuple>.fromAddress(message.outputInt);
     _factory.releaseIndexUpdate(message.getInputObject());
-    return tuple;
+    return StorageTuple(tuple);
   }
 
   @inline
-  Future<Pointer<storage_tuple>> updateSingle(
+  Future<StorageTuple> updateSingle(
     Pointer<Uint8> key,
     int keySize,
     Pointer<Uint8> operations,

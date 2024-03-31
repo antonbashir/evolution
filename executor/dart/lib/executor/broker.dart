@@ -3,7 +3,7 @@ import 'dart:ffi';
 import 'bindings.dart';
 import 'constants.dart';
 import 'declaration.dart';
-import 'storage.dart';
+import 'executor.dart';
 import 'registry.dart';
 import 'tasks.dart';
 
