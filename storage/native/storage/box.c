@@ -194,6 +194,10 @@ void storage_space_insert_single(struct executor_task* task)
         storage_send_error(task);
         return;
     }
+    if (result == NULL)
+    {
+        return;
+    }
     tuple_ref(result);
     task->output = result;
 }
