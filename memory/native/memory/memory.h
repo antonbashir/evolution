@@ -25,7 +25,7 @@ DART_STRUCTURE struct memory_instance
 
 DART_STRUCTURE struct memory_pool
 {
-    DART_FIELD size_t size;
+    DART_FIELD size_t object_size;
     struct mempool pool;
 };
 
@@ -66,7 +66,7 @@ DART_INLINE_LEAF_FUNCTION void memory_destroy(struct memory_instance* memory)
 DART_INLINE_LEAF_FUNCTION struct memory_pool* memory_pool_create(struct memory_instance* memory, size_t size)
 {
     struct memory_pool* pool = memory_module_new(sizeof(struct memory_pool));
-    pool->size = size;
+    pool->object_size = size;
     mempool_create(&pool->pool, &memory->cache, size);
     return mempool_is_initialized(&pool->pool) ? pool : NULL;
 }
@@ -79,7 +79,9 @@ DART_INLINE_LEAF_FUNCTION void memory_pool_destroy(struct memory_pool* pool)
 
 DART_INLINE_LEAF_FUNCTION void* memory_pool_allocate(struct memory_pool* pool)
 {
-    return mempool_alloc(&pool->pool);
+    void* data = mempool_alloc(&pool->pool);
+    memset(data, 0, pool->object_size);
+    return data;
 }
 
 DART_INLINE_LEAF_FUNCTION void memory_pool_free(struct memory_pool* pool, void* ptr)

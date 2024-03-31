@@ -121,7 +121,7 @@ Future<void> _updateSingleIndex() async {
   );
 }
 
-Future<void> _selectSpace() async {
+Future<void> _select() async {
   final data = _multipleData();
   await space.insertMany(data.tuple, data.size);
   expect(await _parseMultiple(space.select()), equals(testMultipleData));
@@ -138,7 +138,7 @@ void testCrud() {
   test("[space] count", _countSpace);
   test("[space] delete", _deleteSingle);
   test("[space] update", _updateSingleSpace);
-  test("[space] select", _selectSpace);
+  test("[space] select", _select);
 
   test("[index] get", _getIndex);
   test("[index] min", _minIndex);
