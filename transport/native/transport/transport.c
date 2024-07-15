@@ -11,13 +11,13 @@ struct transport* transport_initialize(struct transport_configuration* configura
     struct transport* transport = transport_module_new(sizeof(struct transport));
     transport->configuration = *configuration;
 
-    transport->events = simple_map_events_new();
+    transport->events = table_events_new();
     if (transport->events == NULL)
     {
         return NULL;
     }
     struct memory_configuration* memory_configuration = &memory()->configuration.memory_instance_configuration;
-    simple_map_events_reserve(transport->events, memory_configuration->static_buffers_capacity, 0);
+    table_events_reserve(transport->events, memory_configuration->static_buffers_capacity, 0);
 
     transport->inet_used_messages = transport_module_allocate(memory_configuration->static_buffers_capacity, sizeof(struct msghdr));
     transport->unix_used_messages = transport_module_allocate(memory_configuration->static_buffers_capacity, sizeof(struct msghdr));
@@ -64,13 +64,13 @@ int16_t transport_setup(struct transport* transport, struct executor_instance* t
 
 static FORCEINLINE void transport_add_event(struct transport* transport, int32_t fd, uint64_t data, int64_t timeout)
 {
-    struct simple_map_transport_event node = {
+    struct table_transport_event node = {
         .data = data,
         .timeout = timeout,
         .timestamp = time(NULL),
         .fd = fd,
     };
-    simple_map_events_put_copy(transport->events, &node, NULL, 0);
+    table_events_put_copy(transport->events, &node, NULL, 0);
 }
 
 int16_t transport_write(struct transport* transport,
@@ -244,13 +244,13 @@ int16_t transport_accept(struct transport* transport, struct transport_server* s
 
 int16_t transport_cancel_by_fd(struct transport* transport, int32_t fd)
 {
-    simple_map_int_t index;
-    simple_map_int_t to_delete[transport->events->size];
+    table_int_t index;
+    table_int_t to_delete[transport->events->size];
     int32_t to_delete_count = 0;
     struct io_uring* ring = transport->transport_executor->ring;
-    simple_map_foreach(transport->events, index)
+    table_foreach(transport->events, index)
     {
-        struct simple_map_transport_event* node = simple_map_events_node(transport->events, index);
+        struct table_transport_event* node = table_events_node(transport->events, index);
         if (node->fd == fd)
         {
             struct io_uring_sqe* sqe = io_uring_get_sqe(ring);
@@ -266,7 +266,7 @@ int16_t transport_cancel_by_fd(struct transport* transport, int32_t fd)
     }
     for (int32_t index = 0; index < to_delete_count; index++)
     {
-        simple_map_events_del(transport->events, to_delete[index], 0);
+        table_events_del(transport->events, to_delete[index], 0);
     }
     executor_submit(transport->transport_executor);
     return 0;
@@ -274,13 +274,13 @@ int16_t transport_cancel_by_fd(struct transport* transport, int32_t fd)
 
 void transport_check_event_timeouts(struct transport* transport)
 {
-    simple_map_int_t index;
-    simple_map_int_t to_delete[transport->events->size];
+    table_int_t index;
+    table_int_t to_delete[transport->events->size];
     int32_t to_delete_count = 0;
     struct io_uring* ring = transport->transport_executor->ring;
-    simple_map_foreach(transport->events, index)
+    table_foreach(transport->events, index)
     {
-        struct simple_map_transport_event* node = simple_map_events_node(transport->events, index);
+        struct table_transport_event* node = table_events_node(transport->events, index);
         int64_t timeout = node->timeout;
         if (timeout == TRANSPORT_TIMEOUT_INFINITY)
         {
@@ -303,17 +303,17 @@ void transport_check_event_timeouts(struct transport* transport)
     }
     for (int32_t index = 0; index < to_delete_count; index++)
     {
-        simple_map_events_del(transport->events, to_delete[index], 0);
+        table_events_del(transport->events, to_delete[index], 0);
     }
     executor_submit(transport->transport_executor);
 }
 
 void transport_remove_event(struct transport* transport, uint64_t data)
 {
-    simple_map_int_t event;
-    if ((event = simple_map_events_find(transport->events, data, 0)) != simple_map_end(transport->events))
+    table_int_t event;
+    if ((event = table_events_find(transport->events, data, 0)) != table_end(transport->events))
     {
-        simple_map_events_del(transport->events, event, 0);
+        table_events_del(transport->events, event, 0);
     }
 }
 
@@ -325,7 +325,7 @@ void transport_destroy(struct transport* transport)
         transport_module_delete(transport->inet_used_messages[index].msg_name);
         transport_module_delete(transport->unix_used_messages[index].msg_name);
     }
-    simple_map_events_delete(transport->events);
+    table_events_delete(transport->events);
     transport_module_delete(transport->inet_used_messages);
     transport_module_delete(transport->unix_used_messages);
     transport_module_delete(transport);

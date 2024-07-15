@@ -30,7 +30,7 @@ struct test_executor* test_executor_initialize(bool initialize_memory)
         small = memory_small_allocator_create(memory_instance, 1.05);
     }
     executor->descriptor = executor->ring->ring_fd;
-    executor->callbacks = simple_map_native_callbacks_new();
+    executor->callbacks = table_native_callbacks_new();
     return executor;
 }
 
@@ -83,14 +83,14 @@ void test_executor_process(struct test_executor* executor)
         if (cqe->res == EXECUTOR_CALLBACK)
         {
             struct executor_task* message = (struct executor_task*)cqe->user_data;
-            struct simple_map_native_callbacks_key_t key = {
+            struct table_native_callbacks_key_t key = {
                 .owner = message->owner,
                 .method = message->method,
             };
-            simple_map_int_t callback;
-            if ((callback = simple_map_native_callbacks_find(executor->callbacks, key, 0)) != simple_map_end(executor->callbacks))
+            table_int_t callback;
+            if ((callback = table_native_callbacks_find(executor->callbacks, key, 0)) != table_end(executor->callbacks))
             {
-                struct simple_map_native_callbacks_node_t* node = simple_map_native_callbacks_node(executor->callbacks, callback);
+                struct table_native_callbacks_node_t* node = table_native_callbacks_node(executor->callbacks, callback);
                 node->callback(message);
             }
             continue;
@@ -110,12 +110,12 @@ void test_executor_call_dart(struct test_executor* executor, int32_t target, str
 
 void test_executor_register_callback(struct test_executor* executor, test_executor_call callback)
 {
-    struct simple_map_native_callbacks_node_t node = {
+    struct table_native_callbacks_node_t node = {
         .callback = callback,
         .key = {
             .method = 0,
             .owner = 0,
         },
     };
-    simple_map_native_callbacks_put_copy(executor->callbacks, &node, NULL, 0);
+    table_native_callbacks_put_copy(executor->callbacks, &node, NULL, 0);
 }

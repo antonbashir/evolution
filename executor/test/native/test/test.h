@@ -10,7 +10,7 @@ DART_STRUCTURE struct test_executor
 {
     DART_FIELD struct io_uring* ring;
     DART_FIELD int32_t descriptor;
-    DART_FIELD DART_TYPE struct simple_map_native_callbacks_t* callbacks;
+    DART_FIELD DART_TYPE struct table_native_callbacks_t* callbacks;
 };
 
 #if defined(__cplusplus)

@@ -15,7 +15,7 @@ struct context_structure* context_get()
 void context_create()
 {
     if (context_instance.initialized) return;
-    context_instance.modules = simple_map_modules_new();
+    context_instance.modules = table_modules_new();
     context_instance.containers = calloc(MODULES_MAXIMUM, sizeof(struct module_container));
     if (context_instance.modules == NULL || context_instance.containers == NULL)
     {
@@ -27,7 +27,7 @@ void context_create()
 
 void* context_get_module(const char* name)
 {
-    return safe_field(simple_map_modules_find_value(context_instance.modules, name), module);
+    return safe_field(table_modules_find_value(context_instance.modules, name), module);
 }
 
 void context_put_module(const char* name, void* module, const char* type)
@@ -39,19 +39,19 @@ void context_put_module(const char* name, void* module, const char* type)
         .type = type,
     };
     memcpy(&context_instance.containers[context_instance.size], &container, sizeof(struct module_container));
-    simple_map_modules_put_copy(context_instance.modules, &container, NULL, NULL);
+    table_modules_put_copy(context_instance.modules, &container, NULL, NULL);
     context_instance.size++;
 }
 
 void context_remove_module(const char* name)
 {
-    simple_map_int_t slot = simple_map_modules_find(context_instance.modules, name, NULL);
-    if (slot != simple_map_end(context_instance.modules))
+    table_int_t slot = table_modules_find(context_instance.modules, name, NULL);
+    if (slot != table_end(context_instance.modules))
     {
-        struct module_container* container = simple_map_modules_node(context_instance.modules, slot);
+        struct module_container* container = table_modules_node(context_instance.modules, slot);
         free((void*)container->name);
         memset(&context_instance.containers[container->id], 0, sizeof(struct module_container));
-        simple_map_modules_del(context_instance.modules, slot, NULL);
+        table_modules_del(context_instance.modules, slot, NULL);
     }
     context_instance.size--;
 }

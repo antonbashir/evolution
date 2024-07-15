@@ -5,7 +5,7 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import '../../transport/bindings.dart';
 
-final class simple_map_events_t extends Opaque {}
+final class table_events_t extends Opaque {}
 
 final class transport extends Struct {
   external Pointer<iovec> buffers;
@@ -13,7 +13,7 @@ final class transport extends Struct {
   external transport_configuration configuration;
   external Pointer<msghdr> inet_used_messages;
   external Pointer<msghdr> unix_used_messages;
-  external Pointer<simple_map_events_t> events;
+  external Pointer<table_events_t> events;
 }
 
 @Native<Pointer<transport> Function(Pointer<transport_configuration> configuration)>(isLeaf: true)
@@ -28,7 +28,8 @@ external int transport_write(Pointer<transport> transport, int fd, int buffer_id
 @Native<Int16 Function(Pointer<transport> transport, Uint32 fd, Uint16 buffer_id, Uint32 offset, Int64 timeout, Uint16 event, Uint8 sqe_flags)>(isLeaf: true)
 external int transport_read(Pointer<transport> transport, int fd, int buffer_id, int offset, int timeout, int event, int sqe_flags);
 
-@Native<Int16 Function(Pointer<transport> transport, Uint32 fd, Uint16 buffer_id, Pointer<sockaddr> address, Uint8 socket_family, Int32 message_flags, Int64 timeout, Uint16 event, Uint8 sqe_flags)>(isLeaf: true)
+@Native<Int16 Function(Pointer<transport> transport, Uint32 fd, Uint16 buffer_id, Pointer<sockaddr> address, Uint8 socket_family, Int32 message_flags, Int64 timeout, Uint16 event, Uint8 sqe_flags)>(
+    isLeaf: true)
 external int transport_send_message(Pointer<transport> transport, int fd, int buffer_id, Pointer<sockaddr> address, int socket_family, int message_flags, int timeout, int event, int sqe_flags);
 
 @Native<Int16 Function(Pointer<transport> transport, Uint32 fd, Uint16 buffer_id, Uint8 socket_family, Int32 message_flags, Int64 timeout, Uint16 event, Uint8 sqe_flags)>(isLeaf: true)

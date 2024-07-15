@@ -18,7 +18,7 @@ DART_STRUCTURE struct context_structure
     DART_FIELD bool initialized;
     DART_FIELD size_t size;
     DART_FIELD struct module_container* containers;
-    DART_FIELD DART_TYPE struct simple_map_modules_t* modules;
+    DART_FIELD DART_TYPE struct table_modules_t* modules;
 };
 
 DART_LEAF_FUNCTION struct context_structure* context_get();

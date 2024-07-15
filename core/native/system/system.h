@@ -30,8 +30,8 @@ struct system
 {
     bool initialized;
     struct system_configuration configuration;
-    struct simple_map_system_libraries_t* libraries;
-    struct simple_map_string_values_t* environment;
+    struct table_system_libraries_t* libraries;
+    struct table_string_values_t* environment;
 };
 
 extern struct system system_instance;

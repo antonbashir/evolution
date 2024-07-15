@@ -53,7 +53,6 @@
     "transport_collections.h": "c",
     "errors.h": "c",
     "common.h": "c",
-    "simple.h": "c",
     "small.h": "c",
     "system.h": "c",
     "compare": "c",
@@ -184,6 +183,10 @@
     "cerrno": "c",
     "iomanip": "c",
     "istream": "c",
-    "ostream": "c"
+    "ostream": "c",
+    "pointer.h": "c",
+    "bootstrap.h": "c",
+    "hashing_64.h": "c",
+    "table.h": "c"
   },
 }

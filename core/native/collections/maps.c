@@ -1,2 +1,2 @@
-#define SIMPLE_MAP_SOURCE
+#define TABLE_SOURCE
 #include "maps.h"

@@ -19,7 +19,7 @@ DART_STRUCTURE struct transport
     DART_FIELD struct transport_configuration configuration;
     DART_FIELD struct msghdr* inet_used_messages;
     DART_FIELD struct msghdr* unix_used_messages;
-    DART_FIELD DART_TYPE struct simple_map_events_t* events;
+    DART_FIELD DART_TYPE struct table_events_t* events;
 };
 
 DART_LEAF_FUNCTION struct transport* transport_initialize(struct transport_configuration* configuration);

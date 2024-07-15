@@ -5,13 +5,13 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import '../../test/bindings.dart';
 
-final class simple_map_native_callbacks_t extends Opaque {}
+final class table_native_callbacks_t extends Opaque {}
 
 final class test_executor extends Struct {
   external Pointer<io_uring> ring;
   @Int32()
   external int descriptor;
-  external Pointer<simple_map_native_callbacks_t> callbacks;
+  external Pointer<table_native_callbacks_t> callbacks;
 }
 
 @Native<Pointer<test_executor> Function(Bool initialize_memory)>(isLeaf: true)
