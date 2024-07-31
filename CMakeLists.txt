@@ -1,0 +1,82 @@
+cmake_minimum_required(VERSION 3.16.0)
+project(root)
+
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE RelWithDebInfo)
+endif()
+
+add_definitions("-D_GNU_SOURCE")
+set(CMAKE_REQUIRED_DEFINITIONS "-D_GNU_SOURCE")
+set(CMAKE_MESSAGE_LOG_LEVEL ERROR)
+set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "" FORCE)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED true)
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD_REQUIRED true)
+set(CMAKE_C_FLAGS "")
+set(CMAKE_C_FLAGS_RELWITHDEBINFO "")
+SET(CMAKE_C_FLAGS_RELEASE "")
+SET(CMAKE_C_FLAGS_DEBUG "")
+set(CMAKE_CXX_FLAGS "")
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "")
+SET(CMAKE_CXX_FLAGS_RELEASE "")
+SET(CMAKE_CXX_FLAGS_DEBUG "")
+SET(CMAKE_SHARED_LINKER_FLAGS "-fPIC")
+SET(CMAKE_SHARED_LINKER_FLAGS_RELEASE "-fPIC")
+SET(CMAKE_SHARED_LINKER_FLAGS_DEBUG "-fPIC")
+SET(CMAKE_SHARED_LINKER_FLAGS_RELWITHDEBINFO "-fPIC")
+
+SET(COMPILER_C_FLAGS_DEBUG "-fPIC -O0 -g -Wno-parentheses -fstrict-aliasing -fno-stack-protector -DTRACE -DDEBUG")
+SET(COMPILER_C_FLAGS_RELEASE "-fPIC -O2 -Wno-parentheses -fstrict-aliasing -fno-stack-protector -DNDEBUG")
+SET(COMPILER_CXX_FLAGS_DEBUG "${COMPILER_C_FLAGS_DEBUG}")
+SET(COMPILER_CXX_FLAGS_RELEASE "${COMPILER_C_FLAGS_RELEASE}")
+
+set(DEPENDENCY_LIBUNWIND_REPOSITORY "developer@git.local:dependencies/tarantool-libunwind.git")
+set(DEPENDENCY_LIBUNWIND_VERSION evolution)
+set(LIBUNWIND_CFLAGS ${COMPILER_C_FLAGS_RELEASE})
+set(LIBUNWIND_CXXFLAGS ${COMPILER_CXX_FLAGS_RELEASE})
+
+set(DEPENDENCY_LIBURING_REPOSITORY "developer@git.local:dependencies/liburing.git")
+set(DEPENDENCY_LIBURING_VERSION evolution)
+set(LIBURING_CFLAGS ${COMPILER_C_FLAGS_RELEASE})
+set(LIBURING_CXXFLAGS ${COMPILER_CXX_FLAGS_RELEASE})
+
+set(DEPENDENCY_SMALL_REPOSITORY "developer@git.local:dependencies/tarantool-small.git")
+set(DEPENDENCY_SMALL_VERSION evolution)
+
+set(DEPENDENCY_MSGPUCK_REPOSITORY "developer@git.local:dependencies/tarantool-msgpuck.git")
+set(DEPENDENCY_MSGPUCK_VERSION evolution)
+
+set(DEPENDENCY_TARANTOOL_REPOSITORY "developer@git.local:dependencies/tarantool.git")
+set(DEPENDENCY_TARANTOOL_VERSION evolution-3.0.0)
+
+set(DEPENDENCY_DART_API_REPOSITORY "developer@git.local:dependencies/dart-api.git")
+set(DEPENDENCY_DART_API_VERSION 3.3.0)
+
+set(CORE_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/core/native)
+set(EXECUTOR_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/executor/native)
+set(MEMORY_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/memory/native)
+set(TRANSPORT_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/transport/native)
+set(STORAGE_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/storage/native)
+
+include(FetchContent)
+include(ExternalProject)
+include(ProcessorCount)
+include(infrastructure/cmake/infrastructure.cmake)
+
+ProcessorCount(nproc)
+
+if(nproc)
+  set(make make -j${nproc})
+else()
+  set(make make)
+endif()
+
+add_subdirectory(core)
+add_subdirectory(memory)
+add_subdirectory(executor)
+add_subdirectory(transport)
+add_subdirectory(storage)
+
+add_custom_target(natives DEPENDS core_native memory_native executor_native transport_native storage_native)
