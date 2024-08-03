@@ -1,0 +1,9 @@
+linter:
+  rules:
+    - prefer_relative_imports
+analyzer:
+  errors:
+    unused_element: ignore
+  exclude:
+    - ../dependencies
+    - ../native
