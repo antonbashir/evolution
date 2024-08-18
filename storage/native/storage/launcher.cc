@@ -112,25 +112,12 @@ static void signal_free(void)
 
 static void signal_reset(void)
 {
-    if (!cord_ptr) return;
-
-    for (int i = 0; i < ev_sig_count; i++)
-        ev_signal_stop(loop(), &ev_sigs[i]);
-
-    struct sigaction sa;
-
-    memset(&sa, 0, sizeof(sa));
-    sigemptyset(&sa.sa_mask);
-    sa.sa_handler = SIG_DFL;
-
-    if (sigaction(SIGUSR1, &sa, NULL) == -1 ||
-        sigaction(SIGINT, &sa, NULL) == -1 ||
-        sigaction(SIGTERM, &sa, NULL) == -1 ||
-        sigaction(SIGHUP, &sa, NULL) == -1 ||
-        sigaction(SIGWINCH, &sa, NULL) == -1)
-        say_syserror("sigaction");
-
-    fiber_signal_reset();
+    if (loop())
+    {
+        for (int i = 0; i < ev_sig_count; i++)
+            ev_signal_stop(loop(), &ev_sigs[i]);
+        fiber_signal_reset();
+    }
 
     sigset_t sigset;
     sigfillset(&sigset);
