@@ -1,6 +1,0 @@
-analyzer:
-  errors:
-    unused_element: ignore
-linter:
-  rules:
-    - prefer_relative_imports
